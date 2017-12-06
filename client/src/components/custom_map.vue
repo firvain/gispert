@@ -1,4 +1,3 @@
-https://calm-gorge-20681.herokuapp.com/api/fileLayers/id?id=58807c5684ec7433f1f2efd51484824159003
 <template>
   <v-layout>
     <v-flex xs12 sm12>
@@ -23,8 +22,9 @@ https://calm-gorge-20681.herokuapp.com/api/fileLayers/id?id=58807c5684ec7433f1f2
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import turf from 'turf';
 import olMap from '../js/map';
-import styles from '../js/styles';
+// import styles from '../js/styles';
 
 export default {
   props: ['customMap'],
@@ -36,51 +36,49 @@ export default {
       // this.$emit('explore', this.customMap); TODO send this on user profile!
       axios.get(`http://localhost:8081/v1/fileLayers/id?id=${id}`)
       .then((response) => {
-        const geojsonFormat = new ol.format.GeoJSON();
         const features = new ol.format.GeoJSON().readFeatures(response.data, {
           dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:3857',
         });
+        const geometries = turf.toGeometries(response.data);
+        // console.log(turf.multiPolygon([[[[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]]]]));
+        const turfFeatures = turf.dissolve(geometries);
+        console.log(turfFeatures);
+        // console.log(features);
         let allLayers = [];
         allLayers = olMap.getLayers().getArray();
+        // console.log(allLayers);
         allLayers.forEach((layer) => {
           if (layer.getProperties().name === 'customLayer') {
-            const AddedFeature = geojsonFormat.readFeatures(features);
-            let alreadyExists = false;
-            layer.getSource().forEachFeature((feature) => {
-              // console.log(AddedFeature);
-              if (feature.get('mongoID') === AddedFeature[0].getProperties().mongoID) {
-                alreadyExists = true;
-              }
-            });
-            const g = AddedFeature[0].getGeometry().getExtent();
-            if (alreadyExists === false) {
-              layer.getSource().addFeatures(AddedFeature);
+            if (layer.getSource().getFeatures().length > 0) {
+              features.forEach((f) => {
+                let alreadyExists = false;
+                layer.getSource().forEachFeature((feature) => {
+                  if (feature.get('mongoID') === f.get('mongoID')) {
+                    alreadyExists = true;
+                  }
+                });
+                if (alreadyExists === false) {
+                  layer.getSource().addFeature(f);
+                }
+              });
             }
-            if (g[0] - g[2] < 500) {
-              g[0] -= 400;
-              g[2] += 400;
+            if (layer.getSource().getFeatures().length === 0) {
+              layer.getSource().addFeatures(features);
             }
-            if (g[1] - g[3] < 500) {
-              g[1] -= 400;
-              g[3] += 400;
-            }
-            olMap.getView().fit(g, olMap.getSize());
-            const cs = AddedFeature[0].getStyle();
 
-            AddedFeature[0].setStyle(styles.BoldLineString);
-
-            setTimeout(() => {
-              AddedFeature[0].setStyle(cs);
-              olMap.updateSize();
-            }, 500);
+            // if (g[0] - g[2] < 500) {
+            //   g[0] -= 400;
+            //   g[2] += 400;
+            // }
+            // if (g[1] - g[3] < 500) {
+            //   g[1] -= 400;
+            //   g[3] += 400;
+            // }
+            // olMap.getView().fit(g, olMap.getSize());
           }
         });
-      })
-      .catch((e) => {
-        console.log(e);
       });
-      // console.log(response);
     },
   },
   computed: {

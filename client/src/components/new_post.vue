@@ -42,7 +42,7 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import ol from 'openlayers';
+// import ol from 'openlayers';
 import olMap from '../js/map';
 
 export default {
@@ -53,23 +53,23 @@ export default {
   }),
   methods: {
     ...mapActions(['addToCompare']),
-    publishPost() {
-      const featuresToPost = this.drawnFeatures;
-      const text = this.postText;
-      const geojsonFormat = new ol.format.GeoJSON();
-      const userFeats = geojsonFormat.writeFeatures(featuresToPost);
-      console.log(userFeats, text);
-      const userPost = {
-        userId: 'yiannisID',
-        username: 'ytsampouris',
-        timestamp: Date.now(),
-        userFeatures: userFeats,
-        isReplyTo: this.id,
-        group: null,
-      };
+    // publishPost() {
+    //   const featuresToPost = this.drawnFeatures;
+    //   const text = this.postText;
+    //   const geojsonFormat = new ol.format.GeoJSON();
+    //   const userFeats = geojsonFormat.writeFeatures(featuresToPost);
+    //   console.log(userFeats, text);
+    //   const userPost = {
+    //     userId: 'yiannisID',
+    //     username: 'ytsampouris',
+    //     timestamp: Date.now(),
+    //     userFeatures: userFeats,
+    //     isReplyTo: this.id,
+    //     group: null,
+    //   };
       // TODO use axios to post this to API
-      console.log(userPost);
-    },
+    //   console.log(userPost);
+    // },
     showMapTools() {
       this.$root.$emit('showTools');
       if (this.id !== undefined) {

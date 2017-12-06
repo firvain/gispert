@@ -87,7 +87,7 @@ export default {
   },
   mounted() {
     olMap.setTarget('mapDiv');
-    console.log(this.$route.params.id);
+    // console.log(this.$route.params.id);
   },
 };
 </script>
