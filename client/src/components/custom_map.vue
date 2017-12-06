@@ -40,9 +40,11 @@ export default {
           dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:3857',
         });
-        const geometries = turf.toGeometries(response.data);
+        const ptj1 = new ol.format.GeoJSON().writeFeatureObject(features[0]);
+        const ptj2 = new ol.format.GeoJSON().writeFeatureObject(features[1]);
+        // const pt = JSON.parse(ptj);
         // console.log(turf.multiPolygon([[[[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]]]]));
-        const turfFeatures = turf.dissolve(geometries);
+        const turfFeatures = turf.union(ptj1, ptj2);
         console.log(turfFeatures);
         // console.log(features);
         let allLayers = [];
