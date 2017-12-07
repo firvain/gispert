@@ -13,6 +13,7 @@
           <v-spacer></v-spacer>
           <v-card-actions>
             <v-btn class="green white--text darken-1" @click="explore(customMap.id)">Ανοιξε αυτο χαρτη</v-btn>
+            <v-btn class="green white--text darken-1" @click="shareMap(customMap.id)">Μοιρασου αυτο χαρτη</v-btn>
           </v-card-actions>
         </v-card-actions>
       </v-card>
@@ -22,7 +23,7 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
-import turf from 'turf';
+// import turf from 'turf';
 import olMap from '../js/map';
 // import styles from '../js/styles';
 
@@ -40,13 +41,6 @@ export default {
           dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:3857',
         });
-        const ptj1 = new ol.format.GeoJSON().writeFeatureObject(features[0]);
-        const ptj2 = new ol.format.GeoJSON().writeFeatureObject(features[1]);
-        // const pt = JSON.parse(ptj);
-        // console.log(turf.multiPolygon([[[[0, 0], [0, 10], [10, 10], [10, 0], [0, 0]]]]));
-        const turfFeatures = turf.union(ptj1, ptj2);
-        console.log(turfFeatures);
-        // console.log(features);
         let allLayers = [];
         allLayers = olMap.getLayers().getArray();
         // console.log(allLayers);
@@ -68,22 +62,41 @@ export default {
             if (layer.getSource().getFeatures().length === 0) {
               layer.getSource().addFeatures(features);
             }
-
-            // if (g[0] - g[2] < 500) {
-            //   g[0] -= 400;
-            //   g[2] += 400;
-            // }
-            // if (g[1] - g[3] < 500) {
-            //   g[1] -= 400;
-            //   g[3] += 400;
-            // }
-            // olMap.getView().fit(g, olMap.getSize());
+            const extent = ol.extent.createEmpty();
+            features.forEach((f) => {
+              ol.extent.extend(extent, f.getGeometry().getExtent());
+            });
+            // console.log(extent);
+            if (extent[0] - extent[2] < 500) {
+              extent[0] -= 400;
+              extent[2] += 400;
+            }
+            if (extent[1] - extent[3] < 500) {
+              extent[1] -= 400;
+              extent[3] += 400;
+            }
+            olMap.getView().fit(extent, olMap.getSize());
           }
         });
       });
     },
+    loadRouterMap() {
+      const id = this.$route.params.id;
+      if (id) {
+        this.explore(id);
+      }
+    },
   },
   computed: {
+  },
+  watch: {
+    $route: 'loadRouterMap',
+  },
+  mounted() {
+    const id = this.$route.params.id;
+    if (id) {
+      this.explore(id);
+    }
   },
 };
 </script>

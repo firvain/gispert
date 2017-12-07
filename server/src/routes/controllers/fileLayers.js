@@ -9,17 +9,18 @@ router.route('/')
         var collection = db.collection('geodata');
         if (err) {
           throw err;
+        } else {
+          collection.find({}, { features: 0 }).toArray(function handleCursor(error, docs) {
+            if (error) {
+              res.sendStatus(500);
+              console.log(error);
+            } else {
+              console.log(docs);
+              res.send(docs);
+              db.close();
+            }
+          });
         }
-        collection.find({}, { features: 0 }).toArray(function handleCursor(error, docs) {
-          if (error) {
-            res.sendStatus(500);
-            console.log(error);
-          } else {
-            console.log(docs);
-            res.send(docs);
-            db.close();
-          }
-        });
       });
     })
   .post(function insertLayer(req, res) {
