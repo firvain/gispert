@@ -24,6 +24,7 @@
     "openlayers": "^4.2.0",
     "turf": "^3.0.14",
     "turf-to-geometries": "^1.0.0",
+    "vee-validate": "^2.0.0-rc.25",
     "vue": "^2.3.3",
     "vue-linkify": "^1.0.1",
     "vue-moment": "^2.1.0",

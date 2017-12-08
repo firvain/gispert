@@ -28,34 +28,42 @@ router.route('/')
   })
  .post(function setuser(req, res) {
    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-     var user = req.body;
-         //  console.log(req.body);
-          db.collection('users').aggregate([{$match: { name: user.name }}, { $group: { _id: null, count: { $sum: 1 } } }]).toArray(function handleCursor(err, docs){
-           //  console.log(docs);
-            console.log(user.name);
-           //  console.log('count is: ' + docs[0].count);
-           console.log(typeof(docs));
-           console.log(docs);
-            if (docs && docs[0] && docs[0].count) {
-             throw err;
-             console.log('error user exists');
-            }
-            else {
-              console.log('inserting user');
-              db.collection('users').insertOne(
-                user
-              );
-              res.status(200).send();
-              db.close();
-            }
-          });
+      const user = {
+        name: req.body.name,
+        pass: req.body.password,
+        email: req.body.email,
+      };
+      if (req.body.name.length > 0 && req.body.password.length > 0) {
+        console.log('this user is trying to register:: ', user)
+        //  console.log(req.body);
+        db.collection('users').aggregate([
+          { $match: { name: req.body.name }},
+          { $group: { _id: null, count: { $sum: 1 } } }
+        ]).toArray(function handleCursor(err, docs){
+          // console.log('docs is:: ', docs);
+          // console.log('count is: ' + docs[0].count);
+          console.log(docs);
+          if (docs && docs[0] && docs[0].count) {
+            console.log('error user exists');
+            res.send({ result: 'in use' });
+          }
+          if (docs.length === 0) {
+            // console.log('inserting user');
+            db.collection('users').insertOne(
+              user
+            );
+            // res.status(200).send('success');
+            res.send({ result: 'success' });
+            db.close();
+          }
+        });
+      }
    });
  });
 
 router.route('/all')
   .get(function getusers(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-      // Create your schemas and models here.
       var collection = db.collection('users');
       if (err) {
         throw err;

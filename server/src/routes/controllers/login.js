@@ -20,8 +20,8 @@ router.route('/')
       var name = req.query.name;
       var password = req.query.password;
       // console.log(req.query);
-      // console.log(name);
-      // console.log(password);
+      console.log(name);
+      console.log(password);
 
       if (err) {
         res.send({

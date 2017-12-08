@@ -8,12 +8,12 @@
           name="tab-tracker-form"
           autocomplete="off">
           <v-text-field
-            label="Email"
+            label="Όνομα ή email"
             v-model="credentials.email"
           ></v-text-field>
           <br>
           <v-text-field
-            label="Password"
+            label="Κωδικός"
             type="password"
             v-model="credentials.password"
             autocomplete="new-password"
@@ -30,6 +30,12 @@
         </v-btn>
       </v-container>
       <p>{{credentials.email}},{{credentials.password}}</p>
+      <v-snackbar
+        :timeout=5000
+        v-model="snackbar"
+        color='red'
+      >{{ wrongLoginInfo }}</v-snackbar>
+      {{snackbar}}
     </v-flex>
   </v-layout>
 </template>
@@ -42,8 +48,10 @@ import Pageheader from '@/components/pageheader';
 export default {
   data: () => ({
     error: null,
+    snackbar: false,
     login_txt: 'Σύνδεση',
     signup_txt: 'Εγγραφή',
+    wrongLoginInfo: 'Λάθος στοιχεία εισόδου',
     credentials: {
       email: '',
       password: '',
@@ -53,7 +61,8 @@ export default {
     Pageheader,
   },
   methods: {
-    login: (credentials) => {
+    login(credentials) {
+      console.log('snack:: ', this.snackbar);
       axios.get('http://localhost:8081/v1/login', {
         params: {
           name: credentials.email,
@@ -61,10 +70,17 @@ export default {
         },
       })
       .then((response) => {
-        this.user = response.data;
-      })
-      .catch((e) => {
-        this.errors.push(e);
+        if (response.data.error && response.data.error === 'Login information was incorrect') {
+          console.log(response.data.error);
+          this.snackbar = true;
+          console.log(this.snackbar);
+        }
+        if (response.data.user) {
+          this.user = response.data;
+          // TODO in index.js of store create variables and mutations
+          this.$store.dispatch('setToken', response.data.token);
+          this.$store.dispatch('setUser', response.data.user);
+        }
       });
     },
   },
