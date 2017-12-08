@@ -1,6 +1,7 @@
 <template>
   <div id='timeline'>
     <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
+      <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
       <v-btn
         width="50px"
         large
@@ -60,6 +61,7 @@ export default {
       newPostColor: 'blue-grey',
       newPostTextColor: 'white--text darken-1',
       newPostText: 'νεα αναρτηση',
+      loading: false,
     };
   },
   components: {
@@ -83,12 +85,15 @@ export default {
       return estate;
     },
     next_page() {
+      this.loading = true;
       this.startPage += 25;
       const url = `https://collaborative-map.herokuapp.com/api/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
       axios.get(url).then((response) => {
         response.data.forEach((d) => {
           this.posts.push(d);
         });
+      }).then(() => {
+        this.loading = false;
       });
     },
     toggle_new_post() {
@@ -103,9 +108,12 @@ export default {
     },
   },
   mounted() {
+    this.loading = true;
     const url = `https://collaborative-map.herokuapp.com/api/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
     axios.get(url).then((response) => {
       this.posts = response.data;
+    }).then(() => {
+      this.loading = false;
     });
   },
 };

@@ -2,6 +2,7 @@
   <div id='timeline'>
     <v-container v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
       <v-layout row wrap>
+        <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex
           md12
           v-for="customMap in customMaps"
@@ -37,6 +38,7 @@ export default {
       expand: 'md12',
       mode: 0,
       explore_estate: null,
+      loading: false,
     };
   },
   components: {
@@ -52,8 +54,11 @@ export default {
   mounted() {
     // TODO this.$route.path split by / get the last item and load the map
     // console.log(this.$route.path);
+    this.loading = true;
     axios.get('https://calm-gorge-20681.herokuapp.com/api/fileLayers').then((response) => {
       this.customMaps = response.data;
+    }).then(() => {
+      this.loading = false;
     });
   },
 };

@@ -2,6 +2,7 @@
   <div id='timeline'>
     <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
       <v-layout row wrap>
+        <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex
           md12
           v-for="user in users"
@@ -37,6 +38,7 @@ export default {
       expand: 'md12',
       mode: 0,
       explore_estate: null,
+      loading: false,
     };
   },
   components: {
@@ -50,8 +52,11 @@ export default {
     },
   },
   mounted() {
+    this.loading = true;
     axios.get('https://calm-gorge-20681.herokuapp.com/api/users/all').then((response) => {
       this.users = response.data;
+    }).then(() => {
+      this.loading = false;
     });
   },
 };
