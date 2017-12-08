@@ -13,6 +13,8 @@ export default new Vuex.Store({
     addingToPost: undefined,
     storage: [],
     featureCount: 0,
+    token: null,
+    user: null,
   },
   actions: {
     setFeature(state, data) {
@@ -23,6 +25,12 @@ export default new Vuex.Store({
     },
     setPostIdToAddFeatures(state, data) {
       state.commit('addingToPost', data);
+    },
+    setUser(state, data) {
+      state.commit('setuser', data);
+    },
+    setToken(state,data) {
+      state.commit('settoken', data);
     },
   },
   mutations: {
@@ -55,6 +63,12 @@ export default new Vuex.Store({
         const toDelete = new Set([data]);
         p.features = p.features.filter(obj => !toDelete.has(obj.drawId));
       });
+    },
+    setuser(state, data) {
+      state.user = data;
+    },
+    settoken(state, data) {
+      state.token = data;
     },
   },
   getters: {

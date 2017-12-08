@@ -4,6 +4,23 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectID = require('mongodb').ObjectID;
 var config = require('../../config');
 
+const jwt = require('jsonwebtoken');
+const Promise = require('bluebird');
+const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
+
+function hashPassword(user, options) {
+  const SALT_FACTOR = 8;
+  if(!user.changed('password')) {
+    return;
+  }
+  return bcrypt
+    .genSaltAsync(SALT_FACTOR)
+    .then(salt => bcrypt.hashAsync(user.password, salt, null))
+    .then(hash => {
+      user.setDataValue('pass', hash)
+    });
+}
+
 router.route('/')
   .get(function getusers(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {

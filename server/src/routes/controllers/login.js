@@ -14,6 +14,22 @@ function jwtSignUser (user) {
  })
 }
 
+function hashPassword(user) {
+  console.log('hash password');
+  const SALT_FACTOR = 8;
+  let hashed;
+  bcrypt
+    .genSaltAsync(SALT_FACTOR)
+    .then(salt => bcrypt.hashAsync(user.pass, salt, null))
+    .then(hash => {
+      user['pass'] = hash;
+      console.log('hashed is:: ', hash);
+      console.log('user hashed is:: ', user['pass']);
+      console.log('new User :: ', user);
+      return user;
+    });
+}
+
 router.route('/')
   .get(function getusers(req, res) {
    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
@@ -41,6 +57,7 @@ router.route('/')
             // console.log(result);
             const user = result[0];
             // console.log(jwtSignUser(user));
+            user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
             res.send({
               user: user,
               // TODO when token expires?
