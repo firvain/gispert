@@ -7,6 +7,7 @@ Vue.use(Vuex);
 const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
+  strict: true,
   state: {
     feature: undefined,
     newpostfeature: undefined,
@@ -15,6 +16,7 @@ export default new Vuex.Store({
     featureCount: 0,
     token: null,
     user: null,
+    isUserLoggedIn: false,
   },
   actions: {
     setFeature(state, data) {
@@ -69,6 +71,11 @@ export default new Vuex.Store({
     },
     settoken(state, data) {
       state.token = data;
+      if (state.token) {
+        state.isUserLoggedIn = true;
+      } else {
+        state.isUserLoggedIn = false;
+      }
     },
   },
   getters: {

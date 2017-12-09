@@ -45,10 +45,12 @@ router.route('/')
   })
  .post(function setuser(req, res) {
    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+     userPasswordHashed = bcrypt.hashSync(req.body.password, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
       const user = {
         name: req.body.name,
-        pass: req.body.password,
+        pass: userPasswordHashed,
         email: req.body.email,
+        description: req.body.description,
       };
       if (req.body.name.length > 0 && req.body.password.length > 0) {
         console.log('this user is trying to register:: ', user)
@@ -66,6 +68,8 @@ router.route('/')
           }
           if (docs.length === 0) {
             // console.log('inserting user');
+            // before you insert the user hash the password
+            // user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
             db.collection('users').insertOne(
               user
             );

@@ -5,28 +5,21 @@
       <v-spacer></v-spacer>
         <v-toolbar-items>
           <router-link to="../../register">
-            <v-btn flat>
+            <v-btn flat v-if="!$store.state.isUserLoggedIn">
               {{signup}}
             </v-btn>
           </router-link>
           <router-link to="../../login">
-            <v-btn flat>
+            <v-btn flat v-if="!$store.state.isUserLoggedIn">
               {{login}}
             </v-btn>
             </router-link>
-        </v-toolbar-items>
-
-      <!-- <v-btn icon large>
-        <i class="fa fa-language fa-2x"></i>
-      </v-btn> -->
-        <!-- <v-tooltip left> -->
-          <!-- <router-link to="../../login">
-            <v-btn icon large>
-
+          <router-link to="../../login">
+            <v-btn flat v-if="$store.state.isUserLoggedIn" @click="logoutUser">
+              {{logout}}
             </v-btn>
-          </router-link> -->
-          <!-- <span>{{logout}}</span> -->
-        <!-- </v-tooltip> -->
+            </router-link>
+        </v-toolbar-items>
     </v-toolbar>
   </v-layout>
 </template>
@@ -37,9 +30,15 @@ export default {
     return {
       signup: 'Εγγραφή',
       login: 'Είσοδος',
+      logout: 'Έξοδος',
     };
   },
   methods: {
+    logoutUser() {
+      this.$store.dispatch('setToken', null);
+      this.$store.dispatch('setUser', null);
+      this.$store.dispatch('setMapVisibility', false);
+    },
   },
 };
 </script>

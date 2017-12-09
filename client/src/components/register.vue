@@ -91,6 +91,7 @@ export default {
           email: this.email,
           description: this.description,
         });
+        // eslint-disable-next-line
         console.log('response is:: ', response);
         if (response.data.result === 'success') {
           this.$router.push({

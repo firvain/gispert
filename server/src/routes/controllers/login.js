@@ -34,7 +34,7 @@ router.route('/')
   .get(function getusers(req, res) {
    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
       var name = req.query.name;
-      var password = req.query.password;
+      var password = bcrypt.hashSync(req.query.password, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
       // console.log(req.query);
       console.log(name);
       console.log(password);
@@ -44,7 +44,9 @@ router.route('/')
           error: 'Login information was incorrect'
         });
       } else {
-        var query = {name: req.query.name, pass: req.query.password};
+        // user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
+        // hash password given by user and then var query to search
+        var query = {name: req.query.name, pass: password};
         db.collection('users').find(query).toArray(function(err, result){
           if (err) {
             throw err;

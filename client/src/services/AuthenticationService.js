@@ -2,6 +2,7 @@ import Api from '@/services/Api';
 
 export default {
   register(credentials) {
+    // eslint-disable-next-line
     console.log('credentials in auth service', credentials);
     return Api().post('users', credentials);
   },

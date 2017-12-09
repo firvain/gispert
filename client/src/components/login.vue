@@ -60,7 +60,6 @@ export default {
   },
   methods: {
     login(credentials) {
-      // console.log('snack:: ', this.snackbar);
       axios.get('http://localhost:8081/v1/login', {
         params: {
           name: credentials.email,
@@ -69,15 +68,15 @@ export default {
       })
       .then((response) => {
         if (response.data.error && response.data.error === 'Login information was incorrect') {
-          // console.log(response.data.error);
           this.snackbar = true;
-          // console.log(this.snackbar);
         }
         if (response.data.user) {
           this.user = response.data;
-          // TODO in index.js of store create variables and mutations
           this.$store.dispatch('setToken', response.data.token);
           this.$store.dispatch('setUser', response.data.user);
+          this.$router.push({
+            path: '/main/home',
+          });
         }
       });
     },
