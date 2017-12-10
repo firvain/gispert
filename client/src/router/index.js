@@ -43,7 +43,7 @@ export default new Router({
         },
         {
           path: 'custommaps',
-          name: 'customMaps',
+          name: 'customMapsNoId',
           component: customMaps,
         },
         {

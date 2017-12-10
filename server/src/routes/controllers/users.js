@@ -10,7 +10,7 @@ const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
 
 function hashPassword(user, options) {
   const SALT_FACTOR = 8;
-  if(!user.changed('password')) {
+  if (!user.changed('password')) {
     return;
   }
   return bcrypt
@@ -31,32 +31,34 @@ router.route('/')
       db.collection('users').aggregate([
         { $match: { name: name } }
       ]
-      , function handleCursor(error, user) {
-        if (error) {
-          res.status(500).send({
-            error: 'something blew up'
-          });
-        } else {
-          res.send(user);
-        }
-        db.close();
-      });
+        , function handleCursor(error, user) {
+          if (error) {
+            res.status(500).send({
+              error: 'something blew up'
+            });
+          } else {
+            res.send(user);
+          }
+          db.close();
+        });
     });
   })
- .post(function setuser(req, res) {
-   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+  .post(function setuser(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      userPasswordHashed = bcrypt.hashSync(req.body.password, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
       const user = {
         name: req.body.name,
-        pass: req.body.password,
+        pass: userPasswordHashed,
         email: req.body.email,
+        description: req.body.description,
       };
       if (req.body.name.length > 0 && req.body.password.length > 0) {
         console.log('this user is trying to register:: ', user)
         //  console.log(req.body);
         db.collection('users').aggregate([
-          { $match: { name: req.body.name }},
+          { $match: { name: req.body.name } },
           { $group: { _id: null, count: { $sum: 1 } } }
-        ]).toArray(function handleCursor(err, docs){
+        ]).toArray(function handleCursor(err, docs) {
           // console.log('docs is:: ', docs);
           // console.log('count is: ' + docs[0].count);
           console.log(docs);
@@ -66,6 +68,8 @@ router.route('/')
           }
           if (docs.length === 0) {
             // console.log('inserting user');
+            // before you insert the user hash the password
+            // user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
             db.collection('users').insertOne(
               user
             );
@@ -75,8 +79,8 @@ router.route('/')
           }
         });
       }
-   });
- });
+    });
+  });
 
 router.route('/all')
   .get(function getusers(req, res) {
@@ -85,7 +89,7 @@ router.route('/all')
       if (err) {
         throw err;
       }
-      collection.find({},{pass:0}).toArray(function handleCursor(error, docs) {
+      collection.find({}, { pass: 0 }).toArray(function handleCursor(error, docs) {
         if (err) {
           res.sendStatus(500);
           console.log(error);
@@ -99,26 +103,26 @@ router.route('/all')
   });
 
 router.route('/updateUserDescription')
-.post(function addfollowing(req, res) {
-  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-    var currentUserId;
-    var cId;
-    var description = req.body.description;
+  .post(function addfollowing(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      var currentUserId;
+      var cId;
+      var description = req.body.description;
 
-    currentUserId = req.body.id;
-    cId = new ObjectID(currentUserId);
+      currentUserId = req.body.id;
+      cId = new ObjectID(currentUserId);
 
-    if (err) {
-      throw err;
-    } else {
-      db.collection('users').update(
-        { _id : cId },
-        { $set: { description: description } }
-      );
-      res.status(200).send();
-    }
-    db.close();
+      if (err) {
+        throw err;
+      } else {
+        db.collection('users').update(
+          { _id: cId },
+          { $set: { description: description } }
+        );
+        res.status(200).send();
+      }
+      db.close();
+    });
   });
-});
 
 module.exports = router;
