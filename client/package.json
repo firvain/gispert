@@ -22,6 +22,7 @@
     "moment": "^2.18.0",
     "moment-with-locales-es6": "^2.18.1",
     "openlayers": "^4.2.0",
+    "social-login": "^0.2.8",
     "turf": "^3.0.14",
     "turf-to-geometries": "^1.0.0",
     "vee-validate": "^2.0.0-rc.25",

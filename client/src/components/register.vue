@@ -1,6 +1,6 @@
 <template>
   <v-layout column>
-    <Pageheader></Pageheader>
+    <!-- <Pageheader></Pageheader> -->
     <v-flex xs6 offset-xs3>
       <h1>{{signup}}</h1>
         <form
