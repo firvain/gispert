@@ -5,12 +5,12 @@
       <v-btn
         width="50px"
         large
-        v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"
+        v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"  v-if="$store.state.isUserLoggedIn === true"
       >
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
       </v-btn>
-    <newPost v-if="newPost==true"></newPost>
+    <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true"></newPost>
     <v-layout row wrap>
       <v-flex
         md12
@@ -45,6 +45,7 @@ import { mapGetters, mapActions } from 'vuex';
 import post from './post';
 import cardDetails from './card_in_details';
 import newPost from './new_post';
+import config from '../config';
 
 export default {
   name: 'timeline',
@@ -87,7 +88,7 @@ export default {
     next_page() {
       this.loading = true;
       this.startPage += 25;
-      const url = `https://collaborative-map.herokuapp.com/api/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
       axios.get(url).then((response) => {
         response.data.forEach((d) => {
           this.posts.push(d);
@@ -109,7 +110,7 @@ export default {
   },
   mounted() {
     this.loading = true;
-    const url = `https://collaborative-map.herokuapp.com/api/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
     axios.get(url).then((response) => {
       this.posts = response.data;
     }).then(() => {

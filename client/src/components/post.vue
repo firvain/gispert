@@ -15,7 +15,7 @@
             <v-btn v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}"' class="green white--text darken-1" @click="explore(post)">Δες το στο χάρτη<v-icon right dark>language</v-icon></v-btn>
           </v-card-actions>
           <v-card-actions>
-            <v-btn v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer">
+            <v-btn v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
             {{answerPostText}}<v-icon right dark>insert_comment</v-icon></v-btn>
           </v-card-actions>
         </v-card-actions>

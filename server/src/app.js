@@ -1,5 +1,3 @@
-console.log('hello');
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -7,6 +5,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const io = require('socket.io')();
 const app = express();
+
 
 app.use(morgan('combined'));
 app.use(bodyParser.json());
@@ -17,20 +16,6 @@ app.use(cookieParser());
 
 const APIv1 = require('./routes/APIv1');
 app.use('/v1', APIv1);
-
-app.post('/register', (req, res) => {
-    // here I connect with mongo and do stuff on it
-    res.send({
-        message: 'You are about to register',
-    });
-});
-
-app.get('/registered', (req, res) => {
-    // here I connect with mongo and do stuff on it
-    res.send({
-        message: 'You were registered',
-    });
-});
 
 app.io = io;
 

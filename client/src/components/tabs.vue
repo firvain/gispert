@@ -11,7 +11,7 @@
           <v-icon>search</v-icon>
           Αναζήτηση
         </v-tabs-item>
-        <v-tabs-item :to="{name: 'customMaps'}">
+        <v-tabs-item :to="{name: 'customMapsNoId'}">
           <v-icon>map</v-icon>
           Χάρτες
         </v-tabs-item>

@@ -14,6 +14,9 @@ function jwtSignUser(user) {
   })
 }
 
+// https://scotch.io/tutorials/easy-node-authentication-facebook
+// https://scotch.io/tutorials/easy-node-authentication-google
+
 function hashPassword(user) {
   console.log('hash password');
   const SALT_FACTOR = 8;
