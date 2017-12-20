@@ -10,11 +10,12 @@ router.route('/')
   var post = {
      userId: req.body.userPost.userId,
      userName: req.body.userPost.username,
-     timestamp: req.body.userPost.timestamp,
+     timestamp: String(Math.trunc(req.body.userPost.timestamp)),
      text: req.body.userPost.text,
      userFeatures: req.body.userPost.userFeatures,
      isReplyTo: req.body.userPost.isReplyTo,
-     group: req.body.userPost.group
+     group: req.body.userPost.group,
+     replies: req.body.userPost.replies
   };
   const Database = require('../database')
       , dbUrl = 'mongodb://' + config.mongodbHost + config.dbName
@@ -28,6 +29,9 @@ router.route('/')
         database.addReply(req.body.userPost.isReplyTo, id);
         console.log('the inserted id was :: ', id);
       }
+    })
+    .then(() => { 
+      res.sendStatus(200);
     })
     .catch((err) => {
       if (err){

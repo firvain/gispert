@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs12 sm12>
-      <v-card>
+      <v-card @newpost="new_post_sent()">
         <v-card-title primary-title>
           <div class="text-xs-left">
             <b>@{{post.userName}}:</b>
@@ -19,7 +19,7 @@
             {{answerPostText}}<v-icon right dark>insert_comment</v-icon></v-btn>
           </v-card-actions>
         </v-card-actions>
-        <newPost v-if="answerPost==true" :id="post._id"></newPost>
+        <newPost v-if="answerPost==true" :id="post._id" @newpost="new_post_sent()"></newPost>
         <v-flex
           md12
           v-for="post in post.repliesData"
@@ -61,7 +61,7 @@ export default {
       const newFeature = post.userFeatures;
       // console.log(post);
       // this.$emit('explore', this.post);
-      if (newFeature !== '{"type":"FeatureCollection","features":[]}') {
+      if (newFeature !== '{"type":"FeatureCollection","features":[]}' && newFeature !== null) {
         let allLayers = [];
         allLayers = olMap.getLayers().getArray();
         allLayers.forEach((layer) => {
@@ -108,6 +108,12 @@ export default {
         this.answerPostText = 'ακυρο';
         this.answerPostColor = 'red';
       }
+    },
+    new_post_sent() {
+      console.log('event caught::');
+      // if (result === 'success') {
+      this.toggle_answer();
+      // }
     },
   },
   computed: {

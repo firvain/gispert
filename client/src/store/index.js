@@ -24,6 +24,9 @@ export default new Vuex.Store({
     addNewPostFeature(state, data) {
       state.commit('newPostFeature', data);
     },
+    removeNewPostFeature(state) {
+      state.commit('removePostFeature');
+    },
     setPostIdToAddFeatures(state, data) {
       state.commit('addingToPost', data);
     },
@@ -54,6 +57,13 @@ export default new Vuex.Store({
       } else {
         state.storage.push({ id: post, features: [feature] });
       }
+    },
+    clearNewPostFeatures(state) {
+      let allResponses = state.storage;
+      const toDelete = new Set(['newPost']);
+      console.log(allResponses);
+      const restResponses = allResponses.filter(obj => !toDelete.has(obj.id));
+      state.storage = restResponses;
     },
     addingToPost(state, data) {
       state.addingToPost = data;

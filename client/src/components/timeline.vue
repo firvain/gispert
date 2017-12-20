@@ -116,6 +116,10 @@ export default {
     }).then(() => {
       this.loading = false;
     });
+    this.$on('newpost', () => {
+      console.log('newpost');
+      this.toggle_new_post();
+    });
   },
 };
 </script>

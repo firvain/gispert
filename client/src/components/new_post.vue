@@ -31,6 +31,16 @@
               </v-chip>
             </v-flex>
         <v-card-actions>
+        <v-flex xs12 sm6 class="py-2">
+            <v-btn-toggle mandatory v-model="toggle_one">
+              <v-btn flat>
+                Δημοσιο
+              </v-btn>
+              <v-btn flat>
+                Ιδιωτικο
+              </v-btn>
+            </v-btn-toggle>
+          </v-flex>
           <v-btn flat class="green white--text darken-1" @click="publishPost">Δημοσιευση<v-icon right dark>insert_comment</v-icon></v-btn>
           <v-btn small fab class="green white--text">
             <v-icon white--text dark>help_outline</v-icon>
@@ -51,6 +61,7 @@ export default {
   name: 'newpost',
   data: () => ({
     postText: '',
+    toggle_one: 0,
   }),
   methods: {
     publishPost() {
@@ -66,6 +77,12 @@ export default {
       } else {
         userFeats = null;
       }
+      let idToReply;
+      if (this.id !== undefined) {
+        idToReply = this.id;
+      } else {
+        idToReply = '';
+      }
       const userPost = {
         // eslint-disable-next-line
         userId: this.$store.state.user._id,
@@ -73,21 +90,25 @@ export default {
         text: textToPost,
         timestamp: Date.now(),
         userFeatures: userFeats,
-        isReplyTo: this.id,
-        group: null,
+        isReplyTo: idToReply,
+        group: 'none',
+        replies: [],
       };
       console.log(userPost);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
       axios.post(url, { userPost }).then((response) => {
         console.log('trying to reset component');
         this.postText = '';
-        featuresToPost.forEach((f) => {
-          this.remove(f);
-        });
-        console.log(response.data);
-      }).then((response) => {
-        // delete these features from store
-        console.log(response.data);
+        // featuresToPost.forEach((f) => {
+        //   this.remove(f);
+        // });
+        console.log('1 :: ', response.data);
+        this.$store.commit('clearNewPostFeatures', 'newPost');
+        if (this.id !== undefined) {
+          this.$parent.$emit('newpost');
+        } else {
+          this.$parent.$emit(this.id);
+        }
       });
     },
     showMapTools() {
@@ -107,10 +128,10 @@ export default {
   },
   computed: {
     drawnFeatures: function d() {
-      let selectedFeatures;
-      let objIndex;
+      let selectedFeatures = null;
+      let objIndex = null;
       const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (this.id === undefined) {
+      if (this.id === undefined && allFeatures !== undefined) {
         objIndex = allFeatures.findIndex((obj => obj.id === 'newPost'));
       } else {
         objIndex = allFeatures.findIndex((obj => obj.id === this.id));
@@ -125,12 +146,14 @@ export default {
       const chips = [];
       const allFeatures = this.$store.getters.getDrawnFeatures;
       // console.log(allFeatures);
-      allFeatures.forEach((c) => {
-        const feats = c.features;
-        feats.forEach((f) => {
-          chips.push(f.drawId);
+      if (allFeatures !== undefined) {
+        allFeatures.forEach((c) => {
+          const feats = c.features;
+          feats.forEach((f) => {
+            chips.push(f.drawId);
+          });
         });
-      });
+      }
       return chips;
     },
   },
