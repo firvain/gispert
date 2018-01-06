@@ -61,7 +61,7 @@ export default new Vuex.Store({
     clearNewPostFeatures(state) {
       let allResponses = state.storage;
       const toDelete = new Set(['newPost']);
-      console.log(allResponses);
+      // console.log(allResponses);
       const restResponses = allResponses.filter(obj => !toDelete.has(obj.id));
       state.storage = restResponses;
     },

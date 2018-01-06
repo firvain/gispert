@@ -198,14 +198,15 @@ export default {
         },
       })
       .then((response) => {
+        console.log('response is :: ', response);
         if (response.data.error && response.data.error === 'Login information was incorrect') {
-          // console.log(response.data.error);
-          this.snackbarLog = true;
-          // console.log(this.snackbar);
+          console.log('data error :: ', response.data.error);
+          this.snackbarLoginError = true;
+          console.log('snackbar status :: ', this.snackbarLoginError);
         }
         if (response.data.user) {
           this.user = response.data;
-          this.youAreLoggedIn = true;
+          this.snackbarLoggedIn = true;
           this.dialogLogin = false;
           // TODO in index.js of store create variables and mutations
           this.$store.dispatch('setToken', response.data.token);

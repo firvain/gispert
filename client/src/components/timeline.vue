@@ -85,6 +85,22 @@ export default {
       this.explore_estate = estate;
       return estate;
     },
+    refresh_page() {
+      console.log('refreshing page');
+      this.loading = true;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+      axios.get(url).then((response) => {
+        response.data.forEach((d) => {
+          // eslint-disable-next-line
+          if (this.posts.filter(e => e._id === d._id).length === 0) {
+            this.posts.unshift(d);
+            this.posts.pop();
+          }
+        });
+      }).then(() => {
+        this.loading = false;
+      });
+    },
     next_page() {
       this.loading = true;
       this.startPage += 25;
@@ -112,13 +128,27 @@ export default {
     this.loading = true;
     const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
     axios.get(url).then((response) => {
+      console.log(response);
       this.posts = response.data;
     }).then(() => {
       this.loading = false;
     });
-    this.$on('newpost', () => {
-      console.log('newpost');
+    this.$on('newpost', (eventPost) => {
+      console.log('A totally new post has been published :: ', eventPost);
       this.toggle_new_post();
+      this.refresh_page();
+    });
+    this.$on('newreply', (eventPost) => {
+      console.log('A new reply post has been published :: ', eventPost);
+      // TODO χρειάζομαι το id του post και να ενημερώνω το posts array
+      // αν έχει πολλές απαντήσεις; κάποιες να τις δείχνει περιληπτικά. μέχρι 5 να τις δείχνει αν είναι περισσότερες
+      // να δείχνει τις 2 πιο πρόσφατες και τις άλλες με Load more. Αν πατήσει κουμπί να τις δείχνει όλες. Να λέει
+      // πόσες είναι που θα δείξει.
+      // επίσης πρέπει να φορτώνει τα post με ταξινόμηση ως προς την πιο πρόσφατη απάντηση.
+      // σύστημα notifications?
+      // πόσα post να φέρνει ανά σελίδα; αν έχει πολλές απαντήσεις θα φαίνονται πολύ λίγα. Πρέπει να το ρυθμίζω.
+        // eslint-disable-next-line
+        console.log(eventPost);
     });
   },
 };

@@ -68,10 +68,10 @@ export default {
         },
       })
       .then((response) => {
-        if (response.data.error && response.data.error === 'Login information was incorrect') {
-          // console.log(response.data.error);
+        console.log(response.data.error);
+        if (response.data.error) {
           this.snackbar = true;
-          // console.log(this.snackbar);
+          console.log(this.snackbar);
         }
         if (response.data.user) {
           this.user = response.data;

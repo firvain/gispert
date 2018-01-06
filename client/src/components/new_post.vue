@@ -12,7 +12,7 @@
               v-model="postText"
               id="postText"
                   counter
-                  max="120"
+                  max="200"
                   full-width
                   multi-line
             ></v-text-field>
@@ -31,22 +31,47 @@
               </v-chip>
             </v-flex>
         <v-card-actions>
-        <v-flex xs12 sm6 class="py-2">
-            <v-btn-toggle mandatory v-model="toggle_one">
-              <v-btn flat>
-                Δημοσιο
-              </v-btn>
-              <v-btn flat>
-                Ιδιωτικο
-              </v-btn>
-            </v-btn-toggle>
+          <v-flex xs12 sm6>
+            <v-select
+              v-bind:items="groups"
+              v-model="selectGroups"
+              label="Ορατό σε..."
+              single-line
+              item-text="name"
+              item-value="id"
+              return-object
+              multiple
+              hint="Επιλογές ορατότητας"
+              persistent-hint
+            ></v-select>
           </v-flex>
-          <v-btn flat class="green white--text darken-1" @click="publishPost">Δημοσιευση<v-icon right dark>insert_comment</v-icon></v-btn>
-          <v-btn small fab class="green white--text">
-            <v-icon white--text dark>help_outline</v-icon>
-          </v-btn>
+          <v-flex xs12 sm6>
+            <v-select
+              v-bind:items="collections"
+              v-model="selectCollections"
+              label="Συλλογές"
+              single-line
+              item-text="name"
+              item-value="id"
+              return-object
+              multiple
+              hint='Διάλεξε συλλογή'
+              persistent-hint
+            ></v-select>
+          </v-flex>
+          <v-flex xs12 sm12>
+            <v-btn flat class="green white--text darken-1" @click="publishPost">Δημοσιευση<v-icon right dark>insert_comment</v-icon></v-btn>
+            <v-btn small fab class="green white--text">
+              <v-icon white--text dark>help_outline</v-icon>
+            </v-btn>
+          </v-flex>
         </v-card-actions>
       </v-card>
+      <v-snackbar
+        :timeout=5000
+        v-model="snackbarNewPost"
+        :color= "snackbarColor"
+      >{{ newPostInfo }}</v-snackbar>
     </v-flex>
   </v-layout>
 </template>
@@ -62,18 +87,31 @@ export default {
   data: () => ({
     postText: '',
     toggle_one: 0,
+    selectGroups: [],
+    groups: [
+      { name: 'Κοζανίτες', id: '4' },
+      { name: 'Γκουγκούνια', id: '5' },
+    ],
+    selectCollections: [],
+    collections: [
+      { name: 'Κοζάνη', id: '1' },
+      { name: 'Βόιο', id: '2' },
+    ],
+    newPostInfo: '',
+    snackbarNewPost: false,
+    snackbarColor: '',
   }),
   methods: {
     publishPost() {
-      console.log('PUBLISH');
+      // console.log('PUBLISH');
       const featuresToPost = this.drawnFeatures;
-      console.log('featuresToPost :: ', featuresToPost);
+      // console.log('featuresToPost :: ', featuresToPost);
       const textToPost = this.postText;
       let userFeats;
       if (featuresToPost) {
         const geojsonFormat = new ol.format.GeoJSON();
         userFeats = geojsonFormat.writeFeatures(featuresToPost);
-        console.log(userFeats, textToPost);
+        // console.log(userFeats, textToPost);
       } else {
         userFeats = null;
       }
@@ -91,25 +129,38 @@ export default {
         timestamp: Date.now(),
         userFeatures: userFeats,
         isReplyTo: idToReply,
-        group: 'none',
+        groups: this.selectGroups,
+        collections: this.selectCollections,
         replies: [],
       };
-      console.log(userPost);
+      // console.log('this is the post to publish', userPost);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
-      axios.post(url, { userPost }).then((response) => {
-        console.log('trying to reset component');
-        this.postText = '';
-        // featuresToPost.forEach((f) => {
-        //   this.remove(f);
-        // });
-        console.log('1 :: ', response.data);
-        this.$store.commit('clearNewPostFeatures', 'newPost');
-        if (this.id !== undefined) {
-          this.$parent.$emit('newpost');
-        } else {
-          this.$parent.$emit(this.id);
-        }
-      });
+      if (textToPost !== '' || userFeats !== null) {
+        axios.post(url, { userPost }).then((response) => {
+          // console.log('trying to reset component');
+          console.log(response.data);
+          // TODO must handle response
+          this.postText = '';
+          this.newPostInfo = 'Δημοσιεύτηκε!';
+          this.snackbarColor = 'green';
+          this.snackbarNewPost = true;
+
+          this.$store.commit('clearNewPostFeatures', 'newPost');
+          if (this.id === undefined) {
+            console.log('totally new post');
+            this.$parent.$emit('newpost', { type: 'newpost' });
+          } else {
+            // eslint-disable-next-line
+            userPost._id = response.data;
+            console.log('this is the userpost :: ', userPost);
+            this.$parent.$emit('newreply', userPost);
+          }
+        });
+      } else {
+        this.newPostInfo = 'Δεν υπάρχει κείμενο ή αντικείμενα του χάρτη. Γράψτε ή σχεδιάστε κάτι πριν πατήσετε Δημοσίευση';
+        this.snackbarColor = 'red';
+        this.snackbarNewPost = true;
+      }
     },
     showMapTools() {
       this.$root.$emit('showTools');
@@ -139,7 +190,7 @@ export default {
       if (objIndex > -1) {
         selectedFeatures = allFeatures[objIndex].features;
       }
-      console.log('allfeatures', allFeatures, 'objindex', objIndex, this.id, selectedFeatures);
+      // console.log('allfeatures', allFeatures, 'objindex', objIndex, this.id, selectedFeatures);
       return selectedFeatures;
     },
     activeChips: function ch() {

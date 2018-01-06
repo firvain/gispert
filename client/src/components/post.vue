@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs12 sm12>
-      <v-card @newpost="new_post_sent()">
+      <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
           <div class="text-xs-left">
             <b>@{{post.userName}}:</b>
@@ -12,14 +12,19 @@
         <v-card-actions class="white">
           <v-spacer></v-spacer>
           <v-card-actions>
-            <v-btn v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}"' class="green white--text darken-1" @click="explore(post)">Δες το στο χάρτη<v-icon right dark>language</v-icon></v-btn>
+            <v-btn v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">Δες το στο χάρτη<v-icon right dark>language</v-icon></v-btn>
           </v-card-actions>
           <v-card-actions>
             <v-btn v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
             {{answerPostText}}<v-icon right dark>insert_comment</v-icon></v-btn>
           </v-card-actions>
         </v-card-actions>
-        <newPost v-if="answerPost==true" :id="post._id" @newpost="new_post_sent()"></newPost>
+        <newPost v-if="answerPost==true" :id="post._id"></newPost>
+        <!-- TODO εδώ πρέπει να συμπτήσει όταν έχει πολλές απαντήσεις -->
+        <!-- βάλε κουμπί load more που να δείχνει τον συνολικό αριθμό από όλες τις απαντήσεις-->
+        <!-- δείξε την αρχική και τις 2 τελευταίες απαντήσεις -->
+        <!-- on hover εφέ, αν έχει 2nd 3rd level απαντήσεις χρειάζεται on click στο ποστ για να δείχνει απαντήσεις. -->
+        <!-- ένα εφέ στο ον κλικ να δείχνει το αρχικό ποστ και από κάτω τις απαντήσεις και τις απαντήσεις των απαντήσεων -->
         <v-flex
           md12
           v-for="post in post.repliesData"
@@ -29,6 +34,11 @@
         </v-flex>
       </v-card>
     </v-flex>
+      <v-snackbar
+        :timeout=5000
+        v-model="snackbarNewPost"
+        :color= "snackbarColor"
+      >{{ newPostInfo }}</v-snackbar>
   </v-layout>
 </template>
 <script>
@@ -47,6 +57,9 @@ export default {
     answerPostText: 'απαντησε',
     answerPostColor: 'green',
     answerPostTextColor: 'white--text darken-1',
+    newPostInfo: '',
+    snackbarNewPost: false,
+    snackbarColor: '',
   }),
   components: {
     newPost,
@@ -59,6 +72,7 @@ export default {
     explore(post) {
       const geojsonFormat = new ol.format.GeoJSON();
       const newFeature = post.userFeatures;
+      // console.log(post.userFeatures);
       // console.log(post);
       // this.$emit('explore', this.post);
       if (newFeature !== '{"type":"FeatureCollection","features":[]}' && newFeature !== null) {
@@ -109,9 +123,13 @@ export default {
         this.answerPostColor = 'red';
       }
     },
-    new_post_sent() {
+    new_post_sent(reply) {
       console.log('event caught::');
       // if (result === 'success') {
+      this.newPostInfo = 'Δημοσιεύτηκε η απάντηση!';
+      this.snackbarColor = 'green';
+      this.snackbarNewPost = true;
+      this.$parent.$emit('newreply', reply);
       this.toggle_answer();
       // }
     },
