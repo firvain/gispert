@@ -2,7 +2,7 @@
   <div id='timeline'>
     <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
       <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
-      <v-btn
+      <v-btn block color="secondary" dark
         width="50px"
         large
         v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"  v-if="$store.state.isUserLoggedIn === true"
@@ -141,12 +141,15 @@ export default {
     this.$on('newreply', (eventPost) => {
       console.log('A new reply post has been published :: ', eventPost);
       // TODO χρειάζομαι το id του post και να ενημερώνω το posts array
-      // αν έχει πολλές απαντήσεις; κάποιες να τις δείχνει περιληπτικά. μέχρι 5 να τις δείχνει αν είναι περισσότερες
-      // να δείχνει τις 2 πιο πρόσφατες και τις άλλες με Load more. Αν πατήσει κουμπί να τις δείχνει όλες. Να λέει
+      // αν έχει πολλές απαντήσεις; κάποιες να τις δείχνει περιληπτικά. μέχρι 5
+      // να τις δείχνει αν είναι περισσότερες
+      // να δείχνει τις 2 πιο πρόσφατες και τις άλλες με Load more. Αν πατήσει
+      // κουμπί να τις δείχνει όλες. Να λέει
       // πόσες είναι που θα δείξει.
       // επίσης πρέπει να φορτώνει τα post με ταξινόμηση ως προς την πιο πρόσφατη απάντηση.
       // σύστημα notifications?
-      // πόσα post να φέρνει ανά σελίδα; αν έχει πολλές απαντήσεις θα φαίνονται πολύ λίγα. Πρέπει να το ρυθμίζω.
+      // πόσα post να φέρνει ανά σελίδα; αν έχει πολλές απαντήσεις θα φαίνονται πολύ
+      // λίγα. Πρέπει να το ρυθμίζω.
         // eslint-disable-next-line
         console.log(eventPost);
     });

@@ -10,14 +10,14 @@
           </div>
         </v-card-title>
         <v-card-actions class="white">
-          <v-spacer></v-spacer>
-          <v-card-actions>
+          <!-- <v-spacer></v-spacer> -->
             <v-btn v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">Δες το στο χάρτη<v-icon right dark>language</v-icon></v-btn>
-          </v-card-actions>
-          <v-card-actions>
             <v-btn v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
             {{answerPostText}}<v-icon right dark>insert_comment</v-icon></v-btn>
-          </v-card-actions>
+            <v-badge color="indigo" v-if="post.replies.length > 0">
+              <span slot="badge">{{ post.replies.length }}</span>
+              <v-icon large color="grey">insert_comment</v-icon>
+            </v-badge>
         </v-card-actions>
         <newPost v-if="answerPost==true" :id="post._id"></newPost>
         <!-- TODO εδώ πρέπει να συμπτήσει όταν έχει πολλές απαντήσεις -->
@@ -27,11 +27,12 @@
         <!-- ένα εφέ στο ον κλικ να δείχνει το αρχικό ποστ και από κάτω τις απαντήσεις και τις απαντήσεις των απαντήσεων -->
         <v-flex
           md12
-          v-for="post in post.repliesData"
+          v-for="post in replies.slice(0, loadmorereplies)"
           :key="post._id"
         >
-          <post :post='post' @explore="explore(post)"></post>
-        </v-flex>
+          <post :post='post'>test</post>
+        </v-flex>{{replies.length}}
+        <v-btn block color="white" v-if="replies" @click="loadmorereplies = post.repliesData.length">Φορτωση περισσοτερων απαντησεων</v-btn>
       </v-card>
     </v-flex>
       <v-snackbar
@@ -60,15 +61,31 @@ export default {
     newPostInfo: '',
     snackbarNewPost: false,
     snackbarColor: '',
+    loadmorereplies: 2,
+    replies: false,
   }),
   components: {
     newPost,
   },
   mounted() {
     this.explore(this.post);
+    this.repliesReversed();
+    // console.log(this.post.repliesData, typeof (this.post.repliesData));
   },
   methods: {
     // ...mapActions(['addToCompare']),
+    repliesReversed() {
+      let reversed;
+      if (this.post.repliesData && this.post.repliesData.length > 0) {
+        // console.log(this.post.repliesData.splice(0, 2));
+        reversed = this.post.repliesData.reverse();
+        // reversed = reversed.slice(0, this.loadmorereplies);
+      } else {
+        reversed = false;
+      }
+      // console.log('reversed:: ', reversed);
+      this.replies = reversed;
+    },
     explore(post) {
       const geojsonFormat = new ol.format.GeoJSON();
       const newFeature = post.userFeatures;
