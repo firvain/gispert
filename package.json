@@ -12,7 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^1.0.0"
+    "concurrently": "^1.0.0",
+    "es6-promise": "^4.2.2"
   },
   "devDependencies": {
     "concurrently": "^1.0.0",

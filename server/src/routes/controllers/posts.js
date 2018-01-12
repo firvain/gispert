@@ -84,6 +84,57 @@ router.route('/all')
       });
     });
 
+    router.route('/replies')
+    .get(function getreplies(req, res) {
+      var start = parseInt(req.query.start);
+      var end = parseInt(req.query.end);
+      var ids = req.query.ids;
+      console.log('ids to fetch ', ids, start, end);
+      MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+        var collection = db.collection('posts');
+        var objectids = [];
+        ids.forEach((id) => {
+          objectids.push(ObjectId(id));
+        });
+        return collection.aggregate([
+          {
+            $match: { "_id": { $in: objectids }}
+          }
+          ,
+          {
+            $sort: { 'timestamp': -1 }
+          },
+          {
+            $skip: 0
+          },
+          {
+            $limit: 10
+          },
+          {
+            $lookup:
+              {
+                from: "posts",
+                localField: "replies",
+                foreignField: "_id",
+                as: "repliesData"
+              }
+          }]
+        );
+        })
+        .then(function (cursor) {
+          return cursor.toArray();
+        })
+        .then(function (content) {
+          res.status(200).json(content);
+        })
+        .catch(function (err) {
+          throw err;
+        });
+      });
+
+
+
 // router.route('/person')
 // .get(function getPersonsPo11111111sts(req, res) {
 //     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {

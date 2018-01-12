@@ -11,13 +11,20 @@
         </v-card-title>
         <v-card-actions class="white">
           <!-- <v-spacer></v-spacer> -->
-            <v-btn v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">Δες το στο χάρτη<v-icon right dark>language</v-icon></v-btn>
+            <v-tooltip bottom>
+              <v-btn slot="activator" v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">Δες το στο χάρτη<v-icon right dark>language</v-icon></v-btn>
+              <span>Βάλτο στο χάρτη</span>
+            </v-tooltip>
             <v-btn v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
             {{answerPostText}}<v-icon right dark>insert_comment</v-icon></v-btn>
-            <v-badge color="indigo" v-if="post.replies.length > 0">
-              <span slot="badge">{{ post.replies.length }}</span>
-              <v-icon large color="grey">insert_comment</v-icon>
-            </v-badge>
+            <v-tooltip bottom>
+              <v-btn color="green" slot="activator" outline small fab v-if="post.repliesData == undefined && post.replies.length > 0" @click="showMoreReplies">
+                <v-icon large color="grey">insert_comment</v-icon>
+                {{ post.replies.length }}
+              </v-btn>
+              <span>Δες απαντήσεις</span>
+            </v-tooltip>
+
         </v-card-actions>
         <newPost v-if="answerPost==true" :id="post._id"></newPost>
         <!-- TODO εδώ πρέπει να συμπτήσει όταν έχει πολλές απαντήσεις -->
@@ -25,14 +32,24 @@
         <!-- δείξε την αρχική και τις 2 τελευταίες απαντήσεις -->
         <!-- on hover εφέ, αν έχει 2nd 3rd level απαντήσεις χρειάζεται on click στο ποστ για να δείχνει απαντήσεις. -->
         <!-- ένα εφέ στο ον κλικ να δείχνει το αρχικό ποστ και από κάτω τις απαντήσεις και τις απαντήσεις των απαντήσεων -->
+        <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex
           md12
           v-for="post in replies.slice(0, loadmorereplies)"
           :key="post._id"
         >
-          <post :post='post'>test</post>
-        </v-flex>{{replies.length}}
-        <v-btn block color="white" v-if="replies" @click="loadmorereplies = post.repliesData.length">Φορτωση περισσοτερων απαντησεων</v-btn>
+          <post :post='post'></post>
+        </v-flex>
+        <v-btn block color="white" v-if="replies.length > 0 && loadmorereplies < post.repliesData.length" @click="loadmorereplies = post.repliesData.length">Φορτωση περισσοτερων απαντησεων</v-btn>
+
+        <v-flex
+          md12
+          v-if="fetchedReplies.length > 0"
+          v-for="reply in fetchedReplies"
+          :key="reply._id"
+        >
+          <post :post='reply'></post>
+        </v-flex>
       </v-card>
     </v-flex>
       <v-snackbar
@@ -46,6 +63,8 @@
 // import { mapActions, mapGetters } from 'vuex';
 import ol from 'openlayers';
 import moment from 'moment';
+import axios from 'axios';
+import config from '../config';
 import newPost from './new_post';
 import olMap from '../js/map';
 import styles from '../js/styles';
@@ -62,7 +81,12 @@ export default {
     snackbarNewPost: false,
     snackbarColor: '',
     loadmorereplies: 2,
-    replies: false,
+    replies: [],
+    showReplies: false,
+    startPage: 0,
+    limitPage: 10,
+    loading: false,
+    fetchedReplies: [],
   }),
   components: {
     newPost,
@@ -74,6 +98,26 @@ export default {
   },
   methods: {
     // ...mapActions(['addToCompare']),
+    showMoreReplies() {
+      const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/replies`;
+      // axios.get(url, { ids: this.replies }).then((response) => {
+      //   console.log(response);
+      //   this.fetchedReplies = response.data;
+      // })
+      axios.get(serverUrl, { params: {
+        ids: this.post.replies,
+        start: this.startPage.toString(),
+        end: this.limitPage.toString(),
+      },
+      }).then((response) => {
+        console.log(response);
+        this.fetchedReplies = response.data;
+      }).then(() => {
+        this.loading = false;
+      });
+
+      this.showReplies = true;
+    },
     repliesReversed() {
       let reversed;
       if (this.post.repliesData && this.post.repliesData.length > 0) {
@@ -81,7 +125,7 @@ export default {
         reversed = this.post.repliesData.reverse();
         // reversed = reversed.slice(0, this.loadmorereplies);
       } else {
-        reversed = false;
+        reversed = [];
       }
       // console.log('reversed:: ', reversed);
       this.replies = reversed;

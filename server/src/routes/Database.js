@@ -1,8 +1,7 @@
 'use strict'
-// import { Promise } from 'es6-promise';
 
-const Promise = require('es6-promise')
-const MongoClient = require('mongodb')
+const Promise = require('es6-promise').Promise;
+const MongoClient = require('mongodb');
 var ObjectId = require('mongodb').ObjectID;
 
 class Database {
@@ -28,6 +27,7 @@ class Database {
                 this.db.collection('posts').insertOne(
                 post, (err, docs) => {
                     if(err) {
+                        console.log('Failed to add post');
                         reject(err)
                     } else {
                         console.log('doc added :: ', docs.insertedId);
