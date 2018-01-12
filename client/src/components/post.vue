@@ -27,13 +27,9 @@
 
         </v-card-actions>
         <newPost v-if="answerPost==true" :id="post._id"></newPost>
-        <!-- TODO εδώ πρέπει να συμπτήσει όταν έχει πολλές απαντήσεις -->
-        <!-- βάλε κουμπί load more που να δείχνει τον συνολικό αριθμό από όλες τις απαντήσεις-->
-        <!-- δείξε την αρχική και τις 2 τελευταίες απαντήσεις -->
-        <!-- on hover εφέ, αν έχει 2nd 3rd level απαντήσεις χρειάζεται on click στο ποστ για να δείχνει απαντήσεις. -->
-        <!-- ένα εφέ στο ον κλικ να δείχνει το αρχικό ποστ και από κάτω τις απαντήσεις και τις απαντήσεις των απαντήσεων -->
+
         <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
-        <v-flex
+        <v-flex class="ma-0 pa-0"
           md12
           v-for="post in replies.slice(0, loadmorereplies)"
           :key="post._id"
@@ -42,13 +38,13 @@
         </v-flex>
         <v-btn block color="white" v-if="replies.length > 0 && loadmorereplies < post.repliesData.length" @click="loadmorereplies = post.repliesData.length">Φορτωση περισσοτερων απαντησεων</v-btn>
 
-        <v-flex
-          md12
+        <v-flex class="ma-0 pa-0"
+          md12 
           v-if="fetchedReplies.length > 0"
           v-for="reply in fetchedReplies"
           :key="reply._id"
         >
-          <post :post='reply'></post>
+          <post :post='reply' transition="scale-transition"></post>
         </v-flex>
       </v-card>
     </v-flex>
@@ -94,23 +90,16 @@ export default {
   mounted() {
     this.explore(this.post);
     this.repliesReversed();
-    // console.log(this.post.repliesData, typeof (this.post.repliesData));
   },
   methods: {
-    // ...mapActions(['addToCompare']),
     showMoreReplies() {
       const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/replies`;
-      // axios.get(url, { ids: this.replies }).then((response) => {
-      //   console.log(response);
-      //   this.fetchedReplies = response.data;
-      // })
       axios.get(serverUrl, { params: {
         ids: this.post.replies,
         start: this.startPage.toString(),
         end: this.limitPage.toString(),
       },
       }).then((response) => {
-        console.log(response);
         this.fetchedReplies = response.data;
       }).then(() => {
         this.loading = false;
@@ -121,21 +110,15 @@ export default {
     repliesReversed() {
       let reversed;
       if (this.post.repliesData && this.post.repliesData.length > 0) {
-        // console.log(this.post.repliesData.splice(0, 2));
         reversed = this.post.repliesData.reverse();
-        // reversed = reversed.slice(0, this.loadmorereplies);
       } else {
         reversed = [];
       }
-      // console.log('reversed:: ', reversed);
       this.replies = reversed;
     },
     explore(post) {
       const geojsonFormat = new ol.format.GeoJSON();
       const newFeature = post.userFeatures;
-      // console.log(post.userFeatures);
-      // console.log(post);
-      // this.$emit('explore', this.post);
       if (newFeature !== '{"type":"FeatureCollection","features":[]}' && newFeature !== null) {
         let allLayers = [];
         allLayers = olMap.getLayers().getArray();

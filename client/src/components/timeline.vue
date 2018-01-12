@@ -86,7 +86,7 @@ export default {
       return estate;
     },
     refresh_page() {
-      console.log('refreshing page');
+      // console.log('refreshing page');
       this.loading = true;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
       axios.get(url).then((response) => {
@@ -128,7 +128,7 @@ export default {
     this.loading = true;
     const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
     axios.get(url).then((response) => {
-      console.log(response);
+      // console.log(response);
       this.posts = response.data;
     }).then(() => {
       this.loading = false;

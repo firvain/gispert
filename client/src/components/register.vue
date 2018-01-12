@@ -91,7 +91,7 @@ export default {
           email: this.email,
           description: this.description,
         });
-        console.log('response is:: ', response);
+        // console.log('response is:: ', response);
         if (response.data.result === 'success') {
           this.$router.push({
             name: 'login',
