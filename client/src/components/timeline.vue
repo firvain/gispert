@@ -19,7 +19,7 @@
       >
         <post :post='post' @explore="explore"></post>
       </v-flex>
-      </v-layout>
+    </v-layout>
     </v-container>
     <v-container fluid v-else-if='mode === 1'>
       <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
@@ -160,6 +160,7 @@ export default {
 #timeline {
   color: black;
   max-height: 82vh;
+  width: 100vh;
   overflow-y: scroll;
 }
 </style>

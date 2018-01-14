@@ -1,5 +1,5 @@
 <template>
-  <div id='timeline'>
+  <div id='mapList'>
     <v-container v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
       <v-layout row wrap>
         <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
@@ -64,7 +64,8 @@ export default {
 };
 </script>
 <style>
-#timeline {
+#mapList {
   color: black;
+  width: 90vh;
 }
 </style>
