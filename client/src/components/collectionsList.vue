@@ -9,6 +9,29 @@
       >
         <collection :collection='collection'></collection>
       </v-list>
+      <p v-if="privateCollections.length == 0">Δεν υπάρχουν προσωπικές συλλογές. Πρόσθεσε μία πατώντας
+        <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
+          <v-icon dark>add</v-icon>
+        </v-btn>
+      </p>
+      <form v-if="newPrivateCollectionCard">
+        <v-text-field
+          v-model="newCollection.title"
+          label="Τίτλος"
+          :counter="10"
+          data-vv-name="name"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="newCollection.description"
+          label="Περιγραφή"
+          :counter="10"
+          data-vv-name="name"
+          required
+        ></v-text-field>
+        <v-btn @click="createCollection">submit</v-btn>
+        <v-btn @click="newPrivateCollectionCard = false">cancel</v-btn>
+      </form>
     </v-container>
 
     <v-subheader inset>Δημόσιες Συλλογές</v-subheader>
@@ -19,6 +42,11 @@
       >
         <collection :collection='collection'></collection>
       </v-list>
+      <p v-if="publicCollections.length == 0">Δεν υπάρχουν δημόσιες συλλογές. Πρόσθεσε μία πατώντας
+        <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
+          <v-icon dark>add</v-icon>
+        </v-btn>
+      </p>
     </v-container>
   </v-container>
 </template>
@@ -32,29 +60,33 @@ export default {
     return {
       loading: false,
       privateCollections: [
-        { title: 'kozani test1', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test2', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
       ],
       publicCollections: [
-        { title: 'kozani test public1', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test public2', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test public3', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test public1', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test public2', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test public3', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test public1', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test public2', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
-        { title: 'kozani test public3', description: 'test', id: 'jfjkdlaiefjie37492jfiosf98w' },
       ],
       groups: [
         { title: 'group1', id: 'jfkd33jf88nvn884ng8n26nr6', members: [] },
       ],
+      newPrivateCollectionCard: false,
+      newPublicCollectionCard: false,
+      newCollection: {
+        title: null,
+        description: null,
+      },
     };
   },
   components: {
     collection,
   },
   methods: {
+    addPrivateCollectionCard() {
+      this.newPrivateCollectionCard = true;
+    },
+    addPublicCollectionCard() {
+      this.newPublicCollectionCard = true;
+    },
+    createCollection() {
+
+    },
   },
   mounted() {
     this.loading = true;

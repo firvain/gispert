@@ -15,6 +15,11 @@
             <v-icon color="grey lighten-1">edit</v-icon>
           </v-btn>
         </v-list-tile-action>
+        <v-list-tile-action>
+          <v-btn icon ripple>
+            <v-icon color="grey lighten-1">share</v-icon>
+          </v-btn>
+        </v-list-tile-action>
       </v-list-tile>
       <v-layout row wrap v-if="details">
         <v-flex
