@@ -25,20 +25,19 @@ router.route('/')
     })
     .post(function setuser(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var group = req.body;
-            var newGroup = {
-                name: req.body.name,
+            var newCollection = {
+                title: req.body.title,
+                description: req.body.description,
                 creator: req.body.creator,
-                timecreated: req.body.timecreated,
-                members: [req.body.members]
+                timecreated: req.body.timecreated
             };
             // console.log(req.body);
-            console.log(newGroup);
+            console.log('a new collection:: ', newCollection);
             if (err) {
                 throw err;
             } else {
-                db.collection('groups').insertOne(
-                    newGroup
+                db.collection('collections').insertOne(
+                    newCollection
                 );
                 res.status(200).send();
             }
@@ -49,9 +48,9 @@ router.route('/')
 router.route('/delete')
     .post(function setuser(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var _id = req.body._id;
+            var _id = req.body.id;
             var cId = new ObjectID(_id);
-            console.log(req.body);
+            console.log('collection id to delete:: ', req.body._id);
 
             if (err) {
                 throw err;

@@ -6,7 +6,7 @@
           <v-list-tile-sub-title>{{ collection.description }}</v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
-          <v-btn icon ripple>
+          <v-btn icon ripple @click="deleteCollection(collection._id)">
             <v-icon color="grey lighten-1">delete</v-icon>
           </v-btn>
         </v-list-tile-action>
@@ -59,6 +59,15 @@ export default {
       }).then(() => {
         this.loading = false;
         this.details = true;
+      });
+    },
+    deleteCollection(id) {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/delete`;
+      console.log('id to delete:: ', id);
+      axios.post(url, { id }).then((response) => {
+        console.log('delete collection triggered:: ', response);
+      }).then(() => {
+        this.loading = false;
       });
     },
   },

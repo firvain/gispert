@@ -32,13 +32,14 @@
         <v-btn @click="createCollection">submit</v-btn>
         <v-btn @click="newPrivateCollectionCard = false">cancel</v-btn>
       </form>
+      {{ newCollection.title }}, {{ newCollection.description }}
     </v-container>
 
     <v-subheader inset>Δημόσιες Συλλογές</v-subheader>
     <v-container fluid>
       <v-list
         v-for="collection in publicCollections"
-        :key="collection.id"
+        :key="collection._id"
       >
         <collection :collection='collection'></collection>
       </v-list>
@@ -48,10 +49,17 @@
         </v-btn>
       </p>
     </v-container>
+    <v-snackbar
+      :timeout=5000
+      v-model="snackbar"
+      color= snackbarColor
+    >{{ message }}
+    </v-snackbar>
   </v-container>
 </template>
 <script>
 import axios from 'axios';
+import config from '../config';
 import collection from './collection';
 
 export default {
@@ -72,6 +80,9 @@ export default {
         title: null,
         description: null,
       },
+      message: '',
+      snackbar: false,
+      snackbarColor: 'green',
     };
   },
   components: {
@@ -85,13 +96,23 @@ export default {
       this.newPublicCollectionCard = true;
     },
     createCollection() {
-
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+      const newCollection = this.newCollection;
+      console.log('new collection:: ', newCollection.title);
+      axios.post(url, { newCollection }).then((response) => {
+        this.privateCollections = response.data;
+      }).then(() => {
+        this.message = 'Προστέθηκε μία συλλογή!';
+        this.snackbarColor = 'green';
+        this.snackbar = true;
+      });
     },
   },
   mounted() {
     this.loading = true;
-    axios.get('https://calm-gorge-20681.herokuapp.com/api/users/all').then((response) => {
-      this.users = response.data;
+    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+    axios.get(url).then((response) => {
+      this.privateCollections = response.data;
     }).then(() => {
       this.loading = false;
     });
