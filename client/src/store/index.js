@@ -16,6 +16,8 @@ export default new Vuex.Store({
     token: null,
     user: null,
     isUserLoggedIn: false,
+    privateCollections: [],
+    publicCollections: [],
   },
   actions: {
     setFeature(state, data) {
@@ -35,6 +37,24 @@ export default new Vuex.Store({
     },
     setToken(state,data) {
       state.commit('settoken', data);
+    },
+    setPrivateCollections(state,data) {
+      state.commit('setprivatecollections', data);
+    },
+    setPublicCollections(state,data) {
+      state.commit('setpubliccollections', data);
+    },
+    deletePrivateCollection(state,data) {
+      state.commit('deleteprivatecollection', data);
+    },
+    deletePublicCollection(state,data) {
+      state.commit('deletepubliccollection', data);
+    },
+    editPrivateCollection(state,data) {
+      state.commit('editprivatecollection', data);
+    },
+    editPublicCollection(state,data) {
+      state.commit('editpubliccollection', data);
     },
   },
   mutations: {
@@ -86,6 +106,26 @@ export default new Vuex.Store({
         state.isUserLoggedIn = false;
       }
     },
+    setprivatecollections(state, data) {
+      state.privateCollections = data;
+    },
+    setpubliccollections(state, data) {
+      state.publicCollections = data;
+    },
+    deleteprivatecollection(state, id) {
+      let collections = state.privateCollections;
+      const toDelete = new Set([id]);
+      const restCollections = collections.filter(obj => !toDelete.has(obj._id));
+      state.collections = restCollections;
+    },
+    deletepubliccollection(state, id) {
+      let collections = state.publicCollections;
+      const toDelete = new Set([id]);
+      const restCollections = collections.filter(obj => !toDelete.has(obj._id));
+      state.collections = restCollections;
+    },
+    editprivatecollection(state, data) {},
+    editpubliccollection(state, data) {},
   },
   getters: {
     getDrawnFeatures(state) {

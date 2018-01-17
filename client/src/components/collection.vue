@@ -21,7 +21,7 @@
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
-      <v-layout row wrap v-if="details">
+      <!-- <v-layout row wrap v-if="details">
         <v-flex
           md12
           v-for="post in posts"
@@ -29,7 +29,7 @@
         >
           <post :post='post'></post>
         </v-flex>
-      </v-layout>
+      </v-layout> -->
     </v-flex>
 </template>
 <script>
@@ -43,6 +43,7 @@ export default {
   data: () => ({
     details: false,
     posts: null,
+    loading: false,
   }),
   components: {
     post,
@@ -50,24 +51,32 @@ export default {
   methods: {
     exploreCollection() {
       // TODO make correct request
-      const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/replies`;
-      axios.get(serverUrl, { params: {
-        ids: this.post.replies,
-      },
-      }).then((response) => {
-        this.posts = response.data;
-      }).then(() => {
-        this.loading = false;
-        this.details = true;
-      });
+      // const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/replies`;
+      // axios.get(serverUrl, { params: {
+      //   ids: this.post.replies,
+      // },
+      // }).then((response) => {
+      //   this.posts = response.data;
+      // }).then(() => {
+      //   this.loading = false;
+      //   this.details = true;
+      // });
     },
     deleteCollection(id) {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/delete`;
-      console.log('id to delete:: ', id);
+      // console.log('id to delete:: ', id);
       axios.post(url, { id }).then((response) => {
         console.log('delete collection triggered:: ', response);
       }).then(() => {
         this.loading = false;
+        if (this.collection.visibility === 'private') {
+          this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
+        }
+        if (this.collection.visibility === 'public') {
+          this.$store.dispatch('deletePrivateCollection', id);
+          this.$store.dispatch('deletePublicCollection', id);
+          this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+        }
       });
     },
   },

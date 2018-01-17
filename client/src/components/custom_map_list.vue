@@ -26,6 +26,7 @@
 </template>
 <script>
 import axios from 'axios';
+import config from '../config';
 import customMap from './custom_map';
 import cardDetails from './card_in_details';
 
@@ -55,7 +56,8 @@ export default {
     // TODO this.$route.path split by / get the last item and load the map
     // console.log(this.$route.path);
     this.loading = true;
-    axios.get('https://calm-gorge-20681.herokuapp.com/api/fileLayers').then((response) => {
+    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
+    axios.get(url).then((response) => {
       this.customMaps = response.data;
     }).then(() => {
       this.loading = false;
@@ -66,6 +68,5 @@ export default {
 <style>
 #mapList {
   color: black;
-  width: 90vh;
 }
 </style>

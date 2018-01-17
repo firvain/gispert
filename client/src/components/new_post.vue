@@ -94,6 +94,7 @@ export default {
     ],
     selectCollections: [],
     collections: [
+      { name: 'get from vuex', id: '3' },
       { name: 'Κοζάνη', id: '1' },
       { name: 'Βόιο', id: '2' },
     ],

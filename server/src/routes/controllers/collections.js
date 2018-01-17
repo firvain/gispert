@@ -5,13 +5,15 @@ var ObjectID = require('mongodb').ObjectID;
 var config = require('../../config');
 
 router.route('/')
-    .get(function getusers(req, res) {
+    .get(function getcollections(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+            var type = req.query.type;
+            console.log('get type:: ', type);
             var collection = db.collection('collections');
             if (err) {
                 console.log(err);
             }
-            collection.find({},{visibility: 'public'}).toArray(function handleCursor(error, docs) {
+            collection.find({visibility: type},{}).toArray(function handleCursor(error, docs) {
                 var data = {};
                 if (err) {
                     res.sendStatus(500);
@@ -23,14 +25,16 @@ router.route('/')
             });
         });
     })
-    .post(function setuser(req, res) {
+    .post(function setcollection(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var newCollection = {
-                title: req.body.title,
-                description: req.body.description,
-                creator: req.body.creator,
-                timecreated: req.body.timecreated
-            };
+            // var newCollection = {
+            //     title: req.body.title,
+            //     description: req.body.description,
+            //     creator: req.body.creator,
+            //     timecreated: req.body.timecreated
+            // };
+            var newCollection = req.body.newCollection;
+
             // console.log(req.body);
             console.log('a new collection:: ', newCollection);
             if (err) {
@@ -39,7 +43,7 @@ router.route('/')
                 db.collection('collections').insertOne(
                     newCollection
                 );
-                res.status(200).send();
+                res.status(200).send('OK');
             }
             db.close();
         });
@@ -58,7 +62,7 @@ router.route('/delete')
                 db.collection('collections').remove(
                     { _id: cId }
                 );
-                res.status(200).send();
+                res.status(200).send('OK');
             }
             db.close();
         });

@@ -26,6 +26,7 @@
 </template>
 <script>
 import axios from 'axios';
+import config from '../config';
 import user from './user';
 import cardDetails from './card_in_details';
 
@@ -53,7 +54,8 @@ export default {
   },
   mounted() {
     this.loading = true;
-    axios.get('https://calm-gorge-20681.herokuapp.com/api/users/all').then((response) => {
+    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+    axios.get(url).then((response) => {
       this.users = response.data;
     }).then(() => {
       this.loading = false;
