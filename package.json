@@ -13,7 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "concurrently": "^1.0.0",
-    "es6-promise": "^4.2.2"
+    "es6-promise": "^4.2.2",
+    "moment": "^2.20.1"
   },
   "devDependencies": {
     "concurrently": "^1.0.0",

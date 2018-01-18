@@ -3,6 +3,7 @@ var router = express.Router();
 const jwt = require('jsonwebtoken');
 const Promise = require('bluebird');
 const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
+const moment = require('moment');
 
 var MongoClient = require('mongodb').MongoClient;
 const config = require('../../config');
@@ -63,6 +64,10 @@ router.route('/')
             const user = result[0];
             // console.log(jwtSignUser(user));
             user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
+            db.collection('users').update(
+              { _id: user._id },
+              { $set: { currentToken: jwtSignUser(user), tokenExpires: moment().add(2, 'hours') } } // check if this works
+            );
             res.send({
               user: user,
               // TODO when token expires?
