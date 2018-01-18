@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default(() => {
-  console.log('problem?');
+  // console.log('problem?');
   const url = axios.create({
     baseURL: 'http://localhost:8081/v1/',
   });

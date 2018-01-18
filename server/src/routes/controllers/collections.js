@@ -8,12 +8,13 @@ router.route('/')
     .get(function getcollections(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
             var type = req.query.type;
+            var userId = req.query.userId;
             console.log('get type:: ', type);
             var collection = db.collection('collections');
             if (err) {
                 console.log(err);
             }
-            collection.find({visibility: type},{}).toArray(function handleCursor(error, docs) {
+            collection.find({$and: [ {visibility: type}, {user: userId} ]}, {}).toArray(function handleCursor(error, docs) {
                 var data = {};
                 if (err) {
                     res.sendStatus(500);

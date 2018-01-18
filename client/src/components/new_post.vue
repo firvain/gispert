@@ -47,12 +47,12 @@
           </v-flex>
           <v-flex xs12 sm6>
             <v-select
-              v-bind:items="collections"
+              v-bind:items="computedCollections"
               v-model="selectCollections"
               label="Συλλογές"
               single-line
-              item-text="name"
-              item-value="id"
+              item-text="title"
+              item-value="_id"
               return-object
               multiple
               hint='Διάλεξε συλλογή'
@@ -139,7 +139,7 @@ export default {
       if (textToPost !== '' || userFeats !== null) {
         axios.post(url, { userPost }).then((response) => {
           // console.log('trying to reset component');
-          console.log(response.data);
+          // console.log(response.data);
           // TODO must handle response
           this.postText = '';
           this.newPostInfo = 'Δημοσιεύτηκε!';
@@ -148,12 +148,12 @@ export default {
 
           this.$store.commit('clearNewPostFeatures', 'newPost');
           if (this.id === undefined) {
-            console.log('totally new post');
+            // console.log('totally new post');
             this.$parent.$emit('newpost', { type: 'newpost' });
           } else {
             // eslint-disable-next-line
             userPost._id = response.data;
-            console.log('this is the userpost :: ', userPost);
+            // console.log('this is the userpost :: ', userPost);
             this.$parent.$emit('newreply', userPost);
           }
         });
@@ -207,6 +207,12 @@ export default {
         });
       }
       return chips;
+    },
+    computedCollections: function c() {
+      const collections = this.$store.state.privateCollections;
+      collections.concat(this.$store.state.publicCollections);
+      // console.log('collections computed:: ', collections);
+      return collections;
     },
   },
 };

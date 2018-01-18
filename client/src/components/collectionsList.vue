@@ -139,7 +139,7 @@ export default {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
       const newCollection = this.newCollection;
       newCollection.user = this.getUserId();
-      console.log('new collection:: ', newCollection.title, newCollection.description);
+      // console.log('new collection:: ', newCollection.title, newCollection.description);
       axios.post(url, { newCollection })
       .then(() => {
         this.message = 'Προστέθηκε μία συλλογή!';
@@ -164,6 +164,7 @@ export default {
       axios.get(url, {
         params: {
           type: 'private',
+          userId: this.getUserId(),
         },
       }).then((response) => {
         this.privateCollections = response.data;

@@ -10,6 +10,9 @@
             <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false">
               {{login_txt}}
             </v-btn>
+            <v-btn flat @click='showProfileDialogue' v-if="$store.state.isUserLoggedIn === true">
+              {{profile_txt}}
+            </v-btn>
             <v-btn flat @click='logoutUser' v-if="$store.state.isUserLoggedIn === true">
               {{logout_txt}}
             </v-btn>
@@ -20,7 +23,7 @@
         <v-card-title class="headline">Εγγραφή νέου χρήστη</v-card-title>
         <v-card-text>
           <form
-          name="tab-tracker-form"
+          name="register-form"
           autocomplete="off">
           <v-text-field
             label="Όνομα"
@@ -58,7 +61,7 @@
           @click="register">
           {{signup}}
         </v-btn>
-          <v-btn color="green darken-1" flat="flat" @click.native="dialog = false">Άκυρο</v-btn>
+          <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false">Άκυρο</v-btn>
         </v-card-actions>
       </v-card>
               <v-snackbar
@@ -98,7 +101,7 @@
           @click="login(credentials)">
           {{login_txt}}
         </v-btn>
-          <!-- <v-btn color="green darken-1" flat="flat" @click.native="dialog = false">Άκυρο</v-btn> -->
+          <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">Άκυρο</v-btn>
         </v-card-actions>
       </v-card>
       <v-snackbar
@@ -107,6 +110,69 @@
         color='red'
       >{{ wrongLoginInfo }}</v-snackbar>
     </v-dialog>
+
+
+    <v-dialog v-model="dialogProfile" max-width="290">
+      <v-card>
+        <v-card-title class="headline">Προφίλ χρήστη</v-card-title>
+        <v-card-text>
+          <form
+          name="profile-form"
+          autocomplete="off">
+          <v-text-field
+            label="Όνομα"
+            v-model="name"
+            :rules="nameRules"
+            single-line
+          ></v-text-field>
+          <br>
+          <v-text-field
+            label="Παλιός Κωδικός"
+            type="password"
+            v-model="password"
+            :rules="passRules"
+            autocomplete="new-password"
+          ></v-text-field>
+          <br>
+          <v-text-field
+            label="Νέος Κωδικός"
+            type="password"
+            v-model="password"
+            :rules="passRules"
+            autocomplete="new-password"
+          ></v-text-field>
+          <br>
+          <v-text-field
+            label="Email"
+            v-model="email"
+            single-line
+          ></v-text-field>
+          <br>
+          <v-text-field
+            label="Γράψε αν θέλεις εδώ μια μικρή περιγραφή για σένα"
+            v-model="description"
+            single-line
+          ></v-text-field>
+        </form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+        <v-btn v-if="name.length > 0 && password.length > 0"
+          dark
+          class="cyan"
+          @click="register">
+          {{signup}}
+        </v-btn>
+          <v-btn color="green darken-1" flat="flat" @click.native="dialogProfile = false">Άκυρο</v-btn>
+        </v-card-actions>
+      </v-card>
+              <v-snackbar
+        :timeout=5000
+        v-model="snackbarRegisterError"
+        color='red'
+      >{{ alreadyInUseMessage }}</v-snackbar>
+    </v-dialog>
+
 
       <v-snackbar
         :timeout=5000
@@ -132,8 +198,10 @@ export default {
       signup: 'Εγγραφή',
       login_txt: 'Είσοδος',
       logout_txt: 'Έξοδος',
+      profile_txt: 'Προφίλ',
       dialogRegister: false,
       dialogLogin: false,
+      dialogProfile: false,
       email: '',
       name: '',
       password: '',
@@ -169,6 +237,9 @@ export default {
     showLoginDialogue() {
       this.dialogLogin = true;
     },
+    showProfileDialogue() {
+      this.dialogProfile = true;
+    },
     async register() {
       try {
         const response = await AuthenticationService.register({
@@ -177,7 +248,7 @@ export default {
           email: this.email,
           description: this.description,
         });
-        console.log('response is:: ', response);
+        // console.log('response is:: ', response);
         if (response.data.result === 'success') {
           this.dialogRegister = false;
           this.snackbarRegistered = true;
@@ -198,11 +269,11 @@ export default {
         },
       })
       .then((response) => {
-        console.log('response is :: ', response);
+        // console.log('response is :: ', response);
         if (response.data.error && response.data.error === 'Login information was incorrect') {
-          console.log('data error :: ', response.data.error);
+          // console.log('data error :: ', response.data.error);
           this.snackbarLoginError = true;
-          console.log('snackbar status :: ', this.snackbarLoginError);
+          // console.log('snackbar status :: ', this.snackbarLoginError);
         }
         if (response.data.user) {
           this.user = response.data;
@@ -215,10 +286,10 @@ export default {
       });
     },
     logoutUser() {
-      console.log(this.$store.state.isUserLoggedIn);
+      // console.log(this.$store.state.isUserLoggedIn);
       this.$store.dispatch('setToken', null);
       this.$store.dispatch('setUser', null);
-      console.log(this.$store.state.isUserLoggedIn);
+      // console.log(this.$store.state.isUserLoggedIn);
     },
   },
 };
