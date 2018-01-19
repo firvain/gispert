@@ -10,7 +10,7 @@ const config = require('../../config');
 
 function jwtSignUser(user) {
   const ONE_WEEK = 60 * 60 * 24 * 7;
-  return jwt.sign(user, config.authentication.jwtSecret, {
+  return jwt.sign(user, config.secret, {
     //  expriresIn: ONE_WEEK,
   })
 }
@@ -64,10 +64,10 @@ router.route('/')
             const user = result[0];
             // console.log(jwtSignUser(user));
             user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
-            db.collection('users').update(
-              { _id: user._id },
-              { $set: { currentToken: jwtSignUser(user), tokenExpires: moment().add(2, 'hours') } } // check if this works
-            );
+            // db.collection('users').update(
+            //   { _id: user._id },
+            //   { $set: { currentToken: jwtSignUser(user), tokenExpires: moment().add(2, 'hours') } } // check if this works
+            // );
             res.send({
               user: user,
               // TODO when token expires?

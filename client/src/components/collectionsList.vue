@@ -166,6 +166,7 @@ export default {
           type: 'private',
           userId: this.getUserId(),
         },
+        headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         this.privateCollections = response.data;
       }).then(() => {

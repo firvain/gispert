@@ -57,8 +57,14 @@ export default {
     // console.log(this.$route.path);
     this.loading = true;
     const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
-    axios.get(url).then((response) => {
-      this.customMaps = response.data;
+    axios.get(url, {
+      headers: { 'x-access-token': this.$store.state.token },
+    }).then((response) => {
+      if (response.data.success === false) {
+        console.log('not logged in to see maps');
+      } else {
+        this.customMaps = response.data;
+      }
     }).then(() => {
       this.loading = false;
     });

@@ -6,6 +6,8 @@ const cookieParser = require('cookie-parser');
 const io = require('socket.io')();
 const app = express();
 
+var config = require('./config');
+var jwt    = require('jsonwebtoken');
 
 app.use(morgan('combined'));
 app.use(bodyParser.json());
@@ -13,9 +15,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.set('superSecret', config.secret);
 
 const APIv1 = require('./routes/APIv1');
 app.use('/v1', APIv1);
+const APIsecure = require('./routes/APIsecure');
+app.use('/v1', APIsecure);
 
 app.io = io;
 

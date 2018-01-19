@@ -55,8 +55,15 @@ export default {
   mounted() {
     this.loading = true;
     const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
-    axios.get(url).then((response) => {
-      this.users = response.data;
+    axios.get(url, {
+      headers: { 'x-access-token': this.$store.state.token },
+    }).then((response) => {
+      if (response.data.success === false) {
+        console.log(response.data);
+        console.log('not logged in to see others');
+      } else {
+        this.users = response.data;
+      }
     }).then(() => {
       this.loading = false;
     });

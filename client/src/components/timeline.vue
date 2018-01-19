@@ -126,8 +126,15 @@ export default {
   },
   mounted() {
     this.loading = true;
-    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
-    axios.get(url).then((response) => {
+    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all`;
+    axios.get(url, {
+      params: {
+        start: this.startPage.toString(),
+        end: this.limitPage.toString(),
+        type: 'public',
+      },
+      headers: { 'x-access-token': this.$store.state.token },
+    }).then((response) => {
       // console.log(response);
       this.posts = response.data;
     }).then(() => {
