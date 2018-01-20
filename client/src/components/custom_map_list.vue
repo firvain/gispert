@@ -4,7 +4,7 @@
       <v-layout row wrap>
         <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex
-          md12
+          md12 sm12
           v-for="customMap in customMaps"
           :key="customMap.id"
         >
@@ -74,5 +74,7 @@ export default {
 <style>
 #mapList {
   color: black;
+  max-height: 82vh;
+  overflow-y: scroll;
 }
 </style>

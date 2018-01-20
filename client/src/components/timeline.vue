@@ -89,7 +89,9 @@ export default {
       // console.log('refreshing page');
       this.loading = true;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
-      axios.get(url).then((response) => {
+      axios.get(url, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
         response.data.forEach((d) => {
           // eslint-disable-next-line
           if (this.posts.filter(e => e._id === d._id).length === 0) {
@@ -105,7 +107,9 @@ export default {
       this.loading = true;
       this.startPage += 25;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
-      axios.get(url).then((response) => {
+      axios.get(url, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
         response.data.forEach((d) => {
           this.posts.push(d);
         });
@@ -131,7 +135,6 @@ export default {
       params: {
         start: this.startPage.toString(),
         end: this.limitPage.toString(),
-        type: 'public',
       },
       headers: { 'x-access-token': this.$store.state.token },
     }).then((response) => {

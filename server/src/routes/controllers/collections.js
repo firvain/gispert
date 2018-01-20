@@ -14,28 +14,36 @@ router.route('/')
             if (err) {
                 console.log(err);
             }
-            collection.find({$and: [ {visibility: type}, {user: userId} ]}, {}).toArray(function handleCursor(error, docs) {
-                var data = {};
-                if (err) {
-                    res.sendStatus(500);
-                    console.log(error);
-                } else {
-                    res.send(docs);
-                    db.close();
-                }
-            });
+            if (type === 'private') {
+                collection.find({ $and: [{ visibility: type }, { user: userId }] }, {}).toArray(function handleCursor(error, docs) {
+                    console.log(docs);
+                    var data = {};
+                    if (err) {
+                        res.sendStatus(500);
+                        console.log(error);
+                    } else {
+                        res.send(docs);
+                        db.close();
+                    }
+                });
+            } else {
+                collection.find({ $and: [{ visibility: type }] }, {}).toArray(function handleCursor(error, docs) {
+                    console.log(docs);
+                    var data = {};
+                    if (err) {
+                        res.sendStatus(500);
+                        console.log(error);
+                    } else {
+                        res.send(docs);
+                        db.close();
+                    }
+                });                
+            }
         });
     })
     .post(function setcollection(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            // var newCollection = {
-            //     title: req.body.title,
-            //     description: req.body.description,
-            //     creator: req.body.creator,
-            //     timecreated: req.body.timecreated
-            // };
             var newCollection = req.body.newCollection;
-
             // console.log(req.body);
             console.log('a new collection:: ', newCollection);
             if (err) {

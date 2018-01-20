@@ -140,22 +140,24 @@ export default {
       const newCollection = this.newCollection;
       newCollection.user = this.getUserId();
       // console.log('new collection:: ', newCollection.title, newCollection.description);
-      axios.post(url, { newCollection })
-      .then(() => {
-        this.message = 'Προστέθηκε μία συλλογή!';
-        this.snackbarColor = 'green';
-        this.snackbar = true;
-        if (this.newCollection.visibility === 'public') {
-          this.loadPublicCollections();
-          this.newPublicCollectionCard = false;
-        } else {
-          this.loadPrivateCollections();
-          this.newPrivateCollectionCard = false;
-        }
-        this.newCollection.title = '';
-        this.newCollection.description = '';
-        this.newCollection.visibility = '';
-      });
+      axios.post(url, { newCollection },
+        {
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then(() => {
+          this.message = 'Προστέθηκε μία συλλογή!';
+          this.snackbarColor = 'green';
+          this.snackbar = true;
+          if (this.newCollection.visibility === 'public') {
+            this.loadPublicCollections();
+            this.newPublicCollectionCard = false;
+          } else {
+            this.loadPrivateCollections();
+            this.newPrivateCollectionCard = false;
+          }
+          this.newCollection.title = '';
+          this.newCollection.description = '';
+          this.newCollection.visibility = '';
+        });
     },
     loadPrivateCollections() {
       // console.log('loading collections');
@@ -182,6 +184,7 @@ export default {
         params: {
           type: 'public',
         },
+        headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         this.publicCollections = response.data;
       }).then(() => {

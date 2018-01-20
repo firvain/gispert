@@ -71,7 +71,9 @@ export default {
 };
 </script>
 <style>
-#timeline {
+#userList {
   color: black;
+  max-height: 82vh;
+  overflow-y: scroll;
 }
 </style>
