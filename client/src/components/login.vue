@@ -41,6 +41,8 @@
 <script>
 import axios from 'axios';
 import Pageheader from '@/components/pageheader';
+import config from '../config';
+
 // import AuthenticationService from '@/services/AuthenticationService';
 
 export default {
@@ -61,7 +63,9 @@ export default {
   methods: {
     login(credentials) {
       // console.log('snack:: ', this.snackbar);
-      axios.get('http://localhost:8081/v1/login', {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/login`;
+      console.log('connect to connect login url:: ', url);
+      axios.get(url, {
         params: {
           name: credentials.email,
           password: credentials.password,

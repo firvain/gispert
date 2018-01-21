@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router(); // eslint-disable-line
 
 const login = require('./controllers/login');
+const public = require('./controllers/public');
 
 router.use('/login', login);
+router.use('/public', public);
 
 // TODO: create public versions of this api
 // const posts = require('./controllers/posts');

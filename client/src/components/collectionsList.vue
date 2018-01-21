@@ -1,13 +1,13 @@
 <template>
   <v-container id='collectionList'>
     <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
-    <v-subheader inset>
+    <v-subheader inset v-if="this.$store.state.isUserLoggedIn">
       <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
         <v-icon dark>add</v-icon>
       </v-btn>
       Προσωπικές Συλλογές
     </v-subheader>
-    <v-container fluid>
+    <v-container fluid v-if="this.$store.state.isUserLoggedIn">
       <v-list
         v-for="collection in privateCollections"
         :key="collection._id"
@@ -179,12 +179,11 @@ export default {
     loadPublicCollections() {
       // console.log('loading collections');
       this.loading = true;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
       axios.get(url, {
-        params: {
-          type: 'public',
-        },
-        headers: { 'x-access-token': this.$store.state.token },
+        // params: {
+        //   type: 'public',
+        // },
       }).then((response) => {
         this.publicCollections = response.data;
       }).then(() => {
@@ -195,7 +194,9 @@ export default {
   },
   mounted() {
     this.loading = true;
-    this.loadPrivateCollections();
+    if (this.$store.state.isUserLoggedIn) {
+      this.loadPrivateCollections();
+    }
     this.loadPublicCollections();
     this.$on('refreshprivatecollections', () => {
       this.loadPrivateCollections();
