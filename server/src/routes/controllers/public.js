@@ -10,13 +10,13 @@ router.route('/collections')
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
             // var type = req.query.type;
             // var userId = req.query.userId;
-            console.log('get type:: ', type, ' collections public');
+            // console.log('get type:: ', type, ' collections public');
 
             var collection = db.collection('collections');
             if (err) {
                 console.log(err);
             }
-            collection.find({ $and: [{ visibility: 'public' }] }, {}).toArray(function handleCursor(error, docs) {
+            collection.find({ visibility: 'public' }, {}).toArray(function handleCursor(error, docs) {
                 console.log(docs);
                 var data = {};
                 if (err) {

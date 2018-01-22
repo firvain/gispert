@@ -11,6 +11,12 @@ const apiGeodata = require('./controllers/apiGeodata');
 const groups = require('./controllers/groups');
 const collections = require('./controllers/collections');
 
+const login = require('./controllers/login');
+const public = require('./controllers/public');
+
+router.use('/login', login);
+router.use('/public', public);
+
 // route middleware to verify a token
 router.use(function(req, res, next) {
   // check header or url parameters or post parameters for token

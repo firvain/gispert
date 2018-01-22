@@ -17,10 +17,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.set('superSecret', config.secret);
 
-const APIv1 = require('./routes/APIv1');
-app.use('/v1', APIv1);
-const APIsecure = require('./routes/APIsecure');
+// const APIv1 = require('./routes/APIv1');
+// app.use('/v1', APIv1);
+const APIsecure = require('./routes/APIv2');
 app.use('/v1', APIsecure);
+
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PATCH, DELETE, OPTIONS');
+  next();
+});
 
 app.io = io;
 

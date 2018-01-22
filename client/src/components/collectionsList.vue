@@ -165,7 +165,6 @@ export default {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
       axios.get(url, {
         params: {
-          type: 'private',
           userId: this.getUserId(),
         },
         headers: { 'x-access-token': this.$store.state.token },
@@ -181,9 +180,6 @@ export default {
       this.loading = true;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
       axios.get(url, {
-        // params: {
-        //   type: 'public',
-        // },
       }).then((response) => {
         this.publicCollections = response.data;
       }).then(() => {
