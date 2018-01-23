@@ -99,12 +99,12 @@ export default {
         start: this.startPage.toString(),
         end: this.limitPage.toString(),
       },
+        headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         this.fetchedReplies = response.data;
       }).then(() => {
         this.loading = false;
       });
-
       this.showReplies = true;
     },
     repliesReversed() {

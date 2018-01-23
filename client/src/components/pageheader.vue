@@ -289,6 +289,8 @@ export default {
       // console.log(this.$store.state.isUserLoggedIn);
       this.$store.dispatch('setToken', null);
       this.$store.dispatch('setUser', null);
+      this.$store.dispatch('setTimeline', []);
+      this.$store.dispatch('setPrivateCollections', []);
       // console.log(this.$store.state.isUserLoggedIn);
     },
   },

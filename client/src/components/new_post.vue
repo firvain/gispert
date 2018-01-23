@@ -40,7 +40,7 @@
               item-text="name"
               item-value="id"
               return-object
-              multiple
+              
               hint="Επιλογές ορατότητας"
               persistent-hint
             ></v-select>
@@ -87,17 +87,13 @@ export default {
   data: () => ({
     postText: '',
     toggle_one: 0,
-    selectGroups: [],
+    selectGroups: { name: 'Δημόσιο', id: '0' },
     groups: [
-      { name: 'Κοζανίτες', id: '4' },
-      { name: 'Γκουγκούνια', id: '5' },
+      { name: 'Δημόσιο', id: '0' },
+      { name: 'Μόνο σε μένα', id: '1' },
     ],
     selectCollections: [],
-    collections: [
-      { name: 'get from vuex', id: '3' },
-      { name: 'Κοζάνη', id: '1' },
-      { name: 'Βόιο', id: '2' },
-    ],
+    collections: [],
     newPostInfo: '',
     snackbarNewPost: false,
     snackbarColor: '',
@@ -130,14 +126,16 @@ export default {
         timestamp: Date.now(),
         userFeatures: userFeats,
         isReplyTo: idToReply,
-        groups: this.selectGroups,
+        groups: this.selectGroups.id,
         collections: this.selectCollections,
         replies: [],
       };
       // console.log('this is the post to publish', userPost);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
       if (textToPost !== '' || userFeats !== null) {
-        axios.post(url, { userPost }).then((response) => {
+        axios.post(url, { userPost }, {
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
           // console.log('trying to reset component');
           // console.log(response.data);
           // TODO must handle response

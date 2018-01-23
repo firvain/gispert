@@ -1,6 +1,5 @@
 <template>
   <v-container id='collectionList'>
-    <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
     <v-subheader inset v-if="this.$store.state.isUserLoggedIn">
       <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
         <v-icon dark>add</v-icon>
@@ -76,6 +75,7 @@
         <v-btn @click="newPublicCollectionCard = false">Ακυρο</v-btn>
       </form>
     </v-container>
+    <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
     <v-snackbar
       :timeout=5000
       v-model="snackbar"
@@ -162,6 +162,9 @@ export default {
     loadPrivateCollections() {
       // console.log('loading collections');
       this.loading = true;
+      if (this.$store.state.privateCollections.length > 0) {
+        this.privateCollections = this.$store.state.privateCollections;
+      }
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
       axios.get(url, {
         params: {
@@ -178,6 +181,9 @@ export default {
     loadPublicCollections() {
       // console.log('loading collections');
       this.loading = true;
+      if (this.$store.state.publicCollections.length > 0) {
+        this.publicCollections = this.$store.state.publicCollections;
+      }
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
       axios.get(url, {
       }).then((response) => {

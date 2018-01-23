@@ -1,7 +1,6 @@
 <template>
   <div id='timeline'>
     <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
-      <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
       <v-btn block color="secondary" dark
         width="50px"
         large
@@ -30,6 +29,7 @@
         <i class="fa fa-close fa-lg"> Close</i>
       </v-btn>
     </v-container>
+    <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
     <v-btn
       v-on:click='next_page'
       class="blue-grey white--text"
@@ -130,7 +130,15 @@ export default {
   },
   mounted() {
     this.loading = true;
-    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all`;
+    let url;
+    if (this.$store.state.timeline.length > 0) {
+      this.posts = this.$store.state.timeline;
+    }
+    if (this.$store.state.isUserLoggedIn) {
+      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all`;
+    } else {
+      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
+    }
     axios.get(url, {
       params: {
         start: this.startPage.toString(),
@@ -142,7 +150,9 @@ export default {
       this.posts = response.data;
     }).then(() => {
       this.loading = false;
+      this.$store.dispatch('setTimeline', this.posts);
     });
+
     this.$on('newpost', (eventPost) => {
       console.log('A totally new post has been published :: ', eventPost);
       this.toggle_new_post();

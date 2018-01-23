@@ -65,7 +65,9 @@ export default {
     deleteCollection(id) {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/delete`;
       // console.log('id to delete:: ', id);
-      axios.post(url, { id }).then(() => {
+      axios.post(url, { id }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then(() => {
         this.loading = false;
         if (this.collection.visibility === 'private') {
           this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');

@@ -5,6 +5,18 @@ var MongoClient = require('mongodb').MongoClient;
 var config = require('../../config');
 var ObjectId = require('mongodb').ObjectID;
 
+function dynamicSort(property) {
+  var sortOrder = 1;
+  if(property[0] === "-") {
+      sortOrder = -1;
+      property = property.substr(1);
+  }
+  return function (a,b) {
+      var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+      return result * sortOrder;
+  }
+}
+
 router.route('/')
  .post(function setpost(req, res) {
   var post = {
@@ -42,19 +54,25 @@ router.route('/')
  });
 
 router.route('/all')
-  .get(function getusers(req, res) {
+  .get(function getposts(req, res) {
     var start = parseInt(req.query.start);
     var end = parseInt(req.query.end);
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
     .then(function (db) {
       var collection = db.collection('posts');
       return collection.aggregate([
-          {
-            $match: { 'isReplyTo': '' }
+        { $match: {  $and: [ { 'isReplyTo': '' } ]}},
+        { $graphLookup: {
+            from: "posts",
+            startWith: "$replies",
+            connectFromField: "_id",
+            connectToField: "_id",
+            as: "repliesData",
+            restrictSearchWithMatch: { "groups" : { $in: ["0", "1" ] } }
           }
-          ,
+        } ,
           {
-            $sort: { 'timestamp': -1 }
+            $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
           },
           {
             $skip: start
@@ -62,21 +80,17 @@ router.route('/all')
           {
             $limit: end
           },
-          {
-            $lookup:
-              {
-                from: "posts",
-                localField: "replies",
-                foreignField: "_id",
-                as: "repliesData"
-              }
-          }]
-        );
+        ]);
       })
       .then(function (cursor) {
         return cursor.toArray();
       })
       .then(function (content) {
+        content.forEach((p) => {
+          if(p.repliesData) {
+              p.repliesData.sort(dynamicSort("timestamp"));
+          }
+        });
         res.status(200).json(content);
       })
       .catch(function (err) {

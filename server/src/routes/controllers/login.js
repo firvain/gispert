@@ -8,13 +8,6 @@ const moment = require('moment');
 var MongoClient = require('mongodb').MongoClient;
 const config = require('../../config');
 
-function jwtSignUser(user) {
-  const ONE_WEEK = 60 * 60 * 24 * 7;
-  return jwt.sign(user, config.secret, {
-    //  expriresIn: ONE_WEEK,
-  })
-}
-
 // https://scotch.io/tutorials/easy-node-authentication-facebook
 // https://scotch.io/tutorials/easy-node-authentication-google
 
@@ -48,8 +41,6 @@ router.route('/')
           error: 'Login information was incorrect'
         });
       } else {
-        // user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
-        // hash password given by user and then var query to search
         var query = { name: req.query.name, pass: password };
         db.collection('users').find(query).toArray(function (err, result) {
           if (err) {
@@ -60,18 +51,11 @@ router.route('/')
             });
             db.close();
           } else {
-            // console.log(result);
             const user = result[0];
-            // console.log(jwtSignUser(user));
             user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
-            // db.collection('users').update(
-            //   { _id: user._id },
-            //   { $set: { currentToken: jwtSignUser(user), tokenExpires: moment().add(2, 'hours') } } // check if this works
-            // );
             res.send({
               user: user,
-              // TODO when token expires?
-              token: jwtSignUser(user),
+              token: jwt.sign({ data: user }, config.secret, { expiresIn: 60 * 60 * 2 })
             });
             db.close();
           }

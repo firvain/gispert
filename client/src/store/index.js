@@ -18,6 +18,7 @@ export default new Vuex.Store({
     isUserLoggedIn: false,
     privateCollections: [],
     publicCollections: [],
+    timeline: [],
   },
   actions: {
     setFeature(state, data) {
@@ -55,6 +56,9 @@ export default new Vuex.Store({
     },
     editPublicCollection(state,data) {
       state.commit('editpubliccollection', data);
+    },
+    setTimeline(state,data) {
+      state.commit('setTimeline', data);
     },
   },
   mutations: {
@@ -126,6 +130,9 @@ export default new Vuex.Store({
     },
     editprivatecollection(state, data) {},
     editpubliccollection(state, data) {},
+    setTimeline(state, data) {
+      state.timeline = data;
+    },
   },
   getters: {
     getDrawnFeatures(state) {
