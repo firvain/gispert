@@ -6,12 +6,12 @@
           <v-list-tile-sub-title>{{ collection.description }}</v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
-          <v-btn icon ripple @click="deleteCollection(collection._id)">
+          <v-btn icon ripple @click="deleteCollection(collection._id)" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="grey lighten-1">delete</v-icon>
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn icon ripple>
+          <v-btn icon ripple v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="grey lighten-1">edit</v-icon>
           </v-btn>
         </v-list-tile-action>

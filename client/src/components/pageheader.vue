@@ -291,6 +291,10 @@ export default {
       this.$store.dispatch('setUser', null);
       this.$store.dispatch('setTimeline', []);
       this.$store.dispatch('setPrivateCollections', []);
+      this.$store.dispatch('setFeature', null);
+      this.$store.dispatch('addNewPostFeature', null);
+      this.$store.dispatch('removeNewPostFeature', null);
+      this.$store.dispatch('setPostIdToAddFeatures', null);
       // console.log(this.$store.state.isUserLoggedIn);
     },
   },
