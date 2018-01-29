@@ -143,6 +143,7 @@ export default {
       params: {
         start: this.startPage.toString(),
         end: this.limitPage.toString(),
+        userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
       },
       headers: { 'x-access-token': this.$store.state.token },
     }).then((response) => {

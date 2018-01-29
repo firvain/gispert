@@ -31,6 +31,7 @@ router.route('/collections')
                     res.sendStatus(500);
                     console.log(error);
                 } else {
+                    docs.unshift({ title: 'Δημόσια Συλλογή', id: '0', description: 'Συλλογή που μπορούν να δουν όλοι' });
                     res.send(docs);
                     db.close();
                 }

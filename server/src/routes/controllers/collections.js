@@ -21,6 +21,7 @@ router.route('/')
                         res.sendStatus(500);
                         console.log(error);
                     } else {
+                        docs.unshift({ title: 'Ιδιωτική Συλλογή', id: userId, user: userId, visibility: 'private', description: 'Συλλογή που μπορείς να δεις μόνο εσύ' });
                         res.send(docs);
                         db.close();
                     }

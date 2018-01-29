@@ -191,6 +191,7 @@
 <script>
 import axios from 'axios';
 import AuthenticationService from '@/services/AuthenticationService';
+import config from '../config';
 
 export default {
   data() {
@@ -262,7 +263,8 @@ export default {
     },
     login(credentials) {
       // console.log('snack:: ', this.snackbar);
-      axios.get('http://localhost:8081/v1/login', {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/login`;
+      axios.get(url, {
         params: {
           name: credentials.email,
           password: credentials.password,

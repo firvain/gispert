@@ -57,18 +57,40 @@ router.route('/all')
   .get(function getposts(req, res) {
     var start = parseInt(req.query.start);
     var end = parseInt(req.query.end);
+    var userId = req.query.userId;
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
     .then(function (db) {
       var collection = db.collection('posts');
+      // select posts that are public, replies that are public and posts that I posted
       return collection.aggregate([
-        { $match: {  $and: [ { 'isReplyTo': '' } ]}},
+        { $match: {  
+          $and: [ 
+            { 'isReplyTo': '' }, 
+            {"$or": 
+              [{
+                "collections" : { $elemMatch: { user: userId }}
+              },
+              {
+                "collections" : { $elemMatch: { visibility: 'public' }}
+              }]
+            }
+          ]}
+        },
         { $graphLookup: {
             from: "posts",
             startWith: "$replies",
             connectFromField: "_id",
             connectToField: "_id",
             as: "repliesData",
-            restrictSearchWithMatch: { "groups" : { $in: ["0", "1" ] } }
+            // restrictSearchWithMatch: { "groups" : { $in: ["0", "1" ] } }
+            // restrictSearchWithMatch:             
+            //   {"$or": [{
+            //       "collections" : { $elemMatch: { user: userId }}
+            //     },
+            //     {
+            //       "collections" : { $elemMatch: { visibility: 'public' }}
+            //     }]
+            //   }
           }
         } ,
           {

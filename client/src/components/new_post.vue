@@ -33,20 +33,6 @@
         <v-card-actions>
           <v-flex xs12 sm6>
             <v-select
-              v-bind:items="groups"
-              v-model="selectGroups"
-              label="Ορατό σε..."
-              single-line
-              item-text="name"
-              item-value="id"
-              return-object
-              
-              hint="Επιλογές ορατότητας"
-              persistent-hint
-            ></v-select>
-          </v-flex>
-          <v-flex xs12 sm6>
-            <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
               label="Συλλογές"
@@ -87,11 +73,6 @@ export default {
   data: () => ({
     postText: '',
     toggle_one: 0,
-    selectGroups: { name: 'Δημόσιο', id: '0' },
-    groups: [
-      { name: 'Δημόσιο', id: '0' },
-      { name: 'Μόνο σε μένα', id: '1' },
-    ],
     selectCollections: [],
     collections: [],
     newPostInfo: '',
@@ -126,7 +107,6 @@ export default {
         timestamp: Date.now(),
         userFeatures: userFeats,
         isReplyTo: idToReply,
-        groups: this.selectGroups.id,
         collections: this.selectCollections,
         replies: [],
       };
@@ -207,8 +187,8 @@ export default {
       return chips;
     },
     computedCollections: function c() {
-      const collections = this.$store.state.privateCollections;
-      collections.concat(this.$store.state.publicCollections);
+      let collections = this.$store.state.privateCollections;
+      collections = collections.concat(this.$store.state.publicCollections);
       // console.log('collections computed:: ', collections);
       return collections;
     },
