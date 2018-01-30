@@ -14,14 +14,15 @@ router.route('/')
                 console.log(err);
             }
             if (userId) {
-                collection.find({ $and: [{ visibility: 'private' }, { user: userId }] }, {}).toArray(function handleCursor(error, docs) {
+                // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
+                collection.find({ $and: [{ visibility: 'private' }, { user: ObjectID(userId) }] }, {}).toArray(function handleCursor(error, docs) {
                     console.log(docs);
                     var data = {};
                     if (err) {
                         res.sendStatus(500);
                         console.log(error);
                     } else {
-                        docs.unshift({ title: 'Ιδιωτική Συλλογή', id: userId, user: userId, visibility: 'private', description: 'Συλλογή που μπορείς να δεις μόνο εσύ' });
+                        // docs.unshift({ title: 'Ιδιωτική Συλλογή', id: userId, user: userId, visibility: 'private', description: 'Συλλογή που μπορείς να δεις μόνο εσύ' });
                         res.send(docs);
                         db.close();
                     }

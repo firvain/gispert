@@ -26,8 +26,7 @@ router.route('/')
     text: req.body.userPost.text,
     userFeatures: req.body.userPost.userFeatures,
     isReplyTo: req.body.userPost.isReplyTo,
-    groups: req.body.userPost.groups,
-    collections: req.body.userPost.collections,
+    collections: ObjectId(req.body.userPost.collections),
     replies: req.body.userPost.replies
   };
   const Database = require('../database')
@@ -66,14 +65,14 @@ router.route('/all')
         { $match: {  
           $and: [ 
             { 'isReplyTo': '' }, 
-            {"$or": 
-              [{
-                "collections" : { $elemMatch: { user: userId }}
-              },
-              {
-                "collections" : { $elemMatch: { visibility: 'public' }}
-              }]
-            }
+            // {"$or": 
+            //   [{
+            //     "collections" : { $elemMatch: { user: userId }}
+            //   },
+            //   {
+            //     "collections" : { $elemMatch: { visibility: 'public' }}
+            //   }]
+            // }
           ]}
         },
         { $graphLookup: {

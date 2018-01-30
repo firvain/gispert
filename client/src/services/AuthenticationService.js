@@ -3,7 +3,7 @@ import Api from '@/services/Api';
 export default {
   register(credentials) {
     // console.log('credentials in auth service', credentials);
-    return Api().post('users', credentials);
+    return Api().post('register', credentials);
   },
   login(credentials) {
     return Api().post('login', credentials);

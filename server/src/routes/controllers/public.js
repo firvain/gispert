@@ -24,14 +24,16 @@ router.route('/collections')
             if (err) {
                 console.log(err);
             }
-            collection.find({ visibility: 'public' }, {}).toArray(function handleCursor(error, docs) {
+            // TODO: join to users and show them, pagination
+            collection.find({ visibility: 'public'
+            }).toArray(function handleCursor(error, docs) {
                 console.log(docs);
                 var data = {};
                 if (err) {
                     res.sendStatus(500);
                     console.log(error);
                 } else {
-                    docs.unshift({ title: 'Δημόσια Συλλογή', id: '0', description: 'Συλλογή που μπορούν να δουν όλοι' });
+                    // docs.unshift({ title: 'Δημόσια Συλλογή', id: '0', description: 'Συλλογή που μπορούν να δουν όλοι' });
                     res.send(docs);
                     db.close();
                 }
@@ -47,26 +49,45 @@ router.route('/timeline')
     .then(function (db) {
       var collection = db.collection('posts');
       return collection.aggregate([
-        { $match: {  $and: [ { 'isReplyTo': '' }, {"groups" : "0"} ]}},
+        { $match: {  
+          $and: [ 
+            { 'isReplyTo': '' }, 
+            {"$or": 
+            [
+              {
+                "collections" : { $elemMatch: { visibility: 'public' }}
+              }
+            ]
+            }
+          ]}
+        },
         { $graphLookup: {
             from: "posts",
             startWith: "$replies",
             connectFromField: "_id",
             connectToField: "_id",
             as: "repliesData",
-            restrictSearchWithMatch: { "groups" : "0" }
+            // restrictSearchWithMatch: { "groups" : { $in: ["0", "1" ] } }
+            // restrictSearchWithMatch:             
+            //   {"$or": [{
+            //       "collections" : { $elemMatch: { user: userId }}
+            //     },
+            //     {
+            //       "collections" : { $elemMatch: { visibility: 'public' }}
+            //     }]
+            //   }
           }
         } ,
-        {
-            $sort: { 'timestamp': -1 }
-        },
-        {
+          {
+            $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
+          },
+          {
             $skip: start
-        },
-        {
+          },
+          {
             $limit: end
-        },
-      ]);
+          },
+        ]);
     })
     .then(function (cursor) {
         return cursor.toArray();

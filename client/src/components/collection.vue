@@ -2,7 +2,7 @@
     <v-flex xs12 sm12>
       <v-list-tile @click="exploreCollection">
         <v-list-tile-content>
-          <v-list-tile-title>{{ collection.title }}</v-list-tile-title>
+          <v-list-tile-title>{{ collection.title }} {{collection.username}}</v-list-tile-title>
           <v-list-tile-sub-title>{{ collection.description }}</v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>

@@ -107,6 +107,7 @@ export default {
         title: null,
         description: null,
         visibility: '',
+        username: this.$store.state.user.name,
       },
       message: '',
       snackbar: false,
@@ -162,7 +163,8 @@ export default {
     loadPrivateCollections() {
       // console.log('loading collections');
       this.loading = true;
-      if (this.$store.state.privateCollections.length > 0) {
+      const vuexCollections = this.$store.state.privateCollections;
+      if (vuexCollections && vuexCollections.length > 0) {
         this.privateCollections = this.$store.state.privateCollections;
       }
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
@@ -181,13 +183,15 @@ export default {
     loadPublicCollections() {
       // console.log('loading collections');
       this.loading = true;
-      if (this.$store.state.publicCollections.length > 0) {
+      const vuexCollections = this.$store.state.publicCollections;
+      if (vuexCollections && vuexCollections.length > 0) {
         this.publicCollections = this.$store.state.publicCollections;
       }
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
       axios.get(url, {
       }).then((response) => {
         this.publicCollections = response.data;
+        console.log('public collections fetched:: ', this.publicCollections);
       }).then(() => {
         this.loading = false;
         this.$store.dispatch('setPublicCollections', this.publicCollections);

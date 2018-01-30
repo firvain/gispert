@@ -12,9 +12,11 @@ const groups = require('./controllers/groups');
 const collections = require('./controllers/collections');
 
 const login = require('./controllers/login');
+const register = require('./controllers/register');
 const public = require('./controllers/public');
 
 router.use('/login', login);
+router.use('/register', register);
 router.use('/public', public);
 
 // route middleware to verify a token

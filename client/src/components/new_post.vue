@@ -40,7 +40,6 @@
               item-text="title"
               item-value="_id"
               return-object
-              multiple
               hint='Διάλεξε συλλογή'
               persistent-hint
             ></v-select>
@@ -73,7 +72,7 @@ export default {
   data: () => ({
     postText: '',
     toggle_one: 0,
-    selectCollections: [],
+    selectCollections: '',
     collections: [],
     newPostInfo: '',
     snackbarNewPost: false,
@@ -107,7 +106,7 @@ export default {
         timestamp: Date.now(),
         userFeatures: userFeats,
         isReplyTo: idToReply,
-        collections: this.selectCollections,
+        collections: this.selectCollections._id, // eslint-disable-line no-underscore-dangle
         replies: [],
       };
       // console.log('this is the post to publish', userPost);
@@ -187,10 +186,24 @@ export default {
       return chips;
     },
     computedCollections: function c() {
-      let collections = this.$store.state.privateCollections;
-      collections = collections.concat(this.$store.state.publicCollections);
-      // console.log('collections computed:: ', collections);
-      return collections;
+      const vuexCollections = [];
+
+      this.$store.state.privateCollections.forEach((col) => {
+        vuexCollections.push(col);
+      });
+
+      this.$store.state.publicCollections.forEach((col) => {
+        vuexCollections.push(col);
+      });
+
+      console.log('collections computed:: ', vuexCollections);
+      this.selectCollections = vuexCollections[0];
+      vuexCollections.forEach((collection) => {
+        const label = `${collection.title} ${collection.username}`;
+        // eslint-disable-next-line
+        collection.title = label;
+      });
+      return vuexCollections;
     },
   },
 };
