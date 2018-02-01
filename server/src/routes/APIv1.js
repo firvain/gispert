@@ -7,7 +7,7 @@ const public = require('./controllers/public');
 router.use('/login', login);
 router.use('/public', public);
 
-// TODO: create public versions of this api
+
 // const posts = require('./controllers/posts');
 // const fileLayers = require('./controllers/fileLayers');
 // const apiGeodata = require('./controllers/apiGeodata');
