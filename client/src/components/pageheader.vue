@@ -11,8 +11,11 @@
               {{login_txt}}
             </v-btn>
             <v-btn flat @click='showProfileDialogue' v-if="$store.state.isUserLoggedIn === true">
-              {{profile_txt}}
+              {{$store.state.user.name}}
             </v-btn>
+            <!-- <v-btn flat @click='showProfileDialogue' v-if="$store.state.isUserLoggedIn === true">
+              {{profile_txt}}
+            </v-btn> -->
             <v-btn flat @click='logoutUser' v-if="$store.state.isUserLoggedIn === true">
               {{logout_txt}}
             </v-btn>

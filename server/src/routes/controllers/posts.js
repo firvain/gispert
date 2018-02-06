@@ -54,6 +54,9 @@ router.route('/')
 
 router.route('/all')
   .get(function getposts(req, res) {
+    // TODO: check if user is logged in, in a valid way
+    // https://medium.com/hyphe/token-based-authentication-in-node-6e8731bfd7f2
+
     var start = parseInt(req.query.start);
     var end = parseInt(req.query.end);
     var userId = req.query.userId;
@@ -62,45 +65,53 @@ router.route('/all')
       var collection = db.collection('posts');
       // select posts that are public, replies that are public and posts that I posted
       return collection.aggregate([
-        { $match: {  
-          $and: [ 
-            { 'isReplyTo': '' }, 
-            // {"$or": 
-            //   [{
-            //     "collections" : { $elemMatch: { user: userId }}
-            //   },
-            //   {
-            //     "collections" : { $elemMatch: { visibility: 'public' }}
-            //   }]
-            // }
-          ]}
-        },
         { $graphLookup: {
             from: "posts",
             startWith: "$replies",
             connectFromField: "_id",
             connectToField: "_id",
             as: "repliesData",
-            // restrictSearchWithMatch: { "groups" : { $in: ["0", "1" ] } }
-            // restrictSearchWithMatch:             
-            //   {"$or": [{
-            //       "collections" : { $elemMatch: { user: userId }}
-            //     },
-            //     {
-            //       "collections" : { $elemMatch: { visibility: 'public' }}
-            //     }]
-            //   }
           }
-        } ,
-          {
+        },
+        { $graphLookup: {
+            from: "collections",
+            startWith: "$collections",
+            connectFromField: "collections",
+            connectToField: "_id",
+            as: "collectionData",
+          }
+        },
+        {
             $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
-          },
-          {
+        },
+        {
             $skip: start
-          },
-          {
+        },
+        {
             $limit: end
-          },
+        },
+        { "$project": {
+            "_id": 1,
+            "userId": 1,
+            "userName": 1,
+            "timestamp": 1,
+            "text":1,
+            "userFeatures": 1,
+            "isReplyTo":1,
+            "replies":1,
+            "collectionData": {
+               "$filter": {
+                   "input": "$collectionData",
+                   "as": "child",
+                   "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }, { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
+               }
+            }
+        }},
+        { $match: {  
+          $and: [ 
+            { 'isReplyTo': '' }, {'collectionData': { $size: 1 }}
+          ]}
+        },
         ]);
       })
       .then(function (cursor) {

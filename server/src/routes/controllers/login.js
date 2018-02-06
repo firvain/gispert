@@ -42,7 +42,7 @@ router.route('/')
         });
       } else {
         var query = { name: req.query.name, pass: password };
-        db.collection('users').find(query).toArray(function (err, result) {
+        db.collection('users').find(query, {pass: 0}).toArray(function (err, result) {
           if (err) {
             throw err;
           } else if (result.length == 0) {
@@ -52,7 +52,7 @@ router.route('/')
             db.close();
           } else {
             const user = result[0];
-            user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
+            // user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
             res.send({
               user: user,
               token: jwt.sign({ data: user }, config.secret, { expiresIn: 60 * 60 * 2 })

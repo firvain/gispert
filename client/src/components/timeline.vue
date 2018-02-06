@@ -131,19 +131,23 @@ export default {
   mounted() {
     this.loading = true;
     let url;
+    let userID;
     if (this.$store.state.timeline.length > 0) {
       this.posts = this.$store.state.timeline;
     }
     if (this.$store.state.isUserLoggedIn) {
       url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all`;
+      userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
     } else {
       url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
+      userID = '';
     }
+
     axios.get(url, {
       params: {
         start: this.startPage.toString(),
         end: this.limitPage.toString(),
-        userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        userId: userID, // eslint-disable-line no-underscore-dangle
       },
       headers: { 'x-access-token': this.$store.state.token },
     }).then((response) => {

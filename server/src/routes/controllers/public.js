@@ -49,44 +49,53 @@ router.route('/timeline')
     .then(function (db) {
       var collection = db.collection('posts');
       return collection.aggregate([
-        { $match: {  
-          $and: [ 
-            { 'isReplyTo': '' }, 
-            {"$or": 
-            [
-              {
-                "collections" : { $elemMatch: { visibility: 'public' }}
-              }
-            ]
-            }
-          ]}
-        },
         { $graphLookup: {
             from: "posts",
             startWith: "$replies",
             connectFromField: "_id",
             connectToField: "_id",
             as: "repliesData",
-            // restrictSearchWithMatch: { "groups" : { $in: ["0", "1" ] } }
-            // restrictSearchWithMatch:             
-            //   {"$or": [{
-            //       "collections" : { $elemMatch: { user: userId }}
-            //     },
-            //     {
-            //       "collections" : { $elemMatch: { visibility: 'public' }}
-            //     }]
-            //   }
           }
-        } ,
-          {
+        },
+        { $graphLookup: {
+            from: "collections",
+            startWith: "$collections",
+            connectFromField: "collections",
+            connectToField: "_id",
+            as: "collectionData",
+          }
+        },
+        {
             $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
-          },
-          {
+        },
+        {
             $skip: start
-          },
-          {
+        },
+        {
             $limit: end
-          },
+        },
+        { "$project": {
+            "_id": 1,
+            "userId": 1,
+            "userName": 1,
+            "timestamp": 1,
+            "text":1,
+            "userFeatures": 1,
+            "isReplyTo":1,
+            "replies":1,
+            "collectionData": {
+               "$filter": {
+                   "input": "$collectionData",
+                   "as": "child",
+                   "cond": { "$eq": [ "$$child.visibility", "public" ] }
+               }
+            }
+        }},
+        { $match: {  
+          $and: [ 
+            { 'isReplyTo': '' }, {'collectionData': { $size: 1 }}
+          ]}
+        },
         ]);
     })
     .then(function (cursor) {
