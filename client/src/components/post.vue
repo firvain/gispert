@@ -26,7 +26,7 @@
             </v-tooltip>
 
         </v-card-actions>
-        <newPost v-if="answerPost==true" :id="post._id"></newPost>
+        <newPost v-if="answerPost==true" :id="post._id" :collection="post.collectionData[0]._id"></newPost>
 
         <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex class="ma-0 pa-0"

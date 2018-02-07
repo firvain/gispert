@@ -23,6 +23,8 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import config from '../config';
+
 // import turf from 'turf';
 import olMap from '../js/map';
 // import styles from '../js/styles';
@@ -33,10 +35,13 @@ export default {
   data: () => ({
   }),
   methods: {
-    explore(id) {
+    explore(mid) {
       // this.$emit('explore', this.customMap); TODO send this on user profile!
-      axios.get(`http://localhost:8081/v1/fileLayers/id?id=${id}`)
-      .then((response) => {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/filelayers/id`;
+      axios.get(url, {
+        params: { id: mid },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
         const features = new ol.format.GeoJSON().readFeatures(response.data, {
           dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:3857',

@@ -7,17 +7,6 @@
       Προσωπικές Συλλογές
     </v-subheader>
     <v-container fluid v-if="this.$store.state.isUserLoggedIn">
-      <v-list
-        v-for="collection in privateCollections"
-        :key="collection._id"
-      >
-        <collection :collection='collection'></collection>
-      </v-list>
-      <p v-if="privateCollections.length == 0">Δεν υπάρχουν προσωπικές συλλογές. Πρόσθεσε μία πατώντας
-        <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
-          <v-icon dark>add</v-icon>
-        </v-btn>
-      </p>
       <form v-if="newPrivateCollectionCard">
         <v-text-field
           v-model="newCollection.title"
@@ -36,6 +25,17 @@
         <v-btn @click="createCollection">Αποθηκευση</v-btn>
         <v-btn @click="newPrivateCollectionCard = false">Ακυρο</v-btn>
       </form>
+      <v-list
+        v-for="collection in privateCollections"
+        :key="collection._id"
+      >
+        <collection :collection='collection'></collection>
+      </v-list>
+      <p v-if="privateCollections.length == 0">Δεν υπάρχουν προσωπικές συλλογές. Πρόσθεσε μία πατώντας
+        <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
+          <v-icon dark>add</v-icon>
+        </v-btn>
+      </p>
     </v-container>
 
     <v-subheader inset>
@@ -45,17 +45,6 @@
       Δημόσιες Συλλογές
     </v-subheader>
     <v-container fluid>
-      <v-list
-        v-for="collection in publicCollections"
-        :key="collection._id"
-      >
-        <collection :collection='collection'></collection>
-      </v-list>
-      <p v-if="publicCollections.length == 0">Δεν υπάρχουν δημόσιες συλλογές. Πρόσθεσε μία πατώντας
-        <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
-          <v-icon dark>add</v-icon>
-        </v-btn>
-      </p>
       <form v-if="newPublicCollectionCard">
         <v-text-field
           v-model="newCollection.title"
@@ -74,6 +63,17 @@
         <v-btn @click="createCollection">Αποθηκευση</v-btn>
         <v-btn @click="newPublicCollectionCard = false">Ακυρο</v-btn>
       </form>
+      <v-list
+        v-for="collection in publicCollections"
+        :key="collection._id"
+      >
+        <collection :collection='collection'></collection>
+      </v-list>
+      <p v-if="publicCollections.length == 0">Δεν υπάρχουν δημόσιες συλλογές. Πρόσθεσε μία πατώντας
+        <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
+          <v-icon dark>add</v-icon>
+        </v-btn>
+      </p>
     </v-container>
     <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
     <v-snackbar
@@ -97,9 +97,6 @@ export default {
       privateCollections: [
       ],
       publicCollections: [
-      ],
-      groups: [
-        { title: 'group1', id: 'jfkd33jf88nvn884ng8n26nr6', members: [] },
       ],
       newPrivateCollectionCard: false,
       newPublicCollectionCard: false,
@@ -189,6 +186,9 @@ export default {
       }
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
       axios.get(url, {
+        params: {
+          userId: this.getUserId(),
+        },
       }).then((response) => {
         this.publicCollections = response.data;
         console.log('public collections fetched:: ', this.publicCollections);

@@ -20,21 +20,43 @@ function dynamicSort(property) {
 router.route('/collections')
     .get(function getcollections(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+            var userid = req.query.userId;
+            console.log('public of user:: ', userid);
             var collection = db.collection('collections');
             if (err) {
                 console.log(err);
             }
-            // TODO: join to users and show them, pagination
-            collection.find({ visibility: 'public'
-            }).toArray(function handleCursor(error, docs) {
-                console.log(docs);
-                var data = {};
+
+            collection.find({
+                $or: [{
+                    $and: [
+                        { visibility: 'public' }, 
+                        { members: ObjectID(userid) }
+                    ]    
+                }, {
+                    $and: [
+                        { visibility: 'public' }, 
+                        { user: ObjectID(userid) }
+                    ]                        
+                }]
+            }, {}).toArray(function handleCursor(error, docs) {
+                // var data = {};
                 if (err) {
                     res.sendStatus(500);
                     console.log(error);
                 } else {
                     // docs.unshift({ title: 'Δημόσια Συλλογή', id: '0', description: 'Συλλογή που μπορούν να δουν όλοι' });
-                    res.send(docs);
+                    var result = [];
+                    docs.forEach((d) => {
+                        console.log(d.user.toString(), userid);
+                        if (d.user.toString() === userid) {
+                            result.unshift(d);
+                        } else {
+                            result.push(d);
+                        }
+                    });
+                    // console.log(docs);
+                    res.send(result);
                     db.close();
                 }
             });
@@ -113,5 +135,6 @@ router.route('/timeline')
         throw err;
     });
 })
+
 
 module.exports = router;

@@ -31,7 +31,7 @@
               </v-chip>
             </v-flex>
         <v-card-actions>
-          <v-flex xs12 sm6>
+          <v-flex xs12 sm6 v-if="this.id === undefined">
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
@@ -67,7 +67,7 @@ import olMap from '../js/map';
 import config from '../config';
 
 export default {
-  props: ['id'],
+  props: ['id', 'collection'],
   name: 'newpost',
   data: () => ({
     postText: '',
@@ -106,7 +106,8 @@ export default {
         timestamp: Date.now(),
         userFeatures: userFeats,
         isReplyTo: idToReply,
-        collections: this.selectCollections._id, // eslint-disable-line no-underscore-dangle
+        // collections: this.selectCollections._id, // eslint-disable-line no-underscore-dangle
+        collections: this.collection,
         replies: [],
       };
       // console.log('this is the post to publish', userPost);
@@ -186,7 +187,7 @@ export default {
       return chips;
     },
     computedCollections: function c() {
-      const vuexCollections = [];
+      let vuexCollections = [];
 
       this.$store.state.privateCollections.forEach((col) => {
         vuexCollections.push(col);
@@ -199,9 +200,31 @@ export default {
       console.log('collections computed:: ', vuexCollections);
       this.selectCollections = vuexCollections[0];
       vuexCollections.forEach((collection) => {
-        const label = `${collection.title} ${collection.username}`;
+        // const label = `${collection.title} ${collection.username}`;
+        const label = `${collection.title}`;
         // eslint-disable-next-line
         collection.title = label;
+      });
+
+      const memberof = vuexCollections.filter((m) => {
+          // eslint-disable-next-line
+          if (m.members) { m.members.includes(this.$store.state.user._id) }
+        return m;
+      });
+      memberof.forEach((collection) => {
+        const label = `${collection.title}`;
+        // eslint-disable-next-line
+        collection.title = label;
+      });
+
+      console.log(memberof[0].title, memberof[0].username);
+      console.log(memberof[1].title, memberof[1].username);
+      console.log(memberof[2].title, memberof[2].username);
+      // eslint-disable-next-line
+      vuexCollections = vuexCollections.filter(c => c.user === this.$store.state.user._id);
+      // console.log('postable:: ', this.postableCollections);
+      memberof.forEach((e) => {
+        vuexCollections.push(e);
       });
       return vuexCollections;
     },
