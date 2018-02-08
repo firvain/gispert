@@ -26,7 +26,7 @@
         <v-card-text>
           <v-text-field
             label="Σύνδεσμος"
-            v-model="this.$router.resolve().href"
+            v-model="shareMapUrl"
             single-line
           ></v-text-field>
         </v-card-text>
@@ -131,6 +131,11 @@ export default {
     },
   },
   computed: {
+    shareMapUrl() {
+      const url = `${window.location.href}/${this.customMap.id}`;
+      // console.log(this.customMap.id);
+      return url;
+    },
   },
   watch: {
     $route: 'loadRouterMap',
