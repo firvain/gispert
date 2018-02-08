@@ -13,11 +13,43 @@
           <v-spacer></v-spacer>
           <v-card-actions>
             <v-btn class="green white--text darken-1" @click="explore(customMap.id)">Ανοιξε αυτο χαρτη</v-btn>
-            <v-btn class="green white--text darken-1" @click="shareMap(customMap.id)">Μοιρασου αυτο χαρτη</v-btn>
+            <v-btn class="green white--text darken-1" @click="shareMapDialog = true">Μοιρασου αυτο χαρτη</v-btn>
           </v-card-actions>
         </v-card-actions>
       </v-card>
     </v-flex>
+
+
+    <v-dialog v-model="shareMapDialog" max-width="290">
+      <v-card>
+        <v-card-title class="headline">Μοιράσου το χάρτη</v-card-title>
+        <v-card-text>
+          <v-text-field
+            label="Σύνδεσμος"
+            v-model="this.$router.resolve().href"
+            single-line
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+        <v-btn
+          dark
+          class="cyan"
+          @click="shareMap">
+          {{shareText}}
+        </v-btn>
+          <v-btn color="green darken-1" flat="flat" @click.native="shareMapDialog = false">Άκυρο</v-btn>
+        </v-card-actions>
+      </v-card>
+      <v-snackbar
+        :timeout=5000
+        v-model="snackbarShareMap"
+        color='red'
+      >Το μοίρασες
+      </v-snackbar>
+    </v-dialog>
+
+
   </v-layout>
 </template>
 <script>
@@ -33,6 +65,9 @@ export default {
   props: ['customMap'],
   name: 'customMap',
   data: () => ({
+    shareMapDialog: false,
+    snackbarShareMap: false,
+    shareText: 'Μοιράσου',
   }),
   methods: {
     explore(mid) {
@@ -90,6 +125,9 @@ export default {
       if (id) {
         this.explore(id);
       }
+    },
+    shareMap() {
+
     },
   },
   computed: {
