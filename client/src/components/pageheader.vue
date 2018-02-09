@@ -169,13 +169,12 @@
           <v-btn color="green darken-1" flat="flat" @click.native="dialogProfile = false">Άκυρο</v-btn>
         </v-card-actions>
       </v-card>
-              <v-snackbar
+      <v-snackbar
         :timeout=5000
         v-model="snackbarRegisterError"
         color='red'
       >{{ alreadyInUseMessage }}</v-snackbar>
     </v-dialog>
-
 
       <v-snackbar
         :timeout=5000
@@ -188,6 +187,9 @@
         color='green'
       >{{ youAreRegistered }}</v-snackbar>
 
+    <v-dialog v-model="dialogPost" max-width="290">
+      <post :post='postContent'></post>
+    </v-dialog>
     </v-toolbar>
   </v-layout>
 </template>
@@ -195,6 +197,7 @@
 import axios from 'axios';
 import AuthenticationService from '@/services/AuthenticationService';
 import config from '../config';
+import post from './post';
 
 export default {
   data() {
@@ -206,6 +209,8 @@ export default {
       dialogRegister: false,
       dialogLogin: false,
       dialogProfile: false,
+      dialogPost: false,
+      postContent: null,
       email: '',
       name: '',
       password: '',
@@ -233,6 +238,9 @@ export default {
         password: '',
       },
     };
+  },
+  components: {
+    post,
   },
   methods: {
     showRegisterDialogue() {
@@ -287,6 +295,30 @@ export default {
           // TODO in index.js of store create variables and mutations
           this.$store.dispatch('setToken', response.data.token);
           this.$store.dispatch('setUser', response.data.user);
+
+          const id = this.$route.params.id;
+          console.log(id);
+          if (id) {
+            const pUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/id`;
+            axios.get(pUrl, {
+              params: {
+                pId: id,
+                userId: this.$store.state.user.id,
+              },
+              headers: { 'x-access-token': this.$store.state.token },
+            }).then((resp) => {
+              if (resp.data.success === false) {
+                console.log('not logged in to see post');
+              } else {
+                console.log(resp.data);
+                this.postContent = resp.data[0];
+                console.log('postContent:: ', this.postContent);
+                this.dialogPost = true;
+              }
+            }).then(() => {
+              this.loading = false;
+            });
+          }
         }
       });
     },
@@ -296,10 +328,10 @@ export default {
       this.$store.dispatch('setUser', null);
       this.$store.dispatch('setTimeline', []);
       this.$store.dispatch('setPrivateCollections', []);
-      this.$store.dispatch('setFeature', null);
-      this.$store.dispatch('addNewPostFeature', null);
-      this.$store.dispatch('removeNewPostFeature', null);
-      this.$store.dispatch('setPostIdToAddFeatures', null);
+      // this.$store.dispatch('setFeature', null);
+      // this.$store.dispatch('addNewPostFeature', null);
+      // this.$store.dispatch('removeNewPostFeature', null);
+      // this.$store.dispatch('setPostIdToAddFeatures', null);
       // console.log(this.$store.state.isUserLoggedIn);
     },
   },

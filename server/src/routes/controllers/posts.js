@@ -177,10 +177,12 @@ router.route('/replies')
 
 router.route('/id')
   .get(function getSpecificPost(req, res) {
-    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
       console.log('fetching specific post');
       var collection = db.collection('posts');
-      var postId = req.query.id;
+      var postId = req.query.pId;
+      var userId = req.query.userId;
       return collection.aggregate([
         {
           $graphLookup: {
@@ -202,12 +204,6 @@ router.route('/id')
         },
         {
           $sort: { 'timestamp': -1, 'repliesData.timestamp': -1 }
-        },
-        {
-          $skip: start
-        },
-        {
-          $limit: end
         },
         {
           "$project": {

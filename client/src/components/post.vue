@@ -17,7 +17,7 @@
             </v-tooltip>
             <v-btn v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
             {{answerPostText}}<v-icon right dark>insert_comment</v-icon></v-btn>
-            <v-tooltip bottom>
+            <v-tooltip bottom v-if="post.replies">
               <v-btn color="green" slot="activator" outline small fab v-if="post.repliesData == undefined && post.replies.length > 0" @click="showMoreReplies">
                 <v-icon large color="grey">insert_comment</v-icon>
                 {{ post.replies.length }}
@@ -36,7 +36,7 @@
               </social-sharing>
 
         </v-card-actions>
-        <newPost v-if="answerPost==true" :id="post._id" :collection="post.collectionData[0]._id"></newPost>
+        <newPost v-if="answerPost==true && post.collectionData" :id="post._id" :collection="post.collectionData[0]._id"></newPost>
 
         <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex class="ma-0 pa-0"
