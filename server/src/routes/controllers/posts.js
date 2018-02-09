@@ -126,55 +126,132 @@ router.route('/all')
       });
     });
 
-    router.route('/replies')
-    .get(function getreplies(req, res) {
-      var start = parseInt(req.query.start);
-      var end = parseInt(req.query.end);
-      var ids = req.query.ids;
-      console.log('ids to fetch ', ids, start, end);
-      MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
-      .then(function (db) {
-        var collection = db.collection('posts');
-        var objectids = [];
-        ids.forEach((id) => {
-          objectids.push(ObjectId(id));
-        });
-        return collection.aggregate([
+router.route('/replies')
+.get(function getreplies(req, res) {
+  var start = parseInt(req.query.start);
+  var end = parseInt(req.query.end);
+  var ids = req.query.ids;
+  console.log('ids to fetch ', ids, start, end);
+  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+  .then(function (db) {
+    var collection = db.collection('posts');
+    var objectids = [];
+    ids.forEach((id) => {
+      objectids.push(ObjectId(id));
+    });
+    return collection.aggregate([
+      {
+        $match: { "_id": { $in: objectids }}
+      }
+      ,
+      {
+        $sort: { 'timestamp': -1 }
+      },
+      {
+        $skip: 0
+      },
+      {
+        $limit: 10
+      },
+      {
+        $lookup:
           {
-            $match: { "_id": { $in: objectids }}
+            from: "posts",
+            localField: "replies",
+            foreignField: "_id",
+            as: "repliesData"
           }
-          ,
-          {
-            $sort: { 'timestamp': -1 }
-          },
-          {
-            $skip: 0
-          },
-          {
-            $limit: 10
-          },
-          {
-            $lookup:
-              {
-                from: "posts",
-                localField: "replies",
-                foreignField: "_id",
-                as: "repliesData"
-              }
-          }]
-        );
-        })
-        .then(function (cursor) {
-          return cursor.toArray();
-        })
-        .then(function (content) {
-          res.status(200).json(content);
-        })
-        .catch(function (err) {
-          throw err;
-        });
-      });
+      }]
+    );
+    })
+    .then(function (cursor) {
+      return cursor.toArray();
+    })
+    .then(function (content) {
+      res.status(200).json(content);
+    })
+    .catch(function (err) {
+      throw err;
+    });
+});
 
+router.route('/id')
+  .get(function getSpecificPost(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      console.log('fetching specific post');
+      var collection = db.collection('posts');
+      var postId = req.query.id;
+      return collection.aggregate([
+        {
+          $graphLookup: {
+            from: "posts",
+            startWith: "$replies",
+            connectFromField: "_id",
+            connectToField: "_id",
+            as: "repliesData",
+          }
+        },
+        {
+          $graphLookup: {
+            from: "collections",
+            startWith: "$collections",
+            connectFromField: "collections",
+            connectToField: "_id",
+            as: "collectionData",
+          }
+        },
+        {
+          $sort: { 'timestamp': -1, 'repliesData.timestamp': -1 }
+        },
+        {
+          $skip: start
+        },
+        {
+          $limit: end
+        },
+        {
+          "$project": {
+            "_id": 1,
+            "userId": 1,
+            "userName": 1,
+            "timestamp": 1,
+            "text": 1,
+            "userFeatures": 1,
+            "isReplyTo": 1,
+            "replies": 1,
+            "collectionData": {
+              "$filter": {
+                "input": "$collectionData",
+                "as": "child",
+                "cond": { $or: [{ "$eq": ["$$child.visibility", "public"] }, { "$eq": ["$$child.user", ObjectId(userId)] }] }
+              }
+            }
+          }
+        },
+        {
+          $match: {
+            $and: [
+              { 'isReplyTo': '' }, { 'collectionData': { $size: 1 }}, { '_id': ObjectId(postId) }
+            ]
+          }
+        },
+      ]);
+    })
+  .then(function (cursor) {
+    return cursor.toArray();
+  })
+  .then(function (content) {
+    content.forEach((p) => {
+      if (p.repliesData) {
+        p.repliesData.sort(dynamicSort("timestamp"));
+      }
+    });
+    res.status(200).json(content);
+  })
+  .catch(function (err) {
+    throw err;
+  });
+});
 
 
 // router.route('/person')

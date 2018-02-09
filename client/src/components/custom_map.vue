@@ -13,43 +13,21 @@
           <v-spacer></v-spacer>
           <v-card-actions>
             <v-btn class="green white--text darken-1" @click="explore(customMap.id)">Ανοιξε αυτο χαρτη</v-btn>
-            <v-btn class="green white--text darken-1" @click="shareMapDialog = true">Μοιρασου αυτο χαρτη</v-btn>
+            <!-- <v-btn class="green white--text darken-1" @click="shareMapDialog = true">Μοιρασου αυτο χαρτη</v-btn> -->
+            <social-sharing :url="shareMapUrl" inline-template>
+              <div>
+                <network network="facebook" class="link-network">
+                  <i class="fa fa-fw fa-facebook"></i>
+                </network>
+                <network network="linkedin" class="link-network">
+                  <i class="fa fa-fw fa-linkedin"></i>
+                </network>
+              </div>
+            </social-sharing>
           </v-card-actions>
         </v-card-actions>
       </v-card>
     </v-flex>
-
-
-    <v-dialog v-model="shareMapDialog" max-width="290">
-      <v-card>
-        <v-card-title class="headline">Μοιράσου το χάρτη</v-card-title>
-        <v-card-text>
-          <v-text-field
-            label="Σύνδεσμος"
-            v-model="shareMapUrl"
-            single-line
-          ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-        <v-btn
-          dark
-          class="cyan"
-          @click="shareMap">
-          {{shareText}}
-        </v-btn>
-          <v-btn color="green darken-1" flat="flat" @click.native="shareMapDialog = false">Άκυρο</v-btn>
-        </v-card-actions>
-      </v-card>
-      <v-snackbar
-        :timeout=5000
-        v-model="snackbarShareMap"
-        color='red'
-      >Το μοίρασες
-      </v-snackbar>
-    </v-dialog>
-
-
   </v-layout>
 </template>
 <script>
@@ -65,8 +43,6 @@ export default {
   props: ['customMap'],
   name: 'customMap',
   data: () => ({
-    shareMapDialog: false,
-    snackbarShareMap: false,
     shareText: 'Μοιράσου',
   }),
   methods: {
@@ -148,3 +124,17 @@ export default {
   },
 };
 </script>
+<style>
+  .link-network {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 20px;
+    cursor: pointer;
+    padding: 1vh;
+  }
+  .link-network:hover {
+    border-style: solid;
+    border-width: 2px;
+    border-color: green;
+  }
+</style>

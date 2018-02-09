@@ -197,7 +197,7 @@ export default {
         vuexCollections.push(col);
       });
 
-      console.log('collections computed:: ', vuexCollections);
+      // console.log('collections computed:: ', vuexCollections);
       this.selectCollections = vuexCollections[0];
       vuexCollections.forEach((collection) => {
         // const label = `${collection.title} ${collection.username}`;
@@ -217,9 +217,9 @@ export default {
         collection.title = label;
       });
 
-      console.log(memberof[0].title, memberof[0].username);
-      console.log(memberof[1].title, memberof[1].username);
-      console.log(memberof[2].title, memberof[2].username);
+      // console.log(memberof[0].title, memberof[0].username);
+      // console.log(memberof[1].title, memberof[1].username);
+      // console.log(memberof[2].title, memberof[2].username);
       // eslint-disable-next-line
       vuexCollections = vuexCollections.filter(c => c.user === this.$store.state.user._id);
       // console.log('postable:: ', this.postableCollections);

@@ -37,6 +37,11 @@ export default new Router({
           component: Home,
         },
         {
+          path: 'home/:id',
+          name: 'post',
+          component: Home,
+        },
+        {
           path: 'userList',
           name: 'userList',
           component: userList,

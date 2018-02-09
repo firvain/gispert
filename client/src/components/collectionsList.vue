@@ -191,7 +191,7 @@ export default {
         },
       }).then((response) => {
         this.publicCollections = response.data;
-        console.log('public collections fetched:: ', this.publicCollections);
+        // console.log('public collections fetched:: ', this.publicCollections);
       }).then(() => {
         this.loading = false;
         this.$store.dispatch('setPublicCollections', this.publicCollections);

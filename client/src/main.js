@@ -6,6 +6,8 @@ import 'vuetify/dist/vuetify.min.css';
 import App from './App';
 import router from './router';
 import store from './store';
+
+const SocialSharing = require('vue-social-sharing');
 /* eslint-disable */
 
 Vue.config.productionTip = false;
@@ -20,6 +22,7 @@ new Vue({
 });
 
 Vue.use(Vuex);
+Vue.use(SocialSharing);
 
 // Register a global custom directive called v-focus
 Vue.directive('focus', {

@@ -24,6 +24,16 @@
               </v-btn>
               <span>Δες απαντήσεις</span>
             </v-tooltip>
+              <social-sharing :url="sharePostUrl" inline-template>
+                <div>
+                  <network network="facebook" class="link-network">
+                    <i class="fa fa-fw fa-facebook"></i>
+                  </network>
+                  <network network="linkedin" class="link-network">
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  </network>
+                </div>
+              </social-sharing>
 
         </v-card-actions>
         <newPost v-if="answerPost==true" :id="post._id" :collection="post.collectionData[0]._id"></newPost>
@@ -39,7 +49,7 @@
         <v-btn block color="white" v-if="replies.length > 0 && loadmorereplies < post.repliesData.length" @click="loadmorereplies = post.repliesData.length">Φορτωση περισσοτερων απαντησεων</v-btn>
 
         <v-flex class="ma-0 pa-0"
-          md12 
+          md12
           v-if="fetchedReplies.length > 0"
           v-for="reply in fetchedReplies"
           :key="reply._id"
@@ -168,7 +178,7 @@ export default {
       }
     },
     new_post_sent(reply) {
-      console.log('event caught::');
+      // console.log('event caught::');
       // if (result === 'success') {
       this.newPostInfo = 'Δημοσιεύτηκε η απάντηση!';
       this.snackbarColor = 'green';
@@ -182,6 +192,24 @@ export default {
     timestamp() {
       return moment(parseInt(this.post.timestamp, 0)).format('lll');
     },
+    sharePostUrl() {
+      const url = `${window.location.href}/${this.post._id}`; // eslint-disable-line
+      return url;
+    },
   },
 };
 </script>
+<style>
+  .link-network {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 20px;
+    cursor: pointer;
+    padding: 1vh;
+  }
+  .link-network:hover {
+    border-style: solid;
+    border-width: 2px;
+    border-color: green;
+  }
+</style>

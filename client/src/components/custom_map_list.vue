@@ -53,8 +53,6 @@ export default {
     },
   },
   mounted() {
-    // TODO this.$route.path split by / get the last item and load the map
-    // console.log(this.$route.path);
     this.loading = true;
     const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
     axios.get(url, {
