@@ -16,7 +16,7 @@
               <span>Βάλτο στο χάρτη</span>
             </v-tooltip>
             <v-btn v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
-            {{answerPostText}}<v-icon right dark>insert_comment</v-icon></v-btn>
+            {{answerPostText}}<v-icon right dark>reply</v-icon></v-btn>
             <v-tooltip bottom v-if="post.replies">
               <v-btn color="green" slot="activator" outline small fab v-if="post.repliesData == undefined && post.replies.length > 0" @click="showMoreReplies">
                 <v-icon large color="grey">insert_comment</v-icon>

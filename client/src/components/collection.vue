@@ -1,10 +1,15 @@
 <template>
     <v-flex xs12 sm12>
-      <v-list-tile @click="exploreCollection(collection._id)">
+      <v-list-tile>
         <v-list-tile-content>
           <v-list-tile-title>{{ collection.title }} του χρήστη {{collection.username}}</v-list-tile-title>
           <v-list-tile-sub-title>{{ collection.description }}</v-list-tile-sub-title>
         </v-list-tile-content>
+        <v-list-tile-action>
+          <v-btn icon ripple @click="exploreCollection(collection._id)">
+            <v-icon color="grey lighten-1">folder_open</v-icon>
+          </v-btn>
+        </v-list-tile-action>
         <v-list-tile-action>
           <v-btn icon ripple @click="deleteCollection(collection._id)" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="grey lighten-1">delete</v-icon>
@@ -16,12 +21,36 @@
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn icon ripple>
+          <v-btn icon ripple @click="shareDialog = true">
             <v-icon color="grey lighten-1">share</v-icon>
           </v-btn>
         </v-list-tile-action>
         <p v-if="collection.members" >Αριθμός μελών: {{ collection.members.length }}</p>
       </v-list-tile>
+      <v-dialog v-model="shareDialog" persistent max-width="350">
+        <v-card>
+          <v-card-title class="headline">Διάλεξε με ποιους θα μοιράζεσαι αυτή τη συλλογή</v-card-title>
+          <v-card-text>
+            <v-select
+              label="Επιλογή"
+              v-bind:items="people"
+              v-model="e11"
+              item-text="name"
+              item-value="name"
+              multiple
+              chips
+              max-height="auto"
+              autocomplete
+            >
+            </v-select>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" flat @click.native="shareDialog = false">Κλείσιμο</v-btn>
+            <v-btn color="green darken-1" flat @click.native="shareDialog = false">Αποθήκευση</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <!-- <v-layout row wrap v-if="details">
         <v-flex
           md12
@@ -31,6 +60,7 @@
           <post :post='post'></post>
         </v-flex>
       </v-layout> -->
+            <userselector></userselector>
     </v-flex>
 </template>
 <script>
@@ -45,6 +75,14 @@ export default {
     details: false,
     posts: null,
     loading: false,
+    shareDialog: false,
+    e11: [],
+    people: [
+      { name: 'Sandra Adams', group: 'Group 1' },
+      { name: 'Ali Connors', group: 'Group 1' },
+      { name: 'Trevor Hansen', group: 'Group 1' },
+      { name: 'Tucker Smith', group: 'Group 1' },
+    ],
   }),
   components: {
     post,
@@ -59,18 +97,6 @@ export default {
         // eslint-disable-next-line
         userId: this.$store.state.user._id,
         collectionId: id,
-      },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        this.posts = response.data;
-      }).then(() => {
-        this.loading = false;
-        this.details = true;
-      });
-
-      const serverUrl1 = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/register/encrypt`;
-      axios.post(serverUrl1, { params: {
-        start: 0,
       },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {

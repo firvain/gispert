@@ -37,11 +37,6 @@ export default new Router({
           component: Home,
         },
         {
-          path: 'home/:id',
-          name: 'post',
-          component: Home,
-        },
-        {
           path: 'userList',
           name: 'userList',
           component: userList,
@@ -59,6 +54,11 @@ export default new Router({
         {
           path: 'search',
           name: 'search',
+          component: Search,
+        },
+        {
+          path: 'search/:id',
+          name: 'searchId',
           component: Search,
         },
       ],

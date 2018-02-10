@@ -179,9 +179,9 @@ router.route('/id')
   .get(function getSpecificPost(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
       .then(function (db) {
-      console.log('fetching specific post');
       var collection = db.collection('posts');
       var postId = req.query.pId;
+      console.log('fetching specific post::', postId);
       var userId = req.query.userId;
       return collection.aggregate([
         {
@@ -227,7 +227,7 @@ router.route('/id')
         {
           $match: {
             $and: [
-              { 'isReplyTo': '' }, { 'collectionData': { $size: 1 }}, { '_id': ObjectId(postId) }
+              { 'collectionData': { $size: 1 }}, { '_id': ObjectId(postId) }
             ]
           }
         },
@@ -242,6 +242,7 @@ router.route('/id')
         p.repliesData.sort(dynamicSort("timestamp"));
       }
     });
+    console.log('specific post is:: ', content);
     res.status(200).json(content);
   })
   .catch(function (err) {
