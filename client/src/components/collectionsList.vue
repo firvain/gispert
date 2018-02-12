@@ -210,6 +210,17 @@ export default {
     this.$on('refreshpubliccollections', () => {
       this.loadPublicCollections();
     });
+    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+    axios.get(url, {
+      headers: { 'x-access-token': this.$store.state.token },
+    }).then((response) => {
+      if (response.data.success === false) {
+        console.log(response.data);
+        console.log('not logged in to see others');
+      } else {
+        this.$store.dispatch('setUsers', response.data);
+      }
+    });
   },
 };
 </script>

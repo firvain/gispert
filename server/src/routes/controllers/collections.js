@@ -1,3 +1,5 @@
+// import { ObjectId } from './C:/Users/Yiannis/AppData/Local/Microsoft/TypeScript/2.6/node_modules/@types/bson';
+
 var express = require('express');
 var router = express.Router();
 var MongoClient = require('mongodb').MongoClient;
@@ -16,7 +18,7 @@ router.route('/')
             if (userId) {
                 // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
                 collection.find({ $and: [{ visibility: 'private' }, { user: ObjectID(userId) }] }, {}).toArray(function handleCursor(error, docs) {
-                    console.log(docs);
+                    // console.log(docs);
                     var data = {};
                     if (err) {
                         res.sendStatus(500);
@@ -53,7 +55,7 @@ router.route('/delete')
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
             var _id = req.body.id;
             var cId = new ObjectID(_id);
-            console.log('collection id to delete:: ', req.body._id);
+            // console.log('collection id to delete:: ', req.body._id);
 
             if (err) {
                 throw err;
@@ -74,7 +76,7 @@ router.route('/collection')
     var end = parseInt(req.query.end);
     var userId = req.query.userId;
     var collectionId = req.query.collectionId;
-    console.log('getting posts for this collection:: ', collectionId, userId, start, end);
+    // console.log('getting posts for this collection:: ', collectionId, userId, start, end);
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
     .then(function (db) {
       var collection = db.collection('posts');
@@ -145,5 +147,30 @@ router.route('/collection')
     });
 
 
+    router.route('/savemembers')
+    .post(function savemembers(req, res) {
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+            var ids = req.body.data.members;
+            var collectionid = req.body.data.collectionId;
+            var cId = new ObjectID(collectionid);
+            var cids = [];
+            ids.forEach((id) => {
+                cids.push(new ObjectID(id));
+
+            });
+            console.log('members:: ', ids, collectionid);
+
+            if (err) {
+                throw err;
+            } else {
+                db.collection('collections').update(
+                    { _id: cId },
+                    { $push: { members: { $each: cids } } }
+                );
+                res.status(200).send('OK');
+            }
+            db.close();
+        });
+    });
 
 module.exports = router;

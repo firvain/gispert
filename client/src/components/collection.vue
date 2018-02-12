@@ -31,23 +31,25 @@
         <v-card>
           <v-card-title class="headline">Διάλεξε με ποιους θα μοιράζεσαι αυτή τη συλλογή</v-card-title>
           <v-card-text>
-            <v-select
+            <v-flex xs12 sm12>
+            <v-select v-if="this.$store.state.users"
               label="Επιλογή"
-              v-bind:items="people"
-              v-model="e11"
+              v-bind:items="collectionMembers(collection.members)"
+              v-model="members"
               item-text="name"
-              item-value="name"
+              item-value="_id"
               multiple
               chips
-              max-height="auto"
+              max-height="300px"
               autocomplete
             >
             </v-select>
+            </v-flex>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="shareDialog = false">Κλείσιμο</v-btn>
-            <v-btn color="green darken-1" flat @click.native="shareDialog = false">Αποθήκευση</v-btn>
+            <v-btn color="green darken-1" flat @click.native="saveCollectionMembers(collection._id)">Αποθήκευση</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -60,7 +62,6 @@
           <post :post='post'></post>
         </v-flex>
       </v-layout> -->
-            <userselector></userselector>
     </v-flex>
 </template>
 <script>
@@ -76,16 +77,21 @@ export default {
     posts: null,
     loading: false,
     shareDialog: false,
-    e11: [],
-    people: [
-      { name: 'Sandra Adams', group: 'Group 1' },
-      { name: 'Ali Connors', group: 'Group 1' },
-      { name: 'Trevor Hansen', group: 'Group 1' },
-      { name: 'Tucker Smith', group: 'Group 1' },
-    ],
+    members: [],
   }),
   components: {
     post,
+  },
+  mounted() {
+  },
+  computed: {
+    collectionMembers(members) {
+      const thisCollectionUsers = this.$store.state.users;
+      members.forEach((c) => {
+        thisCollectionUsers.remove(c);
+      });
+      return thisCollectionUsers;
+    },
   },
   methods: {
     exploreCollection(id) {
@@ -121,6 +127,22 @@ export default {
           this.$store.dispatch('deletePublicCollection', id);
           this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
         }
+      });
+    },
+    saveCollectionMembers(id) {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/savemembers`;
+      const ids = this.members;
+      const data = { members: ids, collectionId: id };
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then(() => {
+        if (this.collection.visibility === 'private') {
+          this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
+        }
+        if (this.collection.visibility === 'public') {
+          this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+        }
+        this.shareDialog = false;
       });
     },
   },

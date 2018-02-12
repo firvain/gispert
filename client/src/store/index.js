@@ -19,6 +19,7 @@ export default new Vuex.Store({
     privateCollections: [],
     publicCollections: [],
     timeline: [],
+    users:[],
   },
   actions: {
     setFeature(state, data) {
@@ -59,6 +60,9 @@ export default new Vuex.Store({
     },
     setTimeline(state,data) {
       state.commit('setTimeline', data);
+    },
+    setUsers(state, data) {
+      state.commit('setusers', data);
     },
   },
   mutations: {
@@ -132,6 +136,9 @@ export default new Vuex.Store({
     editpubliccollection(state, data) {},
     setTimeline(state, data) {
       state.timeline = data;
+    },
+    setusers(state, data) {
+      state.users = data;
     },
   },
   getters: {
