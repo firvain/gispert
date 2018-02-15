@@ -153,8 +153,19 @@ const customLayer = new ol.layer.Vector({
   name: 'customLayer',
 });
 
+const dragAndDropInteraction = new ol.interaction.DragAndDrop({
+  formatConstructors: [
+    ol.format.GPX,
+    ol.format.GeoJSON,
+    ol.format.IGC,
+    ol.format.KML,
+    ol.format.TopoJSON,
+  ],
+});
+
 const olMap = new ol.Map({
   target: 'map',
+  interactions: ol.interaction.defaults().extend([dragAndDropInteraction]),
   layers: [
     bingMapsAerial,
     customLayer,
@@ -166,6 +177,10 @@ const olMap = new ol.Map({
   selectedItem: null,
 });
 
+dragAndDropInteraction.on('addfeatures', (event) => {
+  customLayer.getSource().addFeatures(event.features);
+  olMap.getView().fit(customLayer.getSource().getExtent());
+});
 
 const collection = new ol.Collection();
 const selectClick = new ol.interaction.Select({
