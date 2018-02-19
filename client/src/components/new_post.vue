@@ -4,7 +4,7 @@
       <v-card>
       <v-layout row wrap>
             <v-flex md9>
-            <v-text-field
+            <v-text-field @focus="showMapTools"
               autofocus
               name="input-1"
               label="Νέα ανάρτηση"
@@ -143,6 +143,7 @@ export default {
     },
     showMapTools() {
       this.$root.$emit('showTools');
+      console.log('post id:: ', this.id);
       if (this.id !== undefined) {
         this.$store.commit('addingToPost', this.id);
       } else {

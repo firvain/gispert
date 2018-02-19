@@ -3,15 +3,14 @@
     <v-card flat height="0px">
       <v-toolbar class="white overflowing" absolute dense offset-xs2>
         <v-text-field prepend-icon="search" hide-details single-line></v-text-field>
-        <v-btn icon v-bind:color="selectColor" @click="toggle_map_tools('selectFeatures')">
+        <v-btn icon v-bind:color="selectColor" @click="toggle_map_tools('selectFeatures')" v-if="this.$store.state.isUserLoggedIn">
           <v-icon>crop_free</v-icon>
         </v-btn>
-        <v-btn icon v-bind:color="drawColor" @click="toggle_map_tools('drawFeatures')">
+        <v-btn icon v-bind:color="drawColor" @click="toggle_map_tools('drawFeatures')" v-if="this.$store.state.isUserLoggedIn">
           <v-icon>location_on</v-icon>
         </v-btn>
       </v-toolbar>
-<!-- {{currentlySelectedFeature.get('name')}} -->
-      <v-container class="text-xs-center" v-if="selectedTool === 'drawFeatures'">
+      <v-container class="text-xs-center" v-if="selectedTool === 'drawFeatures' && this.$store.state.isUserLoggedIn">
         <br><br>
         <v-tooltip bottom>
           <v-btn fab small :color="toolColors[0]" slot="activator" @click="setDraw('Point')">
@@ -33,10 +32,10 @@
         </v-tooltip>
       </v-container>
 
-      <v-container class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined">
+      <v-container class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
         <br><br>
         <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]" slot="activator" @click="setActiveAnalysis('addToPost')">
+          <v-btn fab small :color="toolColors[2]" slot="activator" @click="addToPost()">
             <v-icon dark>loupe</v-icon>
           </v-btn>
           <span>Πρόσθεσέ το στην ανάρτηση</span>
@@ -166,6 +165,10 @@ export default {
           }
         }
       });
+    },
+    addToPost() {
+      console.log(this.$store.state.feature);
+      this.$store.commit('newPostFeature', this.$store.state.feature);
     },
     setActiveAnalysis(type) {
       this.activeAnalysis = type;

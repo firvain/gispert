@@ -2,7 +2,7 @@
   <div id='mw' class="mapStyle">
     <searchLocation></searchLocation>
     <div id='mapDiv' class="mapStyle"></div>
-    <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null">
+    <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
         <v-list class="message-list">
           <v-list-tile class="" v-for="message in currentMessages" v-bind:key="message">
             <v-list-tile-content class="">

@@ -32,9 +32,10 @@
           <v-card-title class="headline">Διάλεξε με ποιους θα μοιράζεσαι αυτή τη συλλογή</v-card-title>
           <v-card-text>
             <v-flex xs12 sm12>
+              <!-- TODO: must exclude this user from this list v-bind:items="this.$store.state.users  -->
             <v-select v-if="this.$store.state.users"
               label="Επιλογή"
-              v-bind:items="collectionMembers(collection.members)"
+              v-bind:items="this.$store.state.users"
               v-model="members"
               item-text="name"
               item-value="_id"
@@ -87,9 +88,10 @@ export default {
   computed: {
     collectionMembers(members) {
       const thisCollectionUsers = this.$store.state.users;
-      members.forEach((c) => {
-        thisCollectionUsers.remove(c);
-      });
+      console.log(members);
+      // members.forEach((c) => {
+      //   thisCollectionUsers.remove(c);
+      // });
       return thisCollectionUsers;
     },
   },
