@@ -125,7 +125,7 @@ router.route('/collection')
         }},
         { $match: {  
           $and: [ 
-            { 'isReplyTo': '' }, {'collectionData': { $size: 1 }}, {'collectionData._id': ObjectID(collectionId) }
+            /*{ 'isReplyTo': '' }, {'collectionData': { $size: 1 }},*/ {'collectionData._id': ObjectID(collectionId) }
           ]}
         },
         ]);

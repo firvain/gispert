@@ -73,6 +73,7 @@ export default {
       'incrementAsync',
     ]),
     refresh_page() {
+      //  TODO: do the correct API call
       // console.log('refreshing page');
       this.loading = true;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
@@ -91,6 +92,7 @@ export default {
       });
     },
     next_page() {
+      //  TODO: do the correct API call
       this.loading = true;
       this.startPage += 25;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;

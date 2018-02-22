@@ -36,6 +36,7 @@
           </v-chip>
         </v-flex>
         <v-card-actions>
+          {{ selectCollections._id }}
           <v-flex xs12 sm6 v-if="this.id === undefined">
             <v-select
               v-bind:items="computedCollections"
@@ -111,8 +112,8 @@ export default {
         timestamp: Date.now(),
         userFeatures: userFeats,
         isReplyTo: idToReply,
-        // collections: this.selectCollections._id, // eslint-disable-line no-underscore-dangle
-        collections: this.collection,
+        collections: this.selectCollections._id, // eslint-disable-line no-underscore-dangle
+        // collections: this.selectCollections,
         replies: [],
       };
       // console.log('this is the post to publish', userPost);
