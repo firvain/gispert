@@ -17,7 +17,8 @@ router.route('/')
             }
             if (userId) {
                 // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
-                collection.find({ $and: [{ visibility: 'private' }, { user: ObjectID(userId) }] }, {}).toArray(function handleCursor(error, docs) {
+                collection.find({ $or: [{ members: ObjectID(userId) },
+                    {$and: [{ visibility: 'private' }, { user: ObjectID(userId) }]}] }, {}).toArray(function handleCursor(error, docs) {
                     // console.log(docs);
                     var data = {};
                     if (err) {
