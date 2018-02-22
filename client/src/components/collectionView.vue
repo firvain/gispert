@@ -1,8 +1,8 @@
 <template>
-  <div id='timeline'>
-    <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
-      <v-btn block color="secondary" dark
-        width="50px"
+  <v-flex md12 id='timeline'>
+    <v-container md9 fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
+      <v-btn md8 color="secondary" dark
+        block
         large
         v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"  v-if="$store.state.isUserLoggedIn === true"
       >
@@ -16,18 +16,9 @@
         v-for="post in posts"
         :key="post._id"
       >
-        <post :post='post' @explore="explore"></post>
+        <post :post='post'></post>
       </v-flex>
     </v-layout>
-    </v-container>
-    <v-container fluid v-else-if='mode === 1'>
-      <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
-        <i class="fa fa-close fa-lg"> Close</i>
-      </v-btn>
-      <cardDetails v-bind:post="explore_estate"></cardDetails>
-      <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
-        <i class="fa fa-close fa-lg"> Close</i>
-      </v-btn>
     </v-container>
     <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
     <v-btn
@@ -38,17 +29,17 @@
       φορτωση περισσότερων
       <v-icon right dark>navigate_next</v-icon>
     </v-btn>
-  </div>
+  </v-flex>
 </template>
 <script>
 import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex';
 import post from './post';
-import cardDetails from './card_in_details';
 import newPost from './new_post';
 import config from '../config';
 
 export default {
+  props: ['id'],
   name: 'timeline',
   data() {
     return {
@@ -62,12 +53,12 @@ export default {
       newPost: false,
       newPostColor: 'blue-grey',
       newPostTextColor: 'white--text darken-1',
-      newPostText: 'νεα αναρτηση',
+      newPostText: 'νεα αναρτηση σε αυτη τη συλλογη',
       loading: false,
     };
   },
   components: {
-    post, cardDetails, newPost,
+    post, newPost,
   },
   computed: mapGetters([
     'evenOrOdd',
@@ -81,11 +72,6 @@ export default {
       'incrementIfOdd',
       'incrementAsync',
     ]),
-    explore(estate) {
-      this.mode = 1;
-      this.explore_estate = estate;
-      return estate;
-    },
     refresh_page() {
       // console.log('refreshing page');
       this.loading = true;
@@ -137,7 +123,7 @@ export default {
       this.posts = this.$store.state.timeline;
     }
     if (this.$store.state.isUserLoggedIn) {
-      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all`;
+      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
       userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
     } else {
       url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
@@ -149,6 +135,7 @@ export default {
         start: this.startPage.toString(),
         end: this.limitPage.toString(),
         userId: userID, // eslint-disable-line no-underscore-dangle
+        collectionId: this.id,
       },
       headers: { 'x-access-token': this.$store.state.token },
     }).then((response) => {

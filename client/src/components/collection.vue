@@ -7,7 +7,8 @@
         </v-list-tile-content>
         <v-list-tile-action>
           <v-btn icon ripple @click="exploreCollection(collection._id)">
-            <v-icon color="grey lighten-1">folder_open</v-icon>
+            <v-icon color="grey lighten-1" v-if="details">folder_open</v-icon>
+            <v-icon color="grey lighten-1" v-if="details === false">folder</v-icon>
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
@@ -73,12 +74,14 @@
           <post :post='post'></post>
         </v-flex>
       </v-layout> -->
+      <collectionView v-if="details" :id="collection._id"></collectionView>
     </v-flex>
 </template>
 <script>
 import axios from 'axios';
 import config from '../config';
 import post from './post';
+import collectionView from './collectionView';
 
 export default {
   props: ['collection'],
@@ -92,7 +95,7 @@ export default {
     members: [],
   }),
   components: {
-    post,
+    post, collectionView,
   },
   mounted() {
   },
@@ -107,23 +110,9 @@ export default {
     },
   },
   methods: {
-    exploreCollection(id) {
+    exploreCollection() {
       // TODO make correct request
-      const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
-      axios.get(serverUrl, { params: {
-        start: 0,
-        end: 50,
-        // eslint-disable-next-line
-        userId: this.$store.state.user._id,
-        collectionId: id,
-      },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        this.posts = response.data;
-      }).then(() => {
-        this.loading = false;
-        this.details = true;
-      });
+      this.details = !this.details;
     },
     deleteCollection(id) {
       this.deleteCollectionDialog = false;

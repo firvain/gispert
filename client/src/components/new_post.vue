@@ -148,7 +148,7 @@ export default {
     },
     showMapTools() {
       this.$root.$emit('showTools');
-      console.log('post id:: ', this.id);
+      // console.log('post id:: ', this.id);
       if (this.id !== undefined) {
         this.$store.commit('addingToPost', this.id);
       } else {
