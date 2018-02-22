@@ -11,7 +11,7 @@
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn icon ripple @click="deleteCollection(collection._id)" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+          <v-btn icon ripple @click="deleteCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="grey lighten-1">delete</v-icon>
           </v-btn>
         </v-list-tile-action>
@@ -54,6 +54,16 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="deleteCollectionDialog" persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline">Διαγραφή Συλλογής;</v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" flat @click.native="deleteCollection(collection._id)">NAI</v-btn>
+            <v-btn color="green darken-1" flat @click.native="deleteCollectionDialog = false">OXI</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <!-- <v-layout row wrap v-if="details">
         <v-flex
           md12
@@ -78,6 +88,7 @@ export default {
     posts: null,
     loading: false,
     shareDialog: false,
+    deleteCollectionDialog: false,
     members: [],
   }),
   components: {
@@ -115,6 +126,7 @@ export default {
       });
     },
     deleteCollection(id) {
+      this.deleteCollectionDialog = false;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/delete`;
       // console.log('id to delete:: ', id);
       axios.post(url, { id }, {

@@ -3,33 +3,38 @@
     <v-flex xs12 sm12>
       <v-card>
       <v-layout row wrap>
-            <v-flex md9>
-            <v-text-field @focus="showMapTools"
-              autofocus
-              name="input-1"
-              label="Νέα ανάρτηση"
-              hint="Γράψε εδώ το κείμενό σου"
-              v-model="postText"
-              id="postText"
-                  counter
-                  max="200"
-                  full-width
-                  multi-line
-            ></v-text-field>
-            </v-flex>
-          <v-flex md1>
-            <div class='text-md-right'>
-              <v-btn outline medium fab class="indigo--text" @click= "showMapTools" data-tooltip="Σχεδίασε στο χάρτη και πρόσθεσε το σχέδιο στην ανάρτηση!" data-tooltip-location="left">
-                <v-icon>edit</v-icon>
-              </v-btn>
-            </div>
-            </v-flex>
+        <v-flex md10>
+          <v-text-field @focus="showMapTools"
+            autofocus
+            name="input-1"
+            label="Νέα ανάρτηση"
+            hint="Γράψε εδώ το κείμενό σου"
+            v-model="postText"
+            id="postText"
+            counter
+            max="200"
+            full-width
+            multi-line
+          ></v-text-field>
+        </v-flex>
+        <v-flex md2>
+          <div class='text-md-right'>
+            <v-btn :outline="this.id !== this.$store.state.addingToPost" medium fab
+              class="indigo--text"
+              color="green"
+              @click= "showMapTools"
+              data-tooltip="Σχεδίασε στο χάρτη και θα προστεθεί το σχέδιο στην ανάρτηση!"
+              data-tooltip-location="left">
+              <v-icon>edit</v-icon>
+            </v-btn>
+          </div>
+        </v-flex>
         </v-layout>
-            <v-flex v-if="drawnFeatures !== undefined">
-              <v-chip close v-for="f in drawnFeatures" :key='f.drawId' @input="remove(f.drawId)">
-                {{ f.getGeometry().getType() }}
-              </v-chip>
-            </v-flex>
+        <v-flex v-if="drawnFeatures !== undefined">
+          <v-chip close v-for="f in drawnFeatures" :key='f.drawId' @input="remove(f.drawId)">
+            {{ f.getGeometry().getType() }}
+          </v-chip>
+        </v-flex>
         <v-card-actions>
           <v-flex xs12 sm6 v-if="this.id === undefined">
             <v-select
@@ -232,3 +237,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+  .active {
+    background-color: greenyellow;
+  }
+</style>
