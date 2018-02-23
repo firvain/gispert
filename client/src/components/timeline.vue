@@ -1,7 +1,8 @@
 <template>
   <div id='timeline'>
     <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
-      <v-btn block color="secondary" dark
+    <v-tooltip bottom>
+      <v-btn slot="activator" block color="secondary" dark
         width="50px"
         large
         v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"  v-if="$store.state.isUserLoggedIn === true"
@@ -9,6 +10,8 @@
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
       </v-btn>
+      <span>Φτιάξε μία νέα ανάρτηση με στοιχεία του χάρτη και κείμενο και δημοσίευσέ τη!!!</span>
+    </v-tooltip>
     <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true"></newPost>
     <v-layout row wrap>
       <v-flex
@@ -29,7 +32,8 @@
         <i class="fa fa-close fa-lg"> Close</i>
       </v-btn>
     </v-container>
-    <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
+    <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
+    <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-btn
       v-on:click='next_page'
       class="blue-grey white--text"

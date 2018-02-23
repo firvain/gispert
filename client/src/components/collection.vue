@@ -3,7 +3,10 @@
       <v-list-tile>
         <v-list-tile-content>
           <v-list-tile-title>{{ collection.title }} του χρήστη {{collection.username}}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ collection.description }}</v-list-tile-sub-title>
+          <v-list-tile-sub-title>
+            {{ collection.description }}
+            <v-btn v-if="collection.members" flat small color="primary">Αριθμός μελών: {{ collection.members.length }}</v-btn>
+          </v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
           <v-btn icon ripple @click="exploreCollection(collection._id)">
@@ -26,7 +29,6 @@
             <v-icon color="grey lighten-1">share</v-icon>
           </v-btn>
         </v-list-tile-action>
-        <p v-if="collection.members" >Αριθμός μελών: {{ collection.members.length }}</p>
       </v-list-tile>
       <v-dialog v-model="shareDialog" persistent max-width="350">
         <v-card>
@@ -110,8 +112,15 @@ export default {
     },
   },
   methods: {
-    exploreCollection() {
+    exploreCollection(id) {
       // TODO make correct request
+      if (this.details) {
+        this.$parent.$parent.$emit('openedcollection', null);
+        // console.log('collection is open');
+      } else {
+        this.$parent.$parent.$emit('openedcollection', id);
+        // console.log('collection closed');
+      }
       this.details = !this.details;
     },
     deleteCollection(id) {

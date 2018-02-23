@@ -15,8 +15,13 @@
               <v-btn slot="activator" v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">Δες το στο χάρτη<v-icon right dark>language</v-icon></v-btn>
               <span>Βάλτο στο χάρτη</span>
             </v-tooltip>
-            <v-btn v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
-            {{answerPostText}}<v-icon right dark>reply</v-icon></v-btn>
+            <v-tooltip bottom>
+              <v-btn slot="activator" v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
+                {{answerPostText}}
+                <v-icon right dark>reply</v-icon>
+              </v-btn>
+              <span>Απάντησε με μια ανάρτηση!</span>
+            </v-tooltip>
             <v-tooltip bottom v-if="post.replies">
               <v-btn color="green" slot="activator" outline small fab v-if="post.repliesData == undefined && post.replies.length > 0" @click="showMoreReplies">
                 <v-icon large color="grey">insert_comment</v-icon>
@@ -26,12 +31,18 @@
             </v-tooltip>
               <social-sharing :url="sharePostUrl" inline-template>
                 <div>
-                  <network network="facebook" class="link-network">
-                    <i class="fa fa-fw fa-facebook"></i>
-                  </network>
-                  <network network="linkedin" class="link-network">
-                    <i class="fa fa-fw fa-linkedin"></i>
-                  </network>
+                  <v-tooltip bottom>
+                    <network slot="activator" network="facebook" class="link-network">
+                      <i class="fa fa-fw fa-facebook"></i>
+                    </network>
+                    <span>Μοιράσου το στο Facebook!</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <network slot="activator" network="linkedin" class="link-network">
+                      <i class="fa fa-fw fa-linkedin"></i>
+                    </network>
+                    <span>Μοιράσου το στο LinkedIn!</span>
+                  </v-tooltip>
                 </div>
               </social-sharing>
 
@@ -203,7 +214,7 @@ export default {
   .link-network {
     border-style: solid;
     border-width: 1px;
-    border-radius: 20px;
+    border-radius: 10px;
     cursor: pointer;
     padding: 1vh;
   }

@@ -64,6 +64,9 @@ export default new Vuex.Store({
     setUsers(state, data) {
       state.commit('setusers', data);
     },
+    resetFeatureCount(state, data) {
+      state.commit('resetfeaturecount', data);
+    },
   },
   mutations: {
     setSelected(state, data) {
@@ -75,6 +78,8 @@ export default new Vuex.Store({
       const feature = state.newpostfeature;
       state.featureCount += 1;
       feature.drawId = state.featureCount;
+      feature.mongoID = state.user._id + '' + Date.now();
+      feature.name = '@' + state.user.name;
       if (state.storage.length > 0) {
         const objIndex = state.storage.findIndex((obj => obj.id == post));
         if (objIndex > -1) {
@@ -139,6 +144,11 @@ export default new Vuex.Store({
     },
     setusers(state, data) {
       state.users = data;
+    },
+    resetfeaturecount(state, data) {
+      state.featureCount = 0;
+      state.newpostfeature = undefined;
+      state.storage = [];
     },
   },
   getters: {

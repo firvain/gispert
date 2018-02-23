@@ -2,7 +2,8 @@
   <div id='mapList'>
     <v-container v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
       <v-layout row wrap>
-        <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
+        <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
+        <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         <v-flex
           md12 sm12
           v-for="customMap in customMaps"

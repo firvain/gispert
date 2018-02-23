@@ -1,7 +1,7 @@
 <template>
   <v-layout column>
     <v-toolbar class="orange no-padding" dark>
-      <i class="fa fa-map fa-4x"></i><v-toolbar-title><h3>Terra Cognita</h3></v-toolbar-title><h6>Collaborative Maps</h6>
+      <i class="fa fa-map fa-2x"></i><h6>Terra Cognita</h6><p>Collaborative Maps</p>
       <v-spacer></v-spacer>
         <v-toolbar-items>
             <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false">
@@ -23,7 +23,7 @@
 
     <v-dialog v-model="dialogRegister" max-width="290">
       <v-card>
-        <v-card-title class="headline">Εγγραφή νέου χρήστη</v-card-title>
+        <v-card-title class="headline">{{ signupUserText}}</v-card-title>
         <v-card-text>
           <form
           name="register-form"
@@ -199,6 +199,7 @@ export default {
   data() {
     return {
       signup: 'Εγγραφή',
+      signupUserText: 'Εγγραφή νέου χρήστη',
       login_txt: 'Είσοδος',
       logout_txt: 'Έξοδος',
       profile_txt: 'Προφίλ',
@@ -295,6 +296,9 @@ export default {
       this.$store.dispatch('setUser', null);
       this.$store.dispatch('setTimeline', []);
       this.$store.dispatch('setPrivateCollections', []);
+      this.$store.dispatch('setPublicCollections', []);
+      this.$store.commit('addingToPost', undefined);
+      this.$store.dispatch('resetFeatureCount', 0);
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
       // this.$store.dispatch('removeNewPostFeature', null);

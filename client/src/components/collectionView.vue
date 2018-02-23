@@ -9,7 +9,7 @@
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
       </v-btn>
-    <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true"></newPost>
+    <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collectionid="id"></newPost>
     <v-layout row wrap>
       <v-flex
         md12
@@ -76,8 +76,15 @@ export default {
       //  TODO: do the correct API call
       // console.log('refreshing page');
       this.loading = true;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+      const userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
       axios.get(url, {
+        params: {
+          start: this.startPage.toString(),
+          end: this.limitPage.toString(),
+          userId: userID,
+          collectionId: this.id,
+        },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         response.data.forEach((d) => {
@@ -95,8 +102,15 @@ export default {
       //  TODO: do the correct API call
       this.loading = true;
       this.startPage += 25;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+      const userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
       axios.get(url, {
+        params: {
+          start: this.startPage.toString(),
+          end: this.limitPage.toString(),
+          userId: userID, // eslint-disable-line no-underscore-dangle
+          collectionId: this.id,
+        },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         response.data.forEach((d) => {
@@ -121,9 +135,7 @@ export default {
     this.loading = true;
     let url;
     let userID;
-    if (this.$store.state.timeline.length > 0) {
-      this.posts = this.$store.state.timeline;
-    }
+
     if (this.$store.state.isUserLoggedIn) {
       url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
       userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle

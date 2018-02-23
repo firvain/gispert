@@ -36,8 +36,7 @@
           </v-chip>
         </v-flex>
         <v-card-actions>
-          {{ selectCollections._id }}
-          <v-flex xs12 sm6 v-if="this.id === undefined">
+          <v-flex xs12 sm6 v-if="this.id === undefined && this.collectionid === undefined">
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
@@ -73,7 +72,7 @@ import olMap from '../js/map';
 import config from '../config';
 
 export default {
-  props: ['id', 'collection'],
+  props: ['id', 'collection', 'collectionid'],
   name: 'newpost',
   data: () => ({
     postText: '',
@@ -116,6 +115,9 @@ export default {
         // collections: this.selectCollections,
         replies: [],
       };
+      if (this.collectionid) {
+        userPost.collections = this.collectionid;
+      }
       // console.log('this is the post to publish', userPost);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
       if (textToPost !== '' || userFeats !== null) {

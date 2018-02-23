@@ -1,6 +1,6 @@
 <template>
   <v-container id='collectionList'>
-    <v-subheader inset v-if="this.$store.state.isUserLoggedIn">
+    <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
       <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
         <v-icon dark>add</v-icon>
       </v-btn>
@@ -26,10 +26,10 @@
         <v-btn @click="newPrivateCollectionCard = false">Ακυρο</v-btn>
       </form>
       <v-list
-        v-for="collection in privateCollections"
+        v-for="collection in $store.state.privateCollections"
         :key="collection._id"
       >
-        <collection :collection='collection'></collection>
+        <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
       <p v-if="privateCollections.length == 0">Δεν υπάρχουν προσωπικές συλλογές. Πρόσθεσε μία πατώντας
         <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
@@ -38,7 +38,7 @@
       </p>
     </v-container>
 
-    <v-subheader inset>
+    <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
       <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
         <v-icon dark>add</v-icon>
       </v-btn>
@@ -64,10 +64,10 @@
         <v-btn @click="newPublicCollectionCard = false">Ακυρο</v-btn>
       </form>
       <v-list
-        v-for="collection in publicCollections"
+        v-for="collection in $store.state.publicCollections"
         :key="collection._id"
       >
-        <collection :collection='collection'></collection>
+        <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
       <p v-if="publicCollections.length == 0">Δεν υπάρχουν δημόσιες συλλογές. Πρόσθεσε μία πατώντας
         <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
@@ -75,7 +75,8 @@
         </v-btn>
       </p>
     </v-container>
-    <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
+    <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
+    <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-snackbar
       :timeout=5000
       v-model="snackbar"
@@ -109,6 +110,7 @@ export default {
       message: '',
       snackbar: false,
       snackbarColor: 'green',
+      openedCollection: null,
     };
     // eslint-disable-line no-underscore-dangle
   },
@@ -220,6 +222,10 @@ export default {
       } else {
         this.$store.dispatch('setUsers', response.data);
       }
+    });
+    this.$on('openedcollection', (id) => {
+      console.log('opened:: ', id);
+      this.openedCollection = id;
     });
   },
 };

@@ -2,7 +2,8 @@
   <div id='userList'>
     <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
       <v-layout row wrap>
-        <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
+        <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
+        <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         <v-flex
           md12
           v-for="user in users"

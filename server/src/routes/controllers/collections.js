@@ -120,13 +120,19 @@ router.route('/collection')
                "$filter": {
                    "input": "$collectionData",
                    "as": "child",
-                   "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }, { "$eq": [ "$$child.user", ObjectID(userId) ] } ] }
+                   "cond": { $or: [ 
+                        { "$eq": [ "$$child.visibility", "public" ] }, 
+                        { "$eq": [ "$$child.visibility", "private" ] }, 
+                        // { "$eq": [ "$$child.user", ObjectID(userId) ] } 
+                    ] }
                }
             }
         }},
         { $match: {  
-          $and: [ 
-            /*{ 'isReplyTo': '' }, {'collectionData': { $size: 1 }},*/ {'collectionData._id': ObjectID(collectionId) }
+          $and: [
+            /*{ 'isReplyTo': '' }, {'collectionData': { $size: 1 }},*/ 
+            {'collectionData._id': ObjectID(collectionId) },
+            {$or: [{ "collectionData.members": ObjectID(userId) }, { "collectionData.user": ObjectID(userId) }]}
           ]}
         },
         ]);
