@@ -200,8 +200,8 @@ export default {
       dialogLogin: false,
       dialogProfile: false,
       email: '',
-      emailEdit: this.$store.state.user.email,
-      descriptionEdit: this.$store.state.user.description,
+      emailEdit: '',
+      descriptionEdit: '',
       name: '',
       password: '',
       description: '',
@@ -283,6 +283,8 @@ export default {
           this.$store.dispatch('setToken', response.data.token);
           this.$store.dispatch('setUser', response.data.user);
           this.$eventHub.$emit('logged-in');
+          this.emailEdit = this.$store.state.user.email;
+          this.descriptionEdit = this.$store.state.user.description;
         }
       });
     },
