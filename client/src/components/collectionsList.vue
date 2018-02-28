@@ -32,7 +32,7 @@
       >
         <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
-      <p v-if="privateCollections.length == 0">Δεν υπάρχουν προσωπικές συλλογές. Πρόσθεσε μία πατώντας
+      <p v-if="privateCollections.length == 0 && $store.state.isUserLoggedIn">Δεν υπάρχουν προσωπικές συλλογές. Πρόσθεσε μία πατώντας
         <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
           <v-icon dark>add</v-icon>
         </v-btn>
@@ -70,7 +70,7 @@
       >
         <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
-      <p v-if="publicCollections.length == 0">Δεν υπάρχουν δημόσιες συλλογές. Πρόσθεσε μία πατώντας
+      <p v-if="publicCollections.length == 0 && $store.state.isUserLoggedIn">Δεν υπάρχουν δημόσιες συλλογές. Πρόσθεσε μία πατώντας
         <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
           <v-icon dark>add</v-icon>
         </v-btn>

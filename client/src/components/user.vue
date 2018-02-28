@@ -2,19 +2,33 @@
   <v-layout>
     <v-flex xs12 sm12>
       <v-card>
-        <v-card-title primary-title>
-          <div>
-              <p class="text-xs-left" md12 v-if="user.name"><b>@{{user.name}}</b>{{user.description}}</p>
-          </div>
+        <v-card-title primary-title height="100px">
+          <v-btn large flat class="text-xs-left" md12 v-if="user.name" @click="explore">@{{user.name}}</v-btn>
         </v-card-title>
-        <v-card-actions class="white">
+        <v-card-text v-if="user.description">
+          {{user.description}}
+        </v-card-text>
+        <v-card-actions class="grey lighten-3">
+          <v-switch
+            slot="activator"
+            label= "Ζωντανή μετάδοση"
+            v-model="showLive"
+            color="success"
+          ></v-switch>          
           <v-spacer></v-spacer>
-          <v-card-actions>
-            <v-btn class="green white--text darken-1" @click="explore">Δες τις αναρτήσεις του</v-btn>
-          </v-card-actions>
-          <v-card-actions>
-            <v-btn class="green white--text darken-1" @click="explore">Live</v-btn>
-          </v-card-actions>
+          <v-tooltip bottom>
+            <v-select
+              slot="activator"
+              label="Επιλογή"
+              :items="userCollections"
+              v-model="selectedcollections"
+              multiple
+              max-height="400"
+              hint="Διάλεξε ποιες συλλογές θα παρακολουθείς"
+              persistent-hint
+            ></v-select>
+            <span>Δες τις δημόσιες συλλογές και ακολούθα τες</span>
+          </v-tooltip>
         </v-card-actions>
       </v-card>
     </v-flex>
@@ -27,6 +41,7 @@ export default {
   props: ['user'],
   name: 'user',
   data: () => ({
+    showLive: true,
   }),
   methods: {
     ...mapActions(['addToCompare']),

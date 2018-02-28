@@ -123,13 +123,6 @@
           name="profile-form"
           autocomplete="off">
           <v-text-field
-            label="Όνομα"
-            v-model="name"
-            :rules="nameRules"
-            single-line
-          ></v-text-field>
-          <br>
-          <v-text-field
             label="Παλιός Κωδικός"
             type="password"
             v-model="password"
@@ -147,13 +140,13 @@
           <br>
           <v-text-field
             label="Email"
-            v-model="email"
+            v-model="emailEdit"
             single-line
           ></v-text-field>
           <br>
           <v-text-field
             label="Γράψε αν θέλεις εδώ μια μικρή περιγραφή για σένα"
-            v-model="description"
+            v-model="descriptionEdit"
             single-line
           ></v-text-field>
         </form>
@@ -207,6 +200,8 @@ export default {
       dialogLogin: false,
       dialogProfile: false,
       email: '',
+      emailEdit: this.$store.state.user.email,
+      descriptionEdit: this.$store.state.user.description,
       name: '',
       password: '',
       description: '',

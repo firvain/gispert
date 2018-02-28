@@ -5,7 +5,7 @@
           <v-list-tile-title>{{ collection.title }} του χρήστη {{collection.username}}</v-list-tile-title>
           <v-list-tile-sub-title>
             {{ collection.description }}
-            <v-btn v-if="collection.members" flat small color="primary">Αριθμός μελών: {{ collection.members.length }}</v-btn>
+            <v-btn v-if="collection.members" flat disabled small color="primary">Αριθμός μελών: {{ collection.members.length }}</v-btn>
           </v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
@@ -25,7 +25,7 @@
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn icon ripple @click="shareDialog = true">
+          <v-btn icon ripple @click="shareDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="grey lighten-1">share</v-icon>
           </v-btn>
         </v-list-tile-action>
