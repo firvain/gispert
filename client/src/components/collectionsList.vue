@@ -26,6 +26,7 @@
         <v-btn @click="newPrivateCollectionCard = false">Ακυρο</v-btn>
       </form>
       <v-list
+        v-if="$store.state.privateCollections"
         v-for="collection in $store.state.privateCollections"
         :key="collection._id"
       >
@@ -105,7 +106,7 @@ export default {
         title: null,
         description: null,
         visibility: '',
-        username: this.$store.state.user.name,
+        // username: this.$store.state.user.name,
       },
       message: '',
       snackbar: false,
@@ -120,7 +121,7 @@ export default {
   methods: {
     getUserId() {
       let id;
-      if (this.$store.state.user._id) { // eslint-disable-line no-underscore-dangle
+      if (this.$store.state.user) { // eslint-disable-line no-underscore-dangle
         id = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
       } else {
         id = null;
@@ -139,6 +140,7 @@ export default {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
       const newCollection = this.newCollection;
       newCollection.user = this.getUserId();
+      newCollection.username = this.$store.state.user.name;
       // console.log('new collection:: ', newCollection.title, newCollection.description);
       axios.post(url, { newCollection },
         {
@@ -199,6 +201,19 @@ export default {
         this.$store.dispatch('setPublicCollections', this.publicCollections);
       });
     },
+    getUsersList() {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+      axios.get(url, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        if (response.data.success === false) {
+          console.log(response.data);
+          console.log('not logged in to see others');
+        } else {
+          this.$store.dispatch('setUsers', response.data);
+        }
+      });
+    },
   },
   mounted() {
     this.loading = true;
@@ -212,16 +227,9 @@ export default {
     this.$on('refreshpubliccollections', () => {
       this.loadPublicCollections();
     });
-    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
-    axios.get(url, {
-      headers: { 'x-access-token': this.$store.state.token },
-    }).then((response) => {
-      if (response.data.success === false) {
-        console.log(response.data);
-        console.log('not logged in to see others');
-      } else {
-        this.$store.dispatch('setUsers', response.data);
-      }
+    this.$eventHub.$on('logged-in', () => {
+      this.loadPrivateCollections();
+      this.loadPublicCollections();
     });
     this.$on('openedcollection', (id) => {
       console.log('opened:: ', id);

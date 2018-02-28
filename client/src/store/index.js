@@ -19,7 +19,8 @@ export default new Vuex.Store({
     privateCollections: [],
     publicCollections: [],
     timeline: [],
-    users:[],
+    users: [],
+    customMaps: [],
   },
   actions: {
     setFeature(state, data) {
@@ -66,6 +67,9 @@ export default new Vuex.Store({
     },
     resetFeatureCount(state, data) {
       state.commit('resetfeaturecount', data);
+    },
+    setCustomMaps(state, data) {
+      state.commit('setcustommaps', data);
     },
   },
   mutations: {
@@ -150,6 +154,10 @@ export default new Vuex.Store({
       state.newpostfeature = undefined;
       state.storage = [];
     },
+    setcustommaps(state, data) {
+      state.customMaps = data;
+    },
+
   },
   getters: {
     getDrawnFeatures(state) {

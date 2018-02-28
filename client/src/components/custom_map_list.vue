@@ -6,7 +6,7 @@
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         <v-flex
           md12 sm12
-          v-for="customMap in customMaps"
+          v-for="customMap in this.$store.state.customMaps"
           :key="customMap.id"
         >
           <customMap :customMap='customMap' @explore="explore">
@@ -35,7 +35,7 @@ export default {
   name: 'customMaplist',
   data() {
     return {
-      customMaps: [],
+      // customMaps: [],
       size: 'xl',
       expand: 'md12',
       mode: 0,
@@ -52,20 +52,27 @@ export default {
       this.explore_estate = estate;
       return estate;
     },
+    loadMaps() {
+      this.loading = true;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
+      axios.get(url, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        if (response.data.success === false) {
+          console.log('not logged in to see maps');
+        } else {
+          // this.customMaps = response.data;
+          this.$store.dispatch('setCustomMaps', response.data);
+        }
+      }).then(() => {
+        this.loading = false;
+      });
+    },
   },
   mounted() {
-    this.loading = true;
-    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
-    axios.get(url, {
-      headers: { 'x-access-token': this.$store.state.token },
-    }).then((response) => {
-      if (response.data.success === false) {
-        console.log('not logged in to see maps');
-      } else {
-        this.customMaps = response.data;
-      }
-    }).then(() => {
-      this.loading = false;
+    this.loadMaps();
+    this.$eventHub.$on('logged-in', () => {
+      this.loadMaps();
     });
   },
 };

@@ -287,6 +287,7 @@ export default {
           // TODO in index.js of store create variables and mutations
           this.$store.dispatch('setToken', response.data.token);
           this.$store.dispatch('setUser', response.data.user);
+          this.$eventHub.$emit('logged-in');
         }
       });
     },
@@ -299,6 +300,8 @@ export default {
       this.$store.dispatch('setPublicCollections', []);
       this.$store.commit('addingToPost', undefined);
       this.$store.dispatch('resetFeatureCount', 0);
+      this.$store.dispatch('setCustomMaps', []);
+      this.$store.dispatch('setUsers', []);
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
       // this.$store.dispatch('removeNewPostFeature', null);

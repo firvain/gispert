@@ -6,7 +6,7 @@
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         <v-flex
           md12
-          v-for="user in users"
+          v-for="user in this.$store.state.users"
           :key="user._id"
         >
           <user :user='user' @explore="explore">
@@ -35,7 +35,7 @@ export default {
   name: 'userlist',
   data() {
     return {
-      users: [],
+      // users: [],
       size: 'xl',
       expand: 'md12',
       mode: 0,
@@ -52,21 +52,28 @@ export default {
       this.explore_estate = estate;
       return estate;
     },
+    loadUsers() {
+      this.loading = true;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+      axios.get(url, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        if (response.data.success === false) {
+          console.log(response.data);
+          console.log('not logged in to see others');
+        } else {
+          this.$store.dispatch('setUsers', response.data);
+          // this.users = response.data;
+        }
+      }).then(() => {
+        this.loading = false;
+      });
+    },
   },
   mounted() {
-    this.loading = true;
-    const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
-    axios.get(url, {
-      headers: { 'x-access-token': this.$store.state.token },
-    }).then((response) => {
-      if (response.data.success === false) {
-        console.log(response.data);
-        console.log('not logged in to see others');
-      } else {
-        this.users = response.data;
-      }
-    }).then(() => {
-      this.loading = false;
+    this.loadUsers();
+    this.$eventHub.$on('logged-in', () => {
+      this.loadUsers();
     });
   },
 };

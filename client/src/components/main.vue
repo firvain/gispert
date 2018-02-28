@@ -18,14 +18,14 @@
 
 <script>
 import Pageheader from '@/components/pageheader';
-import timeline from './timeline';
+// import timeline from './timeline';
 import tabs from './tabs';
 import mapDiv from './map';
 
 export default {
-  name: 'main',
+  name: 'mainpage',
   components: {
-    timeline, tabs, mapDiv, Pageheader,
+    tabs, mapDiv, Pageheader,
   },
   data() {
     return {
