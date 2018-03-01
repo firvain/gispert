@@ -1,6 +1,26 @@
 <template>
   <div id='mapList'>
     <v-container v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
+    <v-layout row wrap>
+      <v-flex md8>
+        <v-text-field
+          name="search-input"
+          label="Αναζήτηση"
+          hint="Τουλάχιστον 4 χαρακτήρες"
+          v-model="searchMaps"
+          min="4"
+          append-icon="search"
+        ></v-text-field>
+      </v-flex>
+      <v-flex md4>
+        <v-btn fab outline v-on:click='mode = 0'>
+          <v-icon color="green lighten-1">search</v-icon>
+        </v-btn>
+        <v-btn fab outline v-on:click='mode = 0'>
+          <v-icon color="green lighten-1">clear</v-icon>
+        </v-btn>
+      </v-flex>
+    </v-layout>
       <v-layout row wrap>
         <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
@@ -41,6 +61,7 @@ export default {
       mode: 0,
       explore_estate: null,
       loading: false,
+      searchMaps: '',
     };
   },
   components: {

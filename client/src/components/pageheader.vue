@@ -122,7 +122,7 @@
           <form
           name="profile-form"
           autocomplete="off">
-          <v-text-field
+          <!-- <v-text-field
             label="Παλιός Κωδικός"
             type="password"
             v-model="password"
@@ -137,7 +137,7 @@
             :rules="passRules"
             autocomplete="new-password"
           ></v-text-field>
-          <br>
+          <br> -->
           <v-text-field
             label="Email"
             v-model="emailEdit"
@@ -157,7 +157,7 @@
           dark
           class="cyan"
           @click="register">
-          {{signup}}
+          {{saveProfile}}
         </v-btn>
           <v-btn color="green darken-1" flat="flat" @click.native="dialogProfile = false">Άκυρο</v-btn>
         </v-card-actions>
@@ -196,6 +196,7 @@ export default {
       login_txt: 'Είσοδος',
       logout_txt: 'Έξοδος',
       profile_txt: 'Προφίλ',
+      saveProfile: 'Αποθήκευση',
       dialogRegister: false,
       dialogLogin: false,
       dialogProfile: false,

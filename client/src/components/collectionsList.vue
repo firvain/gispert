@@ -1,24 +1,46 @@
 <template>
-  <v-container id='collectionList'>
+  <v-container id='collectionList' v-show="privateCollectionsContainer">
+  <v-container v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
+    <v-layout row wrap>
+      <v-flex md8>
+        <v-text-field
+          name="search-input"
+          label="Αναζήτηση"
+          hint="Τουλάχιστον 4 χαρακτήρες"
+          v-model="searchCollections"
+          min="4"
+          append-icon="search"
+        ></v-text-field>
+      </v-flex>
+      <v-flex md4>
+        <v-btn fab outline v-on:click='mode = 0'>
+          <v-icon color="green lighten-1">search</v-icon>
+        </v-btn>
+        <v-btn fab outline v-on:click='mode = 0'>
+          <v-icon color="green lighten-1">clear</v-icon>
+        </v-btn>
+      </v-flex>
+    </v-layout>
+  </v-container>
     <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
       <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
         <v-icon dark>add</v-icon>
       </v-btn>
       Προσωπικές Συλλογές
     </v-subheader>
-    <v-container fluid v-if="this.$store.state.isUserLoggedIn">
+    <v-container fluid v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
       <form v-if="newPrivateCollectionCard">
         <v-text-field
           v-model="newCollection.title"
           label="Τίτλος"
-          :counter="10"
+          :counter="32"
           data-vv-name="name"
           required
         ></v-text-field>
         <v-text-field
           v-model="newCollection.description"
           label="Περιγραφή"
-          :counter="10"
+          :counter="32"
           data-vv-name="name"
           required
         ></v-text-field>
@@ -45,7 +67,7 @@
       </v-btn>
       Δημόσιες Συλλογές
     </v-subheader>
-    <v-container fluid>
+    <v-container fluid v-if="openedCollection === null">
       <form v-if="newPublicCollectionCard">
         <v-text-field
           v-model="newCollection.title"
@@ -84,12 +106,20 @@
       color= snackbarColor
     >{{ message }}
     </v-snackbar>
+
+    <collectionView v-if="openedCollection !== null" :id="openedCollection"></collectionView>
+    <v-btn block dark outline small color="green" @click="openedCollection = null" v-if="openedCollection !== null">
+      <v-icon dark>undo</v-icon>
+      Επιστροφη
+    </v-btn>
+
   </v-container>
 </template>
 <script>
 import axios from 'axios';
 import config from '../config';
 import collection from './collection';
+import collectionView from './collectionView';
 
 export default {
   name: 'collectionList',
@@ -102,6 +132,8 @@ export default {
       ],
       newPrivateCollectionCard: false,
       newPublicCollectionCard: false,
+      privateCollectionsContainer: true,
+      searchCollections: '',
       newCollection: {
         title: null,
         description: null,
@@ -116,7 +148,7 @@ export default {
     // eslint-disable-line no-underscore-dangle
   },
   components: {
-    collection,
+    collection, collectionView,
   },
   methods: {
     getUserId() {
@@ -207,8 +239,8 @@ export default {
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         if (response.data.success === false) {
-          console.log(response.data);
-          console.log('not logged in to see others');
+          // console.log(response.data);
+          // console.log('not logged in to see others');
         } else {
           this.$store.dispatch('setUsers', response.data);
         }
@@ -232,7 +264,7 @@ export default {
       this.loadPublicCollections();
     });
     this.$on('openedcollection', (id) => {
-      console.log('opened:: ', id);
+      // console.log('opened:: ', id);
       this.openedCollection = id;
     });
   },

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-toolbar color="orange" dark>
+    <!-- <v-toolbar color="orange" dark>
       <v-toolbar-side-icon></v-toolbar-side-icon>
       <v-toolbar-title>Συλλογές</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -10,7 +10,7 @@
       <v-btn icon>
         <v-icon>view_module</v-icon>
       </v-btn>
-    </v-toolbar>
+    </v-toolbar> -->
     <div v-if="postOpen">
       <v-btn flat icon color="pink" @click="postOpen = false">
         <v-icon>close</v-icon>

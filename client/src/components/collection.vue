@@ -9,24 +9,24 @@
           </v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
-          <v-btn icon ripple @click="exploreCollection(collection._id)">
-            <v-icon color="grey lighten-1" v-if="details">folder_open</v-icon>
-            <v-icon color="grey lighten-1" v-if="details === false">folder</v-icon>
+          <v-btn fab small outline @click="exploreCollection(collection._id)">
+            <v-icon color="blue lighten-1" v-if="details">folder_open</v-icon>
+            <v-icon color="blue lighten-1" v-if="details === false">folder</v-icon>
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn icon ripple @click="deleteCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-            <v-icon color="grey lighten-1">delete</v-icon>
+          <v-btn fab small outline @click="deleteCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+            <v-icon color="red lighten-1">delete</v-icon>
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn icon ripple v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-            <v-icon color="grey lighten-1">edit</v-icon>
+          <v-btn fab small outline v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+            <v-icon color="orange lighten-1">edit</v-icon>
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn icon ripple @click="shareDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-            <v-icon color="grey lighten-1">share</v-icon>
+          <v-btn fab small outline @click="shareDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+            <v-icon color="green lighten-1">share</v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
@@ -76,14 +76,14 @@
           <post :post='post'></post>
         </v-flex>
       </v-layout> -->
-      <collectionView v-if="details" :id="collection._id"></collectionView>
+      <!-- <collectionView v-if="details" :id="collection._id"></collectionView> -->
     </v-flex>
 </template>
 <script>
 import axios from 'axios';
 import config from '../config';
 import post from './post';
-import collectionView from './collectionView';
+// import collectionView from './collectionView';
 
 export default {
   props: ['collection'],
@@ -97,7 +97,7 @@ export default {
     members: [],
   }),
   components: {
-    post, collectionView,
+    post,
   },
   mounted() {
   },

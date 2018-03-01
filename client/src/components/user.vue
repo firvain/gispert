@@ -21,7 +21,7 @@
               slot="activator"
               label="Επιλογή"
               :items="userCollections"
-              v-model="selectedcollections"
+              v-model="selectedCollections"
               multiple
               max-height="400"
               hint="Διάλεξε ποιες συλλογές θα παρακολουθείς"
@@ -42,6 +42,8 @@ export default {
   name: 'user',
   data: () => ({
     showLive: true,
+    userCollections: [],
+    selectedCollections: [],
   }),
   methods: {
     ...mapActions(['addToCompare']),

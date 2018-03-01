@@ -20,8 +20,9 @@
       </v-flex>
     </v-layout>
     </v-container>
-    <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
+    <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-btn
+      v-if="$store.state.timeline.length > 0"
       v-on:click='next_page'
       class="blue-grey white--text"
       block
@@ -29,6 +30,7 @@
       φορτωση περισσότερων
       <v-icon right dark>navigate_next</v-icon>
     </v-btn>
+    <span v-if="$store.state.timeline.length === 0">Δεν υπάρχουν αναρτήσεις</span>
   </v-flex>
 </template>
 <script>
