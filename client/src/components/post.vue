@@ -45,6 +45,12 @@
                   </v-tooltip>
                 </div>
               </social-sharing>
+                  <v-tooltip bottom>
+                    <v-btn slot="activator" @click="shareLink = !shareLink">
+                      <i class="fa fa-fw fa-linkedin"></i>
+                    </v-btn>
+                    <span>Μοιράσου το Link!</span>
+                  </v-tooltip>
 
         </v-card-actions>
         <newPost v-if="answerPost==true && post.collectionData" :id="post._id" :collection="post.collectionData[0]._id"></newPost>
@@ -74,6 +80,18 @@
         v-model="snackbarNewPost"
         :color= "snackbarColor"
       >{{ newPostInfo }}</v-snackbar>
+
+    <v-dialog v-model="shareLink" persistent max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Share link</span>
+        </v-card-title>
+        <v-card-text>
+          <p>{{ shareUrl }}</p>
+          <v-btn color="blue darken-1" flat @click.native="shareLink = false">Close</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 <script>
@@ -104,6 +122,8 @@ export default {
     limitPage: 10,
     loading: false,
     fetchedReplies: [],
+    shareLink: false,
+    shareUrl: '',
   }),
   components: {
     newPost,
@@ -111,6 +131,7 @@ export default {
   mounted() {
     this.explore(this.post);
     this.repliesReversed();
+    this.shareUrl = `${config.APIhttpType}://${config.APIhost}:${config.hostPost}/#/main/search/${this.post._id}`; // eslint-disable-line no-underscore-dangle
   },
   methods: {
     showMoreReplies() {
@@ -153,6 +174,9 @@ export default {
                 alreadyExists = true;
               }
             });
+            if (!AddedFeature[0].getProperties().mongoID) {
+              alreadyExists = false;
+            }
             const g = AddedFeature[0].getGeometry().getExtent();
             if (alreadyExists === false) {
               layer.getSource().addFeatures(AddedFeature);

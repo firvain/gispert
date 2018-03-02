@@ -120,8 +120,10 @@ router.route('/all')
           }
         });
         res.status(200).json(content);
+        db.close();
       })
       .catch(function (err) {
+        db.close();
         throw err;
       });
     });
@@ -219,7 +221,10 @@ router.route('/id')
               "$filter": {
                 "input": "$collectionData",
                 "as": "child",
-                "cond": { $or: [{ "$eq": ["$$child.visibility", "public"] }, { "$eq": ["$$child.user", ObjectId(userId)] }] }
+                "cond": { $or: [
+                  { "$eq": ["$$child.visibility", "public"] },
+                  // { "$eq": ["$$child.user", ObjectId(userId)] }
+                ] }
               }
             }
           }
@@ -227,7 +232,8 @@ router.route('/id')
         {
           $match: {
             $and: [
-              { 'collectionData': { $size: 1 }}, { '_id': ObjectId(postId) }
+              // { 'collectionData': { $size: 1 }}, 
+              { '_id': ObjectId(postId) }
             ]
           }
         },

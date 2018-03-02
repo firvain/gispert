@@ -43,6 +43,14 @@ export default {
   mounted() {
     this.olMap = true;
   },
+  watch: {
+    '$route.params.id': function handle() {
+      console.log('main router changed and emitting!!!!!!');
+      // this.loadPostFromPermalink();
+      this.$eventHub.$emit('routerChanged', 'routerChanged');
+    },
+  },
+
 };
 </script>
 

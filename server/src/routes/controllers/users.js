@@ -50,36 +50,59 @@ router.route('/all')
       var collection = db.collection('users');
       if (err) {
         throw err;
+      } else {
+        collection.aggregate([
+          { 
+            $graphLookup: {
+              from: "collections",
+              startWith: "$_id",
+              connectFromField: "_id",
+              connectToField: "user",
+              as: "collectionData",
+            }
+          },{ "$project": {
+              "_id": 1,
+              "name": 1,
+              "description": 1,
+              "collectionData": {
+                 "$filter": {
+                     "input": "$collectionData",
+                     "as": "child",
+                     "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }] }
+                 }
+              }
+          }}
+        ], function handleCursor(error, users) {
+          if (error) {
+            res.sendStatus(500);
+            console.log(error);
+          } else {
+            // console.log(docs);
+            res.send(users);
+            db.close();
+          }  
+        })
       }
-      collection.find({}, { pass: 0 }).toArray(function handleCursor(error, docs) {
-        if (err) {
-          res.sendStatus(500);
-          console.log(error);
-        } else {
-          // console.log(docs);
-          res.send(docs);
-          db.close();
-        }
-      });
     });
   });
 
-router.route('/updateUserDescription')
-  .post(function addfollowing(req, res) {
+router.route('/updateprofile')
+  .post(function update(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
       var currentUserId;
       var cId;
-      var description = req.body.description;
+      var description = req.body.updateInfo.description;
+      var email = req.body.updateInfo.email;
 
-      currentUserId = req.body.id;
+      currentUserId = req.body.updateInfo.id;
       cId = new ObjectID(currentUserId);
-
+      console.log('updating user profile:: ', currentUserId, email, description);
       if (err) {
         throw err;
       } else {
         db.collection('users').update(
           { _id: cId },
-          { $set: { description: description } }
+          { $set: { description: description, email: email } }
         );
         res.status(200).send();
       }

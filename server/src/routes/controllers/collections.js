@@ -17,15 +17,18 @@ router.route('/')
             }
             if (userId) {
                 // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
-                collection.find({ $or: [{ members: ObjectID(userId) },
-                    {$and: [{ visibility: 'private' }, { user: ObjectID(userId) }]}] }, {}).toArray(function handleCursor(error, docs) {
+                collection.find({ $or: [
+                    // { members: ObjectID(userId) },
+                    {$and: [
+                        { visibility: 'private' }, 
+                        { user: ObjectID(userId) }
+                    ]}] }, {}).toArray(function handleCursor(error, docs) {
                     // console.log(docs);
                     var data = {};
                     if (err) {
                         res.sendStatus(500);
                         console.log(error);
                     } else {
-                        // docs.unshift({ title: 'Ιδιωτική Συλλογή', id: userId, user: userId, visibility: 'private', description: 'Συλλογή που μπορείς να δεις μόνο εσύ' });
                         res.send(docs);
                         db.close();
                     }
@@ -165,7 +168,7 @@ router.route('/collection')
                 cids.push(new ObjectID(id));
 
             });
-            console.log('members:: ', ids, collectionid);
+            // console.log('members:: ', ids, collectionid);
 
             if (err) {
                 throw err;
@@ -180,4 +183,31 @@ router.route('/collection')
         });
     });
 
+    router.route('/addmember')
+    .post(function addmember(req, res) {
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+            const userId = req.body.data.memberId;
+            const collectionsId = req.body.data.collectionsId;
+            console.log('adding user to collection:: ', userId, collectionsId);
+            const id = new ObjectID(userId);
+
+            var cids = [];
+            collectionsId.forEach((id) => {
+                cids.push(new ObjectID(id));
+            });
+
+            if (err) {
+                throw err;
+            } else {
+                db.collection('collections').update(
+                    { _id: { $in: cids} },
+                    { $addToSet: { members:  id } }
+                );
+                res.status(200).send('OK');
+            }
+            db.close();
+        });
+    });
+    
+    
 module.exports = router;

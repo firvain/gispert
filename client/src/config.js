@@ -3,4 +3,5 @@ module.exports = {
   APIhostPort: '8081',
   APIversion: 'v1',
   APIhttpType: 'http',
+  hostPost: '8080',
 };

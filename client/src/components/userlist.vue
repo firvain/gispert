@@ -1,7 +1,7 @@
 <template>
   <div id='userList'>
     <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
-      <v-layout row wrap>
+      <v-layout row wrap v-if="$store.state.users.length > 0">
         <v-flex md8>
           <v-text-field
             name="search-input"
@@ -37,11 +37,11 @@
       </v-layout>
     </v-container>
     <v-container fluid v-else-if='mode === 1'>
-      <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
+      <v-btn round dark ripple raised large v-on:click='mode = 0'>
         <i class="fa fa-close fa-lg"> Close</i>
       </v-btn>
       <cardDetails v-bind:user="explore_estate"></cardDetails>
-      <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
+      <v-btn round dark ripple raised large v-on:click='mode = 0'>
         <i class="fa fa-close fa-lg"> Close</i>
       </v-btn>
     </v-container>

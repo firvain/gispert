@@ -21,21 +21,28 @@
               slot="activator"
               label="Επιλογή"
               :items="userCollections"
+              item-text="title"
+              item-value="_id"
               v-model="selectedCollections"
               multiple
               max-height="400"
               hint="Διάλεξε ποιες συλλογές θα παρακολουθείς"
               persistent-hint
+              v-on:change="listChanged = true"
             ></v-select>
             <span>Δες τις δημόσιες συλλογές και ακολούθα τες</span>
           </v-tooltip>
+          <v-btn fab outline small v-if="listChanged" @click="addMembershipToCollections()">
+            <v-icon color="green lighten-1">save</v-icon>
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-flex>
   </v-layout>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import axios from 'axios';
+import config from '../config';
 
 export default {
   props: ['user'],
@@ -44,27 +51,28 @@ export default {
     showLive: true,
     userCollections: [],
     selectedCollections: [],
+    listChanged: false,
   }),
   methods: {
-    ...mapActions(['addToCompare']),
     explore() {
       this.$emit('explore', this.user);
     },
-    isInCompare(id) {
-      const exists = this.results.find(p => p === id);
-      let listButtonColor;
-      if (exists === id) {
-        listButtonColor = true;
-      } else {
-        listButtonColor = false;
-      }
-      return listButtonColor;
+    addMembershipToCollections() {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/addmember`;
+      const data = {
+        memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        collectionsId: this.selectedCollections,
+      };
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      })
+      .then(() => {
+        console.log('mark as followed and notify user');
+      });
     },
   },
-  computed: {
-    ...mapGetters({
-      results: 'cartEstates',
-    }),
+  mounted() {
+    this.userCollections = this.user.collectionData;
   },
 };
 </script>

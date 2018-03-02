@@ -12,6 +12,7 @@
       </v-btn>
     </v-toolbar> -->
     <div v-if="postOpen">
+      {{ postContent }}
       <v-btn flat icon color="pink" @click="postOpen = false">
         <v-icon>close</v-icon>
       </v-btn>
@@ -33,7 +34,7 @@ export default {
   data() {
     return {
       postContent: null,
-      postOpen: false,
+      postOpen: true,
     };
   },
   components: {
@@ -41,8 +42,15 @@ export default {
   },
   watch: {
     '$route.params.id': function handle() {
+      console.log('router changed in search!!!!!!');
       this.loadPostFromPermalink();
     },
+  },
+  mounted() {
+    this.$eventHub.$on('routerChanged', () => {
+      console.log('router changed through main!!!!!!');
+      this.loadPostFromPermalink();
+    });
   },
   methods: {
     getPublicCollections() {
@@ -98,6 +106,7 @@ export default {
             this.postContent = resp.data[0];
             console.log('postContent:: ', this.postContent);
             this.postOpen = true;
+            console.log('postContent:: ', this.postOpen);
           }
         }).then(() => {
           this.loading = false;

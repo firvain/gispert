@@ -82,7 +82,6 @@ export default {
         if (response.data.success === false) {
           console.log('not logged in to see maps');
         } else {
-          // this.customMaps = response.data;
           this.$store.dispatch('setCustomMaps', response.data);
         }
       }).then(() => {

@@ -153,10 +153,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-        <v-btn v-if="name.length > 0 && password.length > 0"
+        <v-btn
           dark
           class="cyan"
-          @click="register">
+          @click="updateProfile">
           {{saveProfile}}
         </v-btn>
           <v-btn color="green darken-1" flat="flat" @click.native="dialogProfile = false">Άκυρο</v-btn>
@@ -287,6 +287,20 @@ export default {
           this.emailEdit = this.$store.state.user.email;
           this.descriptionEdit = this.$store.state.user.description;
         }
+      });
+    },
+    updateProfile() {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/updateprofile`;
+      const updateInfo = {
+        id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        email: this.emailEdit,
+        description: this.descriptionEdit,
+      };
+      axios.post(url, { updateInfo }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      })
+      .then(() => {
+        this.dialogProfile = false;
       });
     },
     logoutUser() {
