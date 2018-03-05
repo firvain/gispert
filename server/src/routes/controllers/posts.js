@@ -44,6 +44,7 @@ router.route('/')
     })
     .then((id) => { 
       res.status(200).json(id);
+      database.close();
     })
     .catch((err) => {
       if (err){
@@ -109,6 +110,7 @@ router.route('/all')
           ]}
         },
         ]);
+        db.close();
       })
       .then(function (cursor) {
         return cursor.toArray();
@@ -120,10 +122,9 @@ router.route('/all')
           }
         });
         res.status(200).json(content);
-        db.close();
+        // db.close();
       })
       .catch(function (err) {
-        db.close();
         throw err;
       });
     });
@@ -165,6 +166,7 @@ router.route('/replies')
           }
       }]
     );
+    db.close();
     })
     .then(function (cursor) {
       return cursor.toArray();
@@ -238,6 +240,7 @@ router.route('/id')
           }
         },
       ]);
+      db.close();
     })
   .then(function (cursor) {
     return cursor.toArray();

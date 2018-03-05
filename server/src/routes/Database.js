@@ -22,6 +22,14 @@ class Database {
         })
     }
 
+    close() {
+        return new Promise((resolve, reject) => {
+            if(this.db){
+                this.db.close();
+            }
+        })
+    }
+
     addPost(post) {
         return new Promise((resolve, reject) => {
                 this.db.collection('posts').insertOne(

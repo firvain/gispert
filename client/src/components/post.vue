@@ -45,12 +45,12 @@
                   </v-tooltip>
                 </div>
               </social-sharing>
-                  <v-tooltip bottom>
-                    <v-btn outline fab small slot="activator" @click="shareLink = !shareLink; copyToClipboard();" class="link-network">
-                      <i class="fa fa-fw fa-link"></i>
-                    </v-btn>
-                    <span>Μοιράσου το Link!</span>
-                  </v-tooltip>
+              <v-tooltip bottom>
+                <v-btn outline fab small slot="activator" @click="shareLink = !shareLink; copyToClipboard();" class="link-network">
+                  <i class="fa fa-fw fa-link"></i>
+                </v-btn>
+                <span>Μοιράσου το Link!</span>
+              </v-tooltip>
 
         </v-card-actions>
         <newPost v-if="answerPost==true && post.collectionData" :id="post._id" :collection="post.collectionData[0]._id"></newPost>
@@ -87,7 +87,7 @@
           <span class="headline">Share link</span>
         </v-card-title>
         <v-card-text>
-          <p>{{ shareUrl }}</p>
+          <p>Έχει γίνει αντιγραφή του συνδέσμου. Μπορείτε να κάνετε επικόλληση οπουδήποτε θέλετε με Control+V ή δεξί κλίκ Επικόλληση</p>
           <v-btn color="blue darken-1" flat @click.native="shareLink = false">Close</v-btn>
         </v-card-text>
       </v-card>
@@ -183,12 +183,12 @@ export default {
               layer.getSource().addFeatures(AddedFeature);
             }
             if (g[0] - g[2] < 500) {
-              g[0] -= 400;
-              g[2] += 400;
+              g[0] -= 200;
+              g[2] += 200;
             }
             if (g[1] - g[3] < 500) {
-              g[1] -= 400;
-              g[3] += 400;
+              g[1] -= 200;
+              g[3] += 200;
             }
             olMap.getView().fit(g, olMap.getSize());
             const cs = AddedFeature[0].getStyle();

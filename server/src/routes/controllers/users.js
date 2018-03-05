@@ -48,6 +48,9 @@ router.route('/all')
   .get(function getusers(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
       var collection = db.collection('users');
+      var start = parseInt(req.query.pageFrom);
+      var end = parseInt(req.query.pageTo);
+
       if (err) {
         throw err;
       } else {
@@ -71,7 +74,13 @@ router.route('/all')
                      "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }] }
                  }
               }
-          }}
+          }},
+          {
+            $skip: start
+          },
+          {
+            $limit: end
+          }
         ], function handleCursor(error, users) {
           if (error) {
             res.sendStatus(500);

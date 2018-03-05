@@ -35,14 +35,14 @@
           </user>
         </v-flex>
       </v-layout>
-    </v-container>
-    <v-container fluid v-else-if='mode === 1'>
-      <v-btn round dark ripple raised large v-on:click='mode = 0'>
-        <i class="fa fa-close fa-lg"> Close</i>
-      </v-btn>
-      <cardDetails v-bind:user="explore_estate"></cardDetails>
-      <v-btn round dark ripple raised large v-on:click='mode = 0'>
-        <i class="fa fa-close fa-lg"> Close</i>
+      <v-btn
+        v-if="$store.state.isUserLoggedIn"
+        v-on:click='nextPageLoadUsers'
+        class="blue-grey white--text"
+        block
+      >
+        φορτωση περισσότερων
+        <v-icon right dark>navigate_next</v-icon>
       </v-btn>
     </v-container>
   </div>
@@ -64,6 +64,7 @@ export default {
       explore_estate: null,
       loading: false,
       searchUsers: '',
+      page: 25,
     };
   },
   components: {
@@ -76,9 +77,36 @@ export default {
       return estate;
     },
     loadUsers() {
+      if (this.$store.state.isUserLoggedIn) {
+        this.loading = true;
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+        axios.get(url, {
+          params: {
+            pageFrom: 0,
+            pageTo: 25,
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          if (response.data.success === false) {
+            console.log(response.data);
+            console.log('not logged in to see others');
+          } else {
+            this.$store.dispatch('setUsers', response.data);
+            // this.users = response.data;
+          }
+        }).then(() => {
+          this.loading = false;
+        });
+      }
+    },
+    nextPageLoadUsers() {
       this.loading = true;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
       axios.get(url, {
+        params: {
+          pageFrom: this.page,
+          pageTo: this.page + 25,
+        },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         if (response.data.success === false) {
@@ -89,11 +117,13 @@ export default {
           // this.users = response.data;
         }
       }).then(() => {
+        this.page += 25;
         this.loading = false;
       });
     },
   },
   mounted() {
+    this.$store.dispatch('setUsers', 'empty');
     this.loadUsers();
     this.$eventHub.$on('logged-in', () => {
       this.loadUsers();

@@ -3,7 +3,7 @@
     <v-flex xs12 sm12>
       <v-card>
         <v-card-title primary-title height="100px">
-          <v-btn large flat class="text-xs-left" md12 v-if="user.name" @click="explore">@{{user.name}}</v-btn>
+          <a md12 v-if="user.name" @click="explore">@{{user.name}}</a>
         </v-card-title>
         <v-card-text v-if="user.description">
           {{user.description}}
@@ -76,3 +76,8 @@ export default {
   },
 };
 </script>
+<style>
+  a:hover {
+    cursor: pointer;
+  }
+</style>

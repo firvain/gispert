@@ -1,7 +1,7 @@
 <template>
   <div id='mapList'>
     <v-container v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
-    <v-layout row wrap>
+    <v-layout row wrap v-if="$store.state.isUserLoggedIn">
       <v-flex md8>
         <v-text-field
           name="search-input"
@@ -32,6 +32,15 @@
           <customMap :customMap='customMap' @explore="explore">
           </customMap>
         </v-flex>
+        <v-btn
+          v-if="$store.state.isUserLoggedIn"
+          v-on:click='nextPageLoadMaps'
+          class="blue-grey white--text"
+          block
+        >
+          φορτωση περισσότερων
+          <v-icon right dark>navigate_next</v-icon>
+        </v-btn>
       </v-layout>
     </v-container>
     <v-container fluid v-else-if='mode === 1'>
@@ -62,6 +71,7 @@ export default {
       explore_estate: null,
       loading: false,
       searchMaps: '',
+      page: 25,
     };
   },
   components: {
@@ -74,9 +84,34 @@ export default {
       return estate;
     },
     loadMaps() {
+      if (this.$store.state.isUserLoggedIn) {
+        this.loading = true;
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
+        axios.get(url, {
+          params: {
+            pageFrom: 0,
+            pageTo: 25,
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          if (response.data.success === false) {
+            console.log('not logged in to see maps');
+          } else {
+            this.$store.dispatch('setCustomMaps', response.data);
+          }
+        }).then(() => {
+          this.loading = false;
+        });
+      }
+    },
+    nextPageLoadMaps() {
       this.loading = true;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
       axios.get(url, {
+        params: {
+          pageFrom: this.page,
+          pageTo: this.page + 25,
+        },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         if (response.data.success === false) {
@@ -90,6 +125,7 @@ export default {
     },
   },
   mounted() {
+    this.$store.dispatch('setCustomMaps', 'empty');
     this.loadMaps();
     this.$eventHub.$on('logged-in', () => {
       this.loadMaps();

@@ -248,11 +248,10 @@ export default {
     },
   },
   mounted() {
-    this.loading = true;
     if (this.$store.state.isUserLoggedIn) {
       this.loadPrivateCollections();
+      this.loadPublicCollections();
     }
-    this.loadPublicCollections();
     this.$on('refreshprivatecollections', () => {
       this.loadPrivateCollections();
     });

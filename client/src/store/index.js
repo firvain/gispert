@@ -147,7 +147,13 @@ export default new Vuex.Store({
       state.timeline = data;
     },
     setusers(state, data) {
-      state.users = data;
+      if (data !== 'empty') {
+        data.forEach((u) => {
+          state.users.push(u);
+        });
+      } else {
+        state.users = [];
+      }
     },
     resetfeaturecount(state, data) {
       state.featureCount = 0;
@@ -155,7 +161,13 @@ export default new Vuex.Store({
       state.storage = [];
     },
     setcustommaps(state, data) {
-      state.customMaps = data;
+      if (data !== 'empty') {
+        data.forEach((m) => {
+          state.customMaps.push(m);
+        });
+      } else {
+        state.customMaps = [];
+      }
     },
 
   },

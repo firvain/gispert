@@ -2,41 +2,38 @@
   <v-layout>
     <v-flex xs12 sm12>
       <v-card>
-      <v-layout row wrap>
-        <v-flex md10>
-          <v-text-field @focus="showMapTools"
-            autofocus
-            name="input-1"
-            label="Νέα ανάρτηση"
-            hint="Γράψε εδώ το κείμενό σου"
-            v-model="postText"
-            id="postText"
-            counter
-            max="200"
-            full-width
-            multi-line
-          ></v-text-field>
-        </v-flex>
-        <v-flex md2>
-          <div class='text-md-right'>
-            <v-btn :outline="this.id !== this.$store.state.addingToPost" medium fab
-              class="indigo--text"
-              color="green"
-              @click= "showMapTools"
-              data-tooltip="Σχεδίασε στο χάρτη και θα προστεθεί το σχέδιο στην ανάρτηση!"
-              data-tooltip-location="left">
-              <v-icon>edit</v-icon>
-            </v-btn>
-          </div>
-        </v-flex>
+        <v-layout row wrap>
+          <v-flex md12>
+            <v-text-field @focus="showMapTools"
+              autofocus
+              name="input-1"
+              label="Γράψε εδώ κείμενο."
+              hint="Γράψε εδώ το κείμενό σου. Μπορείς να σχεδιάσεις και στο χάρτη!"
+              v-model="postText"
+              id="postText"
+              counter
+              max="200"
+              textarea
+              box
+            ></v-text-field>
+          </v-flex>
         </v-layout>
         <v-flex v-if="drawnFeatures !== undefined">
+          <v-tooltip bottom>
+            <v-btn :outline="this.id !== this.$store.state.addingToPost" small fab slot="activator"
+              class="indigo--text"
+              color="green"
+              @click= "showMapTools">
+              <v-icon>edit</v-icon>
+            </v-btn>
+            <span>Σχεδίασε στο χάρτη και θα προστεθεί το σχέδιο στην ανάρτηση!</span>
+          </v-tooltip>
           <v-chip close v-for="f in drawnFeatures" :key='f.drawId' @input="remove(f.drawId)">
             {{ f.getGeometry().getType() }}
           </v-chip>
         </v-flex>
         <v-card-actions>
-          <v-flex xs12 sm6 v-if="this.id === undefined && this.collectionid === undefined">
+          <v-flex  xs6 sm6 md6 v-if="this.id === undefined && this.collectionid === undefined">
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
@@ -49,7 +46,7 @@
               persistent-hint
             ></v-select>
           </v-flex>
-          <v-flex xs12 sm12>
+          <v-flex xs6 sm6 md6>
             <v-btn flat class="green white--text darken-1" @click="publishPost">Δημοσιευση<v-icon right dark>insert_comment</v-icon></v-btn>
             <v-btn small fab class="green white--text">
               <v-icon white--text dark>help_outline</v-icon>

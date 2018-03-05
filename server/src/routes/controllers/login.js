@@ -33,8 +33,8 @@ router.route('/')
       var name = req.query.name;
       var password = bcrypt.hashSync(req.query.password, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
       // console.log(req.query);
-      console.log(name);
-      console.log(password);
+      // console.log(name);
+      // console.log(password);
 
       if (err) {
         res.send({

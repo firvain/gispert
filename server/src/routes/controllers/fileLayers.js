@@ -7,15 +7,17 @@ router.route('/')
     .get(function getByLayerId(req, res) {
       MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
         var collection = db.collection('geodata');
+        const start = parseInt(req.query.pageFrom);
+        const end = parseInt(req.query.pageTo);
         if (err) {
           throw err;
         } else {
-          collection.find({}, { features: 0 }).toArray(function handleCursor(error, docs) {
+          collection.find({}, { features: 0 }).skip(start).limit(end).toArray(function handleCursor(error, docs) {
             if (error) {
               res.sendStatus(500);
               console.log(error);
             } else {
-              console.log(docs);
+              // console.log(docs);
               res.send(docs);
               db.close();
             }
