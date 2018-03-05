@@ -3,6 +3,19 @@
   <Pageheader></Pageheader>
       <v-layout row wrap>
         <v-flex xs5 md5>
+
+          <v-dialog v-model="postOpen" max-width="700px">
+            <v-card>
+              <v-card-title>
+                <span class="headline">Ανάρτηση</span>
+              </v-card-title>
+              <v-card-text>
+                <post :post='postContent' v-if="postContent !== null"></post>
+                <v-btn color="blue darken-1" flat @click.native="postOpen = false">Close</v-btn>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+
           <tabs></tabs>
         </v-flex>
         <v-flex xs7 md7>
@@ -18,17 +31,22 @@
 
 <script>
 import Pageheader from '@/components/pageheader';
+import axios from 'axios';
 // import timeline from './timeline';
 import tabs from './tabs';
 import mapDiv from './map';
+import post from './post';
+import config from '../config';
 
 export default {
   name: 'mainpage',
   components: {
-    tabs, mapDiv, Pageheader,
+    tabs, mapDiv, Pageheader, post,
   },
   data() {
     return {
+      postContent: null,
+      postOpen: true,
       drawer: null,
       items: [
         { title: 'Home', icon: 'dashboard' },
@@ -46,8 +64,52 @@ export default {
   watch: {
     '$route.params.id': function handle() {
       console.log('main router changed and emitting!!!!!!');
-      // this.loadPostFromPermalink();
-      this.$eventHub.$emit('routerChanged', 'routerChanged');
+      this.loadPostFromPermalink();
+      // this.$eventHub.$emit('routerChanged', 'routerChanged');
+    },
+  },
+  methods: {
+    loadPostFromPermalink() {
+      this.postContent = null;
+      const id = this.$route.params.id;
+      let pUrl;
+      let userIdCurrent;
+      let token;
+      let postContentNew;
+      console.log(id);
+      if (this.$store.state.isUserLoggedIn) {
+        pUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/id`;
+        userIdCurrent = this.$store.state.user.id;
+        token = this.$store.state.token;
+      } else {
+        pUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/postid`;
+        userIdCurrent = null;
+        token = null;
+      }
+      if (id) {
+        axios.get(pUrl, {
+          params: {
+            pId: id,
+            userId: userIdCurrent,
+          },
+          headers: { 'x-access-token': token },
+        }).then((resp) => {
+          if (resp.data.success === false) {
+            console.log('not logged in to see post');
+          } else {
+            console.log(resp.data);
+            this.postContent = resp.data[0];
+            console.log('postContent:: ', this.postContent, this.postContent.text);
+            this.postOpen = true;
+            console.log('postContent:: ', this.postOpen);
+            postContentNew = this.postContent;
+          }
+        }).then(() => {
+          this.postContent = postContentNew;
+          this.loading = false;
+          console.log('postContent2:: ', this.postContent, this.postContent.text);
+        });
+      }
     },
   },
 

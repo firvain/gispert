@@ -12,9 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "clipboard-copy": "^1.4.2",
     "concurrently": "^1.0.0",
     "es6-promise": "^4.2.2",
-    "moment": "^2.20.1"
+    "moment": "^2.20.1",
+    "vue-clipboard2": "0.0.9"
   },
   "devDependencies": {
     "concurrently": "^1.0.0",

@@ -7,9 +7,9 @@ import App from './App';
 import router from './router';
 import store from './store';
 
+
 const SocialSharing = require('vue-social-sharing');
 /* eslint-disable */
-
 Vue.prototype.$eventHub = new Vue(); // Global event bus
 
 Vue.config.productionTip = false;

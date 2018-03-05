@@ -46,8 +46,8 @@
                 </div>
               </social-sharing>
                   <v-tooltip bottom>
-                    <v-btn slot="activator" @click="shareLink = !shareLink">
-                      <i class="fa fa-fw fa-linkedin"></i>
+                    <v-btn outline fab small slot="activator" @click="shareLink = !shareLink; copyToClipboard();" class="link-network">
+                      <i class="fa fa-fw fa-link"></i>
                     </v-btn>
                     <span>Μοιράσου το Link!</span>
                   </v-tooltip>
@@ -99,6 +99,7 @@
 import ol from 'openlayers';
 import moment from 'moment';
 import axios from 'axios';
+import clipboard from 'clipboard-copy';
 import config from '../config';
 import newPost from './new_post';
 import olMap from '../js/map';
@@ -222,6 +223,9 @@ export default {
       this.toggle_answer();
       // }
     },
+    copyToClipboard() {
+      clipboard(this.shareUrl);
+    },
   },
   computed: {
     timestamp() {
@@ -238,7 +242,7 @@ export default {
   .link-network {
     border-style: solid;
     border-width: 1px;
-    border-radius: 10px;
+    border-radius: 20px;
     cursor: pointer;
     padding: 1vh;
   }
