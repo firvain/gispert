@@ -4,7 +4,7 @@
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
           <div class="text-xs-left">
-            <b>@{{post.userName}}:</b>
+            <a md12 @click="explore">@{{post.userName}}</a>
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>
             <p>{{timestamp}}</p>
           </div>

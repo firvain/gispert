@@ -23,7 +23,7 @@
       </v-flex>
     </v-layout>
     </v-container>
-    <v-container fluid v-else-if='mode === 1'>
+    <!-- <v-container fluid v-else-if='mode === 1'>
       <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
         <i class="fa fa-close fa-lg"> Close</i>
       </v-btn>
@@ -31,7 +31,7 @@
       <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
         <i class="fa fa-close fa-lg"> Close</i>
       </v-btn>
-    </v-container>
+    </v-container> -->
     <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-btn
@@ -48,7 +48,7 @@
 import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex';
 import post from './post';
-import cardDetails from './card_in_details';
+// import cardDetails from './card_in_details';
 import newPost from './new_post';
 import config from '../config';
 
@@ -71,7 +71,7 @@ export default {
     };
   },
   components: {
-    post, cardDetails, newPost,
+    post, newPost,
   },
   computed: mapGetters([
     'evenOrOdd',

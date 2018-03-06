@@ -67,6 +67,7 @@ export default {
         headers: { 'x-access-token': this.$store.state.token },
       })
       .then(() => {
+        this.listChanged = false;
         console.log('mark as followed and notify user');
       });
     },

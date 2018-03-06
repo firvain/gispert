@@ -45,13 +45,18 @@
         <v-icon right dark>navigate_next</v-icon>
       </v-btn>
     </v-container>
+    <userTimeline :id="exploreCollection._id" v-if="mode === 1"></userTimeline>
+    <v-btn block dark outline small color="green" @click="exploreCollection = null; mode = 0;" v-if="exploreCollection !== null">
+      <v-icon dark>undo</v-icon>
+      Επιστροφη
+    </v-btn>
   </div>
 </template>
 <script>
 import axios from 'axios';
 import config from '../config';
 import user from './user';
-import cardDetails from './card_in_details';
+import userTimeline from './userTimeline';
 
 export default {
   name: 'userlist',
@@ -61,20 +66,21 @@ export default {
       size: 'xl',
       expand: 'md12',
       mode: 0,
-      explore_estate: null,
+      exploreCollection: null,
       loading: false,
       searchUsers: '',
       page: 25,
     };
   },
   components: {
-    user, cardDetails,
+    user, userTimeline,
   },
   methods: {
-    explore(estate) {
+    explore(collectionId) {
       this.mode = 1;
-      this.explore_estate = estate;
-      return estate;
+      this.exploreCollection = collectionId;
+      this.loading = false;
+      return collectionId;
     },
     loadUsers() {
       if (this.$store.state.isUserLoggedIn) {

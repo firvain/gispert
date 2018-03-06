@@ -260,30 +260,83 @@ router.route('/id')
 });
 
 
-// router.route('/person')
-// .get(function getPersonsPo11111111sts(req, res) {
-//     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-//       var userName;
-//       userName = req.query.userName;
-//       console.log(userName);
-//       var collection = db.collection('posts');
-//       var regexValue = '.*' + userName + '.*';
-//       if (err) {
-//         throw err;
-//       }
-//       collection.find({ text: { $regex : regexValue } }).toArray(
-//         function handleCursor(error, docs) {
-//           if (err) {
-//             res.sendStatus(500);
-//             // console.log(error);
-//           } else {
-//             // console.log(docs);
-//             res.send(docs);
-//             db.close();
-//           }
-//         });
-//     });
-// });
+router.route('/person')
+  .get(function getposts(req, res) {
+    var start = parseInt(req.query.start);
+    var end = parseInt(req.query.end);
+    var userId = req.query.userId;
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+    .then(function (db) {
+      var collection = db.collection('posts');
+      return collection.aggregate([
+        { $graphLookup: {
+            from: "posts",
+            startWith: "$replies",
+            connectFromField: "_id",
+            connectToField: "_id",
+            as: "repliesData",
+          }
+        },
+        { $graphLookup: {
+            from: "collections",
+            startWith: "$collections",
+            connectFromField: "collections",
+            connectToField: "_id",
+            as: "collectionData",
+          }
+        },
+        {
+            $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
+        },
+        { "$project": {
+            "_id": 1,
+            "userId": 1,
+            "userName": 1,
+            "timestamp": 1,
+            "text":1,
+            "userFeatures": 1,
+            "isReplyTo": 1,
+            "replies": 1,
+            "collectionData": {
+               "$filter": {
+                   "input": "$collectionData",
+                   "as": "child",
+                   "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] } ] }
+               }
+            }
+        }},
+        { $match: {  
+            $and: [
+              { 'isReplyTo': '' }, { 'userId' : userId }
+            ]
+          }
+        },
+        {
+          $skip: start
+        },
+        {
+          $limit: end
+        }
+      ]);
+        db.close();
+      })
+      .then(function (cursor) {
+        return cursor.toArray();
+      })
+      .then(function (content) {
+        content.forEach((p) => {
+          if(p.repliesData) {
+              p.repliesData.sort(dynamicSort("timestamp"));
+          }
+        });
+        res.status(200).json(content);
+        // db.close();
+      })
+      .catch(function (err) {
+        throw err;
+      });
+    });
+
 // router.route('/hashtag')
 // .get(function getHashtagPosts(req, res) {
 //     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
@@ -432,28 +485,6 @@ router.route('/id')
 //             res.sendStatus(500);
 //           } else {
 //             console.log(docs);
-//             res.send(docs);
-//             db.close();
-//           }
-//         });
-//     });
-// });
-
-// router.route('/group')
-// .get(function getHashtagPosts(req, res) {
-//     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-//       var term;
-//       var collection = db.collection('posts');
-//       term = req.query.term;
-
-//       if (err) {
-//         throw err;
-//       }
-//       collection.find({ group: term }).toArray(
-//         function handleCursor(error, docs) {
-//           if (err) {
-//             res.sendStatus(500);
-//           } else {
 //             res.send(docs);
 //             db.close();
 //           }
