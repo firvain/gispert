@@ -46,7 +46,7 @@ export default {
   data() {
     return {
       postContent: null,
-      postOpen: true,
+      postOpen: false,
       drawer: null,
       items: [
         { title: 'Home', icon: 'dashboard' },
@@ -63,8 +63,10 @@ export default {
   },
   watch: {
     '$route.params.id': function handle() {
-      console.log('main router changed and emitting!!!!!!');
-      this.loadPostFromPermalink();
+      // console.log('main router changed and emitting!!!!!!', this.$route.params.id);
+      if (this.$route.params.id) {
+        this.loadPostFromPermalink();
+      }
       // this.$eventHub.$emit('routerChanged', 'routerChanged');
     },
   },
@@ -76,7 +78,7 @@ export default {
       let userIdCurrent;
       let token;
       let postContentNew;
-      console.log(id);
+      // console.log(id);
       if (this.$store.state.isUserLoggedIn) {
         pUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/id`;
         userIdCurrent = this.$store.state.user.id;
@@ -97,17 +99,17 @@ export default {
           if (resp.data.success === false) {
             console.log('not logged in to see post');
           } else {
-            console.log(resp.data);
+            // console.log(resp.data);
             this.postContent = resp.data[0];
-            console.log('postContent:: ', this.postContent, this.postContent.text);
+            // console.log('postContent:: ', this.postContent, this.postContent.text);
             this.postOpen = true;
-            console.log('postContent:: ', this.postOpen);
+            // console.log('postContent:: ', this.postOpen);
             postContentNew = this.postContent;
           }
         }).then(() => {
           this.postContent = postContentNew;
           this.loading = false;
-          console.log('postContent2:: ', this.postContent, this.postContent.text);
+          // console.log('postContent2:: ', this.postContent, this.postContent.text);
         });
       }
     },

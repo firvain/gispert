@@ -73,6 +73,27 @@ router.route('/delete')
         });
     });
 
+router.route('/unfollow')
+.post(function setuser(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+        var cid = req.body.data.collectionId;
+        var cId = new ObjectID(cid);
+        var mid = req.body.data.memberId;
+        var mId = new ObjectID(mid);
+        // console.log('collection id to delete:: ', req.body._id);
+
+        if (err) {
+            throw err;
+        } else {
+            db.collection('collections').update(
+                { _id: cId },
+                { $pull: { members: mId } }
+            );
+            res.status(200).send('OK');
+        }
+        db.close();
+    });
+});
 
 router.route('/collection')
 .get(function getposts(req, res) {

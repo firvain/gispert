@@ -15,6 +15,11 @@
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
+          <v-btn fab small outline @click="unfollowCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id">
+            <v-icon color="red lighten-1">visibility_off</v-icon>
+          </v-btn>
+        </v-list-tile-action>
+        <v-list-tile-action>
           <v-btn fab small outline @click="deleteCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="red lighten-1">delete</v-icon>
           </v-btn>
@@ -67,6 +72,18 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <v-dialog v-model="unfollowCollectionDialog" persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline">Παρακολούθηση συλλογής</v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" flat @click.native="unfollowCollection(collection._id)">Μη Παρακολούθηση</v-btn>
+            <v-btn color="green darken-1" flat @click.native="unfollowCollectionDialog = false">Ακυρο</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>      
+      
       <!-- <v-layout row wrap v-if="details">
         <v-flex
           md12
@@ -94,6 +111,7 @@ export default {
     loading: false,
     shareDialog: false,
     deleteCollectionDialog: false,
+    unfollowCollectionDialog: false,
     members: [],
   }),
   components: {
@@ -128,6 +146,28 @@ export default {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/delete`;
       // console.log('id to delete:: ', id);
       axios.post(url, { id }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then(() => {
+        this.loading = false;
+        if (this.collection.visibility === 'private') {
+          this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
+        }
+        if (this.collection.visibility === 'public') {
+          this.$store.dispatch('deletePrivateCollection', id);
+          this.$store.dispatch('deletePublicCollection', id);
+          this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+        }
+      });
+    },
+    unfollowCollection(id) {
+      this.unfollowCollectionDialog = false;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/unfollow`;
+      // console.log('id to delete:: ', id);
+      const data = {
+        memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        collectionId: id,
+      };
+      axios.post(url, { data }, {
         headers: { 'x-access-token': this.$store.state.token },
       }).then(() => {
         this.loading = false;
