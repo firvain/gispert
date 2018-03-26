@@ -81,12 +81,6 @@ router.route('/all')
         {
             $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
         },
-        {
-            $skip: start
-        },
-        {
-            $limit: end
-        },
         { "$project": {
             "_id": 1,
             "userId": 1,
@@ -109,6 +103,12 @@ router.route('/all')
             { 'isReplyTo': '' }, {'collectionData': { $size: 1 }}
           ]}
         },
+        {
+          $skip: start
+        },
+        {
+            $limit: end
+        }      
         ]);
         db.close();
       })

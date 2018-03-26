@@ -1,6 +1,5 @@
 <template>
-  <div id='mapList'>
-    <v-container v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
+  <v-container id='mapList'>
     <v-layout row wrap v-if="$store.state.isUserLoggedIn">
       <v-flex md8>
         <v-text-field
@@ -13,19 +12,21 @@
         ></v-text-field>
       </v-flex>
       <v-flex md4>
-        <v-btn fab outline v-on:click='mode = 0'>
+        <v-btn fab outline v-on:click="searchCustomMaps">
           <v-icon color="green lighten-1">search</v-icon>
         </v-btn>
-        <v-btn fab outline v-on:click='mode = 0'>
+        <v-btn fab outline v-on:click="mode = 'normal'">
           <v-icon color="green lighten-1">clear</v-icon>
         </v-btn>
       </v-flex>
     </v-layout>
+    <v-container v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 'normal'">
       <v-layout row wrap>
         <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         <v-flex
           md12 sm12
+          v-if="mode === 'normal'"
           v-for="customMap in this.$store.state.customMaps"
           :key="customMap.id"
         >
@@ -33,7 +34,7 @@
           </customMap>
         </v-flex>
         <v-btn
-          v-if="$store.state.isUserLoggedIn"
+          v-if="$store.state.isUserLoggedIn && mode === 'normal'"
           v-on:click='nextPageLoadMaps'
           class="blue-grey white--text"
           block
@@ -43,16 +44,21 @@
         </v-btn>
       </v-layout>
     </v-container>
-    <v-container fluid v-else-if='mode === 1'>
-      <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
-        <i class="fa fa-close fa-lg"> Close</i>
-      </v-btn>
-      <cardDetails v-bind:customMap="explore_estate"></cardDetails>
-      <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
-        <i class="fa fa-close fa-lg"> Close</i>
-      </v-btn>
+    <v-container fluid v-else-if="mode === 'search'">
+      <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'search'">
+        Αποτελέσματα Αναζήτησης
+      </v-subheader>
+      <v-flex
+        md12 sm12
+        v-if="mode === 'search'"
+        v-for="customMap in searchResultcustomMaps"
+        :key="customMap.id"
+      >
+        <customMap :customMap='customMap' @explore="explore">
+        </customMap>
+      </v-flex>
     </v-container>
-  </div>
+  </v-container>
 </template>
 <script>
 import axios from 'axios';
@@ -67,11 +73,12 @@ export default {
       // customMaps: [],
       size: 'xl',
       expand: 'md12',
-      mode: 0,
       explore_estate: null,
       loading: false,
       searchMaps: '',
       page: 25,
+      mode: 'normal',
+      searchResultcustomMaps: [],
     };
   },
   components: {
@@ -118,6 +125,25 @@ export default {
           console.log('not logged in to see maps');
         } else {
           this.$store.dispatch('setCustomMaps', response.data);
+        }
+      }).then(() => {
+        this.loading = false;
+      });
+    },
+    searchCustomMaps() {
+      this.mode = 'search';
+      this.loading = true;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers/search`;
+      axios.get(url, {
+        params: {
+          keyword: this.searchMaps,
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        if (response.data.success === false) {
+          console.log('not logged in to see maps');
+        } else {
+          this.searchResultcustomMaps = response.data;
         }
       }).then(() => {
         this.loading = false;

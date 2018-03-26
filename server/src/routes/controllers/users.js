@@ -119,4 +119,58 @@ router.route('/updateprofile')
     });
   });
 
+
+  router.route('/search')
+  .get(function getusers(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      var collection = db.collection('users');
+      var keyword = req.query.keyword;
+
+      if (err) {
+        throw err;
+      } else {
+        collection.aggregate([
+          {
+            $match: {name: {$regex : ".*"+keyword+".*", '$options' : 'i'}},
+          },
+          {
+            $graphLookup: {
+              from: "collections",
+              startWith: "$_id",
+              connectFromField: "_id",
+              connectToField: "user",
+              as: "collectionData",
+            }
+          },{ "$project": {
+              "_id": 1,
+              "name": 1,
+              "description": 1,
+              "collectionData": {
+                 "$filter": {
+                     "input": "$collectionData",
+                     "as": "child",
+                     "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }] }
+                 }
+              }
+          }}
+          // ,{
+          //   $skip: start
+          // },
+          // {
+          //   $limit: end
+          // }
+        ], function handleCursor(error, users) {
+          if (error) {
+            res.sendStatus(500);
+            console.log(error);
+          } else {
+            // console.log(docs);
+            res.send(users);
+            db.close();
+          }  
+        })
+      }
+    });
+  });
+
 module.exports = router;

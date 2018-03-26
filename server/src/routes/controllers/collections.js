@@ -229,6 +229,47 @@ router.route('/collection')
             db.close();
         });
     });
+
     
+
+    router.route('/search')
+    .get(function searchcollections(req, res) {
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+            var userId = req.query.userId;
+            var keyword = req.query.keyword;
+            // console.log('get type:: ', type);
+            var collection = db.collection('collections');
+            if (err) {
+                console.log(err);
+            }
+            if (userId) {
+                // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
+                collection.find({
+                    $and: [
+                    {title: {$regex : ".*"+keyword+".*", '$options' : 'i'}},
+                    {$or: [
+                        { 
+                            visibility: 'public'
+                        },
+                        {
+                            $and: [
+                                { visibility: 'private' }, 
+                                { user: ObjectID(userId) }
+                            ]
+                        }
+                    ]}] }, {}).toArray(function handleCursor(error, docs) {
+                    // console.log(docs);
+                    var data = {};
+                    if (err) {
+                        res.sendStatus(500);
+                        console.log(error);
+                    } else {
+                        res.send(docs);
+                        db.close();
+                    }
+                });
+            }
+        });
+    });
     
 module.exports = router;

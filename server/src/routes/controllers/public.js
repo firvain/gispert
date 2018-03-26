@@ -90,12 +90,6 @@ router.route('/timeline')
         {
             $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
         },
-        {
-            $skip: start
-        },
-        {
-            $limit: end
-        },
         { "$project": {
             "_id": 1,
             "userId": 1,
@@ -118,6 +112,12 @@ router.route('/timeline')
             { 'isReplyTo': '' }, {'collectionData': { $size: 1 }}
           ]}
         },
+        {
+            $skip: start
+        },
+        {
+            $limit: end
+        }        
         ]);
     })
     .then(function (cursor) {

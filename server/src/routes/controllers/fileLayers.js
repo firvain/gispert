@@ -66,4 +66,30 @@ router.route('/id')
     });
   });
 
+
+  router.route('/search')
+  .get(function searchCustomLayers(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      var collection = db.collection('geodata');
+      var keyword = req.query.keyword;
+      console.log('keyword::', keyword);
+      if (err) {
+        console.log(err);
+      }
+      collection.find({ name: {$regex : ".*"+keyword+".*", '$options' : 'i'} }).toArray(function handleCursor(error, docs) {
+        var data = {};
+        if (error) {
+          res.sendStatus(500);
+          console.log(error);
+        } else {
+          // data = JSON.parse(docs);
+          // console.log(docs);
+          res.send(docs);
+          db.close();
+        }
+      });
+    });
+  });
+  
+  
 module.exports = router;

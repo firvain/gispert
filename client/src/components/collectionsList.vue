@@ -13,22 +13,22 @@
         ></v-text-field>
       </v-flex>
       <v-flex md4>
-        <v-btn fab outline v-on:click='mode = 0'>
+        <v-btn fab outline v-on:click='searchInCollections'>
           <v-icon color="green lighten-1">search</v-icon>
         </v-btn>
-        <v-btn fab outline v-on:click='mode = 0'>
+        <v-btn fab outline v-on:click="mode = 'normal'">
           <v-icon color="green lighten-1">clear</v-icon>
         </v-btn>
       </v-flex>
     </v-layout>
   </v-container>
-    <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
+    <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'normal'">
       <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
         <v-icon dark>add</v-icon>
       </v-btn>
       Προσωπικές Συλλογές
     </v-subheader>
-    <v-container fluid v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
+    <v-container fluid v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'normal'">
       <form v-if="newPrivateCollectionCard">
         <v-text-field
           v-model="newCollection.title"
@@ -61,13 +61,13 @@
       </p>
     </v-container>
 
-    <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
+    <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'normal'">
       <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
         <v-icon dark>add</v-icon>
       </v-btn>
       Δημόσιες Συλλογές
     </v-subheader>
-    <v-container fluid v-if="openedCollection === null">
+    <v-container fluid v-if="openedCollection === null && mode === 'normal'">
       <form v-if="newPublicCollectionCard">
         <v-text-field
           v-model="newCollection.title"
@@ -98,6 +98,22 @@
         </v-btn>
       </p>
     </v-container>
+
+
+    <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'search'">
+      Αποτελέσματα Αναζήτησης
+    </v-subheader>
+    <v-container fluid v-if="openedCollection === null && mode === 'search'">
+      <v-list
+        v-for="collection in searchResultsCollections"
+        :key="collection._id"
+      >
+        <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
+      </v-list>
+      <p v-if="searchResultsCollections.length == 0 && $store.state.isUserLoggedIn">Δεν υπάρχουν αποτελέσματα
+      </p>
+    </v-container>
+
     <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-snackbar
@@ -144,6 +160,8 @@ export default {
       snackbar: false,
       snackbarColor: 'green',
       openedCollection: null,
+      mode: 'normal',
+      searchResultsCollections: [],
     };
     // eslint-disable-line no-underscore-dangle
   },
@@ -244,6 +262,25 @@ export default {
         } else {
           this.$store.dispatch('setUsers', response.data);
         }
+      });
+    },
+    searchInCollections() {
+      this.loading = true;
+      this.mode = 'search';
+
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/search`;
+      axios.get(url, {
+        params: {
+          userId: this.getUserId(),
+          keyword: this.searchCollections,
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        this.searchResultsCollections = response.data;
+        // console.log('public collections fetched:: ', this.publicCollections);
+      }).then(() => {
+        this.loading = false;
+        // this.$store.dispatch('setPublicCollections', this.publicCollections);
       });
     },
   },
