@@ -118,6 +118,7 @@ export default {
     post,
   },
   mounted() {
+    this.members = this.collection.members;
   },
   computed: {
     collectionMembers(members) {
@@ -195,6 +196,14 @@ export default {
           this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
         }
         this.shareDialog = false;
+        if (this.collection.visibility === 'private') {
+          this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
+        }
+        if (this.collection.visibility === 'public') {
+          this.$store.dispatch('deletePrivateCollection', id);
+          this.$store.dispatch('deletePublicCollection', id);
+          this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+        }
       });
     },
   },
