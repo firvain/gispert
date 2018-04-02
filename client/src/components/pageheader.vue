@@ -287,6 +287,27 @@ export default {
           this.emailEdit = this.$store.state.user.email;
           this.descriptionEdit = this.$store.state.user.description;
         }
+      })
+      .then(() => {
+        this.loading = true;
+        const urlUsers = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+        axios.get(urlUsers, {
+          params: {
+            pageFrom: 0,
+            pageTo: 25,
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          if (response.data.success === false) {
+            console.log(response.data);
+            console.log('not logged in to see others');
+          } else {
+            this.$store.dispatch('setUsers', response.data);
+            // this.users = response.data;
+          }
+        }).then(() => {
+          this.loading = false;
+        });
       });
     },
     updateProfile() {

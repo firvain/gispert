@@ -196,7 +196,7 @@ router.route('/collection')
             } else {
                 db.collection('collections').update(
                     { _id: cId },
-                    { $push: { members: { $each: cids } } }
+                    { $set: { members: cids } }
                 );
                 res.status(200).send('OK');
             }
