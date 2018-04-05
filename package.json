@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "vue": "cd client && pm2 start ./build/dev-server.js  --name vue --",
+    "vue": "cd client && pm2 start ./build/dev-server.js  --name vue -- --open --hot",
     "server": "pm2 start server/src/app.js --watch --name server",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "app": "npm run server | npm run vue"
