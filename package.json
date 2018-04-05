@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "client": "cd client && npm run dev",
-    "server": "cd server && npm start",
-    "start": "concurrent \"npm run client\" \"npm run server\" "
+    "vue": "cd client && pm2 start ./build/dev-server.js  --name vue --",
+    "server": "pm2 start server/src/app.js --watch --name server",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "app": "npm run server | npm run vue"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,16 @@
   },
   "devDependencies": {
     "concurrently": "^1.0.0",
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.12.1",
+    "babel-core": "^6.0.0",
+    "babel-loader": "^6.0.0",
+    "babel-preset-latest": "^6.0.0",
+    "cross-env": "^3.0.0",
+    "css-loader": "^0.25.0",
+    "file-loader": "^0.9.0",
+    "vue-loader": "^11.1.4",
+    "vue-template-compiler": "^2.2.1",
+    "webpack": "^2.2.0",
+    "webpack-dev-server": "^2.2.0"    
   }
 }

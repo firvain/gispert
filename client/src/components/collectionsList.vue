@@ -1,6 +1,6 @@
 <template>
   <v-container id='collectionList' v-show="privateCollectionsContainer">
-  <v-container v-if="this.$store.state.isUserLoggedIn && openedCollection === null">
+  <v-container v-if="this.$store.state.isUserLoggedIn && openedCollection === null && openedPersonsTL === null">
     <v-layout row wrap>
       <v-flex md8>
         <v-text-field
@@ -26,7 +26,10 @@
       <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
         <v-icon dark>add</v-icon>
       </v-btn>
-      Προσωπικές Συλλογές
+      <v-tooltip bottom>
+        <span slot="activator">Προσωπικές Συλλογές</span>
+        <span>Είναι αυτές που μπορείτε να δείτε μόνο εσείς και οι χρήστες που καλείτε, δεν φαίνονται στην Αναζήτηση</span>
+      </v-tooltip>
     </v-subheader>
     <v-container fluid v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'normal'">
       <form v-if="newPrivateCollectionCard">
@@ -65,7 +68,10 @@
       <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
         <v-icon dark>add</v-icon>
       </v-btn>
-      Δημόσιες Συλλογές
+      <v-tooltip bottom>
+        <span slot="activator">Δημόσιες Συλλογές</span>
+        <span>Είναι αυτές που μπορούν να δουν όλοι, φαίνονται στην Αναζήτηση</span>
+      </v-tooltip>
     </v-subheader>
     <v-container fluid v-if="openedCollection === null && mode === 'normal'">
       <form v-if="newPublicCollectionCard">
@@ -88,8 +94,7 @@
       </form>
       <v-list
         v-for="collection in $store.state.publicCollections"
-        :key="collection._id"
-      >
+        :key="collection._id">
         <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
       <p v-if="publicCollections.length == 0 && $store.state.isUserLoggedIn">Δεν υπάρχουν δημόσιες συλλογές. Πρόσθεσε μία πατώντας
@@ -122,9 +127,11 @@
       color= snackbarColor
     >{{ message }}
     </v-snackbar>
-
     <collectionView v-if="openedCollection !== null" :id="openedCollection"></collectionView>
-    <v-btn block dark outline small color="green" @click="openedCollection = null" v-if="openedCollection !== null">
+    <userTimeline v-if="openedPersonsTL !== null" :id="openedPersonsTL"></userTimeline>
+    <v-btn block dark outline small color="green" 
+      @click="openedCollection = null; openedPersonsTL = null; mode = 'normal'" 
+      v-if="openedCollection !== null || openedPersonsTL !== null">
       <v-icon dark>undo</v-icon>
       Επιστροφη
     </v-btn>
@@ -136,6 +143,7 @@ import axios from 'axios';
 import config from '../config';
 import collection from './collection';
 import collectionView from './collectionView';
+import userTimeline from './userTimeline';
 
 export default {
   name: 'collectionList',
@@ -160,13 +168,14 @@ export default {
       snackbar: false,
       snackbarColor: 'green',
       openedCollection: null,
+      openedPersonsTL: null,
       mode: 'normal',
       searchResultsCollections: [],
     };
     // eslint-disable-line no-underscore-dangle
   },
   components: {
-    collection, collectionView,
+    collection, collectionView, userTimeline,
   },
   methods: {
     getUserId() {
@@ -285,6 +294,11 @@ export default {
     },
   },
   mounted() {
+    if (this.$route.params.id && this.$route.name === 'searchCollection') {
+      console.log('loading collection from permalink', this.openedPersonsTL);
+      this.openedPersonsTL = this.$route.params.id;
+      this.mode = 'userTL';
+    }
     if (this.$store.state.isUserLoggedIn) {
       this.loadPrivateCollections();
       this.loadPublicCollections();

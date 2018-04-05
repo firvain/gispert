@@ -4,9 +4,11 @@
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
           <div class="text-xs-left">
-            <a md12 @click="explore">@{{post.userName}}</a>
+            <a md12 @click="exploreTimeline(post.userId)">@{{post.userName}}</a>
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>
-            <p>{{timestamp}}</p>
+            <p><i>{{timestamp}} <br> Στη συλλογή: 
+              {{post.collectionData[0].title}}</i>
+            </p>
           </div>
         </v-card-title>
         <v-card-actions class="white">
@@ -226,6 +228,10 @@ export default {
     copyToClipboard() {
       clipboard(this.shareUrl);
     },
+    exploreTimeline(userId) {
+      console.log('explore:: ', userId);
+      this.$router.push({ path: `/main/search/collection/${userId}` });
+    },
   },
   computed: {
     timestamp() {
@@ -239,6 +245,9 @@ export default {
 };
 </script>
 <style>
+  a {
+    cursor: pointer;
+  }
   .link-network {
     border-style: solid;
     border-width: 1px;

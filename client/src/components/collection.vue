@@ -65,6 +65,7 @@
       <v-dialog v-model="deleteCollectionDialog" persistent max-width="290">
         <v-card>
           <v-card-title class="headline">Διαγραφή Συλλογής;</v-card-title>
+          <v-card-text>Θα διαγραφούν και όλες οι αναρτήσεις που περιλαμβάνει!</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="deleteCollection(collection._id)">NAI</v-btn>
@@ -118,7 +119,10 @@ export default {
     post,
   },
   mounted() {
-    this.members = this.collection.members;
+    console.log('collection mounted');
+    if (this.collection.members) {
+      this.members = this.collection.members;
+    }
   },
   computed: {
     collectionMembers(members) {

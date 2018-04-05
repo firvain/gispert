@@ -134,6 +134,7 @@ export default {
     },
   },
   mounted() {
+    // console.log('loading collection view id::', this.id);
     this.loading = true;
     let url;
     let userID;

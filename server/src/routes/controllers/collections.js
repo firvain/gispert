@@ -64,9 +64,12 @@ router.route('/delete')
             if (err) {
                 throw err;
             } else {
-                db.collection('collections').remove(
-                    { _id: cId }
-                );
+                db.collection('collections').remove({
+                    _id: cId 
+                });
+                db.collection('posts').deleteMany({
+                    collections : cId
+                });
                 res.status(200).send('OK');
             }
             db.close();

@@ -61,6 +61,11 @@ export default new Router({
           name: 'searchId',
           component: Search,
         },
+        {
+          path: 'search/collection/:id',
+          name: 'searchCollection',
+          component: Search,
+        },
       ],
     },
   ],

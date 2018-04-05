@@ -92,6 +92,7 @@ export default {
     },
     loadMaps() {
       if (this.$store.state.isUserLoggedIn) {
+        this.$store.dispatch('setCustomMaps', 'empty');
         this.loading = true;
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
         axios.get(url, {
@@ -104,6 +105,7 @@ export default {
           if (response.data.success === false) {
             console.log('not logged in to see maps');
           } else {
+            console.log('setting custom maps to vuex');
             this.$store.dispatch('setCustomMaps', response.data);
           }
         }).then(() => {

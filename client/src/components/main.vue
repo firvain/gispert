@@ -62,11 +62,16 @@ export default {
     this.olMap = true;
   },
   watch: {
-    '$route.params.id': function handle() {
+    '$route.params': function handle() {
       // console.log('main router changed and emitting!!!!!!', this.$route.params.id);
-      if (this.$route.params.id) {
+      if (this.$route.params.id && this.$route.name === 'searchId') {
+        console.log('loading post from permalink');
         this.loadPostFromPermalink();
       }
+      // if (this.$route.params.id && this.$route.name === 'searchCollection') {
+        // console.log('loading collection from permalink');
+        // this.loadCollectionFromPermalink(this.$route.params.id);
+      // }
       // this.$eventHub.$emit('routerChanged', 'routerChanged');
     },
   },
@@ -113,6 +118,10 @@ export default {
         });
       }
     },
+    // loadCollectionFromPermalink(id) {
+    //   console.log('loading collection from permalink');
+    //   this.$eventHub.$emit('openedcollection', id);
+    // },
   },
 
 };
