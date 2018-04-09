@@ -1,7 +1,7 @@
 <template>
   <v-layout column>
     <v-toolbar class="orange no-padding" dark>
-      <i class="fa fa-map fa-2x"></i><h6>Terra Cognita</h6><p>Collaborative Maps</p>
+      <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
       <v-spacer></v-spacer>
         <v-toolbar-items>
             <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false">

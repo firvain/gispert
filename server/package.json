@@ -1,7 +1,7 @@
 {
-  "name": "server",
+  "name": "geobabel-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "API for the geobabel app",
   "main": "index.js",
   "scripts": {
     "start": "node node_modules/nodemon/bin/nodemon.js src/app.js --exec",

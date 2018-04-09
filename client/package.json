@@ -1,7 +1,7 @@
 {
-  "name": "reb-ux",
+  "name": "geobabel-client",
   "version": "1.0.0",
-  "description": "The user interface for the real estate broker app",
+  "description": "The user interface for the geobabel app",
   "author": "Yiannis <ytsampouris@terracognita.gr>",
   "private": true,
   "scripts": {

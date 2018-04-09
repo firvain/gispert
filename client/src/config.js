@@ -4,4 +4,6 @@ module.exports = {
   APIversion: 'v1',
   APIhttpType: 'http',
   hostPost: '8080',
+  google_id: '',
+  facebook_id: '',
 };

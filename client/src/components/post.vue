@@ -6,7 +6,7 @@
           <div class="text-xs-left">
             <a md12 @click="exploreTimeline(post.userId)">@{{post.userName}}</a>
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>
-            <p><i>{{timestamp}} <br> Στη συλλογή: 
+            <p v-if="post.collectionData"><i>{{timestamp}} <br> Στη συλλογή:
               {{post.collectionData[0].title}}</i>
             </p>
           </div>

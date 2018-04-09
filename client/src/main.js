@@ -6,14 +6,15 @@ import 'vuetify/dist/vuetify.min.css';
 import App from './App';
 import router from './router';
 import store from './store';
+import config from './config';
 
 
 const SocialSharing = require('vue-social-sharing');
 const HelloJs = require('hellojs/dist/hello.all.min.js');
 const VueHello = require('vue-hellojs');
 
-const GOOGLE_APP_CLIENT_ID = '';
-const FACEBOOK_APP_CLIENT_ID = '';
+const GOOGLE_APP_CLIENT_ID = config.google_id;
+const FACEBOOK_APP_CLIENT_ID = config.facebook_id;
 HelloJs.init({
   google: GOOGLE_APP_CLIENT_ID,
   facebook: FACEBOOK_APP_CLIENT_ID,
