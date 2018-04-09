@@ -21,58 +21,90 @@
             </v-btn>
         </v-toolbar-items>
 
-    <v-dialog v-model="dialogRegister" max-width="290">
-      <v-card>
-        <v-card-title class="headline">{{ signupUserText}}</v-card-title>
-        <v-card-text>
-          <form
-          name="register-form"
-          autocomplete="off">
-          <v-text-field
-            label="Όνομα"
-            v-model="name"
-            :rules="nameRules"
-            single-line
-          ></v-text-field>
-          <br>
-          <v-text-field
-            label="Κωδικός"
-            type="password"
-            v-model="password"
-            :rules="passRules"
-            autocomplete="new-password"
-          ></v-text-field>
-          <br>
-          <v-text-field
-            label="Email"
-            v-model="email"
-            single-line
-          ></v-text-field>
-          <br>
-          <v-text-field
-            label="Γράψε αν θέλεις εδώ μια μικρή περιγραφή για σένα"
-            v-model="description"
-            single-line
-          ></v-text-field>
-        </form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-        <v-btn v-if="name.length > 0 && password.length > 0"
-          dark
-          class="cyan"
-          @click="register">
-          {{signup}}
-        </v-btn>
-          <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false">Άκυρο</v-btn>
-        </v-card-actions>
-      </v-card>
-              <v-snackbar
+    <v-dialog v-model="dialogRegister" max-width="400">
+      <v-tabs icons grow dark>
+        <v-tabs-bar class="orange">
+          <v-tabs-slider color="yellow"></v-tabs-slider>
+          <v-tabs-item href="#tab-1">
+            <v-icon>account_circle</v-icon>
+            Υπάρχον λογαριασμός
+          </v-tabs-item>
+          <v-tabs-item href="#tab-2">
+            <v-icon>control_point</v-icon>
+            Νέος λογαριασμός
+          </v-tabs-item>
+        </v-tabs-bar>
+        <v-tabs-items>
+          <v-tabs-content
+            id="tab-1"
+          >
+            <v-card flat>
+                <!-- https://www.npmjs.com/package/vue-hellojs -->
+                <!-- https://vue-hellojs-demo.surge.sh/#/ -->
+                <v-btn @click="auth('google')">Google</v-btn>
+                <v-btn @click="auth('facebook')">Facebook</v-btn>
+                <v-btn @click="auth('linkedin')">Linkedin</v-btn>
+                <v-btn @click="auth('twitter')">Twitter</v-btn>
+                <v-btn @click="auth('github')">Github</v-btn>
+            </v-card>
+          </v-tabs-content>
+          <v-tabs-content
+            id="tab-2"
+          >
+            <v-card>
+              <v-card-title class="headline">{{ signupUserText}}</v-card-title>
+              <v-card-text>
+                <form
+                name="register-form"
+                autocomplete="off">
+                <v-text-field
+                  label="Όνομα"
+                  v-model="name"
+                  :rules="nameRules"
+                  single-line
+                ></v-text-field>
+                <br>
+                <v-text-field
+                  label="Κωδικός"
+                  type="password"
+                  v-model="password"
+                  :rules="passRules"
+                  autocomplete="new-password"
+                ></v-text-field>
+                <br>
+                <v-text-field
+                  label="Email"
+                  v-model="email"
+                  single-line
+                ></v-text-field>
+                <br>
+                <v-text-field
+                  label="Γράψε αν θέλεις εδώ μια μικρή περιγραφή για σένα"
+                  v-model="description"
+                  single-line
+                ></v-text-field>
+              </form>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn v-if="name.length > 0 && password.length > 0"
+                  dark
+                  class="cyan"
+                  @click="register">
+                  {{signup}}
+                </v-btn>
+                <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false">Άκυρο</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-tabs-content>
+        </v-tabs-items>
+      </v-tabs>
+    </v-dialog>
+      <v-snackbar
         :timeout=5000
         v-model="snackbarRegisterError"
         color='red'
       >{{ alreadyInUseMessage }}</v-snackbar>
-    </v-dialog>
 
 
 
@@ -231,6 +263,23 @@ export default {
     };
   },
   methods: {
+    auth(network) {
+      const hello = this.hello;
+      hello(network).login().then(() => {
+        const authRes = hello(network).getAuthResponse();
+        console.log(authRes);
+        /*
+          performs operations using the token from authRes
+        */
+        hello(network).api('me').then((json) => {
+          const profile = json;
+          console.log(profile);
+          /*
+            performs operations using the user info from profile
+          */
+        });
+      });
+    },
     showRegisterDialogue() {
       this.dialogRegister = true;
     },
@@ -344,3 +393,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+  v-tabs-item {
+    color : white;
+  }
+</style>

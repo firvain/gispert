@@ -9,6 +9,19 @@ import store from './store';
 
 
 const SocialSharing = require('vue-social-sharing');
+const HelloJs = require('hellojs/dist/hello.all.min.js');
+const VueHello = require('vue-hellojs');
+
+const GOOGLE_APP_CLIENT_ID = '';
+const FACEBOOK_APP_CLIENT_ID = '';
+HelloJs.init({
+  google: GOOGLE_APP_CLIENT_ID,
+  facebook: FACEBOOK_APP_CLIENT_ID,
+}, {
+  redirect_uri: 'authcallback/',
+});
+Vue.use(VueHello, HelloJs);
+
 /* eslint-disable */
 Vue.prototype.$eventHub = new Vue(); // Global event bus
 
