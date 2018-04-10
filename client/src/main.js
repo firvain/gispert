@@ -2,12 +2,13 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
 import Vuex from 'vuex';
+import VueI18n from 'vue-i18n';
 import 'vuetify/dist/vuetify.min.css';
 import App from './App';
 import router from './router';
 import store from './store';
 import config from './config';
-
+import messages from './i18n/languages';
 
 const SocialSharing = require('vue-social-sharing');
 const HelloJs = require('hellojs/dist/hello.all.min.js');
@@ -28,8 +29,21 @@ Vue.prototype.$eventHub = new Vue(); // Global event bus
 
 Vue.config.productionTip = false;
 
+Vue.use(Vuex);
+Vue.use(SocialSharing);
+Vue.use(VueI18n);
+
+
+const i18n = new VueI18n({
+  locale: 'en', // set locale
+  // fallbackLocale: 'en',
+  messages // set locale messages
+})
+
+
 /* eslint-disable no-new */
-new Vue({
+export const app = new Vue({
+  i18n,
   el: '#app',
   store,
   router,
@@ -37,8 +51,6 @@ new Vue({
   components: { App },
 });
 
-Vue.use(Vuex);
-Vue.use(SocialSharing);
 
 // Register a global custom directive called v-focus
 Vue.directive('focus', {
@@ -57,3 +69,5 @@ Array.prototype.remove = function remove() {
     }
     return this;
 };
+
+export default i18n;

@@ -5,10 +5,10 @@
       <v-spacer></v-spacer>
         <v-toolbar-items>
             <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false">
-              {{signup}}
+              {{ $t("message.register") }}
             </v-btn>
             <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false">
-              {{login_txt}}
+              {{ $t("message.login") }}
             </v-btn>
             <v-btn flat @click='showProfileDialogue' v-if="$store.state.isUserLoggedIn === true">
               {{$store.state.user.name}}
@@ -17,8 +17,18 @@
               {{profile_txt}}
             </v-btn> -->
             <v-btn flat @click='logoutUser' v-if="$store.state.isUserLoggedIn === true">
-              {{logout_txt}}
+              {{ $t("message.logout") }}
             </v-btn>
+            <v-select
+              @change="setLocale"
+              v-bind:items="languages"
+              item-text="name"
+              item-value="id"
+              v-model="language"
+              label="Select"
+              single-line
+              bottom
+            ></v-select>
         </v-toolbar-items>
 
     <v-dialog v-model="dialogRegister" max-width="400">
@@ -27,11 +37,11 @@
           <v-tabs-slider color="yellow"></v-tabs-slider>
           <v-tabs-item href="#tab-1">
             <v-icon>account_circle</v-icon>
-            Υπάρχον λογαριασμός
+            {{ $t("message.existingAccount") }}
           </v-tabs-item>
           <v-tabs-item href="#tab-2">
             <v-icon>control_point</v-icon>
-            Νέος λογαριασμός
+            {{ $t("message.newAccount") }}
           </v-tabs-item>
         </v-tabs-bar>
         <v-tabs-items>
@@ -52,7 +62,7 @@
             id="tab-2"
           >
             <v-card>
-              <v-card-title class="headline">{{ signupUserText}}</v-card-title>
+              <v-card-title class="headline">{{ $t("message.registerUserText") }}</v-card-title>
               <v-card-text>
                 <form
                 name="register-form"
@@ -91,9 +101,11 @@
                   dark
                   class="cyan"
                   @click="register">
-                  {{signup}}
+                  {{ $t("message.register")}}
                 </v-btn>
-                <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false">Άκυρο</v-btn>
+                <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false">
+                  {{ $t("message.cancel")}}
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-tabs-content>
@@ -104,7 +116,7 @@
         :timeout=5000
         v-model="snackbarRegisterError"
         color='red'
-      >{{ alreadyInUseMessage }}</v-snackbar>
+      >{{ $t("message.alreadyInUseMessage") }}</v-snackbar>
 
 
 
@@ -134,7 +146,7 @@
           dark
           class="cyan"
           @click="login(credentials)">
-          {{login_txt}}
+          {{ $t("message.login")}}
         </v-btn>
           <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">Άκυρο</v-btn>
         </v-card-actions>
@@ -149,7 +161,7 @@
 
     <v-dialog v-model="dialogProfile" max-width="290">
       <v-card>
-        <v-card-title class="headline">Προφίλ χρήστη</v-card-title>
+        <v-card-title class="headline">{{ $t("message.profile") }}</v-card-title>
         <v-card-text>
           <form
           name="profile-form"
@@ -185,32 +197,34 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-        <v-btn
-          dark
-          class="cyan"
-          @click="updateProfile">
-          {{saveProfile}}
-        </v-btn>
-          <v-btn color="green darken-1" flat="flat" @click.native="dialogProfile = false">Άκυρο</v-btn>
+          <v-btn
+            dark
+            class="cyan"
+            @click="updateProfile">
+            {{ $t("message.save") }}
+          </v-btn>
+          <v-btn color="green darken-1" flat="flat" @click.native="dialogProfile = false">
+            {{ $t("message.cancel") }}
+          </v-btn>
         </v-card-actions>
       </v-card>
       <v-snackbar
         :timeout=5000
         v-model="snackbarRegisterError"
         color='red'
-      >{{ alreadyInUseMessage }}</v-snackbar>
+      >{{ $t("message.alreadyInUseMessage") }}</v-snackbar>
     </v-dialog>
 
       <v-snackbar
         :timeout=5000
         v-model="snackbarLoggedIn"
         color='green'
-      >{{ youAreLoggedIn }}</v-snackbar>
+      >{{ $t("message.youAreLoggedIn") }}</v-snackbar>
       <v-snackbar
         :timeout=5000
         v-model="snackbarRegistered"
         color='green'
-      >{{ youAreRegistered }}</v-snackbar>
+      >{{ $t("message.youAreRegistered") }}</v-snackbar>
 
     </v-toolbar>
   </v-layout>
@@ -219,16 +233,11 @@
 import axios from 'axios';
 import AuthenticationService from '@/services/AuthenticationService';
 import config from '../config';
+import { app } from '../main';
 
 export default {
   data() {
     return {
-      signup: 'Εγγραφή',
-      signupUserText: 'Εγγραφή νέου χρήστη',
-      login_txt: 'Είσοδος',
-      logout_txt: 'Έξοδος',
-      profile_txt: 'Προφίλ',
-      saveProfile: 'Αποθήκευση',
       dialogRegister: false,
       dialogLogin: false,
       dialogProfile: false,
@@ -242,9 +251,6 @@ export default {
       snackbarLoginError: false,
       snackbarLoggedIn: false,
       snackbarRegistered: false,
-      alreadyInUseMessage: 'Το όνομα χρησιμοποιείται από άλλο χρήστη. Διαλέξτε ένα άλλο.',
-      youAreRegistered: 'Έχετε εγγραφεί!',
-      youAreLoggedIn: 'Έχετε εισέλθει!',
       nameRules: [
         v => !!v || 'To όνομα είναι απαραίτητο για να προχωρήσετε.',
       ],
@@ -260,6 +266,16 @@ export default {
         email: '',
         password: '',
       },
+      language: { id: 'en', name: 'English' },
+      languages: [
+        { id: 'en', name: 'English' },
+        { id: 'fr', name: 'French' },
+        { id: 'el_GR', name: 'Ελληνικά' },
+        { id: 'de', name: 'German' },
+        { id: 'it', name: 'Italian' },
+        { id: 'es', name: 'Spanish' },
+        { id: 'nn', name: 'Norwegian' },
+      ],
     };
   },
   methods: {
@@ -335,6 +351,8 @@ export default {
           this.$eventHub.$emit('logged-in');
           this.emailEdit = this.$store.state.user.email;
           this.descriptionEdit = this.$store.state.user.description;
+          this.setLocale(response.data.user.locale);
+          this.language = response.data.user.locale;
         }
       })
       .then(() => {
@@ -389,6 +407,10 @@ export default {
       // this.$store.dispatch('removeNewPostFeature', null);
       // this.$store.dispatch('setPostIdToAddFeatures', null);
       // console.log(this.$store.state.isUserLoggedIn);
+    },
+    setLocale: (value) => {
+      // console.log('setting locale to ::', value);
+      app.$i18n.locale = value;
     },
   },
 };

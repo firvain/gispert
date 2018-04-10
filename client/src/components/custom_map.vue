@@ -6,13 +6,13 @@
           <div>
               <p class="text-xs-left" md12 v-if="customMap.name"><b>{{customMap.name}}</b></p>
               <p class="text-xs-left">{{customMap.description}}</p>
-              <p class="text-xs-left">Δημιουργήθηκε από: <b>@{{customMap.user}}</b></p>
+              <p class="text-xs-left">{{ $t("message.createdBy")}}: <b>@{{customMap.user}}</b></p>
           </div>
         </v-card-title>
         <v-card-actions class="white">
           <v-spacer></v-spacer>
           <v-card-actions>
-            <v-btn class="green white--text darken-1" @click="explore(customMap.id)">Ανοιξε αυτο χαρτη</v-btn>
+            <v-btn class="green white--text darken-1" @click="explore(customMap.id)">{{ $t("message.openMap")}}</v-btn>
             <!-- <v-btn class="green white--text darken-1" @click="shareMapDialog = true">Μοιρασου αυτο χαρτη</v-btn> -->
             <social-sharing :url="shareMapUrl" inline-template>
               <div>

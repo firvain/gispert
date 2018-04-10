@@ -5,19 +5,19 @@
         <v-tabs-slider color="yellow"></v-tabs-slider>
         <v-tabs-item :to="{name: 'home'}">
           <v-icon>timeline</v-icon>
-          Χρονολογιο
+          {{ $t("message.timeline") }}
         </v-tabs-item>
         <v-tabs-item :to="{name: 'search'}">
           <v-icon>search</v-icon>
-          Εξερευνηση
+          {{ $t("message.explore") }}
         </v-tabs-item>
         <v-tabs-item :to="{name: 'customMapsNoId'}">
           <v-icon>map</v-icon>
-          Χαρτες
+          {{ $t("message.maps") }}
         </v-tabs-item>
         <v-tabs-item :to="{name: 'userList'}">
           <v-icon>fa-user-o</v-icon>
-          Χρηστες
+          {{ $t("message.users") }}
         </v-tabs-item>
       </v-tabs-bar>
     </v-tabs>

@@ -191,7 +191,9 @@ export default {
   name: 'app',
   components: {
   },
-  data: { landingPage: true },
+  data() {
+    return { landingPage: false };
+  },
 };
 </script>
 

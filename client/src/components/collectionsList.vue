@@ -27,7 +27,7 @@
         <v-icon dark>add</v-icon>
       </v-btn>
       <v-tooltip bottom>
-        <span slot="activator">Προσωπικές Συλλογές</span>
+        <span slot="activator">{{ $t("message.privateCollections") }}</span>
         <span>Είναι αυτές που μπορείτε να δείτε μόνο εσείς και οι χρήστες που καλείτε, δεν φαίνονται στην Αναζήτηση</span>
       </v-tooltip>
     </v-subheader>
@@ -69,7 +69,7 @@
         <v-icon dark>add</v-icon>
       </v-btn>
       <v-tooltip bottom>
-        <span slot="activator">Δημόσιες Συλλογές</span>
+        <span slot="activator">{{ $t("message.publicCollections") }}</span>
         <span>Είναι αυτές που μπορούν να δουν όλοι, φαίνονται στην Αναζήτηση</span>
       </v-tooltip>
     </v-subheader>
@@ -129,8 +129,8 @@
     </v-snackbar>
     <collectionView v-if="openedCollection !== null" :id="openedCollection"></collectionView>
     <userTimeline v-if="openedPersonsTL !== null" :id="openedPersonsTL"></userTimeline>
-    <v-btn block dark outline small color="green" 
-      @click="openedCollection = null; openedPersonsTL = null; mode = 'normal'" 
+    <v-btn block dark outline small color="green"
+      @click="openedCollection = null; openedPersonsTL = null; mode = 'normal'"
       v-if="openedCollection !== null || openedPersonsTL !== null">
       <v-icon dark>undo</v-icon>
       Επιστροφη

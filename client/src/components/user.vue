@@ -14,7 +14,7 @@
             label= "Ζωντανή μετάδοση"
             v-model="showLive"
             color="success"
-          ></v-switch>          
+          ></v-switch>
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <v-select
@@ -30,7 +30,7 @@
               persistent-hint
               v-on:change="listChanged = true"
             ></v-select>
-            <span>Δες τις δημόσιες συλλογές και ακολούθα τες</span>
+            <span>{{ $t("message.checkCollectionsOut")}}</span>
           </v-tooltip>
           <v-btn fab outline small v-if="listChanged" @click="addMembershipToCollections()">
             <v-icon color="green lighten-1">save</v-icon>
@@ -68,7 +68,7 @@ export default {
       })
       .then(() => {
         this.listChanged = false;
-        console.log('mark as followed and notify user');
+        // console.log('mark as followed and notify user');
       });
     },
   },

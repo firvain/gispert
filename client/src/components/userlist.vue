@@ -44,14 +44,14 @@
         class="blue-grey white--text"
         block
       >
-        φορτωση περισσότερων
+        {{ $t("message.loadMore")}}
         <v-icon right dark>navigate_next</v-icon>
       </v-btn>
     </v-container>
     <userTimeline :id="exploreCollection._id" v-if="mode === 'explore'"></userTimeline>
     <v-btn block dark outline small color="green" @click="exploreCollection = null; mode = 'normal';" v-if="exploreCollection !== null && mode==='explore'">
       <v-icon dark>undo</v-icon>
-      Επιστροφη
+      {{ $t("message.back")}}
     </v-btn>
     <v-container v-if="mode === 'search'">
       <v-flex
