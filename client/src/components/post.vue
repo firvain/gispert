@@ -14,22 +14,25 @@
         <v-card-actions class="white">
           <!-- <v-spacer></v-spacer> -->
             <v-tooltip bottom>
-              <v-btn slot="activator" v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">Δες το στο χάρτη<v-icon right dark>language</v-icon></v-btn>
-              <span>Βάλτο στο χάρτη</span>
+              <v-btn slot="activator" v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">
+                {{ $t("message.showOnMap") }}
+                <v-icon right dark>language</v-icon>
+              </v-btn>
+              <span>{{ $t("message.showOnMapTooltip") }}</span>
             </v-tooltip>
             <v-tooltip bottom>
               <v-btn slot="activator" v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
-                {{answerPostText}}
+                {{ $t("message.reply") }}
                 <v-icon right dark>reply</v-icon>
               </v-btn>
-              <span>Απάντησε με μια ανάρτηση!</span>
+              <span>{{ $t("message.replyTooltip") }}!</span>
             </v-tooltip>
             <v-tooltip bottom v-if="post.replies">
               <v-btn color="green" slot="activator" outline small fab v-if="post.repliesData == undefined && post.replies.length > 0" @click="showMoreReplies">
                 <v-icon large color="grey">insert_comment</v-icon>
                 {{ post.replies.length }}
               </v-btn>
-              <span>Δες απαντήσεις</span>
+              <span>{{ $t("message.viewReplies") }}</span>
             </v-tooltip>
               <social-sharing :url="sharePostUrl" inline-template>
                 <div>
@@ -37,13 +40,13 @@
                     <network slot="activator" network="facebook" class="link-network">
                       <i class="fa fa-fw fa-facebook"></i>
                     </network>
-                    <span>Μοιράσου το στο Facebook!</span>
+                    <span>{{ $t("message.shareOn") }} Facebook!</span>
                   </v-tooltip>
                   <v-tooltip bottom>
                     <network slot="activator" network="linkedin" class="link-network">
                       <i class="fa fa-fw fa-linkedin"></i>
                     </network>
-                    <span>Μοιράσου το στο LinkedIn!</span>
+                    <span>{{ $t("message.shareOn") }} LinkedIn!</span>
                   </v-tooltip>
                 </div>
               </social-sharing>
@@ -51,7 +54,7 @@
                 <v-btn outline fab small slot="activator" @click="shareLink = !shareLink; copyToClipboard();" class="link-network">
                   <i class="fa fa-fw fa-link"></i>
                 </v-btn>
-                <span>Μοιράσου το Link!</span>
+                <span>{{ $t("message.shareLink") }}!</span>
               </v-tooltip>
 
         </v-card-actions>
@@ -86,11 +89,11 @@
     <v-dialog v-model="shareLink" persistent max-width="500px">
       <v-card>
         <v-card-title>
-          <span class="headline">Share link</span>
+          <span class="headline">{{ $t("message.shareLink") }}</span>
         </v-card-title>
         <v-card-text>
-          <p>Έχει γίνει αντιγραφή του συνδέσμου. Μπορείτε να κάνετε επικόλληση οπουδήποτε θέλετε με Control+V ή δεξί κλίκ Επικόλληση</p>
-          <v-btn color="blue darken-1" flat @click.native="shareLink = false">Close</v-btn>
+          <p>{{ $t("message.linkCopied") }}</p>
+          <v-btn color="blue darken-1" flat @click.native="shareLink = false">{{ $t("message.close") }}</v-btn>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -112,7 +115,6 @@ export default {
   name: 'post',
   data: () => ({
     answerPost: false,
-    answerPostText: 'απαντησε',
     answerPostColor: 'green',
     answerPostTextColor: 'white--text darken-1',
     newPostInfo: '',

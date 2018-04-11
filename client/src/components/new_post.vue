@@ -7,8 +7,8 @@
             <v-text-field @focus="showMapTools"
               autofocus
               name="input-1"
-              label="Γράψε εδώ κείμενο."
-              hint="Γράψε εδώ το κείμενό σου. Μπορείς να σχεδιάσεις και στο χάρτη!"
+              :label="$t('message.youMayWriteText')"
+              :hint="$t('message.youMayWriteAndSketch')"
               v-model="postText"
               id="postText"
               counter
@@ -26,7 +26,7 @@
               @click= "showMapTools">
               <v-icon>edit</v-icon>
             </v-btn>
-            <span>Σχεδίασε στο χάρτη και θα προστεθεί το σχέδιο στην ανάρτηση!</span>
+            <span>{{ $t('message.sketchToAddToPost') }}</span>
           </v-tooltip>
           <v-chip close v-for="f in drawnFeatures" :key='f.drawId' @input="remove(f.drawId)">
             {{ f.getGeometry().getType() }}
@@ -37,17 +37,17 @@
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
-              label="Συλλογές"
+              :label="$t('message.collections')"
               single-line
               item-text="title"
               item-value="_id"
               return-object
-              hint='Διάλεξε συλλογή'
+              :hint="$t('message.chooseCollection')"
               persistent-hint
             ></v-select>
           </v-flex>
           <v-flex xs6 sm6 md6>
-            <v-btn flat class="green white--text darken-1" @click="publishPost">Δημοσιευση<v-icon right dark>insert_comment</v-icon></v-btn>
+            <v-btn flat class="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}<v-icon right dark>insert_comment</v-icon></v-btn>
             <v-btn small fab class="green white--text">
               <v-icon white--text dark>help_outline</v-icon>
             </v-btn>
@@ -125,7 +125,7 @@ export default {
           // console.log(response.data);
           // TODO must handle response
           this.postText = '';
-          this.newPostInfo = 'Δημοσιεύτηκε!';
+          this.newPostInfo = this.$t('message.published');
           this.snackbarColor = 'green';
           this.snackbarNewPost = true;
 
@@ -141,7 +141,7 @@ export default {
           }
         });
       } else {
-        this.newPostInfo = 'Δεν υπάρχει κείμενο ή αντικείμενα του χάρτη. Γράψτε ή σχεδιάστε κάτι πριν πατήσετε Δημοσίευση';
+        this.newPostInfo = this.$t('message.errorNoTextOrSketches');
         this.snackbarColor = 'red';
         this.snackbarNewPost = true;
       }

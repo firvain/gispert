@@ -10,7 +10,7 @@
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
       </v-btn>
-      <span>Φτιάξε μία νέα ανάρτηση με στοιχεία του χάρτη και κείμενο και δημοσίευσέ τη!!!</span>
+      <span>{{ $t('message.newPostHint')}}!!!</span>
     </v-tooltip>
     <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true"></newPost>
     <v-layout row wrap>
@@ -39,7 +39,7 @@
       class="blue-grey white--text"
       block
     >
-      φορτωση περισσότερων
+      {{ $t('message.loadMore')}}
       <v-icon right dark>navigate_next</v-icon>
     </v-btn>
   </div>
@@ -66,7 +66,7 @@ export default {
       newPost: false,
       newPostColor: 'blue-grey',
       newPostTextColor: 'white--text darken-1',
-      newPostText: 'νεα αναρτηση',
+      newPostText: this.$t('message.newPost'),
       loading: false,
     };
   },
@@ -124,11 +124,11 @@ export default {
     },
     toggle_new_post() {
       this.newPost = !this.newPost;
-      if (this.newPostText === 'ακυρο') {
-        this.newPostText = 'νεα αναρτηση';
+      if (this.newPostText === this.$t('message.cancel')) {
+        this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
       } else {
-        this.newPostText = 'ακυρο';
+        this.newPostText = this.$t('message.cancel');
         this.newPostColor = 'red';
       }
     },

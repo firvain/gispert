@@ -5,8 +5,8 @@
       <v-flex md8>
         <v-text-field
           name="search-input"
-          label="Αναζήτηση"
-          hint="Τουλάχιστον 4 χαρακτήρες"
+          :label="$t('message.search')"
+          :hint="$t('message.searchHint')"
           v-model="searchCollections"
           min="4"
           append-icon="search"
@@ -28,27 +28,27 @@
       </v-btn>
       <v-tooltip bottom>
         <span slot="activator">{{ $t("message.privateCollections") }}</span>
-        <span>Είναι αυτές που μπορείτε να δείτε μόνο εσείς και οι χρήστες που καλείτε, δεν φαίνονται στην Αναζήτηση</span>
+        <span>{{ $t('message.privateCollectionsHint')}}</span>
       </v-tooltip>
     </v-subheader>
     <v-container fluid v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'normal'">
       <form v-if="newPrivateCollectionCard">
         <v-text-field
           v-model="newCollection.title"
-          label="Τίτλος"
+          :label="$t('message.title')"
           :counter="32"
           data-vv-name="name"
           required
         ></v-text-field>
         <v-text-field
           v-model="newCollection.description"
-          label="Περιγραφή"
+          :label="$t('message.description')"
           :counter="32"
           data-vv-name="name"
           required
         ></v-text-field>
-        <v-btn @click="createCollection">Αποθηκευση</v-btn>
-        <v-btn @click="newPrivateCollectionCard = false">Ακυρο</v-btn>
+        <v-btn @click="createCollection">{{ $t('message.save') }}</v-btn>
+        <v-btn @click="newPrivateCollectionCard = false">{{ $t('message.cancel') }}</v-btn>
       </form>
       <v-list
         v-if="$store.state.privateCollections"
@@ -57,7 +57,7 @@
       >
         <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
-      <p v-if="privateCollections.length == 0 && $store.state.isUserLoggedIn">Δεν υπάρχουν προσωπικές συλλογές. Πρόσθεσε μία πατώντας
+      <p v-if="privateCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noPrivateCollections')}}
         <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
           <v-icon dark>add</v-icon>
         </v-btn>
@@ -70,34 +70,34 @@
       </v-btn>
       <v-tooltip bottom>
         <span slot="activator">{{ $t("message.publicCollections") }}</span>
-        <span>Είναι αυτές που μπορούν να δουν όλοι, φαίνονται στην Αναζήτηση</span>
+        <span>{{ $t('message.publicCollectionsHint') }}</span>
       </v-tooltip>
     </v-subheader>
     <v-container fluid v-if="openedCollection === null && mode === 'normal'">
       <form v-if="newPublicCollectionCard">
         <v-text-field
           v-model="newCollection.title"
-          label="Τίτλος"
+          :label="$t('message.title')"
           :counter="10"
           data-vv-name="name"
           required
         ></v-text-field>
         <v-text-field
           v-model="newCollection.description"
-          label="Περιγραφή"
+          :label="$t('message.description')"
           :counter="10"
           data-vv-name="name"
           required
         ></v-text-field>
-        <v-btn @click="createCollection">Αποθηκευση</v-btn>
-        <v-btn @click="newPublicCollectionCard = false">Ακυρο</v-btn>
+        <v-btn @click="createCollection">{{ $t('message.save') }}</v-btn>
+        <v-btn @click="newPublicCollectionCard = false">{{ $t('message.cancel') }}</v-btn>
       </form>
       <v-list
         v-for="collection in $store.state.publicCollections"
         :key="collection._id">
         <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
-      <p v-if="publicCollections.length == 0 && $store.state.isUserLoggedIn">Δεν υπάρχουν δημόσιες συλλογές. Πρόσθεσε μία πατώντας
+      <p v-if="publicCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noPublicCollections')}}
         <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
           <v-icon dark>add</v-icon>
         </v-btn>
@@ -106,7 +106,7 @@
 
 
     <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'search'">
-      Αποτελέσματα Αναζήτησης
+      {{ $t('message.searchResults')}}
     </v-subheader>
     <v-container fluid v-if="openedCollection === null && mode === 'search'">
       <v-list
@@ -115,7 +115,7 @@
       >
         <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
-      <p v-if="searchResultsCollections.length == 0 && $store.state.isUserLoggedIn">Δεν υπάρχουν αποτελέσματα
+      <p v-if="searchResultsCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noResults')}}
       </p>
     </v-container>
 
@@ -133,7 +133,7 @@
       @click="openedCollection = null; openedPersonsTL = null; mode = 'normal'"
       v-if="openedCollection !== null || openedPersonsTL !== null">
       <v-icon dark>undo</v-icon>
-      Επιστροφη
+      {{ $t('message.back')}}
     </v-btn>
 
   </v-container>
@@ -205,7 +205,7 @@ export default {
         {
           headers: { 'x-access-token': this.$store.state.token },
         }).then(() => {
-          this.message = 'Προστέθηκε μία συλλογή!';
+          this.message = this.$t('message.collectionAddedToast');
           this.snackbarColor = 'green';
           this.snackbar = true;
           if (this.newCollection.visibility === 'public') {

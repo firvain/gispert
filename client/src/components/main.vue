@@ -7,11 +7,11 @@
           <v-dialog v-model="postOpen" max-width="700px">
             <v-card>
               <v-card-title>
-                <span class="headline">{{ $t("message.post", language) }}</span>
+                <span class="headline">{{ $t("message.post") }}</span>
               </v-card-title>
               <v-card-text>
                 <post :post='postContent' v-if="postContent !== null"></post>
-                <v-btn color="blue darken-1" flat @click.native="postOpen = false">{{ $t("message.close", language) }}</v-btn>
+                <v-btn color="blue darken-1" flat @click.native="postOpen = false">{{ $t("message.close") }}</v-btn>
               </v-card-text>
             </v-card>
           </v-dialog>

@@ -20,6 +20,7 @@
               {{ $t("message.logout") }}
             </v-btn>
             <v-select
+              class="select"
               @change="setLocale"
               v-bind:items="languages"
               item-text="name"
@@ -68,14 +69,14 @@
                 name="register-form"
                 autocomplete="off">
                 <v-text-field
-                  label="Όνομα"
+                  :label="$t('message.name')"
                   v-model="name"
                   :rules="nameRules"
                   single-line
                 ></v-text-field>
                 <br>
                 <v-text-field
-                  label="Κωδικός"
+                  :label="$t('message.password')"
                   type="password"
                   v-model="password"
                   :rules="passRules"
@@ -89,7 +90,7 @@
                 ></v-text-field>
                 <br>
                 <v-text-field
-                  label="Γράψε αν θέλεις εδώ μια μικρή περιγραφή για σένα"
+                  :label="$t('message.userDescriptionHint')"
                   v-model="description"
                   single-line
                 ></v-text-field>
@@ -122,18 +123,18 @@
 
     <v-dialog v-model="dialogLogin" max-width="290">
       <v-card>
-        <v-card-title class="headline">Σύνδεση στο λογαριασμό</v-card-title>
+        <v-card-title class="headline">{{ $t("message.accountLogin")}}</v-card-title>
         <v-card-text>
         <form
           name="login-form"
           autocomplete="off">
           <v-text-field
-            label="Όνομα ή email"
+            :label = "$t('message.name')"
             v-model="credentials.email"
           ></v-text-field>
           <br>
           <v-text-field
-            label="Κωδικός"
+            :label="$t('message.password')"
             type="password"
             v-model="credentials.password"
             autocomplete="new-password"
@@ -148,7 +149,7 @@
           @click="login(credentials)">
           {{ $t("message.login")}}
         </v-btn>
-          <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">Άκυρο</v-btn>
+          <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">{{ $t("message.cancel")}}</v-btn>
         </v-card-actions>
       </v-card>
       <v-snackbar
@@ -189,7 +190,7 @@
           ></v-text-field>
           <br>
           <v-text-field
-            label="Γράψε αν θέλεις εδώ μια μικρή περιγραφή για σένα"
+            :label="$t('message.userDescriptionHint')"
             v-model="descriptionEdit"
             single-line
           ></v-text-field>
@@ -252,16 +253,16 @@ export default {
       snackbarLoggedIn: false,
       snackbarRegistered: false,
       nameRules: [
-        v => !!v || 'To όνομα είναι απαραίτητο για να προχωρήσετε.',
+        v => !!v || this.$t('message.userNameMissing'),
       ],
       passRules: [
-        v => !!v || 'Ο κωδικός είναι απαραίτητος για να προχωρήσετε.',
-        v => v.length > 7 || 'Ο κωδικός πρέπει να περιέχει περισσότερους από 8 χαρακτήρες, για την δική σας ασφάλεια.',
+        v => !!v || this.$t('message.passwordMissing'),
+        v => v.length > 7 || this.$t('message.passwordWeak'),
       ],
       emailRules: [
-        v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'Το email πρέπει να έχει σωστή μορφή.', // eslint-disable-line no-useless-escape
+        v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || this.$t('message.emailErrorFormat'), // eslint-disable-line no-useless-escape
       ],
-      wrongLoginInfo: 'Λάθος στοιχεία εισόδου',
+      wrongLoginInfo: this.$t('message.credentialsError'),
       credentials: {
         email: '',
         password: '',
@@ -418,5 +419,8 @@ export default {
 <style scoped>
   v-tabs-item {
     color : white;
+  }
+  .select {
+    z-index: 999999;
   }
 </style>

@@ -4,8 +4,8 @@
       <v-flex md8>
         <v-text-field
           name="search-input"
-          label="Αναζήτηση"
-          hint="Τουλάχιστον 4 χαρακτήρες"
+          :label="$t('message.search')"
+          :hint="$t('message.searchHint')"
           v-model="searchMaps"
           min="4"
           append-icon="search"
@@ -39,14 +39,14 @@
           class="blue-grey white--text"
           block
         >
-          φορτωση περισσότερων
+          {{ $t('message.loadMore')}}
           <v-icon right dark>navigate_next</v-icon>
         </v-btn>
       </v-layout>
     </v-container>
     <v-container fluid v-else-if="mode === 'search'">
       <v-subheader inset v-if="this.$store.state.isUserLoggedIn && openedCollection === null && mode === 'search'">
-        Αποτελέσματα Αναζήτησης
+        {{ $t('message.searchResults')}}
       </v-subheader>
       <v-flex
         md12 sm12

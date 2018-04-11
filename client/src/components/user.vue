@@ -11,7 +11,7 @@
         <v-card-actions class="grey lighten-3">
           <v-switch
             slot="activator"
-            label= "Ζωντανή μετάδοση"
+            :label="$t('message.liveMapUpdate')"
             v-model="showLive"
             color="success"
           ></v-switch>
@@ -19,14 +19,14 @@
           <v-tooltip bottom>
             <v-select
               slot="activator"
-              label="Επιλογή"
+              :label="$t('message.choose')"
               :items="userCollections"
               item-text="title"
               item-value="_id"
               v-model="selectedCollections"
               multiple
               max-height="400"
-              hint="Διάλεξε ποιες συλλογές θα παρακολουθείς"
+              :hint="$t('message.chooseCollectionsToFollow')"
               persistent-hint
               v-on:change="listChanged = true"
             ></v-select>

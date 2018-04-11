@@ -2,10 +2,10 @@
     <v-flex xs12 sm12>
       <v-list-tile>
         <v-list-tile-content>
-          <v-list-tile-title>{{ collection.title }} του χρήστη {{collection.username}}</v-list-tile-title>
+          <v-list-tile-title>{{ collection.title }} {{ $t('message.ofTheUser')}} {{collection.username}}</v-list-tile-title>
           <v-list-tile-sub-title>
             {{ collection.description }}
-            <v-btn v-if="collection.members" flat disabled small color="primary">Αριθμός μελών: {{ collection.members.length }}</v-btn>
+            <v-btn v-if="collection.members" flat disabled small color="primary">{{ $t('message.membersNumber')}}: {{ collection.members.length }}</v-btn>
           </v-list-tile-sub-title>
         </v-list-tile-content>
         <v-list-tile-action>
@@ -15,12 +15,15 @@
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn fab small outline @click="unfollowCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id">
+          <v-btn fab small outline
+            @click="unfollowCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id">
             <v-icon color="red lighten-1">visibility_off</v-icon>
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn fab small outline @click="deleteCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+          <v-btn fab small outline
+            @click="deleteCollectionDialog = true"
+            v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="red lighten-1">delete</v-icon>
           </v-btn>
         </v-list-tile-action>
@@ -30,14 +33,15 @@
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn fab small outline @click="shareDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+          <v-btn fab small outline @click="shareDialog = true" 
+            v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="green lighten-1">share</v-icon>
           </v-btn>
         </v-list-tile-action>
       </v-list-tile>
       <v-dialog v-model="shareDialog" persistent max-width="350">
         <v-card>
-          <v-card-title class="headline">Διάλεξε με ποιους θα μοιράζεσαι αυτή τη συλλογή</v-card-title>
+          <v-card-title class="headline">{{ $t('message.chooseUsersToShare')}}</v-card-title>
           <v-card-text>
             <v-flex xs12 sm12>
               <!-- TODO: must exclude this user from this list v-bind:items="this.$store.state.users  -->
@@ -57,30 +61,30 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" flat @click.native="shareDialog = false">Κλείσιμο</v-btn>
-            <v-btn color="green darken-1" flat @click.native="saveCollectionMembers(collection._id)">Αποθήκευση</v-btn>
+            <v-btn color="green darken-1" flat @click.native="shareDialog = false">{{ $t('message.close')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="saveCollectionMembers(collection._id)">{{ $t('message.save')}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
       <v-dialog v-model="deleteCollectionDialog" persistent max-width="290">
         <v-card>
-          <v-card-title class="headline">Διαγραφή Συλλογής;</v-card-title>
-          <v-card-text>Θα διαγραφούν και όλες οι αναρτήσεις που περιλαμβάνει!</v-card-text>
+          <v-card-title class="headline">{{ $t('message.deleteCollection')}}</v-card-title>
+          <v-card-text>{{ $t('message.allPostsWillBeDeleted')}}</v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" flat @click.native="deleteCollection(collection._id)">NAI</v-btn>
-            <v-btn color="green darken-1" flat @click.native="deleteCollectionDialog = false">OXI</v-btn>
+            <v-btn color="green darken-1" flat @click.native="deleteCollection(collection._id)">{{ $t('message.yes')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="deleteCollectionDialog = false">{{ $t('message.no')}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
 
       <v-dialog v-model="unfollowCollectionDialog" persistent max-width="290">
         <v-card>
-          <v-card-title class="headline">Παρακολούθηση συλλογής</v-card-title>
+          <v-card-title class="headline">{{ $t('message.followCollection')}}</v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" flat @click.native="unfollowCollection(collection._id)">Μη Παρακολούθηση</v-btn>
-            <v-btn color="green darken-1" flat @click.native="unfollowCollectionDialog = false">Ακυρο</v-btn>
+            <v-btn color="green darken-1" flat @click.native="unfollowCollection(collection._id)">{{ $t('message.stopFollowing')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="unfollowCollectionDialog = false">{{ $t('message.cancel')}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>      
@@ -119,15 +123,15 @@ export default {
     post,
   },
   mounted() {
-    console.log('collection mounted');
+    // console.log('collection mounted');
     if (this.collection.members) {
       this.members = this.collection.members;
     }
   },
   computed: {
-    collectionMembers(members) {
+    collectionMembers() { // add members as function property
       const thisCollectionUsers = this.$store.state.users;
-      console.log(members);
+      // console.log(members);
       // members.forEach((c) => {
       //   thisCollectionUsers.remove(c);
       // });

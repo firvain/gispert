@@ -5,8 +5,8 @@
         <v-flex md8>
           <v-text-field
             name="search-input"
-            label="Αναζήτηση"
-            hint="Τουλάχιστον 4 χαρακτήρες"
+            :label="$t('message.search')"
+            :hint="$t('message.searchHint')"
             v-model="searchUsers"
             min="4"
             append-icon="search"

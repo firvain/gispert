@@ -27,10 +27,10 @@
       class="blue-grey white--text"
       block
     >
-      φορτωση περισσότερων
+      {{ $t('message.loadMore')}}
       <v-icon right dark>navigate_next</v-icon>
     </v-btn>
-    <span v-if="$store.state.timeline.length === 0">Δεν υπάρχουν αναρτήσεις</span>
+    <span v-if="$store.state.timeline.length === 0">{{ $t('message.noPosts')}}</span>
   </v-flex>
 </template>
 <script>
@@ -55,7 +55,7 @@ export default {
       newPost: false,
       newPostColor: 'blue-grey',
       newPostTextColor: 'white--text darken-1',
-      newPostText: 'νεα αναρτηση σε αυτη τη συλλογη',
+      newPostText: this.$t('message.newPostInThisCollection'),
       loading: false,
     };
   },
@@ -124,11 +124,11 @@ export default {
     },
     toggle_new_post() {
       this.newPost = !this.newPost;
-      if (this.newPostText === 'ακυρο') {
-        this.newPostText = 'νεα αναρτηση';
+      if (this.newPostText === this.$t('message.cancel')) {
+        this.newPostText = this.$t('message.newPostInThisCollection');
         this.newPostColor = 'blue-grey';
       } else {
-        this.newPostText = 'ακυρο';
+        this.newPostText = this.$t('message.cancel');
         this.newPostColor = 'red';
       }
     },
