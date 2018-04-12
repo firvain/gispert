@@ -134,6 +134,12 @@ export default {
     },
   },
   mounted() {
+    this.$options.sockets.newPost = (data) => {
+      console.log('new post', data);
+    };
+    this.$options.sockets.newReply = (data) => {
+      console.log('new reply', data);
+    };
     this.loading = true;
     let url;
     let userID;

@@ -133,11 +133,13 @@ export default {
           if (this.id === undefined) {
             // console.log('totally new post');
             this.$parent.$emit('newpost', { type: 'newpost' });
+            this.$socket.emit('newPost', userPost);
           } else {
             // eslint-disable-next-line
             userPost._id = response.data;
             // console.log('this is the userpost :: ', userPost);
             this.$parent.$emit('newreply', userPost);
+            this.$socket.emit('newReply', userPost);
           }
         });
       } else {

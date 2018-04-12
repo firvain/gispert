@@ -3,6 +3,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import VueI18n from 'vue-i18n';
+import VueSocketio from 'vue-socket.io';
+
 import 'vuetify/dist/vuetify.min.css';
 import App from './App';
 import router from './router';
@@ -32,7 +34,7 @@ Vue.config.productionTip = false;
 Vue.use(Vuex);
 Vue.use(SocialSharing);
 Vue.use(VueI18n);
-
+Vue.use(VueSocketio, `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}`);
 
 const i18n = new VueI18n({
   locale: 'en', // set locale

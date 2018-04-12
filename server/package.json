@@ -21,6 +21,7 @@
     "mongodb": "^2.2.33",
     "morgan": "^1.9.0",
     "promise": "^8.0.1",
+    "socket.io": "^2.1.0",
     "socketio": "^1.0.0"
   },
   "devDependencies": {

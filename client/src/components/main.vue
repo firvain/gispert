@@ -59,6 +59,7 @@ export default {
   },
   mounted() {
     this.olMap = true;
+    this.$socket.emit('refreshPosts', 'refreshPosts');
   },
   watch: {
     '$route.params': function handle() {

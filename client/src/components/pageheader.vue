@@ -426,8 +426,11 @@ export default {
       axios.post(url, { updateInfo }, {
         headers: { 'x-access-token': this.$store.state.token },
       })
-      .then(() => {
-        this.snackbarSetLocale = true;
+      .then((response) => {
+        // console.log(response);
+        if (response.statusText === 'OK') {
+          this.snackbarSetLocale = true;
+        }
       });
     },
   },

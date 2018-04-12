@@ -4,16 +4,21 @@
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
         <v-list class="message-list">
-          <v-list-tile class="" v-for="message in currentMessages" v-bind:key="message">
+          <v-list-tile class="" v-for="message in messages" v-bind:key="message">
             <v-list-tile-content class="">
-              <!-- <v-list-tile-title v-text="currentlySelectedFeature.get('name')" class="caption"></v-list-tile-title> -->
               <v-list-tile-content v-text="message" class="caption"></v-list-tile-content>
             </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+        <!-- <v-list class="message-list"> -->
+          <!-- <v-list-tile class="" v-for="message in currentMessages" v-bind:key="message"> -->
+              <!-- <v-list-tile-title v-text="currentlySelectedFeature.get('name')" class="caption"></v-list-tile-title> -->
+              <!-- <v-list-tile-content v-text="message" class="caption"></v-list-tile-content> -->
             <!-- <v-list-tile-avatar>
               <img v-bind:src="item.avatar"/>
             </v-list-tile-avatar> -->
-          </v-list-tile>
-        </v-list>
+          <!-- </v-list-tile> -->
+        <!-- </v-list> -->
         <v-layout row>
         <v-flex xs10 md10>
           <v-text-field
@@ -45,6 +50,7 @@ export default {
     send_label: 'Αποστολή',
     message_content: '',
     items: [],
+    messages: [],
   }),
   components: {
     searchLocation, olMap,
@@ -64,29 +70,36 @@ export default {
       if (Object.keys(this.$store.state.feature).length > 0) {
         const featureKeys = this.$store.state.feature.getKeys();
         if (featureKeys.indexOf('messages') > 0) {
-          messages = null;
+          messages = [];
           messages = this.$store.state.feature.get('messages').split('\n');
         }
       } else {
-        messages = null;
+        messages = [];
       }
+      this.messages = this.$store.state.feature.get('messages').split('\n');
       return messages;
     },
   },
   methods: {
     sendMessage() {
       if (this.content !== '') {
-        this.$store.dispatch('sendMessage', {
-          username: this.username,
-          content: this.content,
-          date: new Date().toString(),
-          chatID: this.id });
-        this.content = '';
+        const message = {
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          userName: this.$store.state.user.name,
+          content: this.message_content,
+          date: new Date(),
+          chatID: this.currentlySelectedFeature.mongoID };
+        this.$socket.emit('featureMessage', message);
+        this.message_content = '';
       }
     },
   },
   mounted() {
     olMap.setTarget('mapDiv');
+    this.$options.sockets.newFeatureMessage = (data) => {
+      const date = new Date(data.date);
+      this.messages.push(`${data.userName}: ${data.content} (${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
+    };
   },
 };
 </script>
