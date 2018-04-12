@@ -226,6 +226,11 @@
         v-model="snackbarRegistered"
         color='green'
       >{{ $t("message.youAreRegistered") }}</v-snackbar>
+      <v-snackbar
+        :timeout=5000
+        v-model="snackbarSetLocale"
+        color='green'
+      >OK</v-snackbar>
 
     </v-toolbar>
   </v-layout>
@@ -252,6 +257,7 @@ export default {
       snackbarLoginError: false,
       snackbarLoggedIn: false,
       snackbarRegistered: false,
+      snackbarSetLocale: false,
       nameRules: [
         v => !!v || this.$t('message.userNameMissing'),
       ],
@@ -409,9 +415,20 @@ export default {
       // this.$store.dispatch('setPostIdToAddFeatures', null);
       // console.log(this.$store.state.isUserLoggedIn);
     },
-    setLocale: (value) => {
+    setLocale(value) {
       // console.log('setting locale to ::', value);
       app.$i18n.locale = value;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/setlocale`;
+      const updateInfo = {
+        id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        locale: value,
+      };
+      axios.post(url, { updateInfo }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      })
+      .then(() => {
+        this.snackbarSetLocale = true;
+      });
     },
   },
 };

@@ -173,4 +173,27 @@ router.route('/updateprofile')
     });
   });
 
+
+  router.route('/setlocale')
+  .post(function update(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      const currentUserId = req.body.updateInfo.id;
+      const locale = req.body.updateInfo.locale;
+      cId = new ObjectID(currentUserId);
+      // console.log('updating user profile:: ', currentUserId, email, description);
+
+      if (err) {
+        throw err;
+      } else {
+        db.collection('users').update(
+          { _id: cId },
+          { $set: { locale: locale } }
+        );
+        res.status(200).send();
+      }
+      db.close();
+    });
+  });
+
+
 module.exports = router;
