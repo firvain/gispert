@@ -10,6 +10,40 @@
             <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false">
               {{ $t("message.login") }}
             </v-btn>
+            <v-menu offset-y class="top" :close-on-content-click='false' :allow-overflow='true' max-height='250'>
+              <v-btn color="orange" flat dark slot="activator" v-if="$store.state.isUserLoggedIn === true">
+                <v-badge left :color='notificationsBellColor.color'>
+                  <span slot="badge" :color='notificationsBellColor.color' v-if='notifications.length > 0'>{{ notifications.length }}</span>
+                  <v-icon :color='notificationsBellColor.color'>notifications</v-icon>{{notificationsBellColor.number}}
+                </v-badge>
+                </v-btn>
+                <v-list two-line class="top"  v-if='notifications.length > 0'>
+                  <template v-for="(notification, index) in notifications">
+                    <v-list-tile
+                      avatar
+                      ripple
+                      @click="notificationClicked(notification.id)"
+                      :key="notification.id"
+                    >
+                      <v-list-tile-content>
+                        <v-list-tile-title>{{ notification.title }}</v-list-tile-title>
+                        <v-list-tile-sub-title class="text--primary">{{ notification.headline }}</v-list-tile-sub-title>
+                        <v-list-tile-sub-title>{{ notification.subtitle }}</v-list-tile-sub-title>
+                      </v-list-tile-content>
+                      <v-list-tile-action>
+                        <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
+                        <v-icon
+                          color="grey lighten-1"
+                        >star_border</v-icon>
+                        <v-icon
+                          color="yellow darken-2"
+                        >star</v-icon>
+                      </v-list-tile-action>
+                    </v-list-tile>
+                    <v-divider v-if="index + 1 < notifications.length" :key="index"></v-divider>
+                  </template>
+                </v-list>
+            </v-menu>
             <v-btn flat @click='showProfileDialogue' v-if="$store.state.isUserLoggedIn === true">
               {{$store.state.user.name}}
             </v-btn>
@@ -20,7 +54,7 @@
               {{ $t("message.logout") }}
             </v-btn>
             <v-select
-              class="select"
+              class="top"
               @change="setLocale"
               v-bind:items="languages"
               item-text="name"
@@ -247,6 +281,15 @@ export default {
       dialogRegister: false,
       dialogLogin: false,
       dialogProfile: false,
+      notifications: [
+        { id: '1q', title: this.$t('message.post'), subtitle: this.$t('message.aPostPublished'), type: 'post' },
+        { id: '2q', title: this.$t('message.post'), subtitle: this.$t('message.aReplyPublished'), type: 'reply' },
+        { id: '3q', title: this.$t('message.feature'), subtitle: this.$t('message.geometrySketched'), type: 'featureSketch' },
+        { id: '4q', title: this.$t('message.map'), subtitle: this.$t('message.mapPublished'), type: 'map' },
+        { id: '5q', title: this.$t('message.invitation'), subtitle: this.$t('message.invitedToCollection'), type: 'collectionInvitation' },
+        { id: '6q', title: this.$t('message.invitation'), subtitle: this.$t('message.invitationToCollectionAccepted'), type: 'collectionInvitationAccepted' },
+        { id: '7q', title: this.$t('message.collection'), subtitle: this.$t('message.collectionWasFollowed'), type: 'collectionFollowed' },
+      ],
       email: '',
       emailEdit: '',
       descriptionEdit: '',
@@ -284,6 +327,21 @@ export default {
         { id: 'nn', name: 'Norwegian' },
       ],
     };
+  },
+  computed: {
+    notificationsBellColor() {
+      let clr = '';
+      if (this.notifications.length === 0) {
+        clr = 'white';
+      } else {
+        clr = 'blue';
+      }
+      const bell = {
+        color: clr,
+        number: this.notifications.length,
+      };
+      return bell;
+    },
   },
   methods: {
     auth(network) {
@@ -433,6 +491,9 @@ export default {
         }
       });
     },
+    notificationClicked(e) {
+      console.log(e);
+    },
   },
 };
 </script>
@@ -440,7 +501,7 @@ export default {
   v-tabs-item {
     color : white;
   }
-  .select {
+  .top {
     z-index: 999999;
   }
 </style>
