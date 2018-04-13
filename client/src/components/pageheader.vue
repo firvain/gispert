@@ -439,6 +439,7 @@ export default {
           }
         }).then(() => {
           this.loading = false;
+          this.getNotifications();
         });
       });
     },
@@ -491,9 +492,22 @@ export default {
         }
       });
     },
+    getNotifications() {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/notifications`;
+      axios.get(url, {
+        params: {
+          id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        this.notifications = response.data;
+      });
+    },
     notificationClicked(e) {
       console.log(e);
     },
+  },
+  mounted() {
   },
 };
 </script>

@@ -196,4 +196,28 @@ router.route('/updateprofile')
   });
 
 
+  router.route('/notifications')
+  .get(function getposts(req, res) {
+    var userId = req.query.id;
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+    .then(function (db) {
+      var collection = db.collection('notifications');
+      return collection.find(
+        { user: cId }
+      );
+        db.close();
+      })
+      .then(function (cursor) {
+        return cursor.toArray();
+      })
+      .then(function (content) {
+        res.status(200).json(content);
+        // db.close();
+      })
+      .catch(function (err) {
+        throw err;
+      });
+    });
+
+  
 module.exports = router;
