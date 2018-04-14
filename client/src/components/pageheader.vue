@@ -10,6 +10,7 @@
             <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false">
               {{ $t("message.login") }}
             </v-btn>
+              <!-- {{notifications}}{{ notifications.length }}{{notificationsBellColor.number}}{{notificationsBellColor.color}} -->
             <v-menu offset-y class="top" :close-on-content-click='false' :allow-overflow='true' max-height='250'>
               <v-btn color="orange" flat dark slot="activator" v-if="$store.state.isUserLoggedIn === true">
                 <v-badge left :color='notificationsBellColor.color'>
@@ -22,13 +23,13 @@
                     <v-list-tile
                       avatar
                       ripple
-                      @click="notificationClicked(notification.id)"
-                      :key="notification.id"
+                      @click="notificationClicked(notification._id)"
+                      :key="notification._id"
                     >
                       <v-list-tile-content>
-                        <v-list-tile-title>{{ notification.title }}</v-list-tile-title>
-                        <v-list-tile-sub-title class="text--primary">{{ notification.headline }}</v-list-tile-sub-title>
-                        <v-list-tile-sub-title>{{ notification.subtitle }}</v-list-tile-sub-title>
+                        <v-list-tile-title>{{ notification.type }}</v-list-tile-title>
+                        <v-list-tile-sub-title class="text--primary">{{ notification.unfollowedId }}</v-list-tile-sub-title>
+                        <v-list-tile-sub-title>{{ notification.byUser }}</v-list-tile-sub-title>
                       </v-list-tile-content>
                       <v-list-tile-action>
                         <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
@@ -44,6 +45,7 @@
                   </template>
                 </v-list>
             </v-menu>
+
             <v-btn flat @click='showProfileDialogue' v-if="$store.state.isUserLoggedIn === true">
               {{$store.state.user.name}}
             </v-btn>
@@ -493,6 +495,7 @@ export default {
       });
     },
     getNotifications() {
+      console.log('getting notifications');
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/notifications`;
       axios.get(url, {
         params: {

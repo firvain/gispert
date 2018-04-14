@@ -175,6 +175,7 @@ export default {
       const data = {
         memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         collectionId: id,
+        userCreated: this.collection.user,
       };
       axios.post(url, { data }, {
         headers: { 'x-access-token': this.$store.state.token },

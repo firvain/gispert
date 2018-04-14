@@ -83,6 +83,7 @@ router.route('/unfollow')
         var cId = new ObjectID(cid);
         var mid = req.body.data.memberId;
         var mId = new ObjectID(mid);
+        var userCreated = new ObjectID(req.body.data.userCreated);
         // console.log('collection id to delete:: ', req.body._id);
 
         if (err) {
@@ -95,7 +96,9 @@ router.route('/unfollow')
             db.collection('notifications').insertOne({ 
                 unfollowedId: cId,
                 byUser: mId,
-                type: 'unfollowedCollection'
+                type: 'unfollowedCollection',
+                userCreated: userCreated,
+                read: 0
             });
             res.status(200).send('OK');
         }

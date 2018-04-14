@@ -198,12 +198,13 @@ router.route('/updateprofile')
 
   router.route('/notifications')
   .get(function getposts(req, res) {
-    var userId = req.query.id;
+    var userId = new ObjectID(req.query.id);
+    console.log('getting notifications');
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
     .then(function (db) {
       var collection = db.collection('notifications');
       return collection.find(
-        { user: cId }
+        { userCreated: userId }
       );
         db.close();
       })
@@ -211,6 +212,7 @@ router.route('/updateprofile')
         return cursor.toArray();
       })
       .then(function (content) {
+        console.log(content);
         res.status(200).json(content);
         // db.close();
       })
