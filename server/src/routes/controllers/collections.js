@@ -92,6 +92,11 @@ router.route('/unfollow')
                 { _id: cId },
                 { $pull: { members: mId } }
             );
+            db.collection('notifications').insertOne({ 
+                unfollowedId: cId,
+                byUser: mId,
+                type: 'unfollowedCollection'
+            });
             res.status(200).send('OK');
         }
         db.close();
