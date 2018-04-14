@@ -10,16 +10,16 @@
             <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false">
               {{ $t("message.login") }}
             </v-btn>
-              <!-- {{notifications}}{{ notifications.length }}{{notificationsBellColor.number}}{{notificationsBellColor.color}} -->
+              <!-- {{$store.state.notifications}}{{ $store.state.notifications.length }}{{notificationsBell.number}}{{notificationsBell.color}} -->
             <v-menu offset-y class="top" :close-on-content-click='false' :allow-overflow='true' max-height='250'>
               <v-btn color="orange" flat dark slot="activator" v-if="$store.state.isUserLoggedIn === true">
-                <v-badge left :color='notificationsBellColor.color'>
-                  <span slot="badge" :color='notificationsBellColor.color' v-if='notifications.length > 0'>{{ notifications.length }}</span>
-                  <v-icon :color='notificationsBellColor.color'>notifications</v-icon>{{notificationsBellColor.number}}
+                <v-badge left :color='notificationsBell.color'>
+                  <span slot="badge" :color='notificationsBell.color' v-if='$store.state.notifications.length > 0'>{{ $store.state.notifications.length }}</span>
+                  <v-icon :color='notificationsBell.color'>notifications</v-icon>{{notificationsBell.number}}
                 </v-badge>
                 </v-btn>
-                <v-list two-line class="top"  v-if='notifications.length > 0'>
-                  <template v-for="(notification, index) in notifications">
+                <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
+                  <template v-for="(notification, index) in $store.state.notifications">
                     <v-list-tile
                       avatar
                       ripple
@@ -284,14 +284,23 @@ export default {
       dialogLogin: false,
       dialogProfile: false,
       notifications: [
-        { id: '1q', title: this.$t('message.post'), subtitle: this.$t('message.aPostPublished'), type: 'post' },
-        { id: '2q', title: this.$t('message.post'), subtitle: this.$t('message.aReplyPublished'), type: 'reply' },
-        { id: '3q', title: this.$t('message.feature'), subtitle: this.$t('message.geometrySketched'), type: 'featureSketch' },
-        { id: '4q', title: this.$t('message.map'), subtitle: this.$t('message.mapPublished'), type: 'map' },
-        { id: '5q', title: this.$t('message.invitation'), subtitle: this.$t('message.invitedToCollection'), type: 'collectionInvitation' },
-        { id: '6q', title: this.$t('message.invitation'), subtitle: this.$t('message.invitationToCollectionAccepted'), type: 'collectionInvitationAccepted' },
-        { id: '7q', title: this.$t('message.collection'), subtitle: this.$t('message.collectionWasFollowed'), type: 'collectionFollowed' },
+        // { id: '1q', title: this.$t('message.post'),
+        //   subtitle: this.$t('message.aPostPublished'), type: 'post' },
+        // { id: '2q', title: this.$t('message.post'),
+        //   subtitle: this.$t('message.aReplyPublished'), type: 'reply' },
+        // { id: '3q', title: this.$t('message.feature'),
+        //   subtitle: this.$t('message.geometrySketched'), type: 'featureSketch' },
+        // { id: '4q', title: this.$t('message.map'),
+        //   subtitle: this.$t('message.mapPublished'), type: 'map' },
+        // { id: '5q', title: this.$t('message.invitation'),
+        //   subtitle: this.$t('message.invitedToCollection'), type: 'collectionInvitation' },
+        // { id: '6q', title: this.$t('message.invitation'),
+        //   subtitle: this.$t('message.invitationToCollectionAccepted'),
+        // type: 'collectionInvitationAccepted' },
+        // { id: '7q', title: this.$t('message.collection'),
+        // subtitle: this.$t('message.collectionWasFollowed'), type: 'collectionFollowed' },
       ],
+      notificationsBell: { color: 'blue', number: 0 },
       email: '',
       emailEdit: '',
       descriptionEdit: '',
@@ -330,19 +339,20 @@ export default {
       ],
     };
   },
-  computed: {
-    notificationsBellColor() {
+  watch: {
+    'this.$store.state': () => {
       let clr = '';
-      if (this.notifications.length === 0) {
+      if (this.$store.state.notifications.length === 0) {
         clr = 'white';
       } else {
         clr = 'blue';
       }
       const bell = {
         color: clr,
-        number: this.notifications.length,
+        number: this.$store.state.notifications.length,
       };
-      return bell;
+      console.log('new bell', bell);
+      this.notificationsBell = bell;
     },
   },
   methods: {
@@ -503,6 +513,7 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
+        this.$store.dispatch('setNotifications', response.data);
         this.notifications = response.data;
       });
     },

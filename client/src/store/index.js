@@ -21,6 +21,7 @@ export default new Vuex.Store({
     timeline: [],
     users: [],
     customMaps: [],
+    notifications: [],
   },
   actions: {
     setFeature(state, data) {
@@ -71,8 +72,14 @@ export default new Vuex.Store({
     setCustomMaps(state, data) {
       state.commit('setcustommaps', data);
     },
+    setNotifications(state, data) {
+      state.commit('setNotifications', data);
+    },
   },
   mutations: {
+    setNotifications(state, data) {
+      state.notifications = data;
+    },
     setSelected(state, data) {
       state.feature = data;
     },
