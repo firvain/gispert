@@ -188,6 +188,7 @@ export default {
           this.$store.dispatch('deletePrivateCollection', id);
           this.$store.dispatch('deletePublicCollection', id);
           this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+          this.$socket.emit('unfollowedCollection', data);
         }
       });
     },

@@ -182,5 +182,13 @@ export default new Vuex.Store({
     getDrawnFeatures(state) {
       return state.storage;
     },
+    notificationsGetter(state) {
+      const notifications = {
+        messages: state.notifications,
+        number: state.notifications.length,
+        color: 'blue',
+      }
+      return notifications;
+    },
   },
 });

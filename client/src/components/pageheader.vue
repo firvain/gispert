@@ -10,41 +10,14 @@
             <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false">
               {{ $t("message.login") }}
             </v-btn>
-              <!-- {{$store.state.notifications}}{{ $store.state.notifications.length }}{{notificationsBell.number}}{{notificationsBell.color}} -->
-            <v-menu offset-y class="top" :close-on-content-click='false' :allow-overflow='true' max-height='250'>
-              <v-btn color="orange" flat dark slot="activator" v-if="$store.state.isUserLoggedIn === true">
-                <v-badge left :color='notificationsBell.color'>
-                  <span slot="badge" :color='notificationsBell.color' v-if='$store.state.notifications.length > 0'>{{ $store.state.notifications.length }}</span>
-                  <v-icon :color='notificationsBell.color'>notifications</v-icon>{{notificationsBell.number}}
+              <!-- {{notificationsBell.number}}{{notificationsBell.color}},  -->
+              <!-- {{$store.state.notifications.length}} :: {{notificationsGetter}} -->
+              <v-btn color="orange" flat dark @click="dialogNotifications = true" v-if="$store.state.isUserLoggedIn === true">
+                <v-badge left color='blue'>
+                  <span slot="badge" color='blue' v-if='notificationsGetter.number > 0'>{{ notificationsGetter.number }}</span>
+                  <v-icon :color='notificationsGetter.color'>notifications</v-icon>{{notificationsGetter.number}}
                 </v-badge>
-                </v-btn>
-                <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
-                  <template v-for="(notification, index) in $store.state.notifications">
-                    <v-list-tile
-                      avatar
-                      ripple
-                      @click="notificationClicked(notification._id)"
-                      :key="notification._id"
-                    >
-                      <v-list-tile-content>
-                        <v-list-tile-title>{{ notification.type }}</v-list-tile-title>
-                        <v-list-tile-sub-title class="text--primary">{{ notification.unfollowedId }}</v-list-tile-sub-title>
-                        <v-list-tile-sub-title>{{ notification.byUser }}</v-list-tile-sub-title>
-                      </v-list-tile-content>
-                      <v-list-tile-action>
-                        <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
-                        <v-icon
-                          color="grey lighten-1"
-                        >star_border</v-icon>
-                        <v-icon
-                          color="yellow darken-2"
-                        >star</v-icon>
-                      </v-list-tile-action>
-                    </v-list-tile>
-                    <v-divider v-if="index + 1 < notifications.length" :key="index"></v-divider>
-                  </template>
-                </v-list>
-            </v-menu>
+              </v-btn>
 
             <v-btn flat @click='showProfileDialogue' v-if="$store.state.isUserLoggedIn === true">
               {{$store.state.user.name}}
@@ -157,7 +130,7 @@
 
 
 
-    <v-dialog v-model="dialogLogin" max-width="290">
+    <v-dialog v-model="dialogLogin" max-width="400">
       <v-card>
         <v-card-title class="headline">{{ $t("message.accountLogin")}}</v-card-title>
         <v-card-text>
@@ -268,11 +241,41 @@
         color='green'
       >OK</v-snackbar>
 
+      <v-dialog v-model="dialogNotifications" max-width="290">
+        <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
+          <template v-for="(notification, index) in $store.state.notifications">
+            <v-list-tile
+              avatar
+              ripple
+              @click="notificationClicked(notification._id)"
+              :key="notification._id"
+            >
+              <v-list-tile-content>
+                <v-list-tile-title>{{ notification.type }}</v-list-tile-title>
+                <v-list-tile-sub-title class="text--primary">{{ notification.unfollowedId }}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>{{ notification.byUser }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
+                <v-icon
+                  color="grey lighten-1"
+                >star_border</v-icon>
+                <v-icon
+                  color="yellow darken-2"
+                >star</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+            <v-divider v-if="index + 1 < notifications.length" :key="index"></v-divider>
+          </template>
+        </v-list>
+      </v-dialog>
+
     </v-toolbar>
   </v-layout>
 </template>
 <script>
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 import AuthenticationService from '@/services/AuthenticationService';
 import config from '../config';
 import { app } from '../main';
@@ -283,6 +286,7 @@ export default {
       dialogRegister: false,
       dialogLogin: false,
       dialogProfile: false,
+      dialogNotifications: false,
       notifications: [
         // { id: '1q', title: this.$t('message.post'),
         //   subtitle: this.$t('message.aPostPublished'), type: 'post' },
@@ -300,7 +304,7 @@ export default {
         // { id: '7q', title: this.$t('message.collection'),
         // subtitle: this.$t('message.collectionWasFollowed'), type: 'collectionFollowed' },
       ],
-      notificationsBell: { color: 'blue', number: 0 },
+      // notificationsBell: { color: 'white', number: 1 },
       email: '',
       emailEdit: '',
       descriptionEdit: '',
@@ -339,22 +343,27 @@ export default {
       ],
     };
   },
-  watch: {
-    'this.$store.state': () => {
-      let clr = '';
-      if (this.$store.state.notifications.length === 0) {
-        clr = 'white';
-      } else {
-        clr = 'blue';
-      }
-      const bell = {
-        color: clr,
-        number: this.$store.state.notifications.length,
-      };
-      console.log('new bell', bell);
-      this.notificationsBell = bell;
-    },
+  computed: {
+    ...mapGetters([
+      'notificationsGetter',
+    ]),
   },
+  // watch: {
+  //   'this.$store.state': () => {
+  //     let clr = '';
+  //     if (this.$store.state.notifications.length === 0) {
+  //       clr = 'white';
+  //     } else {
+  //       clr = 'blue';
+  //     }
+  //     const bell = {
+  //       color: clr,
+  //       number: this.$store.state.notifications.length,
+  //     };
+  //     console.log('new bell', bell);
+  //     this.notificationsBell = bell;
+  //   },
+  // },
   methods: {
     auth(network) {
       const hello = this.hello;
@@ -451,6 +460,7 @@ export default {
           }
         }).then(() => {
           this.loading = false;
+          this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
           this.getNotifications();
         });
       });
@@ -519,6 +529,7 @@ export default {
     },
     notificationClicked(e) {
       console.log(e);
+      this.$store.dispatch('setNotifications', []);
     },
   },
   mounted() {

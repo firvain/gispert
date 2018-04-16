@@ -60,6 +60,9 @@ export default {
   mounted() {
     this.olMap = true;
     this.$socket.emit('refreshPosts', 'refreshPosts');
+    this.$options.sockets.unfollowedCollection = (data) => {
+      console.log('unfollowedCollection', data);
+    };
   },
   watch: {
     '$route.params': function handle() {

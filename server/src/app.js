@@ -37,9 +37,9 @@ app.use(function (req, res, next) {
 
 // app.io = io;
 io.set('origins', '*:*');
-
+const userList = [];
 io.on('connection', function(socket) {
-    var userAdded = false;
+    // var userAdded = false;
     console.log('Someone connected');
     // socket.on('chat message', function handlemsg(msg) {
     //   io.emit('chat message', msg);
@@ -72,15 +72,30 @@ io.on('connection', function(socket) {
     socket.on('featureMessage', function handlemessage(msg) {
       io.emit('newFeatureMessage', msg);
     });
-    // socket.on('userConnected', function handleUserConnection(userid) {
-    //   socket.userid = userid;
-    //   userAdded = true;
-    //   userList.push(userid);
-    //   io.emit('refreshUserList', userList);
-    //   console.log('userList is:');
-    //   console.log(userList);
-    // });
+    socket.on('unfollowedCollection', function handleunfollow(data) {
+      // io.emit('unfollowedCollection', data);
+      console.log('userList is:', userList);
+      
+      const toid = userList.filter(user => user.user_id === data.userCreated);
+      console.log('sending to user:', toid, 'filter::', data.userCreated);
+      socket.broadcast.to(toid[0].id).emit('unfollowedCollection',{
+        memberId: data.memberId, // eslint-disable-line no-underscore-dangle
+        collectionId: data.collectionId,
+      });
+    });
+    socket.on('userConnected', function handleUserConnection(userid) {
+      const user = {
+        id: socket.id,
+        user_id: userid,
+      };
+      // userAdded = true;
+      userList.push(user);
+      // io.emit('refreshUserList', userList);
+      console.log('userList is:', userList);
+      // console.log('socket id::', socket.userid);
+    });
     // socket.on('disconnect', function handleUserConnection() {
+    //   console.log('socket id to disconnect::', socket.userid);
     //   var index = userList.indexOf(socket.userid);    // <-- Not supported in <IE9
     //   if (index !== -1) {
     //     userList.splice(index, 1);
