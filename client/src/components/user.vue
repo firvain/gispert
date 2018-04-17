@@ -62,12 +62,14 @@ export default {
       const data = {
         memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         collectionsId: this.selectedCollections,
+        userCreated: this.user._id, // eslint-disable-line no-underscore-dangle
       };
       axios.post(url, { data }, {
         headers: { 'x-access-token': this.$store.state.token },
       })
       .then(() => {
         this.listChanged = false;
+        this.$socket.emit('followedCollection', data);
         // console.log('mark as followed and notify user');
       });
     },

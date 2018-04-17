@@ -176,7 +176,9 @@ export default new Vuex.Store({
         state.customMaps = [];
       }
     },
-
+    addNotificationFromSocket(state, data) {
+      this.state.notifications.push(data);
+    },
   },
   getters: {
     getDrawnFeatures(state) {
