@@ -76,33 +76,37 @@ io.on('connection', function(socket) {
       // io.emit('unfollowedCollection', data);
       console.log('unfollow userList is:', userList, data);
       const toid = userList.filter(user => user.user_id === data.userCreated);
-      // console.log('sending to user:', toid, 'filter::', data.userCreated);
+      console.log('sending unfollow to user:', toid, 'filter::', data.userCreated);
       if (toid.length > 0) {
         // console.log('socket id:: ', toid[0].id);
-        socket.broadcast.to(toid[0].id).emit('unfollowedCollection',{
-          byUser: data.memberId, // eslint-disable-line no-underscore-dangle
-          unfollowedId: data.collectionId,
-          userCreated: data.userCreated,
-          read: 0,
-          type: 'unfollowedCollection',
-        });
+        // const msg = {
+        //   byUser: data.memberId, // eslint-disable-line no-underscore-dangle
+        //   unfollowedId: data.collectionId,
+        //   userCreated: data.userCreated,
+        //   read: 0,
+        //   type: 'unfollowedCollection',
+        // };
+        socket.broadcast.to(toid[0].id).emit('unfollowedCollection', 'refreshNotifications');
+        // socket.emit('unfollowedCollection', 'refreshNotifications');
+        // console.log('unfollow msg::', msg);
       }
     });
     socket.on('followedCollection', function handlefollow(data) {
       console.log('follow userList is:', userList, data);
       const toid = userList.filter(user => user.user_id === data.userCreated);
-      console.log('sending to user:', toid, 'filter::', data.userCreated);
+      console.log('sending follow to user:', toid, 'filter::', data.userCreated);
       if (toid.length > 0) {
         // console.log('socket id:: ', toid[0].id);
-        const msg = {
-          byUser: data.memberId, // eslint-disable-line no-underscore-dangle
-          unfollowedId: data.collectionsId,
-          userCreated: data.userCreated,
-          read: 0,
-          type: 'followedCollection',
-        }
-        console.log('follow message:: ', msg);
-        socket.broadcast.to(toid[0].id).emit('followedCollection', msg);
+        // const msg = {
+        //   byUser: data.memberId, // eslint-disable-line no-underscore-dangle
+        //   unfollowedId: data.collectionsId,
+        //   userCreated: data.userCreated,
+        //   read: 0,
+        //   type: 'followedCollection',
+        // }
+        socket.broadcast.to(toid[0].id).emit('followedCollection', 'refreshNotifications');
+        // socket.emit('followedCollection', 'refreshNotifications');
+        // console.log('follow msg::', msg);
       }
     });
     socket.on('userConnected', function handleUserConnection(userid) {
@@ -113,7 +117,7 @@ io.on('connection', function(socket) {
       // userAdded = true;
       userList.push(user);
       // io.emit('refreshUserList', userList);
-      console.log('userList is:', userList);
+      // console.log('userList is:', userList);
       // console.log('socket id::', socket.userid);
     });
     // socket.on('disconnect', function handleUserConnection() {

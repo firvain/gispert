@@ -203,9 +203,46 @@ router.route('/updateprofile')
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
     .then(function (db) {
       var collection = db.collection('notifications');
-      return collection.find(
-        { userCreated: userId }
-      );
+      // return collection.find(
+      //   { userCreated: userId }
+      // );
+      return collection.aggregate([
+        { $graphLookup: {
+            from: "collections",
+            startWith: "$collectionId",
+            connectFromField: "_id",
+            connectToField: "_id",
+            as: "collection",
+          }
+        },
+        { $graphLookup: {
+            from: "users",
+            startWith: "$byUser",
+            connectFromField: "_id",
+            connectToField: "_id",
+            as: "user",
+          }
+        },
+        { $project: {
+            "_id": 1,
+            "unfolloweId": 1,
+            "byUser": 1,
+            "type": 1,
+            "userCreated":1,
+            "read": 1,
+            "collection.title": 1,
+            "user.name": 1
+        }},
+        { $match: {  
+          $and: [ 
+            { userCreated: userId }, {read: 0}
+          ]}
+        },
+        {
+          $limit: 25
+        }      
+        ]);
+
         db.close();
       })
       .then(function (cursor) {

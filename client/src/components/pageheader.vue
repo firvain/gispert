@@ -241,33 +241,8 @@
         color='green'
       >OK</v-snackbar>
 
-      <v-dialog v-model="dialogNotifications" max-width="290">
-        <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
-          <template v-for="(notification, index) in $store.state.notifications">
-            <v-list-tile
-              avatar
-              ripple
-              @click="notificationClicked(notification._id)"
-              :key="notification._id"
-            >
-              <v-list-tile-content>
-                <v-list-tile-title>{{ notification.type }}</v-list-tile-title>
-                <v-list-tile-sub-title class="text--primary">{{ notification.unfollowedId }}</v-list-tile-sub-title>
-                <v-list-tile-sub-title>{{ notification.byUser }}</v-list-tile-sub-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
-                <v-icon
-                  color="grey lighten-1"
-                >star_border</v-icon>
-                <v-icon
-                  color="yellow darken-2"
-                >star</v-icon>
-              </v-list-tile-action>
-            </v-list-tile>
-            <v-divider v-if="index + 1 < notifications.length" :key="index"></v-divider>
-          </template>
-        </v-list>
+      <v-dialog v-model="dialogNotifications" max-width="400">
+        <notificationsList></notificationsList>
       </v-dialog>
 
     </v-toolbar>
@@ -279,6 +254,7 @@ import { mapGetters } from 'vuex';
 import AuthenticationService from '@/services/AuthenticationService';
 import config from '../config';
 import { app } from '../main';
+import notificationsList from './notificationsList';
 
 export default {
   data() {
@@ -287,23 +263,6 @@ export default {
       dialogLogin: false,
       dialogProfile: false,
       dialogNotifications: false,
-      notifications: [
-        // { id: '1q', title: this.$t('message.post'),
-        //   subtitle: this.$t('message.aPostPublished'), type: 'post' },
-        // { id: '2q', title: this.$t('message.post'),
-        //   subtitle: this.$t('message.aReplyPublished'), type: 'reply' },
-        // { id: '3q', title: this.$t('message.feature'),
-        //   subtitle: this.$t('message.geometrySketched'), type: 'featureSketch' },
-        // { id: '4q', title: this.$t('message.map'),
-        //   subtitle: this.$t('message.mapPublished'), type: 'map' },
-        // { id: '5q', title: this.$t('message.invitation'),
-        //   subtitle: this.$t('message.invitedToCollection'), type: 'collectionInvitation' },
-        // { id: '6q', title: this.$t('message.invitation'),
-        //   subtitle: this.$t('message.invitationToCollectionAccepted'),
-        // type: 'collectionInvitationAccepted' },
-        // { id: '7q', title: this.$t('message.collection'),
-        // subtitle: this.$t('message.collectionWasFollowed'), type: 'collectionFollowed' },
-      ],
       // notificationsBell: { color: 'white', number: 1 },
       email: '',
       emailEdit: '',
@@ -347,6 +306,9 @@ export default {
     ...mapGetters([
       'notificationsGetter',
     ]),
+  },
+  components: {
+    notificationsList,
   },
   // watch: {
   //   'this.$store.state': () => {
@@ -461,7 +423,8 @@ export default {
         }).then(() => {
           this.loading = false;
           this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
-          this.getNotifications();
+          console.log('connected as ::', this.$store.state.user.name);
+          // this.getNotifications();
         });
       });
     },
@@ -490,6 +453,7 @@ export default {
       this.$store.dispatch('resetFeatureCount', 0);
       this.$store.dispatch('setCustomMaps', 'empty');
       this.$store.dispatch('setUsers', 'empty');
+      this.$store.dispatch('setNotifications', []);
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
       // this.$store.dispatch('removeNewPostFeature', null);
@@ -514,33 +478,9 @@ export default {
         }
       });
     },
-    getNotifications() {
-      console.log('getting notifications');
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/notifications`;
-      axios.get(url, {
-        params: {
-          id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-        },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        this.$store.dispatch('setNotifications', response.data);
-        this.notifications = response.data;
-      });
-    },
-    notificationClicked(e) {
-      console.log(e);
-      this.$store.dispatch('setNotifications', []);
-    },
+
   },
   mounted() {
-    this.$options.sockets.unfollowedCollection = (data) => {
-      console.log('unfollowedCollection', data);
-      this.$store.commit('addNotificationFromSocket', data);
-    };
-    this.$options.sockets.followedCollection = (data) => {
-      console.log('followedCollection', data);
-      this.$store.commit('addNotificationFromSocket', data);
-    };
   },
 };
 </script>

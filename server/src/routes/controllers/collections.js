@@ -76,36 +76,6 @@ router.route('/delete')
         });
     });
 
-router.route('/unfollow')
-.post(function setuser(req, res) {
-    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-        var cid = req.body.data.collectionId;
-        var cId = new ObjectID(cid);
-        var mid = req.body.data.memberId;
-        var mId = new ObjectID(mid);
-        var userCreated = new ObjectID(req.body.data.userCreated);
-        // console.log('collection id to delete:: ', req.body._id);
-
-        if (err) {
-            throw err;
-        } else {
-            db.collection('collections').update(
-                { _id: cId },
-                { $pull: { members: mId } }
-            );
-            db.collection('notifications').insertOne({ 
-                unfollowedId: cId,
-                byUser: mId,
-                type: 'unfollowedCollection',
-                userCreated: userCreated,
-                read: 0
-            });
-            res.status(200).send('OK');
-        }
-        db.close();
-    });
-});
-
 router.route('/collection')
 .get(function getposts(req, res) {
     var start = parseInt(req.query.start);
@@ -235,13 +205,48 @@ router.route('/collection')
                     { _id: { $in: cids} },
                     { $addToSet: { members:  id } }
                 );
+                db.collection('notifications').insertOne({ 
+                    collectionId: cids,
+                    byUser:id,
+                    type: 'followedCollection',
+                    userCreated: new ObjectID(req.body.data.userCreated),
+                    read: 0
+                });
                 res.status(200).send('OK');
             }
             db.close();
         });
     });
 
+    router.route('/unfollow')
+    .post(function setuser(req, res) {
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+            var cid = req.body.data.collectionId;
+            var cId = new ObjectID(cid);
+            var mid = req.body.data.memberId;
+            var mId = new ObjectID(mid);
+            var userCreated = new ObjectID(req.body.data.userCreated);
+            // console.log('collection id to delete:: ', req.body._id);
     
+            if (err) {
+                throw err;
+            } else {
+                db.collection('collections').update(
+                    { _id: cId },
+                    { $pull: { members: mId } }
+                );
+                db.collection('notifications').insertOne({ 
+                    collectionId: cId,
+                    byUser: mId,
+                    type: 'unfollowedCollection',
+                    userCreated: userCreated,
+                    read: 0
+                });
+                res.status(200).send('OK');
+            }
+            db.close();
+        });
+    });        
 
     router.route('/search')
     .get(function searchcollections(req, res) {
