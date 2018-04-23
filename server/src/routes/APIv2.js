@@ -10,6 +10,7 @@ const fileLayers = require('./controllers/fileLayers');
 const apiGeodata = require('./controllers/apiGeodata');
 const groups = require('./controllers/groups');
 const collections = require('./controllers/collections');
+const notifications = require('./controllers/notifications');
 
 const login = require('./controllers/login');
 const register = require('./controllers/register');
@@ -56,5 +57,6 @@ router.use('/fileLayers', fileLayers);
 router.use('/apiGeodata', apiGeodata);
 router.use('/groups', groups);
 router.use('/collections', collections);
+router.use('/notifications', notifications);
 
 module.exports = router;

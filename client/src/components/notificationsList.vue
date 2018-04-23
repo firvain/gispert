@@ -24,6 +24,8 @@ export default {
     ]),
   },
   mounted() {
+    console.log('mounting list');
+    this.getNotifications();
     this.$options.sockets.unfollowedCollection = (data) => {
       console.log('unfollowedCollection', data);
       this.getNotifications();
@@ -38,7 +40,7 @@ export default {
   methods: {
     getNotifications() {
       console.log('getting notifications');
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/notifications`;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/notifications/user`;
       axios.get(url, {
         params: {
           id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
@@ -48,11 +50,6 @@ export default {
         this.$store.dispatch('setNotifications', response.data);
         this.notifications = response.data;
       });
-    },
-    notificationClicked(e) {
-      console.log(e);
-      // TODO: mark as read in db, mark as read in $store
-      this.$store.dispatch('setNotifications', []);
     },
   },
 };

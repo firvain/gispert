@@ -158,33 +158,6 @@ router.route('/collection')
       });
     });
 
-
-    router.route('/savemembers')
-    .post(function savemembers(req, res) {
-        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var ids = req.body.data.members;
-            var collectionid = req.body.data.collectionId;
-            var cId = new ObjectID(collectionid);
-            var cids = [];
-            ids.forEach((id) => {
-                cids.push(new ObjectID(id));
-
-            });
-            // console.log('members:: ', ids, collectionid);
-
-            if (err) {
-                throw err;
-            } else {
-                db.collection('collections').update(
-                    { _id: cId },
-                    { $set: { members: cids } }
-                );
-                res.status(200).send('OK');
-            }
-            db.close();
-        });
-    });
-
     router.route('/addmember')
     .post(function addmember(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {

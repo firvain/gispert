@@ -242,7 +242,7 @@
       >OK</v-snackbar>
 
       <v-dialog v-model="dialogNotifications" max-width="400">
-        <notificationsList></notificationsList>
+        <notificationsList v-if='$store.state.isUserLoggedIn'></notificationsList>
       </v-dialog>
 
     </v-toolbar>
@@ -481,6 +481,12 @@ export default {
 
   },
   mounted() {
+    this.$options.sockets.unfollowedCollection = (data) => {
+      console.log('unfollowedCollection', data);
+    };
+    this.$options.sockets.followedCollection = (data) => {
+      console.log('followedCollection', data);
+    };
   },
 };
 </script>

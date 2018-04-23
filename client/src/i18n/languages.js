@@ -92,6 +92,8 @@ module.exports = {
       map: 'Map',
       invitation: 'Invitation',
       collection: 'Collection',
+      accept: 'Accept',
+      decline: 'Decline',
     },
   },
   el_GR: {
@@ -187,6 +189,8 @@ module.exports = {
       map: 'Χάρτης',
       invitation: 'Πρόσκληση',
       collection: 'Συλλογή',
+      accept: 'Αποδοχή',
+      decline: 'Απόρριψη',
     },
   },
   fr: {
@@ -282,6 +286,8 @@ module.exports = {
       map: 'Carte',
       invitation: 'Invitation',
       collection: 'Collection',
+      accept: 'Accepter',
+      decline: 'Déclin',
     },
   },
   de: {
@@ -377,6 +383,8 @@ module.exports = {
       map: 'Karte',
       invitation: 'Einladung',
       collection: 'Sammlung',
+      accept: 'Akzeptieren',
+      decline: 'Rückgang',
     },
   },
   it: {
@@ -472,6 +480,8 @@ module.exports = {
       map: 'Carta geografica',
       invitation: 'Invito',
       collection: 'Collezione',
+      accept: 'Accettare',
+      decline: 'Declino',
     },
   },
   es: {
@@ -567,6 +577,8 @@ module.exports = {
       map: 'Mapa',
       invitation: 'Invitación',
       collection: 'Colección',
+      accept: 'Aceptar',
+      decline: 'Disminución',
     },
   },
   nn: {
@@ -662,6 +674,8 @@ module.exports = {
       map: 'Kart',
       invitation: 'Invitasjon',
       collection: 'Samling',
+      accept: 'Godta',
+      decline: 'Nedgang',
     },
   },
 };

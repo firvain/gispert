@@ -193,27 +193,32 @@ export default {
       });
     },
     saveCollectionMembers(id) {
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/savemembers`;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/notifications/inviteMembers`;
       const ids = this.members;
-      const data = { members: ids, collectionId: id };
+      const data = {
+        members: ids,
+        collectionId: id,
+        byUser: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+      };
       axios.post(url, { data }, {
         headers: { 'x-access-token': this.$store.state.token },
       }).then(() => {
-        if (this.collection.visibility === 'private') {
-          this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
-        }
-        if (this.collection.visibility === 'public') {
-          this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
-        }
-        this.shareDialog = false;
-        if (this.collection.visibility === 'private') {
-          this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
-        }
-        if (this.collection.visibility === 'public') {
-          this.$store.dispatch('deletePrivateCollection', id);
-          this.$store.dispatch('deletePublicCollection', id);
-          this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
-        }
+        this.$eventHub.$emit('inviteToCollection', data);
+        // if (this.collection.visibility === 'private') {
+        //   this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
+        // }
+        // if (this.collection.visibility === 'public') {
+        //   this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+        // }
+        // this.shareDialog = false;
+        // if (this.collection.visibility === 'private') {
+        //   this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
+        // }
+        // if (this.collection.visibility === 'public') {
+        //   this.$store.dispatch('deletePrivateCollection', id);
+        //   this.$store.dispatch('deletePublicCollection', id);
+        //   this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+        // }
       });
     },
   },
