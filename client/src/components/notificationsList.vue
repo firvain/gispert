@@ -1,7 +1,17 @@
 <template>
-  <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
-    <notification v-for="(notification, index) in $store.state.notifications" :key='index' :notification='notification'></notification>
-  </v-list>
+  <v-container>
+    <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
+      <notification v-for="(notification, index) in $store.state.notifications" :key='index' :notification='notification'></notification>
+    </v-list>
+    <v-btn
+    v-on:click='next_page'
+    class="blue-grey white--text"
+    block
+    >
+      {{ $t('message.loadMore')}}
+      <v-icon right dark>navigate_next</v-icon>
+    </v-btn>
+  </v-container>
 </template>
 <script>
 import axios from 'axios';
@@ -13,6 +23,8 @@ export default {
   data() {
     return {
       notifications: [],
+      start: 0,
+      end: 25,
     };
   },
   components: {
@@ -44,12 +56,19 @@ export default {
       axios.get(url, {
         params: {
           id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          start: this.start,
+          end: this.end,
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         this.$store.dispatch('setNotifications', response.data);
-        this.notifications = response.data;
+        this.notifications.push(response.data);
       });
+    },
+    next_page() {
+      this.start += 25;
+      this.end += 25;
+      this.getNotifications();
     },
   },
 };

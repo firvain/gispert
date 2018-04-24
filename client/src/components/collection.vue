@@ -62,7 +62,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="shareDialog = false">{{ $t('message.close')}}</v-btn>
-            <v-btn color="green darken-1" flat @click.native="saveCollectionMembers(collection._id)">{{ $t('message.save')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="inviteMembersToCollection(collection._id)">{{ $t('message.save')}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -192,7 +192,7 @@ export default {
         }
       });
     },
-    saveCollectionMembers(id) {
+    inviteMembersToCollection(id) {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/notifications/inviteMembers`;
       const ids = this.members;
       const data = {

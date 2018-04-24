@@ -7,7 +7,9 @@ var config = require('../../config');
 router.route('/user')
 .get(function getposts(req, res) {
   var userId = new ObjectID(req.query.id);
-  console.log('getting notifications');
+  const start = parseInt(req.query.start);
+  const end = parseInt(req.query.end);
+  console.log('getting notifications', start, end);
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
   .then(function (db) {
     var collection = db.collection('notifications');
@@ -39,13 +41,17 @@ router.route('/user')
           "userCreated": 1,
           "read": 1,
           "collection.title": 1,
+          "collection._id": 1,
           "user.name": 1,
+          "user._id": 1,
           "membersInvited": 1
       }},
       { $match: {
           $or: [
             {
-              membersInvited: userId
+              $and: [ 
+                { membersInvited: userId }, {read: 0}
+              ]
             },
             {
               $and: [ 
@@ -56,7 +62,10 @@ router.route('/user')
         }
       },
       {
-        $limit: 25
+        $skip: start
+      },      
+      {
+        $limit: end
       }      
       ]);
 

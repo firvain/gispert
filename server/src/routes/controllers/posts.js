@@ -41,8 +41,28 @@ router.route('/')
         database.addReply(req.body.userPost.isReplyTo, id);
         // console.log('the inserted id was :: ', id);
       }
+      return id;
     })
-    .then((id) => { 
+    .then((repliedPostCreator) => {
+      if (req.body.userPost.isReplyTo) {
+        return repliedPostCreator = database.findRepliedPost(req.body.userPost.isReplyTo);
+        // console.log('replied post:: ', repliedPostCreator, ' id:: ', id);
+      }
+    })
+    .then((repliedPostCreator) => {
+      if(repliedPostCreator) {
+        const notification = {
+          collectionId: post.collections,
+          byUser: new ObjectId(post.userId),
+          type: 'replyToMyPost',
+          userCreated: new ObjectId(repliedPostCreator[0].userId),
+          read: 0
+        };
+        console.log('notification of a reply', notification);
+        database.notifyPost(notification);
+      }
+    })
+    .then((id) => {
       res.status(200).json(id);
       database.close();
     })

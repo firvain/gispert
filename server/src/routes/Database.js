@@ -36,7 +36,7 @@ class Database {
                 post, (err, docs) => {
                     if(err) {
                         console.log('Failed to add post');
-                        reject(err)
+                        reject(err);
                     } else {
                         console.log('doc added :: ', docs.insertedId);
                         resolve(docs.insertedId);
@@ -44,6 +44,54 @@ class Database {
                     }
                 }
             )
+        })
+    }
+
+    notifyPost(notification) {
+        return new Promise((resolve, reject) => {
+            this.db.collection('notifications').insertOne(
+                notification, (err, docs) => {
+                    if(err) {
+                        console.log('Failed to add notification');
+                        reject(err);
+                    } else {
+                        console.log('notification added:: ', notification);
+                        resolve(docs.insertedId);
+                    }
+                }
+            )
+        })
+    }
+
+    findRepliedPost(id) {
+        console.log('finding creator of post');
+        return new Promise((resolve, reject) => {
+            this.db.collection('posts').find({
+                _id: new ObjectId(id),
+            }).toArray(function(err, docs) {
+                if (err) {
+                  reject(err);
+                } else {
+                  console.log('docs of findRepliedPost:: ', docs);
+                  resolve(docs);
+                }          
+            });
+        })
+    }
+
+    findCollectionCreator(id) {
+        console.log('finding collection creator');
+        return new Promise((resolve, reject) => {
+            this.db.collection('collections').find({
+                _id: new ObjectId(id),
+            }).toArray(function(err, docs) {
+                if (err) {
+                  reject(err);
+                } else {
+                  console.log(docs);
+                  resolve(docs.user);
+                }          
+            });
         })
     }
 
