@@ -69,21 +69,50 @@ import olMap from '../js/map';
 import config from '../config';
 
 export default {
-  props: ['id', 'collection', 'collectionid'],
+  props: ['id', 'collection', 'collectionid', 'collectionMembers'],
   name: 'newpost',
   data: () => ({
     postText: '',
     toggle_one: 0,
     selectCollections: '',
     collections: [],
+    collectionMembersToEmit: {},
     newPostInfo: '',
     snackbarNewPost: false,
     snackbarColor: '',
   }),
   mounted() {
     console.log('new post for reply mounted');
+    if (this.id) {
+      this.collectionMembersToEmit.members = this.collectionMembers;
+      console.log('will emit to users:: ', this.collectionMembersToEmit);
+    } else {
+      this.collectionMembersToEmit.members = this.findMembersOfThisCollection();
+    }
   },
   methods: {
+    findMembersOfThisCollection() {
+      console.log('find members::', this.$store.state.publicCollections,
+      this.$store.state.privateCollections);
+      const allCollections =
+        this.$store.state.publicCollections.concat(this.$store.state.privateCollections);
+      const collectionToFind =
+        this.selectCollections._id; // eslint-disable-line no-underscore-dangle
+      function search(nameKey, myArray) {
+        let result = '';
+        console.log('searching for :: ', nameKey);
+        for (let i = 0; i < myArray.length; i += 1) {
+          console.log(myArray[i].title, myArray[i]._id); // eslint-disable-line no-underscore-dangle
+          if (myArray[i]._id === nameKey) { // eslint-disable-line no-underscore-dangle
+            result = myArray[i];
+          }
+        }
+        return result;
+      }
+      const result = search(collectionToFind, allCollections);
+      console.log('search result:: ', result, result.members, result.title);
+      return result.members;
+    },
     publishPost() {
       console.log('PUBLISH');
       const featuresToPost = this.drawnFeatures;
@@ -125,6 +154,7 @@ export default {
       };
       // console.log('this is the post to publish', userPost);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
+      this.findMembersOfThisCollection();
       if (textToPost !== '' || userFeats !== null) {
         axios.post(url, { userPost }, {
           headers: { 'x-access-token': this.$store.state.token },
@@ -142,13 +172,15 @@ export default {
             // console.log('totally new post');
             console.log('this is the userpost newpost:: ', userPost);
             this.$parent.$emit('newpost', { type: 'newpost' });
-            this.$socket.emit('newPost', userPost);
+            console.log('emitting to::', this.collectionMembersToEmit.members);
+            this.$socket.emit('newPost', this.collectionMembersToEmit.members);
           } else {
             // eslint-disable-next-line
             userPost._id = response.data;
             console.log('this is the userpost new reply:: ', userPost);
             this.$parent.$emit('newreply', userPost);
-            this.$socket.emit('newReply', userPost);
+            console.log('emitting to::', this.collectionMembersToEmit.members);
+            this.$socket.emit('newReply', this.collectionMembersToEmit.members);
           }
         });
       } else {
@@ -244,6 +276,25 @@ export default {
         vuexCollections.push(e);
       });
       return vuexCollections;
+    },
+    // collectionMembersToEmit: () => {
+      // const members = [];
+      // console.log('members:: ', this.collectionMembersInitial.members);
+      // if (this.collectionMembersInitial.members.length > 0) {
+      //   members = this.collectionMembersInitial.members;
+      // } else {
+      //   members = ['test'];
+      // }
+      // if (this.id === undefined) {
+      //   members = 'this.collectionMembers';
+      // }
+      // console.log(members);
+      // return ['test', members];
+    // },
+  },
+  watch: {
+    selectCollections: function handle() {
+      this.findMembersOfThisCollection();
     },
   },
 };

@@ -38,7 +38,7 @@ export default {
     ]),
   },
   mounted() {
-    console.log('mounting list');
+    console.log('mounting notification list');
     this.getNotifications();
     this.$options.sockets.unfollowedCollection = (data) => {
       console.log('unfollowedCollection', data);

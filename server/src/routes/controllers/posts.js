@@ -143,8 +143,8 @@ router.route('/all')
           $skip: start
         },
         {
-            $limit: end
-        }      
+          $limit: end
+        }
         ]);
         db.close();
       })
@@ -225,7 +225,7 @@ router.route('/replies')
         $skip: start
       },
       {
-          $limit: end
+        $limit: end
       }      
       ]);
       db.close();
@@ -348,7 +348,7 @@ router.route('/person')
           }
         },
         {
-            $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
+          $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
         },
         { "$project": {
             "_id": 1,

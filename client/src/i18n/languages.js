@@ -58,7 +58,7 @@ module.exports = {
       privateCollectionsHint: 'Collections that only you and the users you invite can view, they are not searchable using the search box',
       collectionAddedToast: 'Added a collection!',
       ofTheUser: 'of user',
-      membersNumber: 'Members number',
+      membersNumber: 'Members count',
       chooseUsersToShare: 'Choose others users to share collection',
       deleteCollection: 'Delete collection?',
       allPostsWillBeDeleted: 'All posts in this collection will be removed',
@@ -95,6 +95,7 @@ module.exports = {
       collection: 'Collection',
       accept: 'Accept',
       decline: 'Decline',
+      byUser: 'by user',
     },
   },
   el_GR: {
@@ -193,6 +194,7 @@ module.exports = {
       collection: 'Συλλογή',
       accept: 'Αποδοχή',
       decline: 'Απόρριψη',
+      byUser: 'από τον χρήστη',
     },
   },
   fr: {
@@ -291,6 +293,7 @@ module.exports = {
       collection: 'Collection',
       accept: 'Accepter',
       decline: 'Déclin',
+      byUser: "par l'utilisateur",
     },
   },
   de: {
@@ -389,6 +392,7 @@ module.exports = {
       collection: 'Sammlung',
       accept: 'Akzeptieren',
       decline: 'Rückgang',
+      byUser: 'von Benutzer',
     },
   },
   it: {
@@ -487,6 +491,7 @@ module.exports = {
       collection: 'Collezione',
       accept: 'Accettare',
       decline: 'Declino',
+      byUser: "dall'utente",
     },
   },
   es: {
@@ -585,6 +590,7 @@ module.exports = {
       collection: 'Colección',
       accept: 'Aceptar',
       decline: 'Disminución',
+      byUser: 'por usuario',
     },
   },
   nn: {
@@ -683,6 +689,7 @@ module.exports = {
       collection: 'Samling',
       accept: 'Godta',
       decline: 'Nedgang',
+      byUser: 'av bruker',
     },
   },
 };

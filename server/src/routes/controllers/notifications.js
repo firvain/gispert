@@ -42,16 +42,8 @@ router.route('/user')
           "read": 1,
           "user": 1,
           "timestamp": 1,
-          "collection": {
-               "$filter": {
-                   "input": "$collection",
-                   "as": "child",
-                   "cond": { $or: [ 
-                       { "$eq": [ "$$child.members", userId ] }, 
-                       { "$eq": [ "$$child.user", userId ] } 
-                   ] }
-               }
-           },
+          "collection.members": 1,
+          "collection.title": 1,
           "text": 1,
           "features": 1
       }},
@@ -72,7 +64,7 @@ router.route('/user')
             {
               $and: [
                 { type: 'newPostInCollection' },
-                { collection: { $size: 1 } },
+                { "collection.members": userId },
                 { read: 0 }
               ]
             }

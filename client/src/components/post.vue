@@ -57,7 +57,10 @@
                 <span>{{ $t("message.shareLink") }}!</span>
               </v-tooltip>
         </v-card-actions>
-        <newPost v-if="answerPost==true && post.collectionData" :id="post._id" :collection="post.collectionData[0]._id"></newPost>
+        <newPost v-if="answerPost==true && post.collectionData" 
+          :id="post._id"
+          :collection="post.collectionData[0]._id"
+          :collectionMembers="post.collectionData[0].members"></newPost>
 
         <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex class="ma-0 pa-0"

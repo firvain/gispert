@@ -30,13 +30,13 @@
     <v-list-tile-content v-if="notification.type === 'newPostInCollection'">
       <v-list-tile-title>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}: {{ notification.user[0].name }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-content v-if="notification.type === 'replyToMyPost'">
       <v-list-tile-title>{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">{{ notification.text }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}: {{ notification.user[0].name }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
 
