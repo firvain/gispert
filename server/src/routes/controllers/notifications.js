@@ -40,33 +40,45 @@ router.route('/user')
           "type": 1,
           "userCreated": 1,
           "read": 1,
-          "collection.title": 1,
-          "collection._id": 1,
-          "user.name": 1,
-          "user._id": 1,
-          "membersInvited": 1
+          "user": 1,
+          "timestamp": 1,
+          "collection": {
+               "$filter": {
+                   "input": "$collection",
+                   "as": "child",
+                   "cond": { $or: [ 
+                       { "$eq": [ "$$child.members", userId ] }, 
+                       { "$eq": [ "$$child.user", userId ] } 
+                   ] }
+               }
+           },
+          "text": 1,
+          "features": 1
       }},
       { $match: {
           $or: [
             {
               $and: [ 
-                { membersInvited: userId }, {read: 0}
+                { membersInvited: userId },
+                { read: 0 }
               ]
             },
             {
-              $and: [ 
-                { userCreated: userId }, {read: 0}
+              $and: [
+                { userCreated: userId },
+                { read: 0 }
+              ]
+            },
+            {
+              $and: [
+                { type: 'newPostInCollection' },
+                { collection: { $size: 1 } },
+                { read: 0 }
               ]
             }
           ]
         }
-      },
-      {
-        $skip: start
-      },      
-      {
-        $limit: end
-      }      
+      }
       ]);
 
       db.close();
@@ -129,6 +141,7 @@ router.route('/user')
                   membersInvited: cids,
                   type: 'invitedToCollection',
                   userCreated: byUser,
+                  timestamp: Date.now(),
                   read: 0
               });
               res.status(200).send('OK');

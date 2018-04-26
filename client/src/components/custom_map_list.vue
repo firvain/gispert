@@ -142,9 +142,7 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        if (response.data.success === false) {
-          console.log('not logged in to see maps');
-        } else {
+        if (response.data.success === true) {
           this.searchResultcustomMaps = response.data;
         }
       }).then(() => {

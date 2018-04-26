@@ -481,12 +481,12 @@ export default {
 
   },
   mounted() {
-    this.$options.sockets.unfollowedCollection = (data) => {
-      console.log('unfollowedCollection', data);
-    };
-    this.$options.sockets.followedCollection = (data) => {
-      console.log('followedCollection', data);
-    };
+    // this.$options.sockets.unfollowedCollection = (data) => {
+    //   console.log('unfollowedCollection', data);
+    // };
+    // this.$options.sockets.followedCollection = (data) => {
+    //   console.log('followedCollection', data);
+    // };
   },
 };
 </script>

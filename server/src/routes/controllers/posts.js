@@ -55,7 +55,23 @@ router.route('/')
           collectionId: post.collections,
           byUser: new ObjectId(post.userId),
           type: 'replyToMyPost',
+          timestamp: post.timestamp,
           userCreated: new ObjectId(repliedPostCreator[0].userId),
+          text: repliedPostCreator[0].text,
+          features: repliedPostCreator[0].userFeatures,
+          read: 0
+        };
+        console.log('notification of a reply', notification);
+        database.notifyPost(notification);
+      } else {
+        const notification = {
+          collectionId: post.collections,
+          byUser: new ObjectId(post.userId),
+          type: 'newPostInCollection',
+          timestamp: post.timestamp,
+          // userCreated: new ObjectId(repliedPostCreator[0].userId),
+          // text: repliedPostCreator[0].text,
+          // features: repliedPostCreator[0].userFeatures,
           read: 0
         };
         console.log('notification of a reply', notification);
@@ -154,6 +170,8 @@ router.route('/replies')
   var start = parseInt(req.query.start);
   var end = parseInt(req.query.end);
   var ids = req.query.ids;
+  var userId = ObjectId(req.query.userId);
+
   console.log('ids to fetch ', ids, start, end);
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
   .then(function (db) {
@@ -162,31 +180,55 @@ router.route('/replies')
     ids.forEach((id) => {
       objectids.push(ObjectId(id));
     });
+
     return collection.aggregate([
+      { $graphLookup: {
+          from: "posts",
+          startWith: "$replies",
+          connectFromField: "_id",
+          connectToField: "_id",
+          as: "repliesData",
+        }
+      },
+      { $graphLookup: {
+          from: "collections",
+          startWith: "$collections",
+          connectFromField: "collections",
+          connectToField: "_id",
+          as: "collectionData",
+        }
+      },
+      {
+        $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
+      },
+      { "$project": {
+          "_id": 1,
+          "userId": 1,
+          "userName": 1,
+          "timestamp": 1,
+          "text":1,
+          "userFeatures": 1,
+          "isReplyTo":1,
+          "replies":1,
+          "collectionData": {
+             "$filter": {
+                 "input": "$collectionData",
+                 "as": "child",
+                 "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }, { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
+             }
+          }
+      }},
       {
         $match: { "_id": { $in: objectids }}
-      }
-      ,
-      {
-        $sort: { 'timestamp': -1 }
       },
       {
-        $skip: 0
+        $skip: start
       },
       {
-        $limit: 10
-      },
-      {
-        $lookup:
-          {
-            from: "posts",
-            localField: "replies",
-            foreignField: "_id",
-            as: "repliesData"
-          }
-      }]
-    );
-    db.close();
+          $limit: end
+      }      
+      ]);
+      db.close();
     })
     .then(function (cursor) {
       return cursor.toArray();

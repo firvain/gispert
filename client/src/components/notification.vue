@@ -33,6 +33,12 @@
       <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
+    <v-list-tile-content v-if="notification.type === 'replyToMyPost'">
+      <v-list-tile-title>{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title>
+      <v-list-tile-sub-title class="text--primary">{{ notification.text }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
+    </v-list-tile-content>
+
 
     <v-list-tile-action 
         v-if="notification.type === 'unfollowedCollection' ||

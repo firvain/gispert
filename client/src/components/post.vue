@@ -56,7 +56,6 @@
                 </v-btn>
                 <span>{{ $t("message.shareLink") }}!</span>
               </v-tooltip>
-
         </v-card-actions>
         <newPost v-if="answerPost==true && post.collectionData" :id="post._id" :collection="post.collectionData[0]._id"></newPost>
 
@@ -145,6 +144,7 @@ export default {
         ids: this.post.replies,
         start: this.startPage.toString(),
         end: this.limitPage.toString(),
+        userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
       },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {

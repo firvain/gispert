@@ -109,8 +109,8 @@ export default {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
           if (response.data.success === false) {
-            console.log(response.data);
-            console.log('not logged in to see others');
+            // console.log(response.data);
+            // console.log('not logged in to see others');
           } else {
             this.$store.dispatch('setUsers', response.data);
             // this.users = response.data;
@@ -131,8 +131,8 @@ export default {
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         if (response.data.success === false) {
-          console.log(response.data);
-          console.log('not logged in to see others');
+          // console.log(response.data);
+          // console.log('not logged in to see others');
         } else {
           this.$store.dispatch('setUsers', response.data);
           // this.users = response.data;
@@ -153,10 +153,7 @@ export default {
           },
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
-          if (response.data.success === false) {
-            // console.log(response.data);
-            console.log('not logged in to see others');
-          } else {
+          if (response.data.success === true) {
             this.searchResultUsers = response.data;
             // this.users = response.data;
           }

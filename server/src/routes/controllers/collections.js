@@ -183,6 +183,7 @@ router.route('/collection')
                     byUser:id,
                     type: 'followedCollection',
                     userCreated: new ObjectID(req.body.data.userCreated),
+                    timestamp: Date.now(),
                     read: 0
                 });
                 res.status(200).send('OK');
@@ -213,6 +214,7 @@ router.route('/collection')
                     byUser: mId,
                     type: 'unfollowedCollection',
                     userCreated: userCreated,
+                    timestamp: Date.now(),
                     read: 0
                 });
                 res.status(200).send('OK');

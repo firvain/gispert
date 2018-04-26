@@ -89,7 +89,7 @@ class Database {
                   reject(err);
                 } else {
                   console.log(docs);
-                  resolve(docs.user);
+                  resolve(docs);
                 }          
             });
         })

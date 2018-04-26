@@ -80,9 +80,12 @@ export default {
     snackbarNewPost: false,
     snackbarColor: '',
   }),
+  mounted() {
+    console.log('new post for reply mounted');
+  },
   methods: {
     publishPost() {
-      // console.log('PUBLISH');
+      console.log('PUBLISH');
       const featuresToPost = this.drawnFeatures;
       // console.log('featuresToPost :: ', featuresToPost);
       const textToPost = this.postText;
@@ -94,11 +97,19 @@ export default {
       } else {
         userFeats = null;
       }
-      let idToReply;
-      if (this.id !== undefined) {
+      let idToReply = '';
+      if (this.id) {
         idToReply = this.id;
       } else {
         idToReply = '';
+      }
+      let collectionToPost = 'not in collection';
+      if (this.selectCollections._id === undefined) { // eslint-disable-line no-underscore-dangle
+        collectionToPost = this.collection;
+        // console.log('detected a reply', this.collection);
+      } else {
+        collectionToPost = this.selectCollections._id; // eslint-disable-line no-underscore-dangle
+        // console.log('detected a new post', this.collection);
       }
       const userPost = {
         // eslint-disable-next-line
@@ -108,13 +119,10 @@ export default {
         timestamp: Date.now(),
         userFeatures: userFeats,
         isReplyTo: idToReply,
-        collections: this.selectCollections._id, // eslint-disable-line no-underscore-dangle
+        collections: collectionToPost, // eslint-disable-line no-underscore-dangle
         // collections: this.selectCollections,
         replies: [],
       };
-      if (this.collectionid) {
-        userPost.collections = this.collectionid;
-      }
       // console.log('this is the post to publish', userPost);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
       if (textToPost !== '' || userFeats !== null) {
@@ -132,12 +140,13 @@ export default {
           this.$store.commit('clearNewPostFeatures', 'newPost');
           if (this.id === undefined) {
             // console.log('totally new post');
+            console.log('this is the userpost newpost:: ', userPost);
             this.$parent.$emit('newpost', { type: 'newpost' });
             this.$socket.emit('newPost', userPost);
           } else {
             // eslint-disable-next-line
             userPost._id = response.data;
-            // console.log('this is the userpost :: ', userPost);
+            console.log('this is the userpost new reply:: ', userPost);
             this.$parent.$emit('newreply', userPost);
             this.$socket.emit('newReply', userPost);
           }

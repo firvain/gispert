@@ -140,12 +140,7 @@ export default {
     this.$options.sockets.newReply = (data) => {
       console.log('new reply', data);
     };
-    const data = {
-      memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-      collectionId: 'id',
-      userCreated: '58809eaa7ed36e69f2f0beb2',
-    };
-    this.$socket.emit('unfollowedCollection', data);
+
     this.loading = true;
     let url;
     let userID;

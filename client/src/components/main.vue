@@ -101,9 +101,7 @@ export default {
           },
           headers: { 'x-access-token': token },
         }).then((resp) => {
-          if (resp.data.success === false) {
-            console.log('not logged in to see post');
-          } else {
+          if (resp.data.success === true) {
             // console.log(resp.data);
             this.postContent = resp.data[0];
             // console.log('postContent:: ', this.postContent, this.postContent.text);

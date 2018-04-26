@@ -64,7 +64,7 @@ export default {
     login(credentials) {
       // console.log('snack:: ', this.snackbar);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/login`;
-      console.log('connect to connect login url:: ', url);
+      // console.log('connect to connect login url:: ', url);
       axios.get(url, {
         params: {
           name: credentials.email,
