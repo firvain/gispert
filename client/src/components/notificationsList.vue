@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    {{ socketMessage }}
+    <!-- {{ socketMessage }} -->
     <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
       <notification v-for="(notification, index) in $store.state.notifications" :key='index' :notification='notification'></notification>
     </v-list>
@@ -43,24 +43,30 @@ export default {
     this.$options.sockets.unfollowedCollection = (data) => {
       console.log('unfollowedCollection', data);
       this.getNotifications();
-      this.socketMessage = 'unfollowedCollection';
+      // this.socketMessage = 'unfollowedCollection';
       // this.$store.commit('addNotificationFromSocket', data);
     };
     this.$options.sockets.followedCollection = (data) => {
       console.log('followedCollection', data);
-      this.socketMessage = 'followedCollection';
+      // this.socketMessage = 'followedCollection';
       this.getNotifications();
       // this.$store.commit('addNotificationFromSocket', data);
     };
     this.$options.sockets.newReply = (data) => {
       console.log('new reply data:: ', data);
-      this.socketMessage = 'new reply data';
+      // this.socketMessage = 'new reply data';
       this.getNotifications();
       // this.$store.commit('addNotificationFromSocket', data);
     };
     this.$options.sockets.newPost = (data) => {
       console.log('new post data:: ', data);
-      this.socketMessage = 'new post data';
+      // this.socketMessage = 'new post data';
+      this.getNotifications();
+      // this.$store.commit('addNotificationFromSocket', data);
+    };
+    this.$options.sockets.inviteToCollection = (data) => {
+      console.log('invited to collection:: ', data);
+      // this.socketMessage = 'new post data';
       this.getNotifications();
       // this.$store.commit('addNotificationFromSocket', data);
     };

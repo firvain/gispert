@@ -154,7 +154,7 @@ export default {
       };
       // console.log('this is the post to publish', userPost);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
-      this.findMembersOfThisCollection();
+      const members = this.findMembersOfThisCollection();
       if (textToPost !== '' || userFeats !== null) {
         axios.post(url, { userPost }, {
           headers: { 'x-access-token': this.$store.state.token },
@@ -170,17 +170,19 @@ export default {
           this.$store.commit('clearNewPostFeatures', 'newPost');
           if (this.id === undefined) {
             // console.log('totally new post');
-            console.log('this is the userpost newpost:: ', userPost);
+            // console.log('this is the userpost newpost:: ', userPost);
             this.$parent.$emit('newpost', { type: 'newpost' });
-            console.log('emitting to::', this.collectionMembersToEmit.members);
-            this.$socket.emit('newPost', this.collectionMembersToEmit.members);
+            console.log('emitting to::', members);
+            userPost.members = members;
+            this.$socket.emit('newPost', userPost);
           } else {
             // eslint-disable-next-line
             userPost._id = response.data;
-            console.log('this is the userpost new reply:: ', userPost);
+            // console.log('this is the userpost new reply:: ', userPost);
             this.$parent.$emit('newreply', userPost);
-            console.log('emitting to::', this.collectionMembersToEmit.members);
-            this.$socket.emit('newReply', this.collectionMembersToEmit.members);
+            console.log('emitting to::', this.collectionMembers);
+            userPost.members = this.collectionMembers;
+            this.$socket.emit('newReply', userPost);
           }
         });
       } else {

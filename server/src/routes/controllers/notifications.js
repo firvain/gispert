@@ -9,7 +9,7 @@ router.route('/user')
   var userId = new ObjectID(req.query.id);
   const start = parseInt(req.query.start);
   const end = parseInt(req.query.end);
-  console.log('getting notifications', start, end);
+  // console.log('getting notifications', start, end);
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
   .then(function (db) {
     var collection = db.collection('notifications');
@@ -25,7 +25,7 @@ router.route('/user')
           as: "collection",
         }
       },
-      { $graphLookup: {
+      { $graphLookup: { 
           from: "users",
           startWith: "$byUser",
           connectFromField: "_id",
@@ -44,20 +44,24 @@ router.route('/user')
           "timestamp": 1,
           "collection.members": 1,
           "collection.title": 1,
+          "collectionId": 1,
           "text": 1,
-          "features": 1
+          "features": 1,
+          "membersInvited": 1
       }},
       { $match: {
           $or: [
             {
               $and: [ 
                 { membersInvited: userId },
+                { type: { $eq: 'invitedToCollection' } },
                 { read: 0 }
               ]
             },
             {
               $and: [
                 { userCreated: userId },
+                { type: { $ne: 'invitedToCollection' } },
                 { read: 0 }
               ]
             },
@@ -67,7 +71,14 @@ router.route('/user')
                 { "collection.members": userId },
                 { read: 0 }
               ]
-            }
+            },
+            {
+              $and: [
+                { type: 'replyToMyPost' },
+                { "collection.members": userId },
+                { read: 0 }
+              ]
+            }            
           ]
         }
       }
@@ -79,7 +90,7 @@ router.route('/user')
       return cursor.toArray();
     })
     .then(function (content) {
-      console.log(content);
+      // console.log(content);
       res.status(200).json(content);
       // db.close();
     })

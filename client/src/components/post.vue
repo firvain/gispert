@@ -3,16 +3,15 @@
     <v-flex xs12 sm12>
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
-          <div class="text-xs-left">
-            <a md12 @click="exploreTimeline(post.userId)">@{{post.userName}}</a>
-            <span md12 v-if="post.text" v-html="post.text" v-linkified></span>
-            <p v-if="post.collectionData"><i>{{timestamp}} <br> {{ $t("message.inCollection")}}:
-              {{post.collectionData[0].title}}</i>
+          <v-layout class="text-xs-left">
+            <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
+            <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;
+            <p v-if="post.collectionData">{{ $t("message.inCollection")}}:
+              {{post.collectionData[0].title}}, <i>{{timestamp}}</i>
             </p>
-          </div>
+          </v-layout>
         </v-card-title>
         <v-card-actions class="white">
-          <!-- <v-spacer></v-spacer> -->
             <v-tooltip bottom>
               <v-btn slot="activator" v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">
                 {{ $t("message.showOnMap") }}
@@ -34,6 +33,7 @@
               </v-btn>
               <span>{{ $t("message.viewReplies") }}</span>
             </v-tooltip>
+              <v-spacer></v-spacer>
               <social-sharing :url="sharePostUrl" inline-template>
                 <div>
                   <v-tooltip bottom>

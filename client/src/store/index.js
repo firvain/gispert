@@ -185,8 +185,11 @@ export default new Vuex.Store({
       return state.storage;
     },
     notificationsGetter(state) {
+      const unreadNotifications = state.notifications.filter(function (notification) {
+        return notification.read === 0;
+      })
       const notifications = {
-        messages: state.notifications,
+        messages: unreadNotifications,
         number: state.notifications.length,
         color: 'blue',
       }

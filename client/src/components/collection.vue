@@ -159,12 +159,12 @@ export default {
       }).then(() => {
         this.loading = false;
         if (this.collection.visibility === 'private') {
-          this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
+          this.$eventHub.$emit('refreshprivatecollections', 'refresh');
         }
         if (this.collection.visibility === 'public') {
           this.$store.dispatch('deletePrivateCollection', id);
           this.$store.dispatch('deletePublicCollection', id);
-          this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+          this.$eventHub.$emit('refreshpubliccollections', 'refresh');
         }
       });
     },
@@ -182,12 +182,12 @@ export default {
       }).then(() => {
         this.loading = false;
         if (this.collection.visibility === 'private') {
-          this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
+          this.$eventHub.$emit('refreshprivatecollections', 'refresh');
         }
         if (this.collection.visibility === 'public') {
           this.$store.dispatch('deletePrivateCollection', id);
           this.$store.dispatch('deletePublicCollection', id);
-          this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
+          this.$eventHub.$emit('refreshpubliccollections', 'refresh');
           this.$socket.emit('unfollowedCollection', data);
         }
       });
@@ -203,7 +203,7 @@ export default {
       axios.post(url, { data }, {
         headers: { 'x-access-token': this.$store.state.token },
       }).then(() => {
-        this.$eventHub.$emit('inviteToCollection', data);
+        this.$socket.$emit('inviteToCollection', data.members);
         // if (this.collection.visibility === 'private') {
         //   this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
         // }

@@ -14,8 +14,8 @@
               <!-- {{$store.state.notifications.length}} :: {{notificationsGetter}} -->
               <v-btn color="orange" flat dark @click="dialogNotifications = true" v-if="$store.state.isUserLoggedIn === true">
                 <v-badge left color='blue'>
-                  <span slot="badge" color='blue' v-if='notificationsGetter.number > 0'>{{ notificationsGetter.number }}</span>
-                  <v-icon :color='notificationsGetter.color'>notifications</v-icon>{{notificationsGetter.number}}
+                  <span slot="badge" color='blue' v-if='bell.number > 0'>{{ bell.number }}</span>
+                  <v-icon :color='bell.color'>notifications</v-icon>{{bell.number}}
                 </v-badge>
               </v-btn>
 
@@ -300,15 +300,22 @@ export default {
         { id: 'es', name: 'Spanish' },
         { id: 'nn', name: 'Norwegian' },
       ],
+      currentBell: null,
     };
   },
   computed: {
-    ...mapGetters([
-      'notificationsGetter',
-    ]),
+    ...mapGetters({
+      bell: 'notificationsGetter',
+    }),
   },
   components: {
     notificationsList,
+  },
+  watch: {
+    bell: (e) => {
+      this.currentBell = e;
+      console.log('new bell', this.currentBell);
+    },
   },
   // watch: {
   //   'this.$store.state': () => {

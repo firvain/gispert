@@ -45,16 +45,42 @@ io.on('connection', function(socket) {
     //   io.emit('chat message', msg);
     // });
     socket.on('newPost', function handlepost(post) {
-      io.emit('newPost', post);
-      console.log('Received a socket request and emitting new post');
+      const receivers = post.members;
+      delete post.members;
+      receivers.forEach(receiver => {
+        const toid = userList.filter(user => user.user_id === receiver);
+        console.log('sending new post notification to user:', toid, 'filter::', receiver);
+        if (toid.length > 0) {
+          socket.broadcast.to(toid[0].id).emit('newPost', post);
+        }
+      });
+      // io.emit('newPost', post);
+      console.log('Received a socket request and emitting new post:: ', post);
     });
     socket.on('newReply', function handlepost(post) {
-      io.emit('newReply', post);
+      const receivers = post.members;
+      delete post.members;
+      receivers.forEach(receiver => {
+        const toid = userList.filter(user => user.user_id === receiver);
+        console.log('sending new post notification to user:', toid, 'filter::', receiver);
+        if (toid.length > 0) {
+          socket.broadcast.to(toid[0].id).emit('newPost', post);
+        }
+      });
+      // io.emit('newPost', post);
       console.log('Received a socket request and emitting reply');
     });
-    // socket.on('refreshGroups', function handlegroup(group) {
-    //   io.emit('newGroup', group);
-    // });
+
+    socket.on('inviteToCollection', function handleinvitation(members) {
+      const receivers = members;
+      receivers.forEach(receiver => {
+        const toid = userList.filter(user => user.user_id === receiver);
+        console.log('sending invitation to user:', toid, 'filter::', receiver);
+        if (toid.length > 0) {
+          socket.broadcast.to(toid[0].id).emit('inviteToCollection', 'inviteToCollection');
+        }        
+      });
+    });
     // socket.on('groupDeleted', function handlegroup(group) {
     //   io.emit('groupDeleted', group);
     // });

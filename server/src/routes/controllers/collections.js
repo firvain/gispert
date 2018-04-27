@@ -178,13 +178,15 @@ router.route('/collection')
                     { _id: { $in: cids} },
                     { $addToSet: { members:  id } }
                 );
-                db.collection('notifications').insertOne({ 
-                    collectionId: cids,
-                    byUser:id,
-                    type: 'followedCollection',
-                    userCreated: new ObjectID(req.body.data.userCreated),
-                    timestamp: Date.now(),
-                    read: 0
+                cids.forEach((cid) => {
+                    db.collection('notifications').insertOne({ 
+                        collectionId: cid,
+                        byUser: id,
+                        type: 'followedCollection',
+                        userCreated: new ObjectID(req.body.data.userCreated),
+                        timestamp: Date.now(),
+                        read: 0
+                    });
                 });
                 res.status(200).send('OK');
             }

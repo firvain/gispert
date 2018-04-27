@@ -38,7 +38,7 @@ class Database {
                         console.log('Failed to add post');
                         reject(err);
                     } else {
-                        console.log('doc added :: ', docs.insertedId);
+                        // console.log('doc added :: ', docs.insertedId);
                         resolve(docs.insertedId);
                         // insertedid = docs.insertedId;
                     }
@@ -55,7 +55,7 @@ class Database {
                         console.log('Failed to add notification');
                         reject(err);
                     } else {
-                        console.log('notification added:: ', notification);
+                        // console.log('notification added:: ', notification);
                         resolve(docs.insertedId);
                     }
                 }
@@ -72,7 +72,7 @@ class Database {
                 if (err) {
                   reject(err);
                 } else {
-                  console.log('docs of findRepliedPost:: ', docs);
+                //   console.log('docs of findRepliedPost:: ', docs);
                   resolve(docs);
                 }          
             });

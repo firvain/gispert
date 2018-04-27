@@ -303,10 +303,12 @@ export default {
       this.loadPrivateCollections();
       this.loadPublicCollections();
     }
-    this.$on('refreshprivatecollections', () => {
+    this.$eventHub.$on('refreshprivatecollections', () => {
+      console.log('refreshing private collections');
       this.loadPrivateCollections();
     });
-    this.$on('refreshpubliccollections', () => {
+    this.$eventHub.$on('refreshpubliccollections', () => {
+      console.log('refreshing public collections');
       this.loadPublicCollections();
     });
     this.$eventHub.$on('logged-in', () => {

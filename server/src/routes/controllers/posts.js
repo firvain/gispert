@@ -61,7 +61,7 @@ router.route('/')
           features: repliedPostCreator[0].userFeatures,
           read: 0
         };
-        console.log('notification of a reply', notification);
+        // console.log('notification of a reply', notification);
         database.notifyPost(notification);
       } else {
         const notification = {
@@ -74,7 +74,7 @@ router.route('/')
           // features: repliedPostCreator[0].userFeatures,
           read: 0
         };
-        console.log('notification of a reply', notification);
+        // console.log('notification of a reply', notification);
         database.notifyPost(notification);
       }
     })
@@ -115,7 +115,7 @@ router.route('/all')
           }
         },
         {
-            $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
+          $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
         },
         { "$project": {
             "_id": 1,
@@ -135,9 +135,10 @@ router.route('/all')
             }
         }},
         { $match: {  
-          $and: [ 
-            { 'isReplyTo': '' }, {'collectionData': { $size: 1 }}
-          ]}
+            $and: [ 
+              { 'isReplyTo': '' }, {'collectionData': { $size: 1 }}
+            ]
+          }
         },
         {
           $skip: start
