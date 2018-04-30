@@ -3,20 +3,14 @@
     ripple
     :key="notification._id"
   >
-    <v-list-tile-content v-if="notification.type === 'unfollowedCollection'">
-      <v-list-tile-title>{{ $t('message.collectionWasUnfollowed') }}</v-list-tile-title>
-      <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
-    </v-list-tile-content>
-
     <v-list-tile-content v-if="notification.type === 'followedCollection'">
       <v-list-tile-title>{{ $t('message.collectionWasFollowed') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
-    <v-list-tile-content v-if="notification.type === 'invitationAccepted'">
-      <v-list-tile-title>{{ $t('message.invitationToCollectionAccepted') }}</v-list-tile-title>
+    <v-list-tile-content v-if="notification.type === 'unfollowedCollection'">
+      <v-list-tile-title>{{ $t('message.collectionWasUnfollowed') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
     </v-list-tile-content>
@@ -27,6 +21,12 @@
       <v-list-tile-sub-title>{{ $t('message.byUser') }}: {{ notification.user[0].name }}</v-list-tile-sub-title>
     </v-list-tile-content>
 
+    <v-list-tile-content v-if="notification.type === 'invitationAccepted'">
+      <v-list-tile-title>{{ $t('message.invitationToCollectionAccepted') }}</v-list-tile-title>
+      <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
+    </v-list-tile-content>
+
     <v-list-tile-content v-if="notification.type === 'newPostInCollection'">
       <v-list-tile-title>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}, {{ notification.text }}</v-list-tile-sub-title>
@@ -34,7 +34,9 @@
     </v-list-tile-content>
 
     <v-list-tile-content v-if="notification.type === 'replyToMyPost'">
-      <v-list-tile-title v-if="notification.user[0].name === $store.state.user.name">{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title>
+      <!-- <v-list-tile-title>{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title> -->
+      <!-- {{$store.state.user._id}}, {{ notification.collection[0].user }} -->
+      <v-list-tile-title v-if="notification.collection[0].user === $store.state.user._id">{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title>
       <v-list-tile-title v-else>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}, {{ notification.text }}</v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}: {{ notification.user[0].name }}, {{ timestamp }}</v-list-tile-sub-title>

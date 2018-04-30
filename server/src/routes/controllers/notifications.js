@@ -44,6 +44,7 @@ router.route('/user')
           "timestamp": 1,
           "collection.members": 1,
           "collection.title": 1,
+          "collection.user": 1,
           "collectionId": 1,
           "text": 1,
           "features": 1,
@@ -51,37 +52,63 @@ router.route('/user')
       }},
       { $match: {
           $or: [
-            {
-              $and: [ 
-                { membersInvited: userId },
-                { type: { $eq: 'invitedToCollection' } },
-                { read: 0 }
-              ]
-            },
-            {
+            { // select notifications for people who followed one of my collections
               $and: [
                 { userCreated: userId },
-                { type: { $ne: 'invitedToCollection' } },
+                { type: { $eq: 'followedCollection' } },
                 { read: 0 }
               ]
             },
-            {
+            { // select notifications for people who UNfollowed one of my collections
+              $and: [
+                { userCreated: userId },
+                { type: { $eq: 'unfollowedCollection' } },
+                { read: 0 }
+              ]
+            },
+            { // select invitations to be a member in a collection
+              $and: [
+                { membersInvited: userId },
+                { type: { $eq: 'invitedToCollection' } },
+                { byUser: {$ne: userId } },
+                { read: 0 }
+              ]
+            },
+            { // select notifications for new posts in a collection I am member
               $and: [
                 { type: 'newPostInCollection' },
                 { "collection.members": userId },
+                { byUser: {$ne: userId } },
                 { read: 0 }
               ]
             },
-            {
+            { // select notifications for replies in a collection I am member
               $and: [
                 { type: 'replyToMyPost' },
                 { "collection.members": userId },
+                { byUser: {$ne: userId } },
                 { read: 0 }
               ]
-            }            
+            },
+            { // select notifications for replies to my posts
+              $and: [
+                { type: 'replyToMyPost' },
+                { userCreated: userId },
+                { read: 0 }
+              ]
+            },
+            { // select notifications for new posts in a collection I created
+              $and: [
+                { type: 'newPostInCollection' },
+                { "collection.user": userId },
+                { byUser: {$ne: userId } },
+                { read: 0 }
+              ]
+            }
           ]
         }
-      }
+      },
+      { $sort : { timestamp : -1 } }
       ]);
 
       db.close();
