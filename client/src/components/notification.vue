@@ -7,10 +7,10 @@
     <v-list-tile-content v-if="notification.type === 'followedCollection'">
       <v-list-tile-title>{{ $t('message.collectionWasFollowed') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
-        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
     </v-list-tile-content>
@@ -18,10 +18,10 @@
     <v-list-tile-content v-if="notification.type === 'unfollowedCollection'">
       <v-list-tile-title>{{ $t('message.collectionWasUnfollowed') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
-        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
     </v-list-tile-content>
@@ -29,10 +29,10 @@
     <v-list-tile-content v-if="notification.type === 'invitedToCollection'">
       <v-list-tile-title>{{ $t('message.invitedToCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
-        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
     </v-list-tile-content>
@@ -40,10 +40,10 @@
     <v-list-tile-content v-if="notification.type === 'invitationAccepted'">
       <v-list-tile-title>{{ $t('message.invitationToCollectionAccepted') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
-        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
     </v-list-tile-content>
@@ -51,11 +51,11 @@
     <v-list-tile-content v-if="notification.type === 'newPostInCollection'">
       <v-list-tile-title>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
         <i><a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a></i>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
-        <a md12 @click="loadPosts(notification.collection[0]._id)">@{{ notification.user[0].name }}</a>,
+        <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
     </v-list-tile-content>
@@ -66,11 +66,11 @@
       <v-list-tile-title v-if="notification.collection[0].user === $store.state.user._id">{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title>
       <v-list-tile-title v-else>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
         , <a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
-        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
     </v-list-tile-content>
@@ -113,7 +113,10 @@
 <script>
 import axios from 'axios';
 import moment from 'moment';
+import ol from 'openlayers';
 import config from '../config';
+import olMap from '../js/map';
+import styles from '../js/styles';
 
 export default {
   props: ['notification'],
@@ -122,11 +125,63 @@ export default {
     };
   },
   methods: {
-    loadPosts(e) {
+    loadCollection(e) {
       console.log('load users tl::', e);
+      const goToPath = `/main/search/collection/${e}`;
+      console.log('going to path:: ', goToPath);
+      this.$router.push({ path: goToPath });
+      this.$eventHub.$emit('openCollection', e);
     },
-    loadFeatures(e) {
-      console.log('load features', e);
+    loadUsersTl(e) {
+      console.log('load users tl::', e);
+      const goToPath = `/main/search/collection/${e}`;
+      console.log('going to path:: ', goToPath);
+      this.$router.push({ path: goToPath });
+      this.$eventHub.$emit('openTimeline', e);
+    },
+    loadFeatures(newFeature) {
+      const geojsonFormat = new ol.format.GeoJSON();
+      console.log('load features', newFeature);
+      if (newFeature !== '{"type":"FeatureCollection","features":[]}' && newFeature !== null) {
+        let allLayers = [];
+        allLayers = olMap.getLayers().getArray();
+        allLayers.forEach((layer) => {
+          if (layer.getProperties().name === 'customLayer') {
+            const AddedFeature = geojsonFormat.readFeatures(newFeature);
+            let alreadyExists = false;
+            layer.getSource().forEachFeature((feature) => {
+              // console.log(AddedFeature);
+              if (feature.get('mongoID') === AddedFeature[0].getProperties().mongoID) {
+                alreadyExists = true;
+              }
+            });
+            if (!AddedFeature[0].getProperties().mongoID) {
+              alreadyExists = false;
+            }
+            const g = AddedFeature[0].getGeometry().getExtent();
+            if (alreadyExists === false) {
+              layer.getSource().addFeatures(AddedFeature);
+            }
+            if (g[0] - g[2] < 500) {
+              g[0] -= 200;
+              g[2] += 200;
+            }
+            if (g[1] - g[3] < 500) {
+              g[1] -= 200;
+              g[3] += 200;
+            }
+            olMap.getView().fit(g, olMap.getSize());
+            const cs = AddedFeature[0].getStyle();
+
+            AddedFeature[0].setStyle(styles.BoldLineString);
+
+            setTimeout(() => {
+              AddedFeature[0].setStyle(cs);
+              olMap.updateSize();
+            }, 500);
+          }
+        });
+      }
     },
     markAsRead() {
       this.notification.read = 1;

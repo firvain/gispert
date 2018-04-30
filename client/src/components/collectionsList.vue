@@ -295,8 +295,8 @@ export default {
   },
   mounted() {
     if (this.$route.params.id && this.$route.name === 'searchCollection') {
-      console.log('loading collection from permalink', this.openedPersonsTL);
       this.openedPersonsTL = this.$route.params.id;
+      console.log('loading collection from permalink', this.openedPersonsTL);
       this.mode = 'userTL';
     }
     if (this.$store.state.isUserLoggedIn) {
@@ -316,8 +316,17 @@ export default {
       this.loadPublicCollections();
     });
     this.$on('openedcollection', (id) => {
-      // console.log('opened:: ', id);
+      console.log('opened:: ', id);
       this.openedCollection = id;
+    });
+    this.$eventHub.$on('openCollection', (id) => {
+      console.log('open collection, notification clicked:: ', id);
+      this.openedCollection = id;
+    });
+    this.$eventHub.$on('openTimeline', (id) => {
+      console.log('open timeline from notification:: ', id);
+      this.openedPersonsTL = id;
+      this.mode = 'userTL';
     });
   },
 };
