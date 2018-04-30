@@ -1,36 +1,63 @@
 <template>
+<v-container pa-0>
   <v-list-tile
     ripple
     :key="notification._id"
   >
     <v-list-tile-content v-if="notification.type === 'followedCollection'">
       <v-list-tile-title>{{ $t('message.collectionWasFollowed') }}</v-list-tile-title>
-      <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title class="text--primary">
+        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+      </v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        &nbsp; <i>{{ timestamp }}</i>
+      </v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-content v-if="notification.type === 'unfollowedCollection'">
       <v-list-tile-title>{{ $t('message.collectionWasUnfollowed') }}</v-list-tile-title>
-      <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title class="text--primary">
+        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+      </v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        &nbsp; <i>{{ timestamp }}</i>
+      </v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-content v-if="notification.type === 'invitedToCollection'">
       <v-list-tile-title>{{ $t('message.invitedToCollection') }}</v-list-tile-title>
-      <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: {{ notification.user[0].name }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title class="text--primary">
+        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+      </v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        &nbsp; <i>{{ timestamp }}</i>
+      </v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-content v-if="notification.type === 'invitationAccepted'">
       <v-list-tile-title>{{ $t('message.invitationToCollectionAccepted') }}</v-list-tile-title>
-      <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ notification.user[0].name }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title class="text--primary">
+        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+      </v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        &nbsp; <i>{{ timestamp }}</i>
+      </v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-content v-if="notification.type === 'newPostInCollection'">
       <v-list-tile-title>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
-      <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}, {{ notification.text }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: {{ notification.user[0].name }}, {{ timestamp }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title class="text--primary">
+        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <i><a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a></i>
+      </v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+        <a md12 @click="loadPosts(notification.collection[0]._id)">@{{ notification.user[0].name }}</a>,
+        &nbsp; <i>{{ timestamp }}</i>
+      </v-list-tile-sub-title>
     </v-list-tile-content>
 
     <v-list-tile-content v-if="notification.type === 'replyToMyPost'">
@@ -38,17 +65,21 @@
       <!-- {{$store.state.user._id}}, {{ notification.collection[0].user }} -->
       <v-list-tile-title v-if="notification.collection[0].user === $store.state.user._id">{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title>
       <v-list-tile-title v-else>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
-      <v-list-tile-sub-title class="text--primary">{{ notification.collection[0].title }}, {{ notification.text }}</v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: {{ notification.user[0].name }}, {{ timestamp }}</v-list-tile-sub-title>
+      <v-list-tile-sub-title class="text--primary">
+        <a md12 @click="loadPosts(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        , <a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a>
+      </v-list-tile-sub-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+        <a md12 @click="loadPosts(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
+        &nbsp; <i>{{ timestamp }}</i>
+      </v-list-tile-sub-title>
     </v-list-tile-content>
 
 
     <v-list-tile-action 
         v-if="notification.type === 'unfollowedCollection' ||
         notification.type === 'followedCollection' ||
-        notification.type === 'replyToMyPost' ||
-        notification.type === 'invitationAccepted' ||
-        notification.type === 'newPostInCollection'">
+        notification.type === 'invitationAccepted'">
       <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
       <v-btn fab small @click="markAsRead(notification._id)" v-if="notification.read === 0">
         <v-icon v-if="notification.read === 0"
@@ -72,9 +103,11 @@
         color="green darken-2"
       >done</v-icon>
     </v-list-tile-action>
+  <!-- <v-divider v-if="index + 1 < notifications.length" :key="index"></v-divider> -->
 
   </v-list-tile>
-  <!-- <v-divider v-if="index + 1 < notifications.length" :key="index"></v-divider> -->
+  <v-divider md12></v-divider>
+</v-container>
 </template>
 
 <script>
@@ -89,6 +122,12 @@ export default {
     };
   },
   methods: {
+    loadPosts(e) {
+      console.log('load users tl::', e);
+    },
+    loadFeatures(e) {
+      console.log('load features', e);
+    },
     markAsRead() {
       this.notification.read = 1;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/notifications/markAsRead`;
@@ -98,6 +137,8 @@ export default {
       axios.post(url, { data },
         {
           headers: { 'x-access-token': this.$store.state.token },
+        }).then(() => {
+          this.$eventHub.$emit('refreshNotifications', 'refreshNotifications');
         });
     },
     invitationDeclined(e) {
@@ -143,3 +184,8 @@ export default {
   },
 };
 </script>
+<style>
+  a {
+    cursor: pointer;
+  }
+</style>

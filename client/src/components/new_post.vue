@@ -110,8 +110,8 @@ export default {
         return result;
       }
       const result = search(collectionToFind, allCollections);
-      console.log('search result:: ', result, result.members, result.title);
-      return result.members;
+      console.log('search result:: ', result, result.members, result.title, result.user);
+      return result;
     },
     publishPost() {
       console.log('PUBLISH');
@@ -173,7 +173,9 @@ export default {
             // console.log('this is the userpost newpost:: ', userPost);
             this.$parent.$emit('newpost', { type: 'newpost' });
             console.log('emitting to::', members);
-            userPost.members = members;
+            userPost.members = members.members; // notify the members of the collection
+            this.$socket.emit('newPost', userPost);
+            userPost.members = [members.user]; // add the creator of the collection
             this.$socket.emit('newPost', userPost);
           } else {
             // eslint-disable-next-line

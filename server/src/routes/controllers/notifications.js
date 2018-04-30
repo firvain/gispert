@@ -45,6 +45,7 @@ router.route('/user')
           "collection.members": 1,
           "collection.title": 1,
           "collection.user": 1,
+          "collection._id": 1,
           "collectionId": 1,
           "text": 1,
           "features": 1,

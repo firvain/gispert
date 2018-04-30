@@ -21,7 +21,7 @@ router.route('/collections')
     .get(function getcollections(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
             var userid = req.query.userId;
-            console.log('public of user:: ', userid);
+            // console.log('public of user:: ', userid);
             var collection = db.collection('collections');
             if (err) {
                 console.log(err);
@@ -48,7 +48,7 @@ router.route('/collections')
                     // docs.unshift({ title: 'Δημόσια Συλλογή', id: '0', description: 'Συλλογή που μπορούν να δουν όλοι' });
                     var result = [];
                     docs.forEach((d) => {
-                        console.log(d.user.toString(), userid);
+                        // console.log(d.user.toString(), userid);
                         if (d.user.toString() === userid) {
                             result.unshift(d);
                         } else {
@@ -143,7 +143,7 @@ router.route('/postid')
       .then(function (db) {
       var collection = db.collection('posts');
       var postId = req.query.pId;
-      console.log('fetching specific post::', postId);
+    //   console.log('fetching specific post::', postId);
     //   var userId = req.query.userId;
       return collection.aggregate([
         {
@@ -208,7 +208,7 @@ router.route('/postid')
         p.repliesData.sort(dynamicSort("timestamp"));
       }
     });
-    console.log('specific post is:: ', content);
+    // console.log('specific post is:: ', content);
     res.status(200).json(content);
   })
   .catch(function (err) {

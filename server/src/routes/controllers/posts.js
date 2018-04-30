@@ -70,8 +70,8 @@ router.route('/')
           type: 'newPostInCollection',
           timestamp: post.timestamp,
           // userCreated: new ObjectId(repliedPostCreator[0].userId),
-          // text: repliedPostCreator[0].text,
-          // features: repliedPostCreator[0].userFeatures,
+          text: req.body.userPost.text,
+          features: req.body.userPost.userFeatures,
           read: 0
         };
         // console.log('notification of a reply', notification);

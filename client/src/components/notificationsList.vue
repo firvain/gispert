@@ -70,6 +70,9 @@ export default {
       this.getNotifications();
       // this.$store.commit('addNotificationFromSocket', data);
     };
+    this.$eventHub.$on('refreshNotifications', () => {
+      this.getNotifications();
+    });
   },
   methods: {
     getNotifications() {
