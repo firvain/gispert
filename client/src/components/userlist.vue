@@ -164,8 +164,10 @@ export default {
     },
   },
   mounted() {
-    this.$store.dispatch('setUsers', 'empty');
-    this.loadUsers();
+    if (this.$store.state.users.length === 0) {
+      this.loadUsers();
+    }
+
     this.$eventHub.$on('logged-in', () => {
       this.loadUsers();
     });

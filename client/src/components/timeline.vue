@@ -132,44 +132,49 @@ export default {
         this.newPostColor = 'red';
       }
     },
+    load_first_page() {
+      this.loading = true;
+      let url;
+      let userID;
+      if (this.$store.state.timeline.length > 0) {
+        this.posts = this.$store.state.timeline;
+      }
+      if (this.$store.state.isUserLoggedIn) {
+        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all`;
+        userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
+      } else {
+        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
+        userID = '';
+      }
+      axios.get(url, {
+        params: {
+          start: this.startPage.toString(),
+          end: this.limitPage.toString(),
+          userId: userID, // eslint-disable-line no-underscore-dangle
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        // console.log(response);
+        this.posts = response.data;
+      }).then(() => {
+        this.loading = false;
+        this.$store.dispatch('setTimeline', this.posts);
+      });
+    },
   },
   mounted() {
+    if (this.$store.state.timeline.length === 0) {
+      this.load_first_page();
+    } else {
+      this.posts = this.$store.state.timeline;
+    }
+
     this.$options.sockets.newPost = (data) => {
       console.log('new post', data);
     };
     this.$options.sockets.newReply = (data) => {
       console.log('new reply', data);
     };
-
-    this.loading = true;
-    let url;
-    let userID;
-    if (this.$store.state.timeline.length > 0) {
-      this.posts = this.$store.state.timeline;
-    }
-    if (this.$store.state.isUserLoggedIn) {
-      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all`;
-      userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
-    } else {
-      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
-      userID = '';
-    }
-
-    axios.get(url, {
-      params: {
-        start: this.startPage.toString(),
-        end: this.limitPage.toString(),
-        userId: userID, // eslint-disable-line no-underscore-dangle
-      },
-      headers: { 'x-access-token': this.$store.state.token },
-    }).then((response) => {
-      // console.log(response);
-      this.posts = response.data;
-    }).then(() => {
-      this.loading = false;
-      this.$store.dispatch('setTimeline', this.posts);
-    });
-
     this.$on('newpost', (eventPost) => {
       console.log('A totally new post has been published :: ', eventPost);
       this.toggle_new_post();

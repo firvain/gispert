@@ -57,7 +57,7 @@
       >
         <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
-      <p v-if="privateCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noPrivateCollections')}}
+      <p v-if="$store.state.privateCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noPrivateCollections')}}
         <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
           <v-icon dark>add</v-icon>
         </v-btn>
@@ -97,7 +97,7 @@
         :key="collection._id">
         <collection v-if="openedCollection === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
-      <p v-if="publicCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noPublicCollections')}}
+      <p v-if="$store.state.publicCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noPublicCollections')}}
         <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
           <v-icon dark>add</v-icon>
         </v-btn>
@@ -127,7 +127,7 @@
       color= snackbarColor
     >{{ message }}
     </v-snackbar>
-    <collectionView v-if="openedCollection !== null" :id="openedCollection"></collectionView>
+    <collectionView v-show="openedCollection !== null" :id="openedCollection"></collectionView>
     <userTimeline v-show="openedPersonsTL !== null" :id="openedPersonsTL"></userTimeline>
     <v-btn block dark outline small color="green"
       @click="openedCollection = null; openedPersonsTL = null; mode = 'normal'"
@@ -209,10 +209,12 @@ export default {
           this.snackbarColor = 'green';
           this.snackbar = true;
           if (this.newCollection.visibility === 'public') {
-            this.loadPublicCollections();
+            // this.loadPublicCollections();
+            this.$store.dispatch('addPublicCollection', newCollection);
             this.newPublicCollectionCard = false;
           } else {
-            this.loadPrivateCollections();
+            // this.loadPrivateCollections();
+            this.$store.dispatch('addPrivateCollection', newCollection);
             this.newPrivateCollectionCard = false;
           }
           this.newCollection.title = '';
@@ -300,9 +302,14 @@ export default {
       this.mode = 'userTL';
     }
     if (this.$store.state.isUserLoggedIn) {
-      this.loadPrivateCollections();
-      this.loadPublicCollections();
+      if (this.$store.state.publicCollections.length === 0) {
+        this.loadPublicCollections();
+      }
+      if (this.$store.state.privateCollections.length === 0) {
+        this.loadPrivateCollections();
+      }
     }
+
     this.$eventHub.$on('refreshprivatecollections', () => {
       console.log('refreshing private collections');
       this.loadPrivateCollections();
@@ -323,6 +330,7 @@ export default {
       console.log('open collection, notification clicked:: ', id);
       this.openedCollection = id;
       this.openedPersonsTL = null;
+      this.mode = 'collectionView';
     });
     this.$eventHub.$on('openTimeline', (id) => {
       console.log('open timeline from notification:: ', id);

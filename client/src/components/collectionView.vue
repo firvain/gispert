@@ -132,35 +132,53 @@ export default {
         this.newPostColor = 'red';
       }
     },
+    loadTimeline(timelineId) {
+      // console.log('loading collection view id::', this.id);
+      this.loading = true;
+      let url;
+      let userID;
+      let collectionToOpen = '';
+
+      if (this.$store.state.isUserLoggedIn) {
+        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
+        userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
+      } else {
+        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
+        userID = '';
+      }
+      if (timelineId) {
+        collectionToOpen = timelineId;
+      } else {
+        collectionToOpen = this.id;
+      }
+
+      axios.get(url, {
+        params: {
+          start: this.startPage.toString(),
+          end: this.limitPage.toString(),
+          userId: userID, // eslint-disable-line no-underscore-dangle
+          collectionId: collectionToOpen,
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        // console.log(response);
+        this.posts = response.data;
+      }).then(() => {
+        this.loading = false;
+        this.$store.dispatch('setCollectionTimeline', this.posts);
+      });
+    },
   },
   mounted() {
-    // console.log('loading collection view id::', this.id);
-    this.loading = true;
-    let url;
-    let userID;
-
-    if (this.$store.state.isUserLoggedIn) {
-      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
-      userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
+    if (this.$store.state.collectionTimeline.length === 0) {
+      this.loadTimeline(this.id);
     } else {
-      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
-      userID = '';
+      this.posts = this.$store.state.collectionTimeline;
     }
 
-    axios.get(url, {
-      params: {
-        start: this.startPage.toString(),
-        end: this.limitPage.toString(),
-        userId: userID, // eslint-disable-line no-underscore-dangle
-        collectionId: this.id,
-      },
-      headers: { 'x-access-token': this.$store.state.token },
-    }).then((response) => {
-      // console.log(response);
-      this.posts = response.data;
-    }).then(() => {
-      this.loading = false;
-      this.$store.dispatch('setTimeline', this.posts);
+    this.$eventHub.$on('openCollection', (id) => {
+      console.log('open openCollection from notification openCollection:: ', id);
+      this.loadTimeline(id);
     });
 
     this.$on('newpost', (eventPost) => {

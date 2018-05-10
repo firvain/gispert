@@ -156,7 +156,7 @@ export default {
         this.posts = response.data;
       }).then(() => {
         this.loading = false;
-        this.$store.dispatch('setTimeline', this.posts);
+        this.$store.dispatch('setUserTimeline', this.posts);
       });
     },
   },

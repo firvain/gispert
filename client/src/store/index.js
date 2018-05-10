@@ -19,6 +19,8 @@ export default new Vuex.Store({
     privateCollections: [],
     publicCollections: [],
     timeline: [],
+    collectionTimeline: [],
+    userTimeline: [],
     users: [],
     customMaps: [],
     notifications: [],
@@ -74,6 +76,18 @@ export default new Vuex.Store({
     },
     setNotifications(state, data) {
       state.commit('setNotifications', data);
+    },
+    setCollectionTimeline(state, data) {
+      state.commit('setCollectionTimeline', data);
+    },
+    setUserTimeline(state, data) {
+      state.commit('setUserTimeline', data);
+    },
+    addPublicCollection(state, data) {
+      state.commit('addPublicCollection', data);
+    },
+    addPrivateCollection(state, data) {
+      state.commit('addPrivateCollection', data);
     },
   },
   mutations: {
@@ -178,6 +192,18 @@ export default new Vuex.Store({
     },
     addNotificationFromSocket(state, data) {
       this.state.notifications.push(data);
+    },
+    setCollectionTimeline(state, data) {
+      state.collectionTimeline = data;
+    },
+    setUserTimeline(state, data) {
+      state.userTimeline = data;
+    },
+    addPublicCollection(state, data) {
+      this.state.publicCollections.push(data);
+    },
+    addPrivateCollection(state, data) {
+      this.state.privateCollections.push(data);
     },
   },
   getters: {
