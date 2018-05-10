@@ -48,7 +48,7 @@ router.route('/')
                 db.collection('collections').insertOne(
                     newCollection
                 );
-                res.status(200).send('OK');
+                res.status(200).send(newCollection);
             }
             db.close();
         });

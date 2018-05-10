@@ -204,22 +204,24 @@ export default {
       axios.post(url, { newCollection },
         {
           headers: { 'x-access-token': this.$store.state.token },
-        }).then(() => {
-          this.message = this.$t('message.collectionAddedToast');
-          this.snackbarColor = 'green';
-          this.snackbar = true;
-          if (this.newCollection.visibility === 'public') {
-            // this.loadPublicCollections();
-            this.$store.dispatch('addPublicCollection', newCollection);
-            this.newPublicCollectionCard = false;
-          } else {
-            // this.loadPrivateCollections();
-            this.$store.dispatch('addPrivateCollection', newCollection);
-            this.newPrivateCollectionCard = false;
+        }).then((response) => {
+          if (response.status === 200) {
+            this.message = this.$t('message.collectionAddedToast');
+            this.snackbarColor = 'green';
+            this.snackbar = true;
+            if (this.newCollection.visibility === 'public') {
+              // this.loadPublicCollections();
+              this.$store.dispatch('addPublicCollection', response.data);
+              this.newPublicCollectionCard = false;
+            } else {
+              // this.loadPrivateCollections();
+              this.$store.dispatch('addPrivateCollection', response.data);
+              this.newPrivateCollectionCard = false;
+            }
+            this.newCollection.title = '';
+            this.newCollection.description = '';
+            this.newCollection.visibility = '';
           }
-          this.newCollection.title = '';
-          this.newCollection.description = '';
-          this.newCollection.visibility = '';
         });
     },
     loadPrivateCollections() {
