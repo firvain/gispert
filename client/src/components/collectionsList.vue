@@ -128,7 +128,7 @@
     >{{ message }}
     </v-snackbar>
     <collectionView v-if="openedCollection !== null" :id="openedCollection"></collectionView>
-    <userTimeline v-if="openedPersonsTL !== null" :id="openedPersonsTL"></userTimeline>
+    <userTimeline v-show="openedPersonsTL !== null" :id="openedPersonsTL"></userTimeline>
     <v-btn block dark outline small color="green"
       @click="openedCollection = null; openedPersonsTL = null; mode = 'normal'"
       v-if="openedCollection !== null || openedPersonsTL !== null">
@@ -315,17 +315,19 @@ export default {
       this.loadPrivateCollections();
       this.loadPublicCollections();
     });
-    this.$on('openedcollection', (id) => {
-      console.log('opened:: ', id);
-      this.openedCollection = id;
-    });
+    // this.$on('openedcollection', (id) => {
+    //   console.log('opened:: ', id);
+    //   this.openedCollection = id;
+    // });
     this.$eventHub.$on('openCollection', (id) => {
       console.log('open collection, notification clicked:: ', id);
       this.openedCollection = id;
+      this.openedPersonsTL = null;
     });
     this.$eventHub.$on('openTimeline', (id) => {
       console.log('open timeline from notification:: ', id);
       this.openedPersonsTL = id;
+      this.openedCollection = null;
       this.mode = 'userTL';
     });
   },

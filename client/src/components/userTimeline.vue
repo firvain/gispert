@@ -130,30 +130,42 @@ export default {
         this.newPostColor = 'red';
       }
     },
+    loadTimeline(timelineId) {
+      this.loading = true;
+      let url;
+      let userID;
+
+      if (this.$store.state.isUserLoggedIn) {
+        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/person`;
+        if (timelineId) {
+          userID = timelineId;
+        } else {
+          userID = this.id; // eslint-disable-line no-underscore-dangle
+        }
+      }
+
+      axios.get(url, {
+        params: {
+          start: this.startPage.toString(),
+          end: this.limitPage.toString(),
+          userId: userID, // eslint-disable-line no-underscore-dangle
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        // console.log(response);
+        this.posts = response.data;
+      }).then(() => {
+        this.loading = false;
+        this.$store.dispatch('setTimeline', this.posts);
+      });
+    },
   },
   mounted() {
-    this.loading = true;
-    let url;
-    let userID;
+    this.loadTimeline(this.id);
 
-    if (this.$store.state.isUserLoggedIn) {
-      url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/person`;
-      userID = this.id; // eslint-disable-line no-underscore-dangle
-    }
-
-    axios.get(url, {
-      params: {
-        start: this.startPage.toString(),
-        end: this.limitPage.toString(),
-        userId: userID, // eslint-disable-line no-underscore-dangle
-      },
-      headers: { 'x-access-token': this.$store.state.token },
-    }).then((response) => {
-      // console.log(response);
-      this.posts = response.data;
-    }).then(() => {
-      this.loading = false;
-      this.$store.dispatch('setTimeline', this.posts);
+    this.$eventHub.$on('openTimeline', (id) => {
+      console.log('open timeline from notification usertimelinevue:: ', id);
+      this.loadTimeline(id);
     });
 
     this.$on('newpost', (eventPost) => {

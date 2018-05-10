@@ -142,10 +142,12 @@ export default {
     exploreCollection(id) {
       // TODO make correct request
       if (this.details) {
-        this.$parent.$parent.$emit('openedcollection', null);
+        this.$eventHub.$emit('openCollection', null);
+        // this.$parent.$parent.$emit('openedcollection', null);
         // console.log('collection is open');
       } else {
-        this.$parent.$parent.$emit('openedcollection', id);
+        this.$eventHub.$emit('openCollection', id);
+        // this.$parent.$parent.$emit('openedcollection', id);
         // console.log('collection closed');
       }
       this.details = !this.details;
