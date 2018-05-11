@@ -139,14 +139,19 @@ export default {
     },
   },
   methods: {
-    exploreCollection(id) {
+    exploreCollection(collectionId) {
       // TODO make correct request
       if (this.details) {
         this.$eventHub.$emit('openCollection', null);
         // this.$parent.$parent.$emit('openedcollection', null);
         // console.log('collection is open');
       } else {
-        this.$eventHub.$emit('openCollection', id);
+        const tl = {
+          id: collectionId,
+          type: 'collection',
+        };
+        this.$eventHub.$emit('openCollection', collectionId);
+        this.$store.dispatch('setOpenedCustomTimeline', tl);
         // this.$parent.$parent.$emit('openedcollection', id);
         // console.log('collection closed');
       }

@@ -62,6 +62,11 @@ export default {
   components: {
     post, newPost,
   },
+  watch: {
+    '$store.state.openedTimeline': function changed() {
+      this.loadTimeline(this.$store.state.openedTimeline.id);
+    },
+  },
   computed: mapGetters([
     'evenOrOdd',
     'feature',
@@ -170,12 +175,12 @@ export default {
     },
   },
   mounted() {
-    if (this.$store.state.collectionTimeline.length === 0) {
-      this.loadTimeline(this.id);
-    } else {
-      this.posts = this.$store.state.collectionTimeline;
-    }
-
+    // if (this.$store.state.openedTimeline.id !== this.id) {
+    //   this.loadTimeline(this.id);
+    // } else {
+    //   this.posts = this.$store.state.collectionTimeline;
+    // }
+    this.loadTimeline(this.id);
     this.$eventHub.$on('openCollection', (id) => {
       console.log('open openCollection from notification openCollection:: ', id);
       this.loadTimeline(id);

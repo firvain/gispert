@@ -126,18 +126,28 @@ export default {
   },
   methods: {
     loadCollection(e) {
+      const tl = {
+        id: e,
+        type: 'collection',
+      };
       console.log('load users tl::', e);
       const goToPath = `/main/search/collection/${e}`;
       console.log('going to path:: ', goToPath);
       this.$router.push({ path: goToPath });
-      this.$eventHub.$emit('openCollection', e);
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
+      // this.$eventHub.$emit('openCollection', e);
     },
     loadUsersTl(e) {
+      const tl = {
+        id: e,
+        type: 'timeline',
+      };
       console.log('load users tl::', e);
       const goToPath = `/main/search/collection/${e}`;
       console.log('going to path:: ', goToPath);
       this.$router.push({ path: goToPath });
-      this.$eventHub.$emit('openTimeline', e);
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
+      // this.$eventHub.$emit('openTimeline', e);
     },
     loadFeatures(newFeature) {
       const geojsonFormat = new ol.format.GeoJSON();

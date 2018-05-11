@@ -62,6 +62,11 @@ export default {
   components: {
     post, newPost,
   },
+  watch: {
+    '$store.state.openedTimeline': function changed() {
+      this.loadTimeline(this.$store.state.openedTimeline.id);
+    },
+  },
   computed: mapGetters([
     'evenOrOdd',
     'feature',

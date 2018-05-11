@@ -46,9 +46,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { mapGetters, mapActions } from 'vuex';
 import post from './post';
-// import cardDetails from './card_in_details';
 import newPost from './new_post';
 import config from '../config';
 
@@ -73,18 +71,7 @@ export default {
   components: {
     post, newPost,
   },
-  computed: mapGetters([
-    'evenOrOdd',
-    'feature',
-  ]),
   methods: {
-    ...mapActions([
-      'setFeature',
-      'increment',
-      'decrement',
-      'incrementIfOdd',
-      'incrementAsync',
-    ]),
     explore(estate) {
       this.mode = 1;
       this.explore_estate = estate;

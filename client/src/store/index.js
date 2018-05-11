@@ -24,6 +24,7 @@ export default new Vuex.Store({
     users: [],
     customMaps: [],
     notifications: [],
+    openedTimeline: null,
   },
   actions: {
     setFeature(state, data) {
@@ -88,6 +89,9 @@ export default new Vuex.Store({
     },
     addPrivateCollection(state, data) {
       state.commit('addPrivateCollection', data);
+    },
+    setOpenedCustomTimeline(state, data) {
+      state.commit('setOpenedCustomTimeline', data);
     },
   },
   mutations: {
@@ -204,6 +208,9 @@ export default new Vuex.Store({
     },
     addPrivateCollection(state, data) {
       this.state.privateCollections.push(data);
+    },
+    setOpenedCustomTimeline(state, data) {
+      this.state.openedTimeline = data;
     },
   },
   getters: {

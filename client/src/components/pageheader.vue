@@ -513,6 +513,7 @@ export default {
       this.$store.dispatch('setCustomMaps', 'empty');
       this.$store.dispatch('setUsers', 'empty');
       this.$store.dispatch('setNotifications', []);
+      this.$store.dispatch('setOpenedCustomTimeline', null);
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
       // this.$store.dispatch('removeNewPostFeature', null);

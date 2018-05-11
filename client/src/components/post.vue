@@ -6,9 +6,11 @@
           <v-layout class="text-xs-left">
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;
-            <p v-if="post.collectionData">{{ $t("message.inCollection")}}:
-              {{post.collectionData[0].title}}, <i>{{timestamp}}</i>
-            </p>
+            {{ $t("message.inCollection")}}:&nbsp;
+            <a md12 @click="exploreCollection(post.collectionData[0]._id)" v-if="post.collectionData">
+              {{post.collectionData[0].title}}
+            </a>,&nbsp;
+            <i>{{timestamp}}</i>
           </v-layout>
         </v-card-title>
         <v-card-actions class="white">
@@ -234,8 +236,22 @@ export default {
       clipboard(this.shareUrl);
     },
     exploreTimeline(userId) {
+      const tl = {
+        id: userId,
+        type: 'timeline',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
       console.log('explore:: ', userId);
       this.$router.push({ path: `/main/search/collection/${userId}` });
+    },
+    exploreCollection(collectionId) {
+      const tl = {
+        id: collectionId,
+        type: 'collection',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
+      console.log('explore:: ', collectionId);
+      this.$router.push({ path: `/main/search/collection/${collectionId}` });
     },
   },
   computed: {
