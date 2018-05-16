@@ -55,20 +55,22 @@ io.on('connection', function(socket) {
         }
       });
       // io.emit('newPost', post);
-      console.log('Received a socket request and emitting new post:: ', post);
+      console.log('Received a socket request and emitting new post:: ', post, 'LIST:: ', userList);
     });
     socket.on('newReply', function handlepost(post) {
       const receivers = post.members;
+      console.log('receivers from vue:: ', receivers);
       delete post.members;
       receivers.forEach(receiver => {
         const toid = userList.filter(user => user.user_id === receiver);
         console.log('sending new post notification to user:', toid, 'filter::', receiver);
         if (toid.length > 0) {
-          socket.broadcast.to(toid[0].id).emit('newPost', post);
+          socket.broadcast.to(receiver).emit('newReply', post);
+          console.log('socket emitted to:: ', receiver, post);
         }
       });
       // io.emit('newPost', post);
-      console.log('Received a socket request and emitting reply');
+      // console.log('Received a socket request and emitting reply', post, 'LIST:: ', userList);
     });
 
     socket.on('inviteToCollection', function handleinvitation(members) {
@@ -143,7 +145,7 @@ io.on('connection', function(socket) {
       // userAdded = true;
       userList.push(user);
       // io.emit('refreshUserList', userList);
-      // console.log('userList is:', userList);
+      console.log('userList is:', userList);
       // console.log('socket id::', socket.userid);
     });
     // socket.on('disconnect', function handleUserConnection() {
@@ -152,7 +154,7 @@ io.on('connection', function(socket) {
     //   if (index !== -1) {
     //     userList.splice(index, 1);
     //   }
-    //   io.emit('refreshUserList', userList);
+    //   // io.emit('refreshUserList', userList);
     //   console.log('user disconnected: ' + socket.userid);
     // });
   });

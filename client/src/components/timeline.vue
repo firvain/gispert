@@ -157,18 +157,17 @@ export default {
     }
 
     this.$options.sockets.newPost = (data) => {
-      console.log('new post', data);
-    };
-    this.$options.sockets.newReply = (data) => {
-      console.log('new reply', data);
+      console.log('new post from socket', data);
+      this.$store.dispatch('addPostToTimeline', data);
     };
     this.$on('newpost', (eventPost) => {
       console.log('A totally new post has been published :: ', eventPost);
       this.toggle_new_post();
-      this.refresh_page();
+      this.$store.dispatch('addPostToTimeline', eventPost);
+    //   this.refresh_page();
     });
-    this.$on('newreply', (eventPost) => {
-      console.log('A new reply post has been published :: ', eventPost);
+    // this.$on('newreply', (eventPost) => {
+    //   console.log('A new reply post has been published :: ', eventPost);
       // TODO χρειάζομαι το id του post και να ενημερώνω το posts array
       // αν έχει πολλές απαντήσεις; κάποιες να τις δείχνει περιληπτικά. μέχρι 5
       // να τις δείχνει αν είναι περισσότερες
@@ -180,8 +179,8 @@ export default {
       // πόσα post να φέρνει ανά σελίδα; αν έχει πολλές απαντήσεις θα φαίνονται πολύ
       // λίγα. Πρέπει να το ρυθμίζω.
         // eslint-disable-next-line
-        console.log(eventPost);
-    });
+    //     console.log(eventPost);
+    // });
   },
 };
 </script>

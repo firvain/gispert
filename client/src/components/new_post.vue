@@ -3,7 +3,7 @@
     <v-flex xs12 sm12>
       <v-card>
         <v-layout row wrap>
-          <v-flex md12>
+          <v-flex md12> {{this.userToNotify}} , {{this.collection}}
             <v-text-field @focus="showMapTools"
               autofocus
               name="input-1"
@@ -69,7 +69,7 @@ import olMap from '../js/map';
 import config from '../config';
 
 export default {
-  props: ['id', 'collection', 'collectionid', 'collectionMembers'],
+  props: ['id', 'collection', 'collectionid', 'collectionMembers', 'userToNotify'],
   name: 'newpost',
   data: () => ({
     postText: '',
@@ -92,15 +92,15 @@ export default {
   },
   methods: {
     findMembersOfThisCollection() {
-      console.log('find members::', this.$store.state.publicCollections,
-      this.$store.state.privateCollections);
+      // console.log('find members::', this.$store.state.publicCollections,
+      // this.$store.state.privateCollections);
       const allCollections =
         this.$store.state.publicCollections.concat(this.$store.state.privateCollections);
       const collectionToFind =
         this.selectCollections._id; // eslint-disable-line no-underscore-dangle
       function search(nameKey, myArray) {
         let result = '';
-        console.log('searching for :: ', nameKey);
+        // console.log('searching for :: ', nameKey);
         for (let i = 0; i < myArray.length; i += 1) {
           console.log(myArray[i].title, myArray[i]._id); // eslint-disable-line no-underscore-dangle
           if (myArray[i]._id === nameKey) { // eslint-disable-line no-underscore-dangle
@@ -110,7 +110,7 @@ export default {
         return result;
       }
       const result = search(collectionToFind, allCollections);
-      console.log('search result:: ', result, result.members, result.title, result.user);
+      console.log('search result, members found:: ', result, result.members, result.title, result.user);
       return result;
     },
     publishPost() {
@@ -143,7 +143,7 @@ export default {
       const userPost = {
         // eslint-disable-next-line
         userId: this.$store.state.user._id,
-        username: this.$store.state.user.name,
+        userName: this.$store.state.user.name,
         text: textToPost,
         timestamp: Date.now(),
         userFeatures: userFeats,
@@ -171,10 +171,10 @@ export default {
           if (this.id === undefined) {
             // console.log('totally new post');
             // console.log('this is the userpost newpost:: ', userPost);
-            this.$parent.$emit('newpost', { type: 'newpost' });
+            this.$parent.$emit('newpost', userPost);
             console.log('emitting to::', members);
             userPost.members = members.members; // notify the members of the collection
-            this.$socket.emit('newPost', userPost);
+            // this.$socket.emit('newPost', userPost);
             userPost.members = [members.user]; // add the creator of the collection
             this.$socket.emit('newPost', userPost);
           } else {
@@ -184,6 +184,7 @@ export default {
             this.$parent.$emit('newreply', userPost);
             console.log('emitting to::', this.collectionMembers);
             userPost.members = this.collectionMembers;
+            userPost.members.push(this.userToNotify); // add the creator of the collection
             this.$socket.emit('newReply', userPost);
           }
         });

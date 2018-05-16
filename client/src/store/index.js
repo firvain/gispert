@@ -66,6 +66,9 @@ export default new Vuex.Store({
     setTimeline(state,data) {
       state.commit('setTimeline', data);
     },
+    addPostToTimeline(state, data) {
+      state.commit('addPostToTimeline', data);
+    },
     setUsers(state, data) {
       state.commit('setusers', data);
     },
@@ -211,6 +214,9 @@ export default new Vuex.Store({
     },
     setOpenedCustomTimeline(state, data) {
       this.state.openedTimeline = data;
+    },
+    addPostToTimeline(store, data) {
+      this.state.timeline.unshift(data);
     },
   },
   getters: {

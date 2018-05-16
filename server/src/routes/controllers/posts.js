@@ -21,7 +21,7 @@ router.route('/')
  .post(function setpost(req, res) {
   var post = {
     userId: req.body.userPost.userId,
-    userName: req.body.userPost.username,
+    userName: req.body.userPost.userName,
     timestamp: String(Math.trunc(req.body.userPost.timestamp)),
     text: req.body.userPost.text,
     userFeatures: req.body.userPost.userFeatures,

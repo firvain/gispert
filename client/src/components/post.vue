@@ -59,10 +59,12 @@
                 <span>{{ $t("message.shareLink") }}!</span>
               </v-tooltip>
         </v-card-actions>
-        <newPost v-if="answerPost==true && post.collectionData" 
+        <newPost v-if="answerPost==true && post.collectionData"
           :id="post._id"
           :collection="post.collectionData[0]._id"
-          :collectionMembers="post.collectionData[0].members"></newPost>
+          :collectionMembers="post.collectionData[0].members"
+          :userToNotify="post.userId">
+        </newPost>
 
         <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex class="ma-0 pa-0"
@@ -141,6 +143,13 @@ export default {
     this.explore(this.post);
     this.repliesReversed();
     this.shareUrl = `${config.APIhttpType}://${config.APIhost}:${config.hostPost}/#/main/search/${this.post._id}`; // eslint-disable-line no-underscore-dangle
+    this.$options.sockets.newReply = (data) => {
+      console.log('new reply data:: ', data);
+      if (data.isReplyTo === this.post._id) { // eslint-disable-line no-underscore-dangle
+        console.log('must show this reply:: ', data);
+        this.post.replies.push(data);
+      }
+    };
   },
   methods: {
     showMoreReplies() {
