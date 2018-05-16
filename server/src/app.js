@@ -65,7 +65,7 @@ io.on('connection', function(socket) {
         const toid = userList.filter(user => user.user_id === receiver);
         console.log('sending new post notification to user:', toid, 'filter::', receiver);
         if (toid.length > 0) {
-          socket.broadcast.to(receiver).emit('newReply', post);
+          socket.broadcast.to(toid[0].id).emit('newReply', post);
           console.log('socket emitted to:: ', receiver, post);
         }
       });
