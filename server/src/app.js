@@ -46,6 +46,7 @@ io.on('connection', function(socket) {
     // });
     socket.on('newPost', function handlepost(post) {
       const receivers = post.members;
+      console.log('new post receivers are::', receivers, receivers.length);
       delete post.members;
       receivers.forEach(receiver => {
         const toid = userList.filter(user => user.user_id === receiver);
@@ -59,11 +60,11 @@ io.on('connection', function(socket) {
     });
     socket.on('newReply', function handlepost(post) {
       const receivers = post.members;
-      console.log('receivers from vue:: ', receivers);
+      console.log('reply receivers are:: ', receivers);
       delete post.members;
       receivers.forEach(receiver => {
         const toid = userList.filter(user => user.user_id === receiver);
-        console.log('sending new post notification to user:', toid, 'filter::', receiver);
+        console.log('sending reply notification to user:', toid, 'filter::', receiver);
         if (toid.length > 0) {
           socket.broadcast.to(toid[0].id).emit('newReply', post);
           console.log('socket emitted to:: ', receiver, post);

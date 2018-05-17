@@ -3,7 +3,7 @@
     <v-flex xs12 sm12>
       <v-card>
         <v-layout row wrap>
-          <v-flex md12> {{this.userToNotify}} , {{this.collection}}
+          <v-flex md12>
             <v-text-field @focus="showMapTools"
               autofocus
               name="input-1"
@@ -172,19 +172,22 @@ export default {
             // console.log('totally new post');
             // console.log('this is the userpost newpost:: ', userPost);
             this.$parent.$emit('newpost', userPost);
-            console.log('emitting to::', members);
+            // console.log('emitting to::', members);
+            userPost._id = response.data.id; // eslint-disable-line no-underscore-dangle
             userPost.members = members.members; // notify the members of the collection
+            console.log('userPost for socket:: ', userPost);
             // this.$socket.emit('newPost', userPost);
-            userPost.members = [members.user]; // add the creator of the collection
+            userPost.members.push(members.user); // add the creator of the collection
             this.$socket.emit('newPost', userPost);
           } else {
             // eslint-disable-next-line
-            userPost._id = response.data;
+            userPost._id = response.data.id;
             // console.log('this is the userpost new reply:: ', userPost);
             this.$parent.$emit('newreply', userPost);
-            console.log('emitting to::', this.collectionMembers);
+            // console.log('emitting to::', this.collectionMembers);
             userPost.members = this.collectionMembers;
             userPost.members.push(this.userToNotify); // add the creator of the collection
+            console.log('userPost for socket:: ', userPost);
             this.$socket.emit('newReply', userPost);
           }
         });

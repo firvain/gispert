@@ -147,7 +147,7 @@ export default {
       console.log('new reply data:: ', data);
       if (data.isReplyTo === this.post._id) { // eslint-disable-line no-underscore-dangle
         console.log('must show this reply:: ', data);
-        this.post.replies.push(data);
+        this.post.replies.push(data._id); // eslint-disable-line no-underscore-dangle
       }
     };
   },

@@ -43,13 +43,13 @@ router.route('/')
       }
       return id;
     })
-    .then((repliedPostCreator) => {
+    .then((id, repliedPostCreator) => {
       if (req.body.userPost.isReplyTo) {
-        return repliedPostCreator = database.findRepliedPost(req.body.userPost.isReplyTo);
+        return repliedPostCreator = database.findRepliedPost(req.body.userPost.isReplyTo), id;
         // console.log('replied post:: ', repliedPostCreator, ' id:: ', id);
       }
     })
-    .then((repliedPostCreator) => {
+    .then((id, repliedPostCreator) => {
       if(repliedPostCreator) {
         const notification = {
           collectionId: post.collections,
@@ -77,9 +77,11 @@ router.route('/')
         // console.log('notification of a reply', notification);
         database.notifyPost(notification);
       }
+      return id;
     })
     .then((id) => {
-      res.status(200).json(id);
+      console.log('sending back the new generated id::', id);
+      res.json({ id: id });
       database.close();
     })
     .catch((err) => {
