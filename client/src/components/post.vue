@@ -144,9 +144,9 @@ export default {
     this.repliesReversed();
     this.shareUrl = `${config.APIhttpType}://${config.APIhost}:${config.hostPost}/#/main/search/${this.post._id}`; // eslint-disable-line no-underscore-dangle
     this.$options.sockets.newReply = (data) => {
-      console.log('new reply data:: ', data);
+      // console.log('new reply data:: ', data);
       if (data.isReplyTo === this.post._id) { // eslint-disable-line no-underscore-dangle
-        console.log('must show this reply:: ', data);
+        // console.log('must show this reply:: ', data);
         this.post.replies.push(data._id); // eslint-disable-line no-underscore-dangle
       }
     };

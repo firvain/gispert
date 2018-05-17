@@ -132,7 +132,9 @@ router.route('/all')
                "$filter": {
                    "input": "$collectionData",
                    "as": "child",
-                   "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }, { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
+                   "cond": { $or: [ 
+                     { "$eq": [ "$$child.visibility", "public" ] }, 
+                     { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
                }
             }
         }},
@@ -366,7 +368,9 @@ router.route('/person')
                "$filter": {
                    "input": "$collectionData",
                    "as": "child",
-                   "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] } ] }
+                   "cond": { $or: [ 
+                     { "$eq": [ "$$child.visibility", "public" ] } 
+                    ] }
                }
             }
         }},

@@ -23,16 +23,6 @@
       </v-flex>
     </v-layout>
     </v-container>
-    <!-- <v-container fluid v-else-if='mode === 1'>
-      <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
-        <i class="fa fa-close fa-lg"> Close</i>
-      </v-btn>
-      <cardDetails v-bind:post="explore_estate"></cardDetails>
-      <v-btn round warning dark ripple raised large v-on:click='mode = 0'>
-        <i class="fa fa-close fa-lg"> Close</i>
-      </v-btn>
-    </v-container> -->
-    <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-btn
       v-on:click='next_page'

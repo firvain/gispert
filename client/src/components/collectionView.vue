@@ -9,7 +9,7 @@
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
       </v-btn>
-    <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collectionid="id"></newPost>
+    <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collection="id"></newPost>
     <v-layout row wrap>
       <v-flex
         md12
@@ -35,7 +35,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 import post from './post';
 import newPost from './new_post';
 import config from '../config';
@@ -67,17 +67,9 @@ export default {
       this.loadTimeline(this.$store.state.openedTimeline.id);
     },
   },
-  computed: mapGetters([
-    'evenOrOdd',
-    'feature',
-  ]),
   methods: {
     ...mapActions([
       'setFeature',
-      'increment',
-      'decrement',
-      'incrementIfOdd',
-      'incrementAsync',
     ]),
     refresh_page() {
       //  TODO: do the correct API call
@@ -175,36 +167,23 @@ export default {
     },
   },
   mounted() {
-    // if (this.$store.state.openedTimeline.id !== this.id) {
-    //   this.loadTimeline(this.id);
-    // } else {
-    //   this.posts = this.$store.state.collectionTimeline;
-    // }
     this.loadTimeline(this.id);
     this.$eventHub.$on('openCollection', (id) => {
       console.log('open openCollection from notification openCollection:: ', id);
       this.loadTimeline(id);
     });
 
+    this.$options.sockets.newPost = (data) => {
+      console.log('new post from socket', data);
+      // if (this.$store.state.openedTimeline.id === ) {
+      this.$store.dispatch('addPostToCollectionView', data);
+      // }
+    };
     this.$on('newpost', (eventPost) => {
       console.log('A totally new post has been published :: ', eventPost);
       this.toggle_new_post();
-      this.refresh_page();
-    });
-    this.$on('newreply', (eventPost) => {
-      console.log('A new reply post has been published :: ', eventPost);
-      // TODO χρειάζομαι το id του post και να ενημερώνω το posts array
-      // αν έχει πολλές απαντήσεις; κάποιες να τις δείχνει περιληπτικά. μέχρι 5
-      // να τις δείχνει αν είναι περισσότερες
-      // να δείχνει τις 2 πιο πρόσφατες και τις άλλες με Load more. Αν πατήσει
-      // κουμπί να τις δείχνει όλες. Να λέει
-      // πόσες είναι που θα δείξει.
-      // επίσης πρέπει να φορτώνει τα post με ταξινόμηση ως προς την πιο πρόσφατη απάντηση.
-      // σύστημα notifications?
-      // πόσα post να φέρνει ανά σελίδα; αν έχει πολλές απαντήσεις θα φαίνονται πολύ
-      // λίγα. Πρέπει να το ρυθμίζω.
-        // eslint-disable-next-line
-        console.log(eventPost);
+      this.$store.dispatch('addPostToCollectionView', eventPost);
+    //   this.refresh_page();
     });
   },
 };

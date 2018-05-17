@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm12>
+    <v-flex xs12 sm12>{{id}}, {{collection}}
       <v-card>
         <v-layout row wrap>
           <v-flex md12>
@@ -33,7 +33,7 @@
           </v-chip>
         </v-flex>
         <v-card-actions>
-          <v-flex  xs6 sm6 md6 v-if="this.id === undefined && this.collectionid === undefined">
+          <v-flex  xs6 sm6 md6 v-if="this.id === undefined && this.collection === undefined">
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
@@ -69,7 +69,7 @@ import olMap from '../js/map';
 import config from '../config';
 
 export default {
-  props: ['id', 'collection', 'collectionid', 'collectionMembers', 'userToNotify'],
+  props: ['id', 'collection', 'collectionMembers', 'userToNotify'],
   name: 'newpost',
   data: () => ({
     postText: '',
@@ -96,8 +96,13 @@ export default {
       // this.$store.state.privateCollections);
       const allCollections =
         this.$store.state.publicCollections.concat(this.$store.state.privateCollections);
-      const collectionToFind =
+      let collectionToFind = '';
+      if (this.collection === undefined) {
+        collectionToFind =
         this.selectCollections._id; // eslint-disable-line no-underscore-dangle
+      } else {
+        collectionToFind = this.collection;
+      }
       function search(nameKey, myArray) {
         let result = '';
         // console.log('searching for :: ', nameKey);
@@ -175,6 +180,8 @@ export default {
             // console.log('emitting to::', members);
             userPost._id = response.data.id; // eslint-disable-line no-underscore-dangle
             userPost.members = members.members; // notify the members of the collection
+            userPost.collectionData = [{ title: members.title,
+              id: response.data._id }]; // eslint-disable-line no-underscore-dangle
             console.log('userPost for socket:: ', userPost);
             // this.$socket.emit('newPost', userPost);
             userPost.members.push(members.user); // add the creator of the collection
@@ -186,6 +193,8 @@ export default {
             this.$parent.$emit('newreply', userPost);
             // console.log('emitting to::', this.collectionMembers);
             userPost.members = this.collectionMembers;
+            userPost.collectionData = [{ title: members.title,
+              id: response.data._id }]; // eslint-disable-line no-underscore-dangle
             userPost.members.push(this.userToNotify); // add the creator of the collection
             console.log('userPost for socket:: ', userPost);
             this.$socket.emit('newReply', userPost);

@@ -69,6 +69,12 @@ export default new Vuex.Store({
     addPostToTimeline(state, data) {
       state.commit('addPostToTimeline', data);
     },
+    addPostToUserTimeline(state, data) {
+      state.commit('addPostToUserTimeline', data);
+    },
+    addPostToCollectionView(state, data) {
+      state.commit('addPostToCollectionView', data);
+    },
     setUsers(state, data) {
       state.commit('setusers', data);
     },
@@ -217,6 +223,12 @@ export default new Vuex.Store({
     },
     addPostToTimeline(store, data) {
       this.state.timeline.unshift(data);
+    },
+    addPostToUserTimeline(store, data) {
+      this.state.userTimeline.unshift(data);
+    },
+    addPostToCollectionView(store, data) {
+      this.state.collectionTimeline.unshift(data);
     },
   },
   getters: {

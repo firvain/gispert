@@ -137,7 +137,11 @@ router.route('/collection')
           $and: [
             /*{ 'isReplyTo': '' }, {'collectionData': { $size: 1 }},*/ 
             {'collectionData._id': ObjectID(collectionId) },
-            {$or: [{ "collectionData.members": ObjectID(userId) }, { "collectionData.user": ObjectID(userId) }]}
+            { 'isReplyTo': '' },
+            {$or: [
+                { "collectionData.members": ObjectID(userId) }, 
+                { "collectionData.user": ObjectID(userId) }
+            ]}
           ]}
         },
         ]);
