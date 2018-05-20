@@ -37,9 +37,13 @@ router.route('/')
       return id = database.addPost(post);
     })
     .then((id) => {
+      console.log('sending back the new generated id::', id, req.body.userPost.isReplyTo);
       if (req.body.userPost.isReplyTo) {
         database.addReply(req.body.userPost.isReplyTo, id);
+        res.json({ id: id, isReplyTo: req.body.userPost.isReplyTo });
         // console.log('the inserted id was :: ', id);
+      } else {
+        res.json({id: id, isReplyTo: ''});
       }
       return id;
     })
@@ -79,9 +83,7 @@ router.route('/')
       }
       return id;
     })
-    .then((id) => {
-      console.log('sending back the new generated id::', id);
-      res.json({ id: id });
+    .then(() => {
       database.close();
     })
     .catch((err) => {

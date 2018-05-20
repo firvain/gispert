@@ -59,7 +59,7 @@ export default {
       // this.$store.commit('addNotificationFromSocket', data);
     };
     this.$options.sockets.newPost = (data) => {
-      console.log('new post data:: ', data);
+      console.log('new post data:: ', JSON.stringify(data));
       // this.socketMessage = 'new post data';
       this.getNotifications();
       // this.$store.commit('addNotificationFromSocket', data);

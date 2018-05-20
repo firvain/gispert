@@ -33,7 +33,7 @@
           </v-chip>
         </v-flex>
         <v-card-actions>
-          <v-flex  xs6 sm6 md6 v-if="this.id === undefined && this.collection === undefined">
+          <v-flex  xs6 sm6 md6 v-if="this.collection === undefined || this.id.length === 0">
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
@@ -107,7 +107,8 @@ export default {
         let result = '';
         // console.log('searching for :: ', nameKey);
         for (let i = 0; i < myArray.length; i += 1) {
-          console.log(myArray[i].title, myArray[i]._id); // eslint-disable-line no-underscore-dangle
+          // console.log(myArray[i].title, myArray[i]._id);
+          // eslint-disable-line no-underscore-dangle
           if (myArray[i]._id === nameKey) { // eslint-disable-line no-underscore-dangle
             result = myArray[i];
           }
@@ -115,7 +116,8 @@ export default {
         return result;
       }
       const result = search(collectionToFind, allCollections);
-      console.log('search result, members found:: ', result, result.members, result.title, result.user);
+      // console.log('search result, members found:: ', result,
+      // result.members, result.title, result.user);
       return result;
     },
     publishPost() {
@@ -165,7 +167,7 @@ export default {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
           // console.log('trying to reset component');
-          // console.log(response.data);
+          console.log('response from API is:: ', response.data);
           // TODO must handle response
           this.postText = '';
           this.newPostInfo = this.$t('message.published');
@@ -182,7 +184,7 @@ export default {
             userPost.members = members.members; // notify the members of the collection
             userPost.collectionData = [{ title: members.title,
               id: response.data._id }]; // eslint-disable-line no-underscore-dangle
-            console.log('userPost for socket:: ', userPost);
+            console.log('new post userPost for socket:: ', JSON.stringify(userPost));
             // this.$socket.emit('newPost', userPost);
             userPost.members.push(members.user); // add the creator of the collection
             this.$socket.emit('newPost', userPost);
@@ -196,7 +198,7 @@ export default {
             userPost.collectionData = [{ title: members.title,
               id: response.data._id }]; // eslint-disable-line no-underscore-dangle
             userPost.members.push(this.userToNotify); // add the creator of the collection
-            console.log('userPost for socket:: ', userPost);
+            console.log('reply userPost for socket:: ', JSON.stringify(userPost));
             this.$socket.emit('newReply', userPost);
           }
         });
