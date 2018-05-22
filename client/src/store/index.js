@@ -69,6 +69,9 @@ export default new Vuex.Store({
     addPostToTimeline(state, data) {
       state.commit('addPostToTimeline', data);
     },
+    addReplyToPost (state, data) {
+      state.commit('addReplyToPost', data);
+    },
     addPostToUserTimeline(state, data) {
       state.commit('addPostToUserTimeline', data);
     },
@@ -229,6 +232,13 @@ export default new Vuex.Store({
     },
     addPostToCollectionView(store, data) {
       this.state.collectionTimeline.unshift(data);
+    },
+    addReplyToPost (state, data) {
+      const objIndex = state.timeline.findIndex((obj => obj._id == data.isReplyTo));
+      console.log('adding reply to post:: ', objIndex, data);
+      if (objIndex > -1) {
+        state.timeline[objIndex].replies.push(data._id);
+      }
     },
   },
   getters: {

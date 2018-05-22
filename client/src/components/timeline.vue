@@ -147,13 +147,18 @@ export default {
     }
 
     this.$options.sockets.newPost = (data) => {
-      console.log('new post from socket', data);
+      console.log('new post from socket', JSON.stringify(data));
       this.$store.dispatch('addPostToTimeline', data);
     };
     this.$on('newpost', (eventPost) => {
       console.log('A totally new post has been published :: ', eventPost);
       this.toggle_new_post();
       this.$store.dispatch('addPostToTimeline', eventPost);
+    //   this.refresh_page();
+    });
+    this.$on('newreply', (eventPost) => {
+      console.log('A new reply has been published :: ', eventPost);
+      this.$store.dispatch('addReplyToPost', eventPost);
     //   this.refresh_page();
     });
     // this.$on('newreply', (eventPost) => {

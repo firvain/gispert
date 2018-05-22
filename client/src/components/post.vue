@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm12>
+    <v-flex xs12 sm12> {{post.replies}}
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
           <v-layout class="text-xs-left">
@@ -15,7 +15,9 @@
         </v-card-title>
         <v-card-actions class="white">
             <v-tooltip bottom>
-              <v-btn slot="activator" v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null' class="green white--text darken-1" @click="explore(post)">
+              <v-btn slot="activator" v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null'
+                class="green white--text darken-1"
+                @click="explore(post)">
                 {{ $t("message.showOnMap") }}
                 <v-icon right dark>language</v-icon>
               </v-btn>
@@ -147,7 +149,7 @@ export default {
       // console.log('new reply data:: ', data);
       if (data.isReplyTo === this.post._id) { // eslint-disable-line no-underscore-dangle
         // console.log('must show this reply:: ', data);
-        this.post.replies.push(data._id); // eslint-disable-line no-underscore-dangle
+        this.$store.dispatch('addReplyToPost', data); // eslint-disable-line no-underscore-dangle
       }
     };
   },

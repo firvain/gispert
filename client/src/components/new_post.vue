@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm12>{{id}}, {{collection}}
+    <v-flex xs12 sm12>
       <v-card>
         <v-layout row wrap>
           <v-flex md12>
@@ -33,7 +33,7 @@
           </v-chip>
         </v-flex>
         <v-card-actions>
-          <v-flex  xs6 sm6 md6 v-if="this.collection === undefined || this.id.length === 0">
+          <v-flex  xs6 sm6 md6 v-if="this.id === undefined">
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
@@ -83,17 +83,17 @@ export default {
   }),
   mounted() {
     console.log('new post for reply mounted');
-    if (this.id) {
-      this.collectionMembersToEmit.members = this.collectionMembers;
-      console.log('will emit to users:: ', this.collectionMembersToEmit);
-    } else {
-      this.collectionMembersToEmit.members = this.findMembersOfThisCollection();
-    }
+    // if (this.id) {
+    //   this.collectionMembersToEmit.members = this.collectionMembers;
+    //   console.log('will emit to users:: ', this.collectionMembersToEmit);
+    // } else {
+    //   this.collectionMembersToEmit.members = this.findMembersOfThisCollection();
+    // }
   },
   methods: {
     findMembersOfThisCollection() {
-      // console.log('find members::', this.$store.state.publicCollections,
-      // this.$store.state.privateCollections);
+      console.log('find members::', this.$store.state.publicCollections,
+        this.$store.state.privateCollections);
       const allCollections =
         this.$store.state.publicCollections.concat(this.$store.state.privateCollections);
       let collectionToFind = '';
@@ -107,7 +107,7 @@ export default {
         let result = '';
         // console.log('searching for :: ', nameKey);
         for (let i = 0; i < myArray.length; i += 1) {
-          // console.log(myArray[i].title, myArray[i]._id);
+          console.log(myArray[i].title, myArray[i]._id); // eslint-disable-line no-underscore-dangle
           // eslint-disable-line no-underscore-dangle
           if (myArray[i]._id === nameKey) { // eslint-disable-line no-underscore-dangle
             result = myArray[i];
@@ -116,8 +116,8 @@ export default {
         return result;
       }
       const result = search(collectionToFind, allCollections);
-      // console.log('search result, members found:: ', result,
-      // result.members, result.title, result.user);
+      console.log('search result, members found:: ', result,
+      result.members, result.title, result.user);
       return result;
     },
     publishPost() {
@@ -162,6 +162,7 @@ export default {
       // console.log('this is the post to publish', userPost);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
       const members = this.findMembersOfThisCollection();
+      console.log('members :: ', JSON.stringify(members));
       if (textToPost !== '' || userFeats !== null) {
         axios.post(url, { userPost }, {
           headers: { 'x-access-token': this.$store.state.token },
@@ -178,27 +179,34 @@ export default {
           if (this.id === undefined) {
             // console.log('totally new post');
             // console.log('this is the userpost newpost:: ', userPost);
-            this.$parent.$emit('newpost', userPost);
             // console.log('emitting to::', members);
             userPost._id = response.data.id; // eslint-disable-line no-underscore-dangle
             userPost.members = members.members; // notify the members of the collection
-            userPost.collectionData = [{ title: members.title,
-              id: response.data._id }]; // eslint-disable-line no-underscore-dangle
-            console.log('new post userPost for socket:: ', JSON.stringify(userPost));
+            userPost.collectionData = [{
+              title: members.title,
+              _id: members._id, // eslint-disable-line no-underscore-dangle
+            }];
+            console.log('new post userPost for socket:: ', JSON.stringify(userPost), 'res::', response.data.id);
             // this.$socket.emit('newPost', userPost);
             userPost.members.push(members.user); // add the creator of the collection
+            this.$parent.$emit('newpost', userPost);
             this.$socket.emit('newPost', userPost);
           } else {
             // eslint-disable-next-line
             userPost._id = response.data.id;
             // console.log('this is the userpost new reply:: ', userPost);
-            this.$parent.$emit('newreply', userPost);
             // console.log('emitting to::', this.collectionMembers);
-            userPost.members = this.collectionMembers;
+            if (this.collectionMembers) {
+              userPost.members = this.collectionMembers;
+            } else {
+              userPost.members = members.members;
+            }
             userPost.collectionData = [{ title: members.title,
-              id: response.data._id }]; // eslint-disable-line no-underscore-dangle
+              _id: response.data.id }]; // eslint-disable-line no-underscore-dangle
             userPost.members.push(this.userToNotify); // add the creator of the collection
+            userPost.isReplyTo = response.data.isReplyTo;
             console.log('reply userPost for socket:: ', JSON.stringify(userPost));
+            this.$parent.$emit('newreply', userPost);
             this.$socket.emit('newReply', userPost);
           }
         });
