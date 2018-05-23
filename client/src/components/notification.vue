@@ -9,7 +9,7 @@
       <v-list-tile-sub-title class="text--primary">
         <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
@@ -20,7 +20,7 @@
       <v-list-tile-sub-title class="text--primary">
         <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
@@ -31,7 +31,7 @@
       <v-list-tile-sub-title class="text--primary">
         <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
@@ -42,7 +42,7 @@
       <v-list-tile-sub-title class="text--primary">
         <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
@@ -54,7 +54,7 @@
         <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
         <i><a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a></i>
       </v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
@@ -69,14 +69,14 @@
         <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
         , <a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a>
       </v-list-tile-sub-title>
-      <v-list-tile-sub-title>{{ $t('message.byUser') }}: 
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
         &nbsp; <i>{{ timestamp }}</i>
       </v-list-tile-sub-title>
     </v-list-tile-content>
 
 
-    <v-list-tile-action 
+    <v-list-tile-action
         v-if="notification.type === 'unfollowedCollection' ||
         notification.type === 'followedCollection' ||
         notification.type === 'invitationAccepted'">
@@ -239,6 +239,7 @@ export default {
           this.markAsRead();
           this.$eventHub.$emit('refreshpubliccollections', data);
           this.$eventHub.$emit('refreshprivatecollections', data);
+          this.$socket.emit('joinCollections', [collectionId]);
         });
     },
   },

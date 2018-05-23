@@ -74,6 +74,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('unfollowedCollection', function handleunfollow(data) {
+      socket.broadcast.to(data.collectionId).emit('refreshCollectionMembers', data.collectionId);
       // io.emit('unfollowedCollection', data);
       console.log('unfollow userList is:', userList, data);
       const toid = userList.filter(user => user.user_id === data.userCreated);
@@ -84,6 +85,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('followedCollection', function handlefollow(data) {
+      socket.broadcast.to(data.collectionId).emit('refreshCollectionMembers', data.collectionId);
       console.log('follow userList is:', userList, data);
       const toid = userList.filter(user => user.user_id === data.userCreated);
       console.log('sending follow to user:', toid, 'filter::', data.userCreated);

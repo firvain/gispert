@@ -268,5 +268,43 @@ router.route('/collection')
             }
         });
     });
+
     
+router.route('/members')
+    .get(function getmemberscollection(req, res) {
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+            const userId = req.query.userId;
+            const collectionId = req.query.collectionId;
+
+            // console.log('get type:: ', type);
+            var collection = db.collection('collections');
+            if (err) {
+                console.log(err);
+            }
+            if (userId) {
+                // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
+                collection.find({
+                    $or: [
+                        {
+                            $and: [
+                                { members: ObjectID(userId) },
+                                { _id: ObjectID(collectionId) }
+                            ]
+                        }]
+                }, {}).toArray(function handleCursor(error, docs) {
+                    // console.log(docs);
+                    var data = {};
+                    if (err) {
+                        res.sendStatus(500);
+                        console.log(error);
+                    } else {
+                        res.send(docs[0].members);
+                        db.close();
+                    }
+                });
+            }
+        });
+    });
+
+
 module.exports = router;

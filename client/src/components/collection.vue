@@ -33,7 +33,7 @@
           </v-btn>
         </v-list-tile-action>
         <v-list-tile-action>
-          <v-btn fab small outline @click="shareDialog = true" 
+          <v-btn fab small outline @click="shareDialog = true"
             v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-icon color="green lighten-1">share</v-icon>
           </v-btn>
@@ -87,8 +87,8 @@
             <v-btn color="green darken-1" flat @click.native="unfollowCollectionDialog = false">{{ $t('message.cancel')}}</v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog>      
-      
+      </v-dialog>
+
       <!-- <v-layout row wrap v-if="details">
         <v-flex
           md12
@@ -127,6 +127,10 @@ export default {
     if (this.collection.members) {
       this.members = this.collection.members;
     }
+    this.$options.sockets.refreshCollectionMembers = (data) => {
+      console.log('refreshing members::', JSON.stringify(data));
+      this.loadMembersOfThisCollection(data);
+    };
   },
   computed: {
     collectionMembers() { // add members as function property
@@ -226,6 +230,20 @@ export default {
         //   this.$store.dispatch('deletePublicCollection', id);
         //   this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
         // }
+      });
+    },
+    loadMembersOfThisCollection(id) {
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/members`;
+      axios.get(url, {
+        params: {
+          collectionId: id,
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        this.members = response.data;
+      }).then(() => {
+        this.loading = false;
       });
     },
   },
