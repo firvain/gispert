@@ -42,35 +42,20 @@ io.on('connection', function(socket) {
     // var userAdded = false;
     console.log('Someone connected');
 
-    socket.on('newPost', function handlepost(post) {
-      const receivers = post.members;
-      console.log('new post receivers are::', receivers, receivers.length);
-      delete post.members;
-      receivers.forEach(receiver => {
-        const toid = userList.filter(user => user.user_id === receiver);
-        console.log('sending new post notification to user:', toid, 'filter::', receiver);
-        if (toid.length > 0) {
-          socket.broadcast.to(toid[0].id).emit('newPost', post);
-        }
+    socket.on('joinCollections', function handleUserConnection(collections) {
+      collections.forEach((c) => {
+        socket.join(c);
       });
-      // io.emit('newPost', post);
-      console.log('Received a socket request and emitting new post:: ', post, 'LIST:: ', userList);
+    });
+
+    socket.on('newPost', function handlepost(post) {
+      console.log('new post received from client::', post);
+      socket.broadcast.to(post.collections).emit('newPost', post);
     });
 
     socket.on('newReply', function handlepost(post) {
-      const receivers = post.members;
-      console.log('reply receivers are:: ', receivers);
-      delete post.members;
-      receivers.forEach(receiver => {
-        const toid = userList.filter(user => user.user_id === receiver);
-        console.log('sending reply notification to user:', toid, 'filter::', receiver);
-        if (toid.length > 0) {
-          socket.broadcast.to(toid[0].id).emit('newReply', post);
-          console.log('socket emitted to:: ', receiver, post);
-        }
-      });
-      // io.emit('newPost', post);
-      // console.log('Received a socket request and emitting reply', post, 'LIST:: ', userList);
+      console.log('new reply received from client::', post);
+      socket.broadcast.to(post.collections).emit('newReply', post);
     });
 
     socket.on('inviteToCollection', function handleinvitation(members) {
@@ -94,17 +79,7 @@ io.on('connection', function(socket) {
       const toid = userList.filter(user => user.user_id === data.userCreated);
       console.log('sending unfollow to user:', toid, 'filter::', data.userCreated);
       if (toid.length > 0) {
-        // console.log('socket id:: ', toid[0].id);
-        // const msg = {
-        //   byUser: data.memberId, // eslint-disable-line no-underscore-dangle
-        //   unfollowedId: data.collectionId,
-        //   userCreated: data.userCreated,
-        //   read: 0,
-        //   type: 'unfollowedCollection',
-        // };
         socket.broadcast.to(toid[0].id).emit('unfollowedCollection', 'refreshNotifications');
-        // socket.emit('unfollowedCollection', 'refreshNotifications');
-        // console.log('unfollow msg::', msg);
       }
     });
 
@@ -128,16 +103,6 @@ io.on('connection', function(socket) {
       // io.emit('refreshUserList', userList);
       console.log('userList is:', userList);
       // console.log('socket id::', socket.userid);
-    });
-
-    socket.on('joinCollections', function handleUserConnection(collections) {
-      collections.forEach((c) => {
-        socket.join(c);
-        var clients = io.sockets.adapter.rooms[c].sockets;
-        var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
-        console.log('number of clients:: ', numClients);
-        socket.broadcast.to(c).emit('room', 'room');
-      });
     });
 
     // socket.on('disconnect', function handleUserConnection() {

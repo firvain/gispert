@@ -225,6 +225,7 @@ export default new Vuex.Store({
       this.state.openedTimeline = data;
     },
     addPostToTimeline(store, data) {
+      console.log('adding post to timeline in vuex::', data);
       this.state.timeline.unshift(data);
     },
     addPostToUserTimeline(store, data) {
@@ -238,6 +239,22 @@ export default new Vuex.Store({
       console.log('adding reply to post:: ', objIndex, data);
       if (objIndex > -1) {
         state.timeline[objIndex].replies.push(data._id);
+      }
+      if (state.openedTimeline !== null) {
+        if (state.openedTimeline.type === 'collection') {
+          const objIndex = state.collectionTimeline.findIndex((obj => obj._id == data.isReplyTo));
+          console.log('adding reply to collection:: ', objIndex, data);
+          if (objIndex > -1) {
+            state.collectionTimeline[objIndex].replies.push(data._id);
+          }
+        }
+        if (state.openedTimeline.type === 'timeline') {
+          const objIndex = state.userTimeline.findIndex((obj => obj._id == data.isReplyTo));
+          console.log('adding reply to userTimeline:: ', objIndex, data);
+          if (objIndex > -1) {
+            state.userTimeline[objIndex].replies.push(data._id);
+          }
+        }
       }
     },
   },

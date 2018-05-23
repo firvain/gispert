@@ -151,7 +151,7 @@ export default {
       this.$store.dispatch('addPostToTimeline', data);
     };
     this.$on('newpost', (eventPost) => {
-      console.log('A totally new post has been published :: ', eventPost);
+      console.log('A totally new post has been published :: ', JSON.stringify(eventPost));
       this.toggle_new_post();
       this.$store.dispatch('addPostToTimeline', eventPost);
     //   this.refresh_page();

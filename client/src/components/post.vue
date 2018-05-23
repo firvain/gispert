@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm12> {{post.replies}}
+    <v-flex xs12 sm12>
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
           <v-layout class="text-xs-left">
@@ -146,7 +146,7 @@ export default {
     this.repliesReversed();
     this.shareUrl = `${config.APIhttpType}://${config.APIhost}:${config.hostPost}/#/main/search/${this.post._id}`; // eslint-disable-line no-underscore-dangle
     this.$options.sockets.newReply = (data) => {
-      // console.log('new reply data:: ', data);
+      console.log('new reply data from server socket:: ', data);
       if (data.isReplyTo === this.post._id) { // eslint-disable-line no-underscore-dangle
         // console.log('must show this reply:: ', data);
         this.$store.dispatch('addReplyToPost', data); // eslint-disable-line no-underscore-dangle
