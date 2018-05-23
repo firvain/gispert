@@ -41,9 +41,7 @@ const userList = [];
 io.on('connection', function(socket) {
     // var userAdded = false;
     console.log('Someone connected');
-    // socket.on('chat message', function handlemsg(msg) {
-    //   io.emit('chat message', msg);
-    // });
+
     socket.on('newPost', function handlepost(post) {
       const receivers = post.members;
       console.log('new post receivers are::', receivers, receivers.length);
@@ -58,6 +56,7 @@ io.on('connection', function(socket) {
       // io.emit('newPost', post);
       console.log('Received a socket request and emitting new post:: ', post, 'LIST:: ', userList);
     });
+
     socket.on('newReply', function handlepost(post) {
       const receivers = post.members;
       console.log('reply receivers are:: ', receivers);
@@ -84,23 +83,11 @@ io.on('connection', function(socket) {
         }        
       });
     });
-    // socket.on('groupDeleted', function handlegroup(group) {
-    //   io.emit('groupDeleted', group);
-    // });
-    // socket.on('style', function handlestyle(f) {
-    //   console.log(f);
-    //   io.emit('style', f);
-    // });
-    // socket.on('refreshLayers', function handlelayer(layer) {
-    //   io.emit('newLayer', layer);
-    // });
-    // socket.on('newFeature', function handlefeature(f) {
-    //   io.emit('drawFeature', f);
-    //   console.log(f);
-    // });
+
     socket.on('featureMessage', function handlemessage(msg) {
       io.emit('newFeatureMessage', msg);
     });
+
     socket.on('unfollowedCollection', function handleunfollow(data) {
       // io.emit('unfollowedCollection', data);
       console.log('unfollow userList is:', userList, data);
@@ -120,24 +107,17 @@ io.on('connection', function(socket) {
         // console.log('unfollow msg::', msg);
       }
     });
+
     socket.on('followedCollection', function handlefollow(data) {
       console.log('follow userList is:', userList, data);
       const toid = userList.filter(user => user.user_id === data.userCreated);
       console.log('sending follow to user:', toid, 'filter::', data.userCreated);
       if (toid.length > 0) {
-        // console.log('socket id:: ', toid[0].id);
-        // const msg = {
-        //   byUser: data.memberId, // eslint-disable-line no-underscore-dangle
-        //   unfollowedId: data.collectionsId,
-        //   userCreated: data.userCreated,
-        //   read: 0,
-        //   type: 'followedCollection',
-        // }
         socket.broadcast.to(toid[0].id).emit('followedCollection', 'refreshNotifications');
-        // socket.emit('followedCollection', 'refreshNotifications');
         // console.log('follow msg::', msg);
       }
     });
+
     socket.on('userConnected', function handleUserConnection(userid) {
       const user = {
         id: socket.id,
@@ -149,6 +129,17 @@ io.on('connection', function(socket) {
       console.log('userList is:', userList);
       // console.log('socket id::', socket.userid);
     });
+
+    socket.on('joinCollections', function handleUserConnection(collections) {
+      collections.forEach((c) => {
+        socket.join(c);
+        var clients = io.sockets.adapter.rooms[c].sockets;
+        var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
+        console.log('number of clients:: ', numClients);
+        socket.broadcast.to(c).emit('room', 'room');
+      });
+    });
+
     // socket.on('disconnect', function handleUserConnection() {
     //   console.log('socket id to disconnect::', socket.userid);
     //   var index = userList.indexOf(socket.userid);    // <-- Not supported in <IE9

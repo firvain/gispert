@@ -428,55 +428,74 @@ export default {
             // this.users = response.data;
           }
         }).then(() => {
-          this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
           console.log('connected as ::', this.$store.state.user.name);
-          // this.getNotifications();
-          this.loadPrivateCollections();
           this.loadPublicCollections();
+          this.loadPrivateCollections();
         }).then(() => {
+          this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
           this.loading = false;
         });
       });
     },
-    loadPrivateCollections() {
-      // console.log('loading collections');
-      this.loading = true;
-      const vuexCollections = this.$store.state.privateCollections;
-      if (vuexCollections && vuexCollections.length > 0) {
-        this.privateCollections = this.$store.state.privateCollections;
+    async loadPrivateCollections() {
+      try {
+        this.loading = true;
+        const vuexCollections = this.$store.state.privateCollections;
+        if (vuexCollections && vuexCollections.length > 0) {
+          this.privateCollections = this.$store.state.privateCollections;
+        }
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+        axios.get(url, {
+          params: {
+            userId: this.getUserId(),
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          this.privateCollections = response.data;
+        }).then(() => {
+          this.loading = false;
+          this.$store.dispatch('setPrivateCollections', this.privateCollections);
+          const collectionIds = [];
+          this.privateCollections.forEach((c) => {
+            collectionIds.push(c._id); // eslint-disable-line no-underscore-dangle
+          });
+          console.log('joining collections', this.privateCollections);
+          this.$socket.emit('joinCollections', collectionIds);
+        });
+      } catch (error) {
+        console.log(error);
       }
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
-      axios.get(url, {
-        params: {
-          userId: this.getUserId(),
-        },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        this.privateCollections = response.data;
-      }).then(() => {
-        this.loading = false;
-        this.$store.dispatch('setPrivateCollections', this.privateCollections);
-      });
+      return true;
     },
-    loadPublicCollections() {
-      // console.log('loading collections');
-      this.loading = true;
-      const vuexCollections = this.$store.state.publicCollections;
-      if (vuexCollections && vuexCollections.length > 0) {
-        this.publicCollections = this.$store.state.publicCollections;
+    async loadPublicCollections() {
+      try {
+        this.loading = true;
+        const vuexCollections = this.$store.state.publicCollections;
+        if (vuexCollections && vuexCollections.length > 0) {
+          this.publicCollections = this.$store.state.publicCollections;
+        }
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
+        axios.get(url, {
+          params: {
+            userId: this.getUserId(),
+          },
+        }).then((response) => {
+          this.publicCollections = response.data;
+          // console.log('public collections fetched:: ', this.publicCollections);
+        }).then(() => {
+          this.loading = false;
+          this.$store.dispatch('setPublicCollections', this.publicCollections);
+          const collectionIds = [];
+          this.publicCollections.forEach((c) => {
+            collectionIds.push(c._id); // eslint-disable-line no-underscore-dangle
+          });
+          console.log('joining collections', this.publicCollections);
+          this.$socket.emit('joinCollections', collectionIds);
+        });
+      } catch (error) {
+        console.log(error);
       }
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
-      axios.get(url, {
-        params: {
-          userId: this.getUserId(),
-        },
-      }).then((response) => {
-        this.publicCollections = response.data;
-        // console.log('public collections fetched:: ', this.publicCollections);
-      }).then(() => {
-        this.loading = false;
-        this.$store.dispatch('setPublicCollections', this.publicCollections);
-      });
+      return true;
     },
     getUserId() {
       let id;
@@ -544,9 +563,9 @@ export default {
     // this.$options.sockets.unfollowedCollection = (data) => {
     //   console.log('unfollowedCollection', data);
     // };
-    // this.$options.sockets.followedCollection = (data) => {
-    //   console.log('followedCollection', data);
-    // };
+    this.$options.sockets.room = (data) => {
+      console.log('room:: ', data);
+    };
   },
 };
 </script>

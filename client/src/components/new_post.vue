@@ -198,8 +198,10 @@ export default {
             // console.log('emitting to::', this.collectionMembers);
             if (this.collectionMembers) {
               userPost.members = this.collectionMembers;
+              console.log('collectionMembers:: ', this.collectionMembers);
             } else {
               userPost.members = members.members;
+              console.log('members.members:: ', members.members);
             }
             userPost.collectionData = [{ title: members.title,
               _id: response.data.id }]; // eslint-disable-line no-underscore-dangle
