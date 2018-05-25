@@ -37,6 +37,15 @@
               </v-btn>
               <span>{{ $t("message.viewReplies") }}</span>
             </v-tooltip>
+
+            <v-tooltip bottom v-if="socketReplies > 0">
+              <v-btn color="blue" slot="activator" outline small @click="showMoreReplies">
+                <v-icon large color="grey">insert_comment</v-icon>
+                New replies: {{ socketReplies }}
+              </v-btn>
+              <span>{{ $t("message.viewReplies") }}</span>
+            </v-tooltip>
+
               <v-spacer></v-spacer>
               <social-sharing :url="sharePostUrl" inline-template>
                 <div>
@@ -68,24 +77,26 @@
           :userToNotify="post.userId">
         </newPost>
 
-        <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
+        <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
         <v-flex class="ma-0 pa-0"
           md12
-          v-for="post in replies.slice(0, loadmorereplies)"
+          v-for="post in replies"
           :key="post._id"
         >
           <post :post='post'></post>
-        </v-flex>
-        <v-btn block color="white" v-if="replies.length > 0 && loadmorereplies < post.repliesData.length" @click="loadmorereplies = post.repliesData.length">Φορτωση περισσοτερων απαντησεων</v-btn>
-
+        </v-flex> -->
+        
         <v-flex class="ma-0 pa-0"
           md12
-          v-if="fetchedReplies.length > 0"
-          v-for="reply in fetchedReplies"
+          v-if="replies.length > 0"
+          v-for="reply in replies"
           :key="reply._id"
         >
           <post :post='reply' transition="scale-transition"></post>
         </v-flex>
+        <v-btn block color="white" v-if="replies.length > 0 && replies.length < post.replies.length" @click="showMoreReplies">
+          Φορτωση περισσοτερων απαντησεων
+        </v-btn>
       </v-card>
     </v-flex>
       <v-snackbar
@@ -135,6 +146,7 @@ export default {
     limitPage: 10,
     loading: false,
     fetchedReplies: [],
+    socketReplies: 0,
     shareLink: false,
     shareUrl: '',
   }),
@@ -143,18 +155,21 @@ export default {
   },
   mounted() {
     this.explore(this.post);
-    this.repliesReversed();
+    // this.repliesReversed();
     this.shareUrl = `${config.APIhttpType}://${config.APIhost}:${config.hostPost}/#/main/search/${this.post._id}`; // eslint-disable-line no-underscore-dangle
     this.$options.sockets.newReply = (data) => {
       console.log('new reply data from server socket:: ', data);
       if (data.isReplyTo === this.post._id) { // eslint-disable-line no-underscore-dangle
         // console.log('must show this reply:: ', data);
+        data.socketReply = true; // eslint-disable-line no-param-reassign
         this.$store.dispatch('addReplyToPost', data); // eslint-disable-line no-underscore-dangle
+        this.socketReplies += 1;
       }
     };
   },
   methods: {
     showMoreReplies() {
+      this.socketReplies = 0;
       const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/replies`;
       axios.get(serverUrl, { params: {
         ids: this.post.replies,
@@ -165,20 +180,26 @@ export default {
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         this.fetchedReplies = response.data;
+        this.fetchedReplies.forEach((r) => {
+          this.replies.push(r);
+        });
+        console.log(this.replies);
       }).then(() => {
         this.loading = false;
       });
       this.showReplies = true;
+      this.startPage += 10;
+      this.limitPage += 10;
     },
-    repliesReversed() {
-      let reversed;
-      if (this.post.repliesData && this.post.repliesData.length > 0) {
-        reversed = this.post.repliesData.reverse();
-      } else {
-        reversed = [];
-      }
-      this.replies = reversed;
-    },
+    // repliesReversed() {
+    //   let reversed;
+    //   if (this.post.repliesData && this.post.repliesData.length > 0) {
+    //     reversed = this.post.repliesData.reverse();
+    //   } else {
+    //     reversed = [];
+    //   }
+    //   this.replies = reversed;
+    // },
     explore(post) {
       const geojsonFormat = new ol.format.GeoJSON();
       const newFeature = post.userFeatures;
