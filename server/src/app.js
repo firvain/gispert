@@ -49,12 +49,12 @@ io.on('connection', function(socket) {
     });
 
     socket.on('newPost', function handlepost(post) {
-      console.log('new post received from client::', post);
+      // console.log('new post received from client::', post);
       socket.broadcast.to(post.collections).emit('newPost', post);
     });
 
     socket.on('newReply', function handlepost(post) {
-      console.log('new reply received from client::', post);
+      // console.log('new reply received from client::', post);
       socket.broadcast.to(post.collections).emit('newReply', post);
     });
 
@@ -74,25 +74,11 @@ io.on('connection', function(socket) {
     });
 
     socket.on('unfollowedCollection', function handleunfollow(data) {
-      socket.broadcast.to(data.collectionId).emit('refreshCollectionMembers', data.collectionId);
-      // io.emit('unfollowedCollection', data);
-      console.log('unfollow userList is:', userList, data);
-      const toid = userList.filter(user => user.user_id === data.userCreated);
-      console.log('sending unfollow to user:', toid, 'filter::', data.userCreated);
-      if (toid.length > 0) {
-        socket.broadcast.to(toid[0].id).emit('unfollowedCollection', 'refreshNotifications');
-      }
+      socket.broadcast.to(data.collectionId).emit('unfollowedCollection', data);
     });
 
     socket.on('followedCollection', function handlefollow(data) {
-      socket.broadcast.to(data.collectionId).emit('refreshCollectionMembers', data.collectionId);
-      console.log('follow userList is:', userList, data);
-      const toid = userList.filter(user => user.user_id === data.userCreated);
-      console.log('sending follow to user:', toid, 'filter::', data.userCreated);
-      if (toid.length > 0) {
-        socket.broadcast.to(toid[0].id).emit('followedCollection', 'refreshNotifications');
-        // console.log('follow msg::', msg);
-      }
+      socket.broadcast.to(data.collectionId).emit('followedCollection', data);
     });
 
     socket.on('userConnected', function handleUserConnection(userid) {

@@ -63,8 +63,10 @@
     <v-list-tile-content v-if="notification.type === 'replyToMyPost'">
       <!-- <v-list-tile-title>{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title> -->
       <!-- {{$store.state.user._id}}, {{ notification.collection[0].user }} -->
-      <v-list-tile-title v-if="notification.collection[0].user === $store.state.user._id">{{ $t('message.aReplyToYourPostPublished') }}</v-list-tile-title>
-      <v-list-tile-title v-else>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
+      <v-list-tile-title v-if="notification.userCreated === $store.state.user._id">{{ $t('message.aReplyToYourPostPublished') }}
+      </v-list-tile-title>
+      <v-list-tile-title v-else>{{ $t('message.newPostInThisCollection') }}
+      </v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
         <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
         , <a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a>

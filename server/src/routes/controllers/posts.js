@@ -47,27 +47,35 @@ router.route('/')
       }
       return id;
     })
-    .then((id, repliedPostCreator) => {
-      if (req.body.userPost.isReplyTo) {
-        return repliedPostCreator = database.findRepliedPost(req.body.userPost.isReplyTo), id;
-        // console.log('replied post:: ', repliedPostCreator, ' id:: ', id);
+    .then((id, creator) => {
+      if (req.body.userPost.isReplyTo !== '') {
+        const creator = database.findRepliedPost(req.body.userPost.isReplyTo);
+        return creator;
       }
-    })
-    .then((id, repliedPostCreator) => {
-      if(repliedPostCreator) {
+    }).then((creator, notification) => {
+      if (creator) {
         const notification = {
           collectionId: post.collections,
           byUser: new ObjectId(post.userId),
           type: 'replyToMyPost',
           timestamp: post.timestamp,
-          userCreated: new ObjectId(repliedPostCreator[0].userId),
-          text: repliedPostCreator[0].text,
-          features: repliedPostCreator[0].userFeatures,
+          userCreated: new ObjectId(creator[0].userId),
+          text: creator[0].text,
+          features: creator[0].userFeatures,
           read: 0
         };
-        // console.log('notification of a reply', notification);
+        console.log('a reply notification:::', notification);
+        return creator, notification;
+      }
+    }).then((notification, creator) => {
+      console.log('creator::', creator, 'notification::', notification);
+      if (notification) {
+        console.log('notifying for reply database');
         database.notifyPost(notification);
-      } else {
+      }
+      return creator;
+    }).then((notification, creator) => {
+      if(req.body.userPost.isReplyTo === '') {
         const notification = {
           collectionId: post.collections,
           byUser: new ObjectId(post.userId),
@@ -78,10 +86,9 @@ router.route('/')
           features: req.body.userPost.userFeatures,
           read: 0
         };
-        // console.log('notification of a reply', notification);
         database.notifyPost(notification);
+        // console.log('notification of a reply', notification);
       }
-      return id;
     })
     .then(() => {
       database.close();

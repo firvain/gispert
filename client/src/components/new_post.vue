@@ -33,7 +33,7 @@
           </v-chip>
         </v-flex>
         <v-card-actions>
-          <v-flex  xs6 sm6 md6 v-if="this.id === undefined">
+          <v-flex  xs6 sm6 md6 v-if="this.id === undefined && this.collection === undefined">
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
@@ -181,7 +181,7 @@ export default {
             // console.log('this is the userpost newpost:: ', userPost);
             // console.log('emitting to::', members);
             userPost._id = response.data.id; // eslint-disable-line no-underscore-dangle
-            userPost.members = members.members; // notify the members of the collection
+            userPost.members = members.members; // notify the members TODO: no need, deprecated
             userPost.collectionData = [{
               title: members.title,
               _id: members._id, // eslint-disable-line no-underscore-dangle
@@ -189,7 +189,7 @@ export default {
             console.log('new post userPost for socket:: ', JSON.stringify(userPost), 'res::', response.data.id);
             // this.$socket.emit('newPost', userPost);
             userPost.members.push(members.user); // add the creator of the collection
-            this.$parent.$emit('newpost', userPost);
+            this.$store.dispatch('addPostToTimeline', userPost);
             this.$socket.emit('newPost', userPost);
           } else {
             // eslint-disable-next-line
@@ -205,10 +205,10 @@ export default {
             }
             userPost.collectionData = [{ title: members.title,
               _id: response.data.id }]; // eslint-disable-line no-underscore-dangle
-            userPost.members.push(this.userToNotify); // add the creator of the collection
+            userPost.members.push(this.userToNotify); // add the creator TODO: no need, deprecated
             userPost.isReplyTo = response.data.isReplyTo;
             console.log('reply userPost for socket:: ', JSON.stringify(userPost));
-            this.$parent.$emit('newreply', userPost);
+            this.$store.dispatch('addReplyToPost', userPost);
             this.$socket.emit('newReply', userPost);
           }
         });

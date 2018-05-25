@@ -62,6 +62,7 @@ export default {
       console.log('new post data:: ', JSON.stringify(data));
       // this.socketMessage = 'new post data';
       this.getNotifications();
+      this.$store.dispatch('addPostToTimeline', data);
       // this.$store.commit('addNotificationFromSocket', data);
     };
     this.$options.sockets.inviteToCollection = (data) => {

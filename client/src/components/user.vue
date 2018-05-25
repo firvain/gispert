@@ -70,6 +70,8 @@ export default {
       .then(() => {
         this.listChanged = false;
         this.$socket.emit('followedCollection', data);
+        this.$eventHub.$emit('refreshprivatecollections');
+        this.$eventHub.$emit('refreshpubliccollections');
         // console.log('mark as followed and notify user');
       });
     },

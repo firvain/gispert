@@ -69,10 +69,12 @@ class Database {
             this.db.collection('posts').find({
                 _id: new ObjectId(id),
             }).toArray(function(err, docs) {
+                // console.log(docs);
                 if (err) {
+                  console.log(err);
                   reject(err);
                 } else {
-                //   console.log('docs of findRepliedPost:: ', docs);
+                  console.log('docs of findRepliedPost:: ', docs);
                   resolve(docs);
                 }          
             });
@@ -85,7 +87,9 @@ class Database {
             this.db.collection('collections').find({
                 _id: new ObjectId(id),
             }).toArray(function(err, docs) {
+                console.log('docs:::=->', docs);
                 if (err) {
+                  console.log(err);
                   reject(err);
                 } else {
                   console.log(docs);
