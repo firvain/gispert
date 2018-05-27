@@ -50,7 +50,7 @@ export default {
       mode: 0,
       explore_estate: null,
       startPage: 0,
-      limitPage: 25,
+      limitPage: 50,
       newPost: false,
       newPostColor: 'blue-grey',
       newPostTextColor: 'white--text darken-1',
@@ -87,7 +87,7 @@ export default {
     },
     next_page() {
       this.loading = true;
-      this.startPage += 25;
+      this.startPage += 50;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
       axios.get(url, {
         headers: { 'x-access-token': this.$store.state.token },
@@ -145,37 +145,6 @@ export default {
     } else {
       this.posts = this.$store.state.timeline;
     }
-
-    // this.$options.sockets.newPost = (data) => {
-    //   console.log('new post from socket', JSON.stringify(data));
-    //   this.$store.dispatch('addPostToTimeline', data);
-    // };
-    // this.$on('newpost', (eventPost) => {
-    //   console.log('A totally new post has been published :: ', JSON.stringify(eventPost));
-    //   this.toggle_new_post();
-    //   this.$store.dispatch('addPostToTimeline', eventPost);
-    // //   this.refresh_page();
-    // });
-    // this.$on('newreply', (eventPost) => {
-    //   console.log('A new reply has been published :: ', eventPost);
-    //   this.$store.dispatch('addReplyToPost', eventPost);
-    // //   this.refresh_page();
-    // });
-    // this.$on('newreply', (eventPost) => {
-    //   console.log('A new reply post has been published :: ', eventPost);
-      // TODO χρειάζομαι το id του post και να ενημερώνω το posts array
-      // αν έχει πολλές απαντήσεις; κάποιες να τις δείχνει περιληπτικά. μέχρι 5
-      // να τις δείχνει αν είναι περισσότερες
-      // να δείχνει τις 2 πιο πρόσφατες και τις άλλες με Load more. Αν πατήσει
-      // κουμπί να τις δείχνει όλες. Να λέει
-      // πόσες είναι που θα δείξει.
-      // επίσης πρέπει να φορτώνει τα post με ταξινόμηση ως προς την πιο πρόσφατη απάντηση.
-      // σύστημα notifications?
-      // πόσα post να φέρνει ανά σελίδα; αν έχει πολλές απαντήσεις θα φαίνονται πολύ
-      // λίγα. Πρέπει να το ρυθμίζω.
-        // eslint-disable-next-line
-    //     console.log(eventPost);
-    // });
   },
 };
 </script>

@@ -215,21 +215,6 @@ export default {
         headers: { 'x-access-token': this.$store.state.token },
       }).then(() => {
         this.$socket.$emit('inviteToCollection', data.members);
-        // if (this.collection.visibility === 'private') {
-        //   this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
-        // }
-        // if (this.collection.visibility === 'public') {
-        //   this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
-        // }
-        // this.shareDialog = false;
-        // if (this.collection.visibility === 'private') {
-        //   this.$parent.$parent.$emit('refreshprivatecollections', 'refresh');
-        // }
-        // if (this.collection.visibility === 'public') {
-        //   this.$store.dispatch('deletePrivateCollection', id);
-        //   this.$store.dispatch('deletePublicCollection', id);
-        //   this.$parent.$parent.$emit('refreshpubliccollections', 'refresh');
-        // }
       });
     },
     loadMembersOfThisCollection(id) {

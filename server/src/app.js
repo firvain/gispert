@@ -75,10 +75,12 @@ io.on('connection', function(socket) {
 
     socket.on('unfollowedCollection', function handleunfollow(data) {
       socket.broadcast.to(data.collectionId).emit('unfollowedCollection', data);
+      socket.leave(data.collectionId);
     });
 
     socket.on('followedCollection', function handlefollow(data) {
       socket.broadcast.to(data.collectionId).emit('followedCollection', data);
+      socket.join(data.collectionId);
     });
 
     socket.on('userConnected', function handleUserConnection(userid) {

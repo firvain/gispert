@@ -51,7 +51,7 @@ export default {
       mode: 0,
       explore_estate: null,
       startPage: 0,
-      limitPage: 25,
+      limitPage: 100,
       newPost: false,
       newPostColor: 'blue-grey',
       newPostTextColor: 'white--text darken-1',
@@ -100,7 +100,7 @@ export default {
     next_page() {
       //  TODO: do the correct API call
       this.loading = true;
-      this.startPage += 25;
+      this.startPage += 100;
       const userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
       axios.get(url, {

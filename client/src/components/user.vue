@@ -29,6 +29,7 @@
               :hint="$t('message.chooseCollectionsToFollow')"
               persistent-hint
               v-on:change="listChanged = true"
+              loading=true
             ></v-select>
             <span>{{ $t("message.checkCollectionsOut")}}</span>
           </v-tooltip>
