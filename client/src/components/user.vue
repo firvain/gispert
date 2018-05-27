@@ -15,27 +15,53 @@
             v-model="showLive"
             color="success"
           ></v-switch>
-          <v-spacer></v-spacer>
-          <v-tooltip bottom>
-            <v-select
-              slot="activator"
-              :label="$t('message.choose')"
-              :items="userCollections"
-              item-text="title"
-              item-value="_id"
-              v-model="selectedCollections"
-              multiple
-              max-height="400"
-              :hint="$t('message.chooseCollectionsToFollow')"
-              persistent-hint
-              v-on:change="listChanged = true"
-              loading=true
-            ></v-select>
-            <span>{{ $t("message.checkCollectionsOut")}}</span>
-          </v-tooltip>
-          <v-btn fab outline small v-if="listChanged" @click="addMembershipToCollections()">
-            <v-icon color="green lighten-1">save</v-icon>
-          </v-btn>
+
+          <v-dialog v-model="dialogCollections" scrollable max-width="300px">
+            <!-- <v-tooltip bottom> -->
+              <v-btn color="primary" dark fab outline small slot="activator">
+                <v-icon color="green lighten-1">list</v-icon>
+              </v-btn>
+              <!-- <span>{{ $t("message.checkCollectionsOut")}}</span>
+            </v-tooltip> -->
+            <v-card color='secondary'>
+              <v-card-title>{{ $t('message.chooseCollectionsToFollow') }}</v-card-title>
+              <v-divider></v-divider>
+              <v-card-text style="height: 300px;">
+                {{ selectedCollections }}
+                <!-- <v-tooltip bottom>
+                  <v-select
+                    slot="activator"
+                    :label="$t('message.choose')"
+                    :items="userCollections"
+                    item-text="title"
+                    item-value="_id"
+                    v-model="selectedCollections"
+                    multiple
+                    max-height="400"
+                    :hint="$t('message.chooseCollectionsToFollow')"
+                    persistent-hint
+                    v-on:change="listChanged = true"
+                    loading=true
+                  ></v-select>
+                  <span>{{ $t("message.checkCollectionsOut")}}</span>
+                </v-tooltip> -->
+                  <v-checkbox
+                    v-for='collection in userCollections'
+                    :key='collection._id'
+                    :label="collection.title"
+                    v-model="selectedCollections"
+                    :value="collection._id"
+                    dark>1
+                  </v-checkbox>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-btn fab outline small v-if="listChanged" @click="addMembershipToCollections()">
+                  <v-icon color="green lighten-1">save</v-icon>
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-card-actions>
       </v-card>
     </v-flex>
@@ -53,6 +79,7 @@ export default {
     userCollections: [],
     selectedCollections: [],
     listChanged: false,
+    dialogCollections: false,
   }),
   methods: {
     explore() {
