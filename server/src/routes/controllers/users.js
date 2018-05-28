@@ -55,25 +55,26 @@ router.route('/all')
         throw err;
       } else {
         collection.aggregate([
-          { 
-            $graphLookup: {
-              from: "collections",
-              startWith: "$_id",
-              connectFromField: "_id",
-              connectToField: "user",
-              as: "collectionData",
-            }
-          },{ "$project": {
+          // { 
+          //   $graphLookup: {
+          //     from: "collections",
+          //     startWith: "$_id",
+          //     connectFromField: "_id",
+          //     connectToField: "user",
+          //     as: "collectionData",
+          //   }
+          // },
+          { "$project": {
               "_id": 1,
               "name": 1,
               "description": 1,
-              "collectionData": {
-                 "$filter": {
-                     "input": "$collectionData",
-                     "as": "child",
-                     "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }] }
-                 }
-              }
+              // "collectionData": {
+              //    "$filter": {
+              //        "input": "$collectionData",
+              //        "as": "child",
+              //        "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }] }
+              //    }
+              // }
           }},
           {
             $skip: start
