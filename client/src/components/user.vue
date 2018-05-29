@@ -15,40 +15,19 @@
             v-model="showLive"
             color="success"
           ></v-switch>
-          <v-btn color="primary" dark fab outline small @click="dialogCollections = true">
+          <v-btn color="primary" dark fab outline small @click="dialogCollections = true; getCollections(user._id);">
             <v-icon color="green lighten-1">list</v-icon>
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-flex>
     <v-dialog v-model="dialogCollections" scrollable max-width="300px">
-      <!-- <v-tooltip bottom> -->
-        <!-- <span>{{ $t("message.checkCollectionsOut")}}</span>
-      </v-tooltip> -->
       <v-card>
         <v-card-title>{{ $t('message.chooseCollectionsToFollow') }}</v-card-title>
         <v-divider></v-divider>
         <v-card-text style="height: 300px; color: black;">
-          <!-- {{ $t('message.choose') }} -->
-          {{ selectedCollections }}
-          <!-- <v-tooltip bottom>
-            <v-select
-              slot="activator"
-              :label="$t('message.choose')"
-              :items="userCollections"
-              item-text="title"
-              item-value="_id"
-              v-model="selectedCollections"
-              multiple
-              max-height="400"
-              :hint="$t('message.chooseCollectionsToFollow')"
-              persistent-hint
-              v-on:change="listChanged = true"
-              loading=true
-            ></v-select>
-            <span>{{ $t("message.checkCollectionsOut")}}</span>
-          </v-tooltip> -->
-            <v-checkbox
+            <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+            <v-checkbox @click.native="listChanged = true; updateArrays(collection._id);"
               v-for='collection in userCollections'
               :key='collection._id'
               :label="collection.title"
@@ -59,7 +38,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn outline small @click="addMembershipToCollections()">
+          <v-btn outline small @click="addMembershipToCollections()" v-if="listChanged">
             {{ $t('message.save') }}
             <v-icon color="green lighten-1">save</v-icon>
           </v-btn>
@@ -79,15 +58,33 @@ export default {
     showLive: true,
     userCollections: [],
     selectedCollections: [],
+    unfollowThese: [],
+    followThese: [],
     listChanged: false,
     dialogCollections: false,
+    loading: false,
+    initialCollections: [],
   }),
   methods: {
     explore() {
       this.$emit('explore', this.user);
     },
+    updateArrays() {
+      this.unfollowThese = [];
+      this.followThese = [];
+      this.initialCollections.forEach((c) => {
+        if (!this.selectedCollections.includes(c)) {
+          this.unfollowThese.push(c);
+        }
+      });
+      this.selectedCollections.forEach((c) => {
+        if (!this.initialCollections.includes(c)) {
+          this.followThese.push(c);
+        }
+      });
+    },
     addMembershipToCollections() {
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/addmember`;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/setMembership`;
       const data = {
         memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         collectionsId: this.selectedCollections,
@@ -102,6 +99,36 @@ export default {
         this.$eventHub.$emit('refreshprivatecollections');
         this.$eventHub.$emit('refreshpubliccollections');
         // console.log('mark as followed and notify user');
+      });
+    },
+    getCollections(id) {
+      this.loading = true;
+      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/collectionsOfUser`;
+      axios.get(url, {
+        params: {
+          userId: id,
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        this.userCollections = response.data;
+      }).then(() => {
+        const idsOfCollections = [];
+        this.$store.state.publicCollections.forEach((c) => {
+          idsOfCollections.push(c._id); // eslint-disable-line no-underscore-dangle
+        });
+        this.$store.state.privateCollections.forEach((c) => {
+          idsOfCollections.push(c._id); // eslint-disable-line no-underscore-dangle
+        });
+        return idsOfCollections;
+      }).then((idsOfCollections) => {
+        this.userCollections.forEach((collection) => {
+          const checkId = collection._id; // eslint-disable-line no-underscore-dangle
+          if (idsOfCollections.includes(checkId)) {
+            this.selectedCollections.push(checkId);
+            this.initialCollections.push(checkId);
+          }
+        });
+        this.loading = false;
       });
     },
   },

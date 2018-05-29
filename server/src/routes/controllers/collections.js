@@ -162,8 +162,8 @@ router.route('/collection')
       });
     });
 
-    router.route('/addmember')
-    .post(function addmember(req, res) {
+    router.route('/setMembership')
+    .post(function setMembership(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
             const userId = req.body.data.memberId;
             const collectionsId = req.body.data.collectionsId;

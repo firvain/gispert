@@ -95,7 +95,7 @@
           <post :post='reply' transition="scale-transition"></post>
         </v-flex>
         <v-btn block color="white" v-if="replies.length > 0 && replies.length < post.replies.length" @click="showMoreReplies">
-          Φορτωση περισσοτερων απαντησεων
+          {{ $t('message.loadMore')}}
         </v-btn>
       </v-card>
     </v-flex>

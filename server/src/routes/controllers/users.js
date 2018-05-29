@@ -195,5 +195,34 @@ router.route('/updateprofile')
       db.close();
     });
   });
+
   
+  router.route('/collectionsOfUser')
+  .get(function getusers(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      const userId = req.query.userId;
+      var collection = db.collection('collections');
+      if (err) {
+        throw err;
+      } else {
+        console.log('user id::', userId);
+        collection.find(
+          {
+            user: ObjectID(userId)
+          }).toArray(
+            function handleCursor(error, collections) {
+              if (error) {
+                res.sendStatus(500);
+                console.log(error);
+              } else {
+                // console.log(docs);
+                res.send(collections);
+                db.close();
+              }  
+            });
+      }
+    });
+  });
+
+
 module.exports = router;

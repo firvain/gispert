@@ -72,4 +72,20 @@ Array.prototype.remove = function remove() {
     return this;
 };
 
+Array.prototype.common = function common(arr1, arr2) {
+  var newArr = [];
+  newArr = arr1.filter(function(v){ return arr2.indexOf(v) >= 0;})
+  newArr.concat(arr2.filter(function(v){ return newArr.indexOf(v) >= 0;}));
+  return newArr;
+}
+
+Array.prototype.difference = function difference (array1, array2) {
+  const temp = [];
+  for (var i in array1) {
+    if(!array2.includes(array1[i])) temp.push(array1[i]);
+    console.log(temp);
+  }
+  return temp;
+}
+
 export default i18n;
