@@ -3,15 +3,15 @@
     <v-flex xs12 sm12>
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
-          <v-layout class="text-xs-left">
+          <v-flex class="text-xs-left">
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
-            <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;
+            <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
             {{ $t("message.inCollection")}}:&nbsp;
             <a md12 @click="exploreCollection(post.collectionData[0]._id)" v-if="post.collectionData">
               {{post.collectionData[0].title}}
             </a>,&nbsp;
             <i>{{timestamp}}</i>
-          </v-layout>
+          </v-flex>
         </v-card-title>
         <v-card-actions class="white">
             <v-tooltip bottom>
