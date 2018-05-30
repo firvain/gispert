@@ -201,6 +201,7 @@ router.route('/updateprofile')
   .get(function getusers(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
       const userId = req.query.userId;
+      const memberId = req.query.memberId;
       var collection = db.collection('collections');
       if (err) {
         throw err;
@@ -208,7 +209,13 @@ router.route('/updateprofile')
         console.log('user id::', userId);
         collection.find(
           {
-            user: ObjectID(userId)
+            $and: [
+              { user: ObjectID(userId) },
+              { $or: [
+                { visibility: 'public' },
+                { members: ObjectID(memberId) }
+              ]}
+            ]
           }).toArray(
             function handleCursor(error, collections) {
               if (error) {

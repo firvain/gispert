@@ -166,23 +166,44 @@ router.route('/collection')
     .post(function setMembership(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
             const userId = req.body.data.memberId;
-            const collectionsId = req.body.data.collectionsId;
-            console.log('adding user to collection:: ', userId, collectionsId);
+            const collectionsToFollow = req.body.data.collectionsToFollow;
+            const collectionsToUnfollow = req.body.data.collectionsToUnfollow;
+            // console.log('adding user to collection:: ', userId, collectionsId);
             const id = new ObjectID(userId);
 
-            var cids = [];
-            collectionsId.forEach((id) => {
-                cids.push(new ObjectID(id));
+            var cidsToFollow = [];
+            collectionsToFollow.forEach((id) => {
+                cidsToFollow.push(new ObjectID(id));
             });
+            var cidsToUnfollow = [];
+            collectionsToUnfollow.forEach((id) => {
+                cidsToUnfollow.push(new ObjectID(id));
+            });
+            console.log('follow unfollow cids:: ', cidsToFollow, cidsToUnfollow);
 
             if (err) {
                 throw err;
             } else {
-                db.collection('collections').update(
-                    { _id: { $in: cids} },
+                db.collection('collections').updateMany(
+                    { _id: { $in: cidsToFollow} },
                     { $addToSet: { members:  id } }
                 );
-                cids.forEach((cid) => {
+                db.collection('collections').updateMany(
+                    { _id: { $in: cidsToUnfollow} },
+                    { $pull: { members:  id } }
+                );
+
+                cidsToFollow.forEach((cid) => {
+                    db.collection('notifications').insertOne({ 
+                        collectionId: cid,
+                        byUser: id,
+                        type: 'followedCollection',
+                        userCreated: new ObjectID(req.body.data.userCreated),
+                        timestamp: Date.now(),
+                        read: 0
+                    });
+                });
+                cidsToUnfollow.forEach((cid) => {
                     db.collection('notifications').insertOne({ 
                         collectionId: cid,
                         byUser: id,

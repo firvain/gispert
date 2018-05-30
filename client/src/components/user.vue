@@ -38,7 +38,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn outline small @click="addMembershipToCollections()" v-if="listChanged">
+          <v-btn outline small @click="setMembershipToCollections()" v-if="listChanged">
             {{ $t('message.save') }}
             <v-icon color="green lighten-1">save</v-icon>
           </v-btn>
@@ -83,11 +83,12 @@ export default {
         }
       });
     },
-    addMembershipToCollections() {
+    setMembershipToCollections() {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/setMembership`;
       const data = {
         memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-        collectionsId: this.selectedCollections,
+        collectionsToFollow: this.followThese,
+        collectionsToUnfollow: this.unfollowThese,
         userCreated: this.user._id, // eslint-disable-line no-underscore-dangle
       };
       axios.post(url, { data }, {
@@ -107,6 +108,7 @@ export default {
       axios.get(url, {
         params: {
           userId: id,
+          memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
