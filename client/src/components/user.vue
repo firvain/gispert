@@ -96,7 +96,14 @@ export default {
       })
       .then(() => {
         this.listChanged = false;
-        this.$socket.emit('followedCollection', data);
+        data.collectionsToFollow.forEach((cId) => {
+          const signal = { collectionId: cId };
+          this.$socket.emit('followedCollection', signal);
+        });
+        data.collectionsToUnfollow.forEach((cId) => {
+          const signal = { collectionId: cId };
+          this.$socket.emit('unfollowedCollection', signal);
+        });
         this.$eventHub.$emit('refreshprivatecollections');
         this.$eventHub.$emit('refreshpubliccollections');
         // console.log('mark as followed and notify user');

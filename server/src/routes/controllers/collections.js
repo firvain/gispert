@@ -207,7 +207,7 @@ router.route('/collection')
                     db.collection('notifications').insertOne({ 
                         collectionId: cid,
                         byUser: id,
-                        type: 'followedCollection',
+                        type: 'unfollowedCollection',
                         userCreated: new ObjectID(req.body.data.userCreated),
                         timestamp: Date.now(),
                         read: 0
