@@ -41,189 +41,189 @@
             ></v-select>
         </v-toolbar-items>
 
-    <v-dialog v-model="dialogRegister" max-width="400">
-      <v-tabs icons grow dark>
-        <v-tabs-bar class="orange">
-          <v-tabs-slider color="yellow"></v-tabs-slider>
-          <v-tabs-item href="#tab-1">
-            <v-icon>account_circle</v-icon>
-            {{ $t("message.existingAccount") }}
-          </v-tabs-item>
-          <v-tabs-item href="#tab-2">
-            <v-icon>control_point</v-icon>
-            {{ $t("message.newAccount") }}
-          </v-tabs-item>
-        </v-tabs-bar>
-        <v-tabs-items>
-          <v-tabs-content
-            id="tab-1"
-          >
-            <v-card flat>
-                <!-- https://www.npmjs.com/package/vue-hellojs -->
-                <!-- https://vue-hellojs-demo.surge.sh/#/ -->
-                <v-btn @click="auth('google')">Google</v-btn>
-                <v-btn @click="auth('facebook')">Facebook</v-btn>
-                <v-btn @click="auth('linkedin')">Linkedin</v-btn>
-                <v-btn @click="auth('twitter')">Twitter</v-btn>
-                <v-btn @click="auth('github')">Github</v-btn>
-            </v-card>
-          </v-tabs-content>
-          <v-tabs-content
-            id="tab-2"
-          >
-            <v-card>
-              <v-card-title class="headline">{{ $t("message.registerUserText") }}</v-card-title>
-              <v-card-text>
-                <form
-                name="register-form"
-                autocomplete="off">
-                <v-text-field
-                  :label="$t('message.name')"
-                  v-model="name"
-                  :rules="nameRules"
-                  single-line
-                ></v-text-field>
-                <br>
-                <v-text-field
-                  :label="$t('message.password')"
-                  type="password"
-                  v-model="password"
-                  :rules="passRules"
-                  autocomplete="new-password"
-                ></v-text-field>
-                <br>
-                <v-text-field
-                  label="Email"
-                  v-model="email"
-                  single-line
-                ></v-text-field>
-                <br>
-                <v-text-field
-                  :label="$t('message.userDescriptionHint')"
-                  v-model="description"
-                  single-line
-                ></v-text-field>
-              </form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn v-if="name.length > 0 && password.length > 0"
-                  dark
-                  class="cyan"
-                  @click="register">
-                  {{ $t("message.register")}}
-                </v-btn>
-                <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false">
-                  {{ $t("message.cancel")}}
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-tabs-content>
-        </v-tabs-items>
-      </v-tabs>
-    </v-dialog>
-      <v-snackbar
-        :timeout=5000
-        v-model="snackbarRegisterError"
-        color='red'
-      >{{ $t("message.alreadyInUseMessage") }}</v-snackbar>
+      <v-dialog v-model="dialogRegister" max-width="400">
+        <v-tabs icons grow dark>
+          <v-tabs-bar class="orange">
+            <v-tabs-slider color="yellow"></v-tabs-slider>
+            <v-tabs-item href="#tab-1">
+              <v-icon>account_circle</v-icon>
+              {{ $t("message.existingAccount") }}
+            </v-tabs-item>
+            <v-tabs-item href="#tab-2">
+              <v-icon>control_point</v-icon>
+              {{ $t("message.newAccount") }}
+            </v-tabs-item>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content
+              id="tab-1"
+            >
+              <v-card flat>
+                  <!-- https://www.npmjs.com/package/vue-hellojs -->
+                  <!-- https://vue-hellojs-demo.surge.sh/#/ -->
+                  <v-btn @click="auth('google')">Google</v-btn>
+                  <v-btn @click="auth('facebook')">Facebook</v-btn>
+                  <v-btn @click="auth('linkedin')">Linkedin</v-btn>
+                  <v-btn @click="auth('twitter')">Twitter</v-btn>
+                  <v-btn @click="auth('github')">Github</v-btn>
+              </v-card>
+            </v-tabs-content>
+            <v-tabs-content
+              id="tab-2"
+            >
+              <v-card>
+                <v-card-title class="headline">{{ $t("message.registerUserText") }}</v-card-title>
+                <v-card-text>
+                  <form
+                  name="register-form"
+                  autocomplete="off">
+                  <v-text-field
+                    :label="$t('message.name')"
+                    v-model="name"
+                    :rules="nameRules"
+                    single-line
+                  ></v-text-field>
+                  <br>
+                  <v-text-field
+                    :label="$t('message.password')"
+                    type="password"
+                    v-model="password"
+                    :rules="passRules"
+                    autocomplete="new-password"
+                  ></v-text-field>
+                  <br>
+                  <v-text-field
+                    label="Email"
+                    v-model="email"
+                    single-line
+                  ></v-text-field>
+                  <br>
+                  <v-text-field
+                    :label="$t('message.userDescriptionHint')"
+                    v-model="description"
+                    single-line
+                  ></v-text-field>
+                </form>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn v-if="name.length > 0 && password.length > 0"
+                    dark
+                    class="cyan"
+                    @click="register">
+                    {{ $t("message.register")}}
+                  </v-btn>
+                  <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false">
+                    {{ $t("message.cancel")}}
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
+      </v-dialog>
+        <v-snackbar
+          :timeout=5000
+          v-model="snackbarRegisterError"
+          color='red'
+        >{{ $t("message.alreadyInUseMessage") }}</v-snackbar>
 
 
 
-    <v-dialog v-model="dialogLogin" max-width="400">
-      <v-card>
-        <v-card-title class="headline">{{ $t("message.accountLogin")}}</v-card-title>
-        <v-card-text>
-        <form
-          name="login-form"
-          autocomplete="off">
-          <v-text-field
-            :label = "$t('message.name')"
-            v-model="credentials.email"
-          ></v-text-field>
-          <br>
-          <v-text-field
-            :label="$t('message.password')"
-            type="password"
-            v-model="credentials.password"
-            autocomplete="new-password"
-          ></v-text-field>
-        </form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-        <v-btn
-          dark
-          class="cyan"
-          @click="login(credentials)">
-          {{ $t("message.login")}}
-        </v-btn>
-          <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">{{ $t("message.cancel")}}</v-btn>
-        </v-card-actions>
-      </v-card>
-      <v-snackbar
-        :timeout=5000
-        v-model="snackbarLoginError"
-        color='red'
-      >{{ wrongLoginInfo }}</v-snackbar>
-    </v-dialog>
-
-
-    <v-dialog v-model="dialogProfile" max-width="290">
-      <v-card>
-        <v-card-title class="headline">{{ $t("message.profile") }}</v-card-title>
-        <v-card-text>
+      <v-dialog v-model="dialogLogin" max-width="400">
+        <v-card>
+          <v-card-title class="headline">{{ $t("message.accountLogin")}}</v-card-title>
+          <v-card-text>
           <form
-          name="profile-form"
-          autocomplete="off">
-          <!-- <v-text-field
-            label="Παλιός Κωδικός"
-            type="password"
-            v-model="password"
-            :rules="passRules"
-            autocomplete="new-password"
-          ></v-text-field>
-          <br>
-          <v-text-field
-            label="Νέος Κωδικός"
-            type="password"
-            v-model="password"
-            :rules="passRules"
-            autocomplete="new-password"
-          ></v-text-field>
-          <br> -->
-          <v-text-field
-            label="Email"
-            v-model="emailEdit"
-            single-line
-          ></v-text-field>
-          <br>
-          <v-text-field
-            :label="$t('message.userDescriptionHint')"
-            v-model="descriptionEdit"
-            single-line
-          ></v-text-field>
-        </form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
+            name="login-form"
+            autocomplete="off">
+            <v-text-field
+              :label = "$t('message.name')"
+              v-model="credentials.email"
+            ></v-text-field>
+            <br>
+            <v-text-field
+              :label="$t('message.password')"
+              type="password"
+              v-model="credentials.password"
+              autocomplete="new-password"
+            ></v-text-field>
+          </form>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
           <v-btn
             dark
             class="cyan"
-            @click="updateProfile">
-            {{ $t("message.save") }}
+            @click="login(credentials)">
+            {{ $t("message.login")}}
           </v-btn>
-          <v-btn color="green darken-1" flat="flat" @click.native="dialogProfile = false">
-            {{ $t("message.cancel") }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-      <v-snackbar
-        :timeout=5000
-        v-model="snackbarRegisterError"
-        color='red'
-      >{{ $t("message.alreadyInUseMessage") }}</v-snackbar>
-    </v-dialog>
+            <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">{{ $t("message.cancel")}}</v-btn>
+          </v-card-actions>
+        </v-card>
+        <v-snackbar
+          :timeout=5000
+          v-model="snackbarLoginError"
+          color='red'
+        >{{ wrongLoginInfo }}</v-snackbar>
+      </v-dialog>
+
+
+      <v-dialog v-model="dialogProfile" max-width="290">
+        <v-card>
+          <v-card-title class="headline">{{ $t("message.profile") }}</v-card-title>
+          <v-card-text>
+            <form
+            name="profile-form"
+            autocomplete="off">
+            <!-- <v-text-field
+              label="Παλιός Κωδικός"
+              type="password"
+              v-model="password"
+              :rules="passRules"
+              autocomplete="new-password"
+            ></v-text-field>
+            <br>
+            <v-text-field
+              label="Νέος Κωδικός"
+              type="password"
+              v-model="password"
+              :rules="passRules"
+              autocomplete="new-password"
+            ></v-text-field>
+            <br> -->
+            <v-text-field
+              label="Email"
+              v-model="emailEdit"
+              single-line
+            ></v-text-field>
+            <br>
+            <v-text-field
+              :label="$t('message.userDescriptionHint')"
+              v-model="descriptionEdit"
+              single-line
+            ></v-text-field>
+          </form>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              dark
+              class="cyan"
+              @click="updateProfile">
+              {{ $t("message.save") }}
+            </v-btn>
+            <v-btn color="green darken-1" flat="flat" @click.native="dialogProfile = false">
+              {{ $t("message.cancel") }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+        <v-snackbar
+          :timeout=5000
+          v-model="snackbarRegisterError"
+          color='red'
+        >{{ $t("message.alreadyInUseMessage") }}</v-snackbar>
+      </v-dialog>
 
       <v-snackbar
         :timeout=5000
@@ -243,6 +243,50 @@
 
       <v-dialog v-model="dialogNotifications" max-width="500">
         <notificationsList v-if='$store.state.isUserLoggedIn'></notificationsList>
+      </v-dialog>
+
+      <v-dialog v-model="landingPageOpen" max-width="700px">
+        <v-card>
+          <v-card-title>
+            <span class="display-1"> Welcome!
+              <!-- {{ $t("message.post") }} -->
+            </span>
+            <v-spacer></v-spacer>
+            <v-select
+              class="top"
+              @change="setLocale"
+              v-bind:items="languages"
+              item-text="name"
+              item-value="id"
+              v-model="language"
+              label="Select"
+              single-line
+              bottom
+            ></v-select>
+
+          </v-card-title>
+          <v-card-text>
+            <div class="title">Crowdsourcing</div>
+            <div class="body-1">Are you in planning industry? Maybe you want to ask for citizen opinions.
+              Create questions and share them on social media for larger audience</div>
+            <div class="title">Geodata Storage</div>
+            <div class="body-1">You need a place to store notes with spatial reference?</div>
+            <div class="title">Talk about locations</div>
+            <div class="body-1">You need to talk about a place with a friend or colleague? Organize your trip, 
+              show them a place, guide them to a location with interactive chat on the map.</div>
+            <div class="title">Real-time mapping</div>
+            <div class="body-1">Create maps collaborating in real time with friends or colleagues.</div>
+            <v-flex>
+              <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false">
+                {{ $t("message.register") }}
+              </v-btn>
+              <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false">
+                {{ $t("message.login") }}
+              </v-btn>
+              <a class="caption">Why register?</a>
+            </v-flex>
+          </v-card-text>
+        </v-card>
       </v-dialog>
 
     </v-toolbar>
@@ -307,6 +351,9 @@ export default {
     ...mapGetters({
       bell: 'notificationsGetter',
     }),
+    landingPageOpen: function check() {
+      return !this.$store.state.isUserLoggedIn;
+    },
   },
   components: {
     notificationsList,
@@ -542,22 +589,23 @@ export default {
     setLocale(value) {
       // console.log('setting locale to ::', value);
       app.$i18n.locale = value;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/setlocale`;
-      const updateInfo = {
-        id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-        locale: value,
-      };
-      axios.post(url, { updateInfo }, {
-        headers: { 'x-access-token': this.$store.state.token },
-      })
-      .then((response) => {
-        // console.log(response);
-        if (response.statusText === 'OK') {
-          this.snackbarSetLocale = true;
-        }
-      });
+      if (this.$store.state.isUserLoggedIn) {
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/setlocale`;
+        const updateInfo = {
+          id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          locale: value,
+        };
+        axios.post(url, { updateInfo }, {
+          headers: { 'x-access-token': this.$store.state.token },
+        })
+        .then((response) => {
+          // console.log(response);
+          if (response.statusText === 'OK') {
+            this.snackbarSetLocale = true;
+          }
+        });
+      }
     },
-
   },
   mounted() {
     // this.$options.sockets.unfollowedCollection = (data) => {

@@ -190,7 +190,7 @@ router.route('/updateprofile')
           { _id: cId },
           { $set: { locale: locale } }
         );
-        res.status(200).send();
+        res.status(200);
       }
       db.close();
     });

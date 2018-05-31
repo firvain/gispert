@@ -38,6 +38,8 @@
               <span>{{ $t("message.viewReplies") }}</span>
             </v-tooltip>
 
+            <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
+
             <v-tooltip bottom v-if="socketReplies > 0">
               <v-btn color="blue" slot="activator" outline small @click="showMoreReplies">
                 <v-icon large color="grey">insert_comment</v-icon>
@@ -64,7 +66,11 @@
                 </div>
               </social-sharing>
               <v-tooltip bottom>
-                <v-btn outline fab small slot="activator" @click="shareLink = !shareLink; copyToClipboard();" class="link-network">
+                <v-btn outline fab small 
+                  color="black"
+                  slot="activator" 
+                  @click="shareLink = !shareLink; copyToClipboard();" 
+                  class="link-network">
                   <i class="fa fa-fw fa-link"></i>
                 </v-btn>
                 <span>{{ $t("message.shareLink") }}!</span>
@@ -96,6 +102,7 @@
         </v-flex>
         <v-btn block color="white" v-if="replies.length > 0 && replies.length < post.replies.length" @click="showMoreReplies">
           {{ $t('message.loadMore')}}
+          <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
         </v-btn>
       </v-card>
     </v-flex>
@@ -149,6 +156,7 @@ export default {
     socketReplies: 0,
     shareLink: false,
     shareUrl: '',
+    loadingReplies: false,
   }),
   components: {
     newPost,
@@ -169,6 +177,7 @@ export default {
   },
   methods: {
     showMoreReplies() {
+      this.loadingReplies = true;
       this.socketReplies = 0;
       const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/replies`;
       axios.get(serverUrl, { params: {
@@ -183,9 +192,10 @@ export default {
         this.fetchedReplies.forEach((r) => {
           this.replies.push(r);
         });
-        console.log(this.replies);
+        // console.log(this.replies);
       }).then(() => {
-        this.loading = false;
+        // this.loading = false;
+        this.loadingReplies = false;
       });
       this.showReplies = true;
       this.startPage += 10;
@@ -310,7 +320,6 @@ export default {
   }
   .link-network:hover {
     border-style: solid;
-    border-width: 2px;
     border-color: green;
   }
 </style>
