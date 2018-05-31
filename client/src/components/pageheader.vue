@@ -245,7 +245,7 @@
         <notificationsList v-if='$store.state.isUserLoggedIn'></notificationsList>
       </v-dialog>
 
-      <v-dialog v-model="landingPageOpen" max-width="700px">
+      <v-dialog v-if="landingPageOpen" max-width="700px">
         <v-card>
           <v-card-title>
             <span class="display-1"> Welcome!

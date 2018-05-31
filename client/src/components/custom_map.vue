@@ -24,15 +24,38 @@
                 </network>
               </div>
             </social-sharing>
+            <v-tooltip bottom>
+              <v-btn outline fab small 
+                color="black"
+                slot="activator" 
+                @click="shareLink = !shareLink; copyToClipboard();" 
+                class="link-network">
+                <i class="fa fa-fw fa-link"></i>
+              </v-btn>
+              <span>{{ $t("message.shareLink") }}!</span>
+            </v-tooltip>
           </v-card-actions>
         </v-card-actions>
       </v-card>
     </v-flex>
+
+    <v-dialog v-model="shareLink" persistent max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{ $t("message.shareLink") }}</span>
+        </v-card-title>
+        <v-card-text>
+          <p>{{ $t("message.linkCopied") }}</p>
+          <v-btn color="blue darken-1" flat @click.native="shareLink = false">{{ $t("message.close") }}</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import clipboard from 'clipboard-copy';
 import config from '../config';
 
 // import turf from 'turf';
@@ -43,7 +66,7 @@ export default {
   props: ['customMap'],
   name: 'customMap',
   data: () => ({
-    shareText: 'Μοιράσου',
+    shareLink: false,
   }),
   methods: {
     explore(mid) {
@@ -102,8 +125,8 @@ export default {
         this.explore(id);
       }
     },
-    shareMap() {
-
+    copyToClipboard() {
+      clipboard(this.shareMapUrl);
     },
   },
   computed: {
