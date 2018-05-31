@@ -66,10 +66,10 @@
                 </div>
               </social-sharing>
               <v-tooltip bottom>
-                <v-btn outline fab small 
+                <v-btn outline fab small
                   color="black"
-                  slot="activator" 
-                  @click="shareLink = !shareLink; copyToClipboard();" 
+                  slot="activator"
+                  @click="shareLink = !shareLink; copyToClipboard();"
                   class="link-network">
                   <i class="fa fa-fw fa-link"></i>
                 </v-btn>
@@ -91,14 +91,14 @@
         >
           <post :post='post'></post>
         </v-flex> -->
-        
+
         <v-flex class="ma-0 pa-0"
           md12
           v-if="replies.length > 0"
           v-for="reply in replies"
           :key="reply._id"
         >
-          <post :post='reply' transition="scale-transition"></post>
+          <post :post='reply'></post>
         </v-flex>
         <v-btn block color="white" v-if="replies.length > 0 && replies.length < post.replies.length" @click="showMoreReplies">
           {{ $t('message.loadMore')}}

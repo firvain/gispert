@@ -232,4 +232,30 @@ router.route('/updateprofile')
   });
 
 
+router.route('/usersToChatWith')
+  .get(function getusers(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      const userId = req.query.userId;
+      var collection = db.collection('collections');
+      if (err) {
+        throw err;
+      } else {
+        collection.aggregate([
+          { $match: { members: ObjectID(userId) } },
+          { "$group": { "_id": { user: "$user", username: "$username" } } }
+        ], function handleCursor(error, users) {
+          if (error) {
+            res.sendStatus(500);
+            console.log(error);
+          } else {
+            // console.log(docs);
+            res.send(users);
+            db.close();
+          }
+        });
+      }
+    });
+  });
+
+
 module.exports = router;

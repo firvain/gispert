@@ -1,5 +1,5 @@
 <template>
-  <v-layout column>
+  <v-layout column> {{ landingPageOpen }}
     <v-toolbar class="orange no-padding" dark>
       <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
       <v-spacer></v-spacer>
@@ -245,7 +245,7 @@
         <notificationsList v-if='$store.state.isUserLoggedIn'></notificationsList>
       </v-dialog>
 
-      <v-dialog v-if="landingPageOpen" max-width="700px">
+      <v-dialog v-model="landingPageOpen" max-width="700px">
         <v-card>
           <v-card-title>
             <span class="display-1"> Welcome!
@@ -272,7 +272,7 @@
             <div class="title">Geodata Storage</div>
             <div class="body-1">You need a place to store notes with spatial reference?</div>
             <div class="title">Talk about locations</div>
-            <div class="body-1">You need to talk about a place with a friend or colleague? Organize your trip, 
+            <div class="body-1">You need to talk about a place with a friend or colleague? Organize your trip,
               show them a place, guide them to a location with interactive chat on the map.</div>
             <div class="title">Real-time mapping</div>
             <div class="body-1">Create maps collaborating in real time with friends or colleagues.</div>
@@ -303,6 +303,7 @@ import notificationsList from './notificationsList';
 export default {
   data() {
     return {
+      dialogWelcome: true,
       dialogRegister: false,
       dialogLogin: false,
       dialogProfile: false,
@@ -364,22 +365,6 @@ export default {
       console.log('new bell', this.currentBell);
     },
   },
-  // watch: {
-  //   'this.$store.state': () => {
-  //     let clr = '';
-  //     if (this.$store.state.notifications.length === 0) {
-  //       clr = 'white';
-  //     } else {
-  //       clr = 'blue';
-  //     }
-  //     const bell = {
-  //       color: clr,
-  //       number: this.$store.state.notifications.length,
-  //     };
-  //     console.log('new bell', bell);
-  //     this.notificationsBell = bell;
-  //   },
-  // },
   methods: {
     auth(network) {
       const hello = this.hello;
