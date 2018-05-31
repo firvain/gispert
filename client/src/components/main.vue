@@ -65,7 +65,7 @@ export default {
     '$route.params': function handle() {
       // console.log('main router changed and emitting!!!!!!', this.$route.params.id);
       if (this.$route.params.id && this.$route.name === 'searchId') {
-        console.log('loading post from permalink');
+        // console.log('loading post from permalink');
         this.loadPostFromPermalink();
       }
       // if (this.$route.params.id && this.$route.name === 'searchCollection') {
@@ -94,6 +94,7 @@ export default {
         token = null;
       }
       if (id) {
+        // console.log('before axios');
         axios.get(pUrl, {
           params: {
             pId: id,
@@ -101,8 +102,8 @@ export default {
           },
           headers: { 'x-access-token': token },
         }).then((resp) => {
-          if (resp.data.success === true) {
-            // console.log(resp.data);
+          if (resp.data) {
+            // console.log(resp);
             this.postContent = resp.data[0];
             // console.log('postContent:: ', this.postContent, this.postContent.text);
             this.postOpen = true;
@@ -112,7 +113,7 @@ export default {
         }).then(() => {
           this.postContent = postContentNew;
           this.loading = false;
-          // console.log('postContent2:: ', this.postContent, this.postContent.text);
+          // console.log('postContent:: ', this.postContent, this.postContent.text);
         });
       }
     },
