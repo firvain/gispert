@@ -105,6 +105,9 @@ export default new Vuex.Store({
     setOpenedCustomTimeline(state, data) {
       state.commit('setOpenedCustomTimeline', data);
     },
+    addNotificationFromSocket(state, data) {
+      state.commit('addNotificationFromSocket', data);
+    },
   },
   mutations: {
     setNotifications(state, data) {

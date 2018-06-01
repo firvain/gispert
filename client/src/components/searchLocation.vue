@@ -85,7 +85,7 @@
       </v-container>
     </v-card>
     <v-dialog v-model="userSelector" scrollable max-width="300px"> 
-      <userSelector v-show="userSelector"></userSelector>
+      <userSelector v-show="userSelector" :active = 'userSelector'></userSelector>
     </v-dialog>
   </div>
 </template>

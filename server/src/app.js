@@ -37,7 +37,7 @@ app.use(function (req, res, next) {
 
 // app.io = io;
 io.set('origins', '*:*');
-const userList = [];
+let userList = [];
 io.on('connection', function(socket) {
     // var userAdded = false;
     console.log('Someone connected');
@@ -69,8 +69,26 @@ io.on('connection', function(socket) {
       });
     });
 
+    socket.on('invitationForFeatureChat', function handleConnection(signal) {
+      console.log('join feature:: ', signal);
+      console.log('join feature:: ', signal.id);
+      socket.join(signal.id);
+      if (userList.length > 1) {
+        signal.receivers.forEach((r) => {
+          socketid = userList.find(u => u.user_id === r.user)
+          console.log(socketid);
+          socket.broadcast.to(socketid.id).emit('invitationForFeatureChat', signal);
+        });
+      }
+    });
+
+    socket.on('joinFeatureChat', function handleUserConnection(id) {
+        socket.join(id);
+    });
+
     socket.on('featureMessage', function handlemessage(msg) {
-      io.emit('newFeatureMessage', msg);
+      console.log('feature message:: ', msg);
+      socket.broadcast.to(msg.featureId).emit('newFeatureMessage', msg);
     });
 
     socket.on('unfollowedCollection', function handleunfollow(data) {
@@ -96,15 +114,19 @@ io.on('connection', function(socket) {
       // console.log('socket id::', socket.userid);
     });
 
-    // socket.on('disconnect', function handleUserConnection() {
-    //   console.log('socket id to disconnect::', socket.userid);
-    //   var index = userList.indexOf(socket.userid);    // <-- Not supported in <IE9
-    //   if (index !== -1) {
-    //     userList.splice(index, 1);
-    //   }
-    //   // io.emit('refreshUserList', userList);
-    //   console.log('user disconnected: ' + socket.userid);
-    // });
+    socket.on('userDisconnected', function handleUserConnection(userid) {
+      const toDelete = new Set([userid]);
+      const restUsers = userList.filter(obj => !toDelete.has(obj.user_id));
+      userList = restUsers;
+    });
+
+    socket.on('disconnect', function handleUserConnection() {
+      console.log('socket id to disconnect::', socket.id);
+      const toDelete = new Set([socket.id]);
+      const restUsers = userList.filter(obj => !toDelete.has(obj.id));
+      userList = restUsers;
+      // console.log('user disconnected: ' + userList);
+    });
   });
 
 // app.listen(process.env.PORT || 8081);

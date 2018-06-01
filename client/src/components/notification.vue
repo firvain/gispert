@@ -77,6 +77,16 @@
       </v-list-tile-sub-title>
     </v-list-tile-content>
 
+    <v-list-tile-content v-if="notification.type === 'invitedToFeatureChat'">
+      <v-list-tile-title>invited to chat</v-list-tile-title>
+      <v-list-tile-sub-title>{{ $t('message.byUser') }}:
+        <a md12 @click="loadUsersTl(notification.byUser)">@{{ notification.senderName }}</a>,
+        &nbsp; <i>{{ timestamp }}</i>
+      </v-list-tile-sub-title>
+    </v-list-tile-content>
+
+
+
 
     <v-list-tile-action
         v-if="notification.type === 'unfollowedCollection' ||
@@ -106,6 +116,23 @@
       >done</v-icon>
     </v-list-tile-action>
   <!-- <v-divider v-if="index + 1 < notifications.length" :key="index"></v-divider> -->
+
+    <v-list-tile-action v-if="notification.type === 'invitedToFeatureChat'">
+      <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
+      <v-btn dark outline small color="green" 
+        @click="invitationToFeatureChatAccepted(notification.feature, notification.featureId)" 
+        v-if="notification.read === 0">
+        {{ $t("message.accept")}}
+      </v-btn>
+      <v-btn dark outline small color="grey" 
+        @click="invitationDeclined(notification.feature)" 
+        v-if="notification.read === 0">
+        {{ $t("message.decline")}}
+      </v-btn>
+      <v-icon v-if="notification.read === 1"
+        color="green darken-2"
+      >done</v-icon>
+    </v-list-tile-action>
 
   </v-list-tile>
   <v-divider md12></v-divider>
@@ -221,7 +248,6 @@ export default {
         });
     },
     invitationAccepted(collectionId) {
-      // TODO: API call to add member to collection
       console.log(collectionId);
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/addMember`;
       const data = {
@@ -243,6 +269,38 @@ export default {
           this.$eventHub.$emit('refreshprivatecollections', data);
           this.$socket.emit('joinCollections', [collectionId]);
         });
+    },
+    invitationToFeatureChatAccepted(feature, id) {
+      console.log('accepted invitation for :: ', feature, id);
+      const geojsonFormat = new ol.format.GeoJSON();
+      const chatFeature = geojsonFormat.readFeature(feature);
+      chatFeature.mongoID = id;
+      console.log('chatFeature:: ', chatFeature);
+      this.loadFeatures(feature);
+      const allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.get('name') && layer.get('name') === 'customLayer') {
+          layer.getSource().forEachFeature((f) => {
+            if (f.get('mongoID') === id) {
+              olMap.getInteractions().forEach((interaction) => {
+                if (interaction instanceof ol.interaction.Select) {
+                  interaction.setActive(true);
+                  interaction.getFeatures().clear();
+                  interaction.getFeatures().push(f);
+                  this.toolColors = ['white', 'white', 'white'];
+                  this.selectedTool = 'selectFeatures';
+                  this.$store.dispatch('setFeature', chatFeature);
+                  console.log('chatFeature2:: ', chatFeature);
+                  this.$socket.emit('joinFeatureChat', id);
+                }
+              });
+            }
+          });
+        }
+      });
+
+      // save notification to db if user is not logged in
+      // save feature and dialogs to db in a new collection
     },
   },
   computed: {

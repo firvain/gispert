@@ -2,7 +2,6 @@
   <v-card>
     <v-card-title>Select users</v-card-title>
     <v-divider></v-divider>
-    <v-divider></v-divider>
     <v-card-text style="height: 300px; color: black;">
       <!-- <v-container> -->
         <v-text-field md8
@@ -36,10 +35,12 @@
 </template>
 <script>
 import axios from 'axios';
+import ol from 'openlayers';
 import config from '../config';
 
 export default {
   name: 'userSelector',
+  props: ['active'],
   data: () => ({
     users: [],
     selectedUsers: [],
@@ -49,22 +50,44 @@ export default {
   }),
   mounted() {
     console.log('mounted');
-    if (this.$store.state.isUserLoggedIn) {
-      this.loading = true;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/usersToChatWith`;
-      axios.get(url, {
-        // eslint-disable-next-line
-        params: { userId: this.$store.state.user._id },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        this.users = response.data;
-      }).then(() => {
-        this.loading = false;
-      });
-    }
+  },
+  watch: {
+    active: function loadusers() {
+      if (this.active === true) {
+        this.loadUsers();
+      }
+    },
   },
   methods: {
+    loadUsers() {
+      if (this.$store.state.isUserLoggedIn) {
+        this.loading = true;
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/usersToChatWith`;
+        axios.get(url, {
+          // eslint-disable-next-line
+          params: { userId: this.$store.state.user._id },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          this.users = response.data;
+        }).then(() => {
+          this.loading = false;
+        });
+      }
+    },
     summonToChat() {
+      console.log(this.$store.state.feature.mongoID);
+      const geojson = new ol.format.GeoJSON();
+      const signal = {
+        id: this.$store.state.feature.mongoID,
+        sender: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        senderName: this.$store.state.user.name,
+        receivers: this.selectedUsers,
+        // TODO: add the mongoID in the feature!!!
+        feature: geojson.writeFeature(this.$store.state.feature),
+        timestamp: Date.now(),
+      };
+      this.$socket.emit('invitationForFeatureChat', signal);
+      console.log('sending feature::', signal);
       // join a room with this geodata id
       // socket emit notification
       // notification accept and join room

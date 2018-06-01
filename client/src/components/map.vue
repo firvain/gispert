@@ -10,15 +10,6 @@
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
-        <!-- <v-list class="message-list"> -->
-          <!-- <v-list-tile class="" v-for="message in currentMessages" v-bind:key="message"> -->
-              <!-- <v-list-tile-title v-text="currentlySelectedFeature.get('name')" class="caption"></v-list-tile-title> -->
-              <!-- <v-list-tile-content v-text="message" class="caption"></v-list-tile-content> -->
-            <!-- <v-list-tile-avatar>
-              <img v-bind:src="item.avatar"/>
-            </v-list-tile-avatar> -->
-          <!-- </v-list-tile> -->
-        <!-- </v-list> -->
         <v-layout row>
         <v-flex xs10 md10>
           <v-text-field
@@ -88,8 +79,10 @@ export default {
           userName: this.$store.state.user.name,
           content: this.message_content,
           date: new Date(),
-          chatID: this.currentlySelectedFeature.mongoID };
+          featureId: this.$store.state.feature.mongoID };
         this.$socket.emit('featureMessage', message);
+        this.messages.push(`${message.userName}: ${message.content} (${message.date.getHours()}:${message.date.getMinutes()}:${message.date.getSeconds()})`);
+        console.log('feature message emitted::', message);
         this.message_content = '';
       }
     },
@@ -97,13 +90,14 @@ export default {
   mounted() {
     olMap.setTarget('mapDiv');
     this.$options.sockets.newFeatureMessage = (data) => {
+      console.log('message received::', data);
       const date = new Date(data.date);
       this.messages.push(`${data.userName}: ${data.content} (${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
     };
   },
 };
 </script>
-<style>
+<style lang="scss">
   .mapStyle {
     width: auto;
     height: 100%;

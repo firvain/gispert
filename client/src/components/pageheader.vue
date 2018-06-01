@@ -558,6 +558,7 @@ export default {
       });
     },
     logoutUser() {
+      this.$socket.emit('userDisconnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
       // console.log(this.$store.state.isUserLoggedIn);
       this.$store.dispatch('setToken', null);
       this.$store.dispatch('setUser', null);

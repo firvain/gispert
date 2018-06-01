@@ -71,6 +71,19 @@ export default {
       this.getNotifications();
       // this.$store.commit('addNotificationFromSocket', data);
     };
+    this.$options.sockets.invitationForFeatureChat = (data) => {
+      console.log('invited to chat:: ', data);
+      const n = {
+        byUser: data.sender,
+        read: 0,
+        type: 'invitedToFeatureChat',
+        feature: data.feature,
+        timestamp: data.timestamp,
+        senderName: data.senderName,
+        featureId: data.id,
+      };
+      this.$store.dispatch('addNotificationFromSocket', n);
+    };
     this.$eventHub.$on('refreshNotifications', () => {
       this.getNotifications();
     });
