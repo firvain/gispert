@@ -77,23 +77,27 @@
           <span>Βρες κοινή περιοχή με ένα άλλο</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('sendToSockets')">
+          <v-btn fab small :color="toolColors[2]" slot="activator" @click="chatOnThisFeature()">
             <v-icon dark>send</v-icon>
           </v-btn>
           <span>Στείλτο σε άλλους χρήστες</span>
         </v-tooltip>
       </v-container>
     </v-card>
+    <v-dialog v-model="userSelector" scrollable max-width="300px"> 
+      <userSelector v-show="userSelector"></userSelector>
+    </v-dialog>
   </div>
 </template>
 <script>
 import ol from 'openlayers';
+import userSelector from './selectCloseUsers';
 import olMap from '../js/map';
 
 export default {
   name: 'searchLocation',
   components: {
-    // mapTools,
+    userSelector,
   },
   data: () => ({
     selectedTool: 'selectFeatures',
@@ -102,6 +106,7 @@ export default {
     toolColors: ['white', 'white', 'white'],
     selectedFeature: olMap.selectedFeature,
     activeAnalysis: null,
+    userSelector: false,
   }),
   computed: {
     currentlySelectedFeature() {
@@ -177,6 +182,9 @@ export default {
           interaction.getFeatures();
         }
       });
+    },
+    chatOnThisFeature() {
+      this.userSelector = true;
     },
   },
 };

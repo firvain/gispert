@@ -1,5 +1,5 @@
 <template>
-  <v-layout column> {{ landingPageOpen }}
+  <v-layout column>
     <v-toolbar class="orange no-padding" dark>
       <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
       <v-spacer></v-spacer>
@@ -352,8 +352,13 @@ export default {
     ...mapGetters({
       bell: 'notificationsGetter',
     }),
-    landingPageOpen: function check() {
-      return !this.$store.state.isUserLoggedIn;
+    landingPageOpen: {
+      get: function get() {
+        return !this.$store.state.isUserLoggedIn;
+      },
+      set: function set() {
+        return true;
+      },
     },
   },
   components: {
