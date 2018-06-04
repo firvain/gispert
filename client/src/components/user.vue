@@ -42,6 +42,10 @@
             {{ $t('message.save') }}
             <v-icon color="green lighten-1">save</v-icon>
           </v-btn>
+          <v-btn outline small @click="dialogCollections = false; selectedCollections = [];">
+            {{ $t('message.close') }}
+            <v-icon color="green lighten-1">close</v-icon>
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
