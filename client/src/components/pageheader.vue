@@ -452,6 +452,7 @@ export default {
         const urlUsers = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
         axios.get(urlUsers, {
           params: {
+            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
             pageFrom: 0,
             pageTo: 25,
           },

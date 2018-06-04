@@ -274,6 +274,9 @@ export default {
     getUsersList() {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
       axios.get(url, {
+        params: {
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         if (response.data.success === false) {

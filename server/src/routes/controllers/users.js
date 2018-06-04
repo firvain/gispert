@@ -47,40 +47,28 @@ router.route('/')
 router.route('/all')
   .get(function getusers(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-      var collection = db.collection('users');
-      var start = parseInt(req.query.pageFrom);
-      var end = parseInt(req.query.pageTo);
+      const collection = db.collection('users');
+      const start = parseInt(req.query.pageFrom);
+      const end = parseInt(req.query.pageTo);
+      const userId = req.query.userId;
 
       if (err) {
         throw err;
       } else {
         collection.aggregate([
-          // { 
-          //   $graphLookup: {
-          //     from: "collections",
-          //     startWith: "$_id",
-          //     connectFromField: "_id",
-          //     connectToField: "user",
-          //     as: "collectionData",
-          //   }
-          // },
           { "$project": {
-              "_id": 1,
-              "name": 1,
-              "description": 1,
-              // "collectionData": {
-              //    "$filter": {
-              //        "input": "$collectionData",
-              //        "as": "child",
-              //        "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }] }
-              //    }
-              // }
+            "_id": 1,
+            "name": 1,
+            "description": 1,
           }},
           {
             $skip: start
           },
           {
             $limit: end
+          },
+          {
+            $match: { _id: { $ne: ObjectID(userId) } },
           }
         ], function handleCursor(error, users) {
           if (error) {

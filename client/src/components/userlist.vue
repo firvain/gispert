@@ -103,6 +103,7 @@ export default {
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
         axios.get(url, {
           params: {
+            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
             pageFrom: 0,
             pageTo: 25,
           },
@@ -125,6 +126,7 @@ export default {
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
       axios.get(url, {
         params: {
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
           pageFrom: this.page,
           pageTo: this.page + 25,
         },
