@@ -190,7 +190,21 @@ export default {
             // this.$socket.emit('newPost', userPost);
             userPost.members.push(members.user); // add the creator of the collection
             this.$store.dispatch('addPostToTimeline', userPost);
+            if (this.$store.state.openedTimeline &&
+              this.$store.state.openedTimeline.type === 'collection'
+              && this.$store.state.openedTimeline.id ===
+              members._id) { // eslint-disable-line no-underscore-dangle
+              this.$store.dispatch('addPostToCollectionView', userPost);
+            }
+            if (this.$store.state.openedTimeline &&
+              this.$store.state.openedTimeline.type === 'timeline'
+              && this.$store.state.openedTimeline.id ===
+              userPost.userId) { // eslint-disable-line no-underscore-dangle
+              console.log('adding the post to userTimeline');
+              this.$store.dispatch('addPostToUserTimeline', userPost);
+            }
             this.$socket.emit('newPost', userPost);
+            this.$eventHub.$emit('newPost', userPost);
           } else {
             // eslint-disable-next-line
             userPost._id = response.data.id;
@@ -209,6 +223,7 @@ export default {
             userPost.isReplyTo = response.data.isReplyTo;
             console.log('reply userPost for socket:: ', JSON.stringify(userPost));
             this.$store.dispatch('addReplyToPost', userPost);
+            this.$eventHub.$emit('newReply', userPost);
             this.$socket.emit('newReply', userPost);
           }
         });

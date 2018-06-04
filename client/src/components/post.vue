@@ -7,7 +7,7 @@
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
             {{ $t("message.inCollection")}}:&nbsp;
-            <a md12 @click="exploreCollection(post.collectionData[0]._id)" v-if="post.collectionData">
+            <a md12 @click="exploreCollection(post.collectionData[0]._id)" v-if="post.collectionData[0]">
               {{post.collectionData[0].title}}
             </a>,&nbsp;
             <i>{{timestamp}}</i>
@@ -41,9 +41,8 @@
             <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
 
             <v-tooltip bottom v-if="socketReplies > 0">
-              <v-btn color="blue" slot="activator" outline small @click="showMoreReplies">
-                <v-icon large color="grey">insert_comment</v-icon>
-                New replies: {{ socketReplies }}
+              <v-btn color="blue" slot="activator" outline fab small @click="showMoreReplies">
+                +{{ socketReplies }}
               </v-btn>
               <span>{{ $t("message.viewReplies") }}</span>
             </v-tooltip>
@@ -76,7 +75,7 @@
                 <span>{{ $t("message.shareLink") }}!</span>
               </v-tooltip>
         </v-card-actions>
-        <newPost v-if="answerPost==true && post.collectionData"
+        <newPost v-if="answerPost === true && post.collectionData"
           :id="post._id"
           :collection="post.collectionData[0]._id"
           :collectionMembers="post.collectionData[0].members"
@@ -174,8 +173,18 @@ export default {
         this.socketReplies += 1;
       }
     };
+    this.$eventHub.$on('newReply', (data) => {
+      if (this.post._id === data.isReplyTo) { // eslint-disable-line no-underscore-dangle
+        this.replies.unshift(data);
+        this.answerPost = false;
+      }
+      // console.log('add reply from me :: ', data);
+    });
   },
   methods: {
+    showSocketReplies() {
+
+    },
     showMoreReplies() {
       this.loadingReplies = true;
       this.socketReplies = 0;
@@ -201,15 +210,6 @@ export default {
       this.startPage += 10;
       this.limitPage += 10;
     },
-    // repliesReversed() {
-    //   let reversed;
-    //   if (this.post.repliesData && this.post.repliesData.length > 0) {
-    //     reversed = this.post.repliesData.reverse();
-    //   } else {
-    //     reversed = [];
-    //   }
-    //   this.replies = reversed;
-    // },
     explore(post) {
       const geojsonFormat = new ol.format.GeoJSON();
       const newFeature = post.userFeatures;

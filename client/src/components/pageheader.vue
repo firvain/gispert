@@ -497,7 +497,7 @@ export default {
           this.privateCollections.forEach((c) => {
             collectionIds.push(c._id); // eslint-disable-line no-underscore-dangle
           });
-          console.log('joining collections', this.privateCollections);
+          console.log('joining collections', JSON.stringify(this.privateCollections));
           this.$socket.emit('joinCollections', collectionIds);
         });
       } catch (error) {
@@ -527,7 +527,7 @@ export default {
           this.publicCollections.forEach((c) => {
             collectionIds.push(c._id); // eslint-disable-line no-underscore-dangle
           });
-          console.log('joining collections', this.publicCollections);
+          console.log('joining collections', JSON.stringify(this.publicCollections));
           this.$socket.emit('joinCollections', collectionIds);
         });
       } catch (error) {
@@ -572,6 +572,8 @@ export default {
       this.$store.dispatch('setUsers', 'empty');
       this.$store.dispatch('setNotifications', []);
       this.$store.dispatch('setOpenedCustomTimeline', null);
+      this.$store.dispatch('setUserTimeline', null);
+      this.$store.dispatch('setCollectionTimeline', null);
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
       // this.$store.dispatch('removeNewPostFeature', null);

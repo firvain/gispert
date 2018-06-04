@@ -38,7 +38,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn outline small @click="setMembershipToCollections()" v-if="listChanged">
+          <v-btn outline small @click="setMembershipToCollections(); dialogCollections = false;" v-if="listChanged">
             {{ $t('message.save') }}
             <v-icon color="green lighten-1">save</v-icon>
           </v-btn>

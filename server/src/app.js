@@ -49,12 +49,12 @@ io.on('connection', function(socket) {
     });
 
     socket.on('newPost', function handlepost(post) {
-      // console.log('new post received from client::', post);
+      console.log('new post received from client::', post);
       socket.broadcast.to(post.collections).emit('newPost', post);
     });
 
     socket.on('newReply', function handlepost(post) {
-      // console.log('new reply received from client::', post);
+      console.log('new reply received from client::', post);
       socket.broadcast.to(post.collections).emit('newReply', post);
     });
 
@@ -92,6 +92,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('unfollowedCollection', function handleunfollow(data) {
+      console.log('catched an unfollow::', data);
       socket.broadcast.to(data.collectionId).emit('unfollowedCollection', data);
       socket.leave(data.collectionId);
     });

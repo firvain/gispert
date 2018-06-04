@@ -145,6 +145,10 @@ export default {
     } else {
       this.posts = this.$store.state.timeline;
     }
+    this.$eventHub.$on('newPost', () => {
+      // this.replies.unshift(data);
+      this.toggle_new_post();
+    });
   },
 };
 </script>
