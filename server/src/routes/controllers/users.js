@@ -229,7 +229,11 @@ router.route('/usersToChatWith')
         throw err;
       } else {
         collection.aggregate([
-          { $match: { members: ObjectID(userId) } },
+          { $match: { 
+            $or: [
+              { members: ObjectID(userId) }
+            ]
+          } },
           { "$group": { "_id": { user: "$user", username: "$username" } } }
         ], function handleCursor(error, users) {
           if (error) {
