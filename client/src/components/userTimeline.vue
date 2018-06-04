@@ -128,7 +128,7 @@ export default {
     toggle_new_post() {
       this.newPost = !this.newPost;
       if (this.newPostText === this.$t('message.cancel')) {
-        this.newPostText = this.$t('message.newPostInThisCollection');
+        this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
       } else {
         this.newPostText = this.$t('message.cancel');
@@ -177,10 +177,10 @@ export default {
       console.log('new post from socket', data);
       this.$store.dispatch('addPostToUserTimeline', data);
     };
-    this.$on('newpost', (eventPost) => {
-      console.log('A totally new post has been published :: ', eventPost);
+    this.$eventHub.$on('newPost', () => {
+      // console.log('A totally new post has been published :: ', eventPost);
       this.toggle_new_post();
-      this.$store.dispatch('addPostToUserTimeline', eventPost);
+      // this.$store.dispatch('addPostToUserTimeline', eventPost);
     //   this.refresh_page();
     });
   },

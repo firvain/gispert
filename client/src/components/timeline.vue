@@ -140,6 +140,7 @@ export default {
     },
   },
   mounted() {
+    this.newPostText = this.$t('message.newPost');
     if (this.$store.state.timeline.length === 0) {
       this.load_first_page();
     } else {

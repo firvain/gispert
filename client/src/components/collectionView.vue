@@ -122,7 +122,7 @@ export default {
     toggle_new_post() {
       this.newPost = !this.newPost;
       if (this.newPostText === this.$t('message.cancel')) {
-        this.newPostText = this.$t('message.newPostInThisCollection');
+        this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
       } else {
         this.newPostText = this.$t('message.cancel');
@@ -179,10 +179,10 @@ export default {
       this.$store.dispatch('addPostToCollectionView', data);
       // }
     };
-    this.$on('newpost', (eventPost) => {
-      console.log('A totally new post has been published :: ', eventPost);
+    this.$eventHub.$on('newPost', () => {
+      // console.log('A totally new post has been published :: ', eventPost);
       this.toggle_new_post();
-      this.$store.dispatch('addPostToCollectionView', eventPost);
+      // this.$store.dispatch('addPostToCollectionView', eventPost);
     //   this.refresh_page();
     });
   },

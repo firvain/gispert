@@ -15,23 +15,30 @@
         </v-card-title>
         <v-card-actions class="white">
             <v-tooltip bottom>
-              <v-btn slot="activator" v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null'
+              <v-btn slot="activator"
+                fab small
+                v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null'
                 class="green white--text darken-1"
                 @click="explore(post)">
-                {{ $t("message.showOnMap") }}
-                <v-icon right dark>language</v-icon>
+                <!-- {{ $t("message.showOnMap") }} -->
+                <v-icon dark>language</v-icon>
               </v-btn>
               <span>{{ $t("message.showOnMapTooltip") }}</span>
             </v-tooltip>
             <v-tooltip bottom>
-              <v-btn slot="activator" v-bind:class="[answerPostColor, answerPostTextColor]" @click="toggle_answer" v-if="$store.state.isUserLoggedIn === true">
-                {{ $t("message.reply") }}
-                <v-icon right dark>reply</v-icon>
+              <v-btn slot="activator"
+                fab small
+                v-bind:class="[answerPostColor, answerPostTextColor]"
+                @click="toggle_answer"
+                v-if="$store.state.isUserLoggedIn === true">
+                <v-icon large color="white">insert_comment</v-icon>
               </v-btn>
               <span>{{ $t("message.replyTooltip") }}!</span>
             </v-tooltip>
-            <v-tooltip bottom v-if="post.replies">
-              <v-btn color="green" slot="activator" outline small fab v-if="post.repliesData == undefined && post.replies.length > 0" @click="showMoreReplies">
+            <v-tooltip bottom v-if="post.replies && replies < 1">
+              <v-btn color="green" slot="activator" outline small fab 
+                v-if="post.repliesData == undefined && post.replies.length > 0"
+                @click="showMoreReplies">
                 <v-icon large color="grey">insert_comment</v-icon>
                 {{ post.replies.length }}
               </v-btn>
@@ -41,7 +48,7 @@
             <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
 
             <v-tooltip bottom v-if="socketReplies > 0">
-              <v-btn color="blue" slot="activator" outline fab small @click="showMoreReplies">
+              <v-btn color="blue" slot="activator" outline fab small @click="showSocketReplies">
                 +{{ socketReplies }}
               </v-btn>
               <span>{{ $t("message.viewReplies") }}</span>
@@ -156,16 +163,19 @@ export default {
     shareLink: false,
     shareUrl: '',
     loadingReplies: false,
+    answerPostText: '',
+    myReplies: 0,
   }),
   components: {
     newPost,
   },
   mounted() {
+    // this.answerPostText = this.$t('message.reply');
     this.explore(this.post);
     // this.repliesReversed();
     this.shareUrl = `${config.APIhttpType}://${config.APIhost}:${config.hostPost}/#/main/search/${this.post._id}`; // eslint-disable-line no-underscore-dangle
     this.$options.sockets.newReply = (data) => {
-      console.log('new reply data from server socket:: ', data);
+      // console.log('new reply data from server socket:: ', data);
       if (data.isReplyTo === this.post._id) { // eslint-disable-line no-underscore-dangle
         // console.log('must show this reply:: ', data);
         data.socketReply = true; // eslint-disable-line no-param-reassign
@@ -176,16 +186,22 @@ export default {
     this.$eventHub.$on('newReply', (data) => {
       if (this.post._id === data.isReplyTo) { // eslint-disable-line no-underscore-dangle
         this.replies.unshift(data);
-        this.answerPost = false;
+        this.toggle_answer();
+        this.myReplies += 1;
       }
-      // console.log('add reply from me :: ', data);
     });
   },
   methods: {
     showSocketReplies() {
-
+      this.startPage = 0;
+      this.limitPage = 10;
+      this.replies = [];
+      this.showMoreReplies();
     },
     showMoreReplies() {
+      if (this.socketReplies > 0 || this.myReplies > 0) {
+        this.replies = [];
+      }
       this.loadingReplies = true;
       this.socketReplies = 0;
       const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/replies`;
@@ -256,11 +272,11 @@ export default {
     },
     toggle_answer() {
       this.answerPost = !this.answerPost;
-      if (this.answerPostText === 'ακυρο') {
-        this.answerPostText = 'απαντησε';
+      if (this.answerPost === false) {
+        // this.answerPostText = this.$t('message.reply');
         this.answerPostColor = 'green';
       } else {
-        this.answerPostText = 'ακυρο';
+        // this.answerPostText = this.$t('message.cancel');
         this.answerPostColor = 'red';
       }
     },
