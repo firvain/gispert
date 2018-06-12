@@ -4,6 +4,9 @@
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
         <v-list class="message-list">
+          <v-chip v-for="user in usersChatting" :key="user">
+            <v-avatar class="teal">A</v-avatar>
+          </v-chip>
           <v-list-tile class="" v-for="message in messages" v-bind:key="message">
             <v-list-tile-content class="">
               <v-list-tile-content v-text="message" class="caption"></v-list-tile-content>
@@ -42,6 +45,7 @@ export default {
     message_content: '',
     items: [],
     messages: [],
+    usersChatting: [],
   }),
   components: {
     searchLocation, olMap,
@@ -93,6 +97,10 @@ export default {
       console.log('message received::', data);
       const date = new Date(data.date);
       this.messages.push(`${data.userName}: ${data.content} (${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
+    };
+    this.$options.sockets.userJoinedChat = (data) => {
+      console.log('user joined::', data);
+      this.usersChatting.push(data);
     };
   },
 };

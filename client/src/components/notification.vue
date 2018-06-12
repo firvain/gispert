@@ -291,7 +291,9 @@ export default {
                   this.selectedTool = 'selectFeatures';
                   this.$store.dispatch('setFeature', chatFeature);
                   console.log('chatFeature2:: ', chatFeature);
-                  this.$socket.emit('joinFeatureChat', id);
+                  const joinFeatureChat = { fid: id, user: this.$store.state.user.name };
+                  console.log('feature chat signal :: ', joinFeatureChat);
+                  this.$socket.emit('joinFeatureChat', joinFeatureChat);
                 }
               });
             }

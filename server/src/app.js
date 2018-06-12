@@ -82,8 +82,10 @@ io.on('connection', function(socket) {
       }
     });
 
-    socket.on('joinFeatureChat', function handleUserConnection(id) {
-        socket.join(id);
+    socket.on('joinFeatureChat', function handleUserConnection(join) {
+      console.log('join is::', join);
+      socket.join(join.fid);
+      socket.broadcast.to(join.fid).emit('userJoinedChat', join.user);
     });
 
     socket.on('featureMessage', function handlemessage(msg) {
