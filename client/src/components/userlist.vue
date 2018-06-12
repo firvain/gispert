@@ -155,7 +155,7 @@ export default {
           },
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
-          if (response.data.success === true) {
+          if (response.data) {
             this.searchResultUsers = response.data;
             // this.users = response.data;
           }
