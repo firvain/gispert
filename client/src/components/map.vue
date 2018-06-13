@@ -6,6 +6,7 @@
         <v-list class="message-list">
           <v-chip v-for="user in usersChatting" :key="user">
             <v-avatar class="teal">A</v-avatar>
+            {{ user }}
           </v-chip>
           <v-list-tile class="" v-for="message in messages" v-bind:key="message">
             <v-list-tile-content class="">
@@ -83,7 +84,8 @@ export default {
           userName: this.$store.state.user.name,
           content: this.message_content,
           date: new Date(),
-          featureId: this.$store.state.feature.mongoID };
+          featureId: this.$store.state.feature.get('mongoID'),
+        };
         this.$socket.emit('featureMessage', message);
         this.messages.push(`${message.userName}: ${message.content} (${message.date.getHours()}:${message.date.getMinutes()}:${message.date.getSeconds()})`);
         console.log('feature message emitted::', message);

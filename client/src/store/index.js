@@ -117,13 +117,16 @@ export default new Vuex.Store({
       state.feature = data;
     },
     newPostFeature(state, data) {
+      console.log('data in vuex:: ', data);
       state.newpostfeature = data;
       const post = state.addingToPost;
       const feature = state.newpostfeature;
       state.featureCount += 1;
       feature.drawId = state.featureCount;
-      feature.mongoID = state.user._id + '' + Date.now();
-      feature.name = '@' + state.user.name;
+      feature.setProperties({ 
+        'mongoID': state.user._id + '' + Date.now(),
+        'name': '@' + state.user.name,
+      });
       if (state.storage.length > 0) {
         const objIndex = state.storage.findIndex((obj => obj.id == post));
         if (objIndex > -1) {

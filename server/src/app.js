@@ -91,6 +91,10 @@ io.on('connection', function(socket) {
     socket.on('featureMessage', function handlemessage(msg) {
       console.log('feature message:: ', msg);
       socket.broadcast.to(msg.featureId).emit('newFeatureMessage', msg);
+      io.of('/').in(msg.featureId).clients((error, clients) => {
+        if (error) throw error;
+        console.log('clients in this room:: ', clients);
+      });
     });
 
     socket.on('unfollowedCollection', function handleunfollow(data) {

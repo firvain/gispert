@@ -78,7 +78,7 @@ export default {
       console.log(this.$store.state.feature.mongoID);
       const geojson = new ol.format.GeoJSON();
       const signal = {
-        id: this.$store.state.feature.mongoID,
+        id: this.$store.state.feature.get('mongoID'),
         sender: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         senderName: this.$store.state.user.name,
         receivers: this.selectedUsers,
@@ -88,6 +88,9 @@ export default {
       };
       this.$socket.emit('invitationForFeatureChat', signal);
       console.log('sending feature::', signal);
+      const joinFeatureChat = { fid: signal.id, user: this.$store.state.user.name };
+      console.log('join feature chat signal :: ', joinFeatureChat);
+      this.$socket.emit('joinFeatureChat', joinFeatureChat);
       // join a room with this geodata id
       // socket emit notification
       // notification accept and join room
