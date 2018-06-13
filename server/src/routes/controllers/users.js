@@ -55,22 +55,46 @@ router.route('/all')
       if (err) {
         throw err;
       } else {
-        collection.aggregate([
-          { "$project": {
-            "_id": 1,
-            "name": 1,
-            "description": 1,
-          }},
-          {
-            $skip: start
-          },
-          {
-            $limit: end
-          },
-          {
-            $match: { _id: { $ne: ObjectID(userId) } },
-          }
-        ], function handleCursor(error, users) {
+        collection.aggregate(
+          [
+            {
+              $graphLookup: {
+                from: "liveMapUsers",
+                startWith: "$_id",
+                connectFromField: "_id",
+                connectToField: "_id",
+                as: "liveData",
+              }
+            },
+            { "$project": {
+              "_id": 1,
+              "name": 1,
+              "description": 1,
+              "liveData": { $arrayElemAt: [ "$liveData.liveUsers" , 0 ] }
+            }},
+            {
+              $match: { _id: { $ne: ObjectID(userId) } },
+            },
+            { "$project": {
+              "_id": 1,
+              "name": 1,
+              "description": 1,
+              "liveData": { $filter:{
+                input: "$liveData",
+                as: "liveUsers",
+                cond: {$eq: ["$$liveUsers", ObjectID(userId)]}
+              }}
+            }},
+            { "$project": {
+              "_id": 1,
+              "name": 1,
+              "description": 1,
+              "liveData": 
+                {
+                   $cond: { if: { $gte: [ "$liveData.length", 0 ] }, then: true, else: false }
+                }
+            }},
+          ], function handleCursor(error, users) {
           if (error) {
             res.sendStatus(500);
             console.log(error);
@@ -178,7 +202,7 @@ router.route('/updateprofile')
           { _id: cId },
           { $set: { locale: locale } }
         );
-        res.status(200);
+        res.sendStatus(200);
       }
       db.close();
     });
@@ -246,6 +270,77 @@ router.route('/usersToChatWith')
           }
         });
       }
+    });
+  });
+
+
+  router.route('/LiveMapChatForUser')
+  .post(function set(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      const currentUserId = req.body.data.id;
+      const cId = new ObjectID(currentUserId);
+      const liveUserId = req.body.data.liveId;
+      const livecId = new ObjectID(liveUserId);
+
+      console.log('live user add:: ', currentUserId, livecId);
+      if (err) {
+        throw err;
+      } else {
+        db.collection('liveMapUsers').update(
+          { _id: cId },
+          { $push: { liveUsers: livecId } },
+          { upsert : true }
+        );
+        res.sendStatus(200);
+      }
+      db.close();
+    });
+  })
+  .get(function get(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      const currentUserId = req.query.id;
+      const cId = new ObjectID(currentUserId);
+
+      console.log('live user get:: ', currentUserId);
+      if (err) {
+        throw err;
+      } else {
+        db.collection('liveMapUsers').find(
+          { _id: cId }
+        ).toArray(function handleCursor(error, docs) {
+          if (error) {
+            res.sendStatus(500);
+            console.log(error);
+          } else {
+            // console.log(docs);
+            res.send(docs);
+            db.close();
+          }
+        });
+      }
+      db.close();
+    });    
+  });
+
+  router.route('/removeLiveMapChatForUser')
+  .post(function set(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      const currentUserId = req.body.data.id;
+      const cId = new ObjectID(currentUserId);
+      const liveUserId = req.body.data.liveId;
+      const livecId = new ObjectID(liveUserId);
+
+      console.log('live user remove:: ', currentUserId, livecId);
+      if (err) {
+        throw err;
+      } else {
+        db.collection('liveMapUsers').update(
+          { _id: cId },
+          { $pull: { liveUsers: livecId } }
+        );
+        res.sendStatus(200);
+      }
+      db.close();
     });
   });
 

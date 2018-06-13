@@ -12,7 +12,7 @@
           <v-switch
             slot="activator"
             :label="$t('message.liveMapUpdate')"
-            v-model="showLive"
+            v-model="user.liveData"
             color="success"
           ></v-switch>
           <v-btn color="primary" dark fab outline small @click="dialogCollections = true; getCollections(user._id);">
@@ -59,7 +59,6 @@ export default {
   props: ['user'],
   name: 'user',
   data: () => ({
-    showLive: true,
     userCollections: [],
     selectedCollections: [],
     unfollowThese: [],
@@ -143,6 +142,40 @@ export default {
         });
         this.loading = false;
       });
+    },
+  },
+  watch: {
+    'user.liveData': function toggle() {
+      console.log('show live changed');
+      if (this.user.liveData) {
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/LiveMapChatForUser`;
+        const data = {
+          id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          liveId: this.user._id, // eslint-disable-line no-underscore-dangle
+        };
+        axios.post(url, { data }, {
+          headers: { 'x-access-token': this.$store.state.token },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            console.log('live use set');
+          }
+        });
+      } else {
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/removeLiveMapChatForUser`;
+        const data = {
+          id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          liveId: this.user._id, // eslint-disable-line no-underscore-dangle
+        };
+        axios.post(url, { data }, {
+          headers: { 'x-access-token': this.$store.state.token },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            console.log('live use set');
+          }
+        });
+      }
     },
   },
   mounted() {
