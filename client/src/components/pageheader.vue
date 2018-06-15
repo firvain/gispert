@@ -448,31 +448,34 @@ export default {
         }
       })
       .then(() => {
-        this.loading = true;
-        const urlUsers = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
-        axios.get(urlUsers, {
-          params: {
-            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-            pageFrom: 0,
-            pageTo: 25,
-          },
-          headers: { 'x-access-token': this.$store.state.token },
-        }).then((response) => {
-          if (response.data.success === false) {
-            console.log(response.data);
-            console.log('not logged in to see others');
-          } else {
-            this.$store.dispatch('setUsers', response.data);
-            // this.users = response.data;
-          }
-        }).then(() => {
-          console.log('connected as ::', this.$store.state.user.name);
-          this.loadPublicCollections();
-          this.loadPrivateCollections();
-        }).then(() => {
-          this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
-          this.loading = false;
-        });
+        console.log('loading users in pageheader!');
+        if (this.$store.state.users.length === 0) {
+          this.loading = true;
+          const urlUsers = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+          axios.get(urlUsers, {
+            params: {
+              userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+              pageFrom: 0,
+              pageTo: 25,
+            },
+            headers: { 'x-access-token': this.$store.state.token },
+          }).then((response) => {
+            if (response.data.success === false) {
+              console.log(response.data);
+              console.log('not logged in to see others');
+            } else {
+              this.$store.dispatch('setUsers', response.data);
+              // this.users = response.data;
+            }
+          }).then(() => {
+            console.log('connected as ::', this.$store.state.user.name);
+            this.loadPublicCollections();
+            this.loadPrivateCollections();
+          }).then(() => {
+            this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
+            this.loading = false;
+          });
+        }
       });
     },
     async loadPrivateCollections() {

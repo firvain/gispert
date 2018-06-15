@@ -39,7 +39,7 @@
         </v-flex>
       </v-layout>
       <v-btn
-        v-if="$store.state.isUserLoggedIn"
+        v-if="$store.state.isUserLoggedIn && endOfUsers === false"
         v-on:click='nextPageLoadUsers'
         class="blue-grey white--text"
         block
@@ -85,6 +85,7 @@ export default {
       searchUsers: '',
       searchResultUsers: [],
       page: 25,
+      endOfUsers: false,
     };
   },
   components: {
@@ -98,6 +99,7 @@ export default {
       return collectionId;
     },
     loadUsers() {
+      console.log('loading users in userlist load users!');
       if (this.$store.state.isUserLoggedIn) {
         this.loading = true;
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
@@ -110,9 +112,11 @@ export default {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
           if (response.data.success === false) {
+            this.endOfUsers = true;
             // console.log(response.data);
             // console.log('not logged in to see others');
           } else {
+            console.log('dispatching users to vuex:: ', response.data);
             this.$store.dispatch('setUsers', response.data);
             // this.users = response.data;
           }
@@ -122,6 +126,7 @@ export default {
       }
     },
     nextPageLoadUsers() {
+      console.log('loading next user page');
       this.loading = true;
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
       axios.get(url, {
@@ -132,7 +137,9 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        if (response.data.success === false) {
+        if (response.data.length === 0) {
+          console.log('success::', response.data.success);
+          this.endOfUsers = true;
           // console.log(response.data);
           // console.log('not logged in to see others');
         } else {
@@ -166,13 +173,16 @@ export default {
     },
   },
   mounted() {
-    if (this.$store.state.users.length === 0) {
-      this.loadUsers();
-    }
+    // if (this.$store.state.users.length === 0) {
+    //   console.log('loading users in userlist!');
+    //   this.loadUsers();
+    // }
 
-    this.$eventHub.$on('logged-in', () => {
-      this.loadUsers();
-    });
+    // this.$eventHub.$on('logged-in', () => {
+    //   if (this.$store.state.users.length === 0) {
+    //     this.loadUsers();
+    //   }
+    // });
   },
 };
 </script>

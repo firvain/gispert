@@ -12,7 +12,7 @@
           <v-switch
             slot="activator"
             :label="$t('message.liveMapUpdate')"
-            v-model="user.liveData"
+            v-model="user.showLive"
             color="success"
           ></v-switch>
           <v-btn color="primary" dark fab outline small @click="dialogCollections = true; getCollections(user._id);">
@@ -145,9 +145,9 @@ export default {
     },
   },
   watch: {
-    'user.liveData': function toggle() {
+    'user.showLive': function toggle() {
       console.log('show live changed');
-      if (this.user.liveData) {
+      if (this.user.showLive) {
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/LiveMapChatForUser`;
         const data = {
           id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
