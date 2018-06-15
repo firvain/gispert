@@ -43,8 +43,16 @@ io.on('connection', function(socket) {
     console.log('Someone connected');
 
     socket.on('joinCollections', function handleUserConnection(collections) {
+      console.log('rooms to join:: ', collections);
       collections.forEach((c) => {
         socket.join(c);
+      });
+    });
+
+    socket.on('leaveCollections', function handleUserConnection(collections) {
+      console.log('rooms to leave:: ', collections);
+      collections.forEach((c) => {
+        socket.leave(c);
       });
     });
 
@@ -90,11 +98,16 @@ io.on('connection', function(socket) {
 
     socket.on('featureMessage', function handlemessage(msg) {
       console.log('feature message:: ', msg);
-      socket.broadcast.to(msg.featureId).emit('newFeatureMessage', msg);
-      io.of('/').in(msg.featureId).clients((error, clients) => {
+      socket.broadcast.to(msg.userId).emit('newFeatureMessage', msg);
+      io.of('/').in(msg.userId).clients((error, clients) => {
         if (error) throw error;
         console.log('clients in this room:: ', clients);
       });
+    });
+
+    socket.on('newGeometry', function handlegeometry(msg) {
+      console.log('new geometry received from client::', msg);
+      socket.broadcast.to(msg.userId).emit('newGeometry', msg);
     });
 
     socket.on('unfollowedCollection', function handleunfollow(data) {

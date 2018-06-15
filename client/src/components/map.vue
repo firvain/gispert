@@ -35,6 +35,7 @@
   </div>
 </template>
 <script>
+import ol from 'openlayers';
 import olMap from '../js/map';
 import searchLocation from './searchLocation';
 
@@ -92,17 +93,57 @@ export default {
         this.message_content = '';
       }
     },
+    newFeatureMessage(msg) {
+      // if feature open add to dialog box else search in map
+      // const date = new Date(data.date);
+      // this.messages.push(`${data.userName}: ${data.content}
+      // (${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          let alreadyExists = false;
+          layer.getSource().forEachFeature((feature) => {
+            console.log('feature to add:: ', msg);
+            if (feature.get('mongoID') === msg.featureId) {
+              alreadyExists = true;
+              console.log('setting properties');
+              feature.setProperties({ messages: `${msg.userName}: ${msg.content}` });
+              this.messages.push(`${msg.userName}: ${msg.content} (${msg.date})`);
+            }
+          });
+          if (alreadyExists === false) {
+            console.log('must ajax it');
+          }
+        }
+      });
+    },
+    addNewGeometry(msg) {
+      const geojsonFormat = new ol.format.GeoJSON();
+      const AddedFeature = geojsonFormat.readFeatures(msg.feature);
+
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().addFeatures(AddedFeature);
+        }
+      });
+    },
   },
   mounted() {
     olMap.setTarget('mapDiv');
+    // this.$options.sockets.userJoinedChat = (data) => {
+    //   console.log('user joined::', data);
+    //   this.usersChatting.push(data);
+    // };
     this.$options.sockets.newFeatureMessage = (data) => {
-      console.log('message received::', data);
-      const date = new Date(data.date);
-      this.messages.push(`${data.userName}: ${data.content} (${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
+      // console.log('message received::', data);
+      this.newFeatureMessage(data);
     };
-    this.$options.sockets.userJoinedChat = (data) => {
-      console.log('user joined::', data);
-      this.usersChatting.push(data);
+    this.$options.sockets.newGeometry = (data) => {
+      console.log('message received::', data);
+      this.addNewGeometry(data);
     };
   },
 };

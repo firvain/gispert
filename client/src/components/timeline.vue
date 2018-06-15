@@ -104,6 +104,7 @@ export default {
       if (this.newPostText === this.$t('message.cancel')) {
         this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
+        this.$store.commit('addingToPost', undefined);
       } else {
         this.newPostText = this.$t('message.cancel');
         this.newPostColor = 'red';

@@ -17,8 +17,11 @@
 <script>
 import axios from 'axios';
 import { mapGetters } from 'vuex';
+import ol from 'openlayers';
 import notification from './notification';
 import config from '../config';
+// import olMap from '../js/map';
+// import styles from '../js/styles';
 
 export default {
   data() {
@@ -36,6 +39,25 @@ export default {
     ...mapGetters([
       'notificationsGetter',
     ]),
+    newFeature() {
+      return this.$store.state.newpostfeature;
+    },
+  },
+  watch: {
+    newFeature: function emit() {
+      console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));
+      const geojson = new ol.format.GeoJSON();
+      if (this.$store.state.addingToPost === undefined) {
+        const msg = {
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          feature: geojson.writeFeature(this.$store.state.newpostfeature),
+        };
+        console.log('sending feature to followers', msg);
+        this.$socket.emit('newGeometry', msg);
+      } else {
+        console.log('not undefined');
+      }
+    },
   },
   mounted() {
     console.log('mounting notification list');

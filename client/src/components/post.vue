@@ -275,6 +275,7 @@ export default {
       if (this.answerPost === false) {
         // this.answerPostText = this.$t('message.reply');
         this.answerPostColor = 'green';
+        this.$store.commit('addingToPost', undefined);
       } else {
         // this.answerPostText = this.$t('message.cancel');
         this.answerPostColor = 'red';

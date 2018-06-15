@@ -82,7 +82,6 @@ export default {
         sender: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         senderName: this.$store.state.user.name,
         receivers: this.selectedUsers,
-        // TODO: add the mongoID in the feature!!!
         feature: geojson.writeFeature(this.$store.state.feature),
         timestamp: Date.now(),
       };

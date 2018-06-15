@@ -471,6 +471,7 @@ export default {
             console.log('connected as ::', this.$store.state.user.name);
             this.loadPublicCollections();
             this.loadPrivateCollections();
+            this.loadLiveUsers();
           }).then(() => {
             this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
             this.loading = false;
@@ -532,6 +533,27 @@ export default {
           });
           console.log('joining collections', JSON.stringify(this.publicCollections));
           this.$socket.emit('joinCollections', collectionIds);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      return true;
+    },
+    async loadLiveUsers() {
+      try {
+        this.loading = true;
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/LiveMapChatForUser`;
+        axios.get(url, {
+          params: {
+            id: this.getUserId(),
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          this.loading = false;
+          console.log('joining liveUsers', JSON.stringify(response.data));
+          console.log('joining liveUsers', JSON.stringify(response.data[0].liveUsers));
+          this.$socket.emit('joinCollections', response.data[0].liveUsers);
+          this.$socket.emit('joinCollections', [this.$store.state.user._id]); // eslint-disable-line no-underscore-dangle
         });
       } catch (error) {
         console.log(error);
@@ -608,9 +630,9 @@ export default {
     // this.$options.sockets.unfollowedCollection = (data) => {
     //   console.log('unfollowedCollection', data);
     // };
-    this.$options.sockets.room = (data) => {
-      console.log('room:: ', data);
-    };
+    // this.$options.sockets.room = (data) => {
+    //   console.log('room:: ', data);
+    // };
   },
 };
 </script>

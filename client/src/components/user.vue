@@ -158,7 +158,8 @@ export default {
         })
         .then((res) => {
           if (res.status === 200) {
-            console.log('live use set');
+            this.$socket.emit('joinCollections', [this.user._id]); // eslint-disable-line no-underscore-dangle
+            console.log('live user added');
           }
         });
       } else {
@@ -172,7 +173,8 @@ export default {
         })
         .then((res) => {
           if (res.status === 200) {
-            console.log('live use set');
+            this.$socket.emit('leaveCollections', [this.user._id]); // eslint-disable-line no-underscore-dangle
+            console.log('live user removed');
           }
         });
       }
