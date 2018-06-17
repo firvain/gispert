@@ -8,6 +8,7 @@ const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
   state: {
+    featureId: undefined,
     feature: undefined,
     newpostfeature: undefined,
     addingToPost: undefined,
@@ -115,6 +116,9 @@ export default new Vuex.Store({
     },
     setSelected(state, data) {
       state.feature = data;
+      if (data.get('mongoID')) {
+        state.featureId = data.get('mongoID');
+      }
     },
     newPostFeature(state, data) {
       state.newpostfeature = data;

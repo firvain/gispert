@@ -3,39 +3,46 @@
     <searchLocation></searchLocation>
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
-        <v-list class="message-list">
-          <v-chip v-for="user in usersChatting" :key="user">
-            <v-avatar class="teal">A</v-avatar>
-            {{ user }}
-          </v-chip>
-          <v-list-tile class="" v-for="message in messages" v-bind:key="message">
-            <v-list-tile-content class="">
-              <v-list-tile-content v-text="message" class="caption"></v-list-tile-content>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-        <v-layout row>
-        <v-flex xs10 md10>
-          <v-text-field
-            name="input-1"
-            :label="new_message_label"
-            id="testing"
-            width='50'
-            v-on:keyup.enter="sendMessage"
-            v-model="message_content"
-          ></v-text-field>
-        </v-flex>
-        <v-flex xs2 md2>
-          <v-btn fab dark small color="green">
-            <v-icon dark>send</v-icon>
-          </v-btn>
-        </v-flex>
-        </v-layout>
+      <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+      <v-list class="message-list">
+        <!-- <v-chip v-for="user in usersChatting" :key="user">
+          <v-avatar class="teal">A</v-avatar>
+          {{ user }}
+        </v-chip> -->
+        <v-list-tile class="" v-for="message in messages" v-bind:key="message.date">
+          <v-flex xs6 sm4 :offset-xs6="message.userId === $store.state.user._id" :offset-sm8="message.userId === $store.state.user._id">
+            <v-card class="message" :color="message.userId !== $store.state.user._id ? 'white' : 'blue' ">
+              <v-card-text :class="message.userId !== $store.state.user._id ? 'black--text' : 'white--text' ">
+                {{ message.userName }} {{message.content}}
+              </v-card-text>
+            </v-card>
+          </v-flex>
+        </v-list-tile>
+      </v-list>
+      <v-layout row>
+      <v-flex xs10 md10>
+        <v-text-field
+          name="input-1"
+          :label="new_message_label"
+          id="testing"
+          width='50'
+          v-on:keyup.enter="sendMessage"
+          v-model="message_content"
+        ></v-text-field>
+      </v-flex>
+      <v-flex xs2 md2>
+        <v-btn fab dark small color="green">
+          <v-icon dark>send</v-icon>
+        </v-btn>
+      </v-flex>
+      </v-layout>
     </v-container>
   </div>
 </template>
 <script>
 import ol from 'openlayers';
+import axios from 'axios';
+import config from '../config';
 import olMap from '../js/map';
 import searchLocation from './searchLocation';
 
@@ -88,7 +95,10 @@ export default {
           featureId: this.$store.state.feature.get('mongoID'),
         };
         this.$socket.emit('featureMessage', message);
-        this.messages.push(`${message.userName}: ${message.content} (${message.date.getHours()}:${message.date.getMinutes()}:${message.date.getSeconds()})`);
+        this.addToConversation(message);
+        // this.messages.push(`${message.userName}: ${message.content}
+        // (${message.date.getHours()}:${message.date.getMinutes()}:${message.date.getSeconds()})`);
+        this.messages.push(message);
         console.log('feature message emitted::', message);
         this.message_content = '';
       }
@@ -107,9 +117,9 @@ export default {
             console.log('feature to add:: ', msg);
             if (feature.get('mongoID') === msg.featureId) {
               alreadyExists = true;
-              console.log('setting properties');
+              console.log('setting properties', msg.userName, msg.content);
               feature.setProperties({ messages: `${msg.userName}: ${msg.content}` });
-              this.messages.push(`${msg.userName}: ${msg.content} (${msg.date})`);
+              this.messages.push(msg);
             }
           });
           if (alreadyExists === false) {
@@ -130,6 +140,62 @@ export default {
         }
       });
     },
+    loadConversation() {
+      try {
+        this.loading = true;
+        this.messages = [];
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations`;
+        axios.get(url, {
+          params: {
+            featureId: this.$store.state.featureId,
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          console.log('response status:: ', response.status);
+          if (response.status === 200) {
+            console.log('data:: ', response.data);
+            response.data.forEach((r) => {
+              console.log('message:: ', r.message);
+              this.messages.push(r.message);
+            });
+            this.loading = false;
+          } else {
+            console.log('error');
+            this.loading = false;
+          }
+          // console.log('public collections fetched:: ', this.publicCollections);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      this.loading = false;
+      return true;
+    },
+    async addToConversation(data) {
+      try {
+        this.loading = true;
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations`;
+        axios.post(url, { data }, {
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          if (response.status === 200) {
+            this.loading = false;
+          } else {
+            console.log('error');
+          }
+          this.loading = false;
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      return true;
+    },
+  },
+  watch: {
+    '$store.state.featureId': function handle() {
+      console.log('new feature selection');
+      this.loadConversation();
+    },
   },
   mounted() {
     olMap.setTarget('mapDiv');
@@ -139,10 +205,12 @@ export default {
     // };
     this.$options.sockets.newFeatureMessage = (data) => {
       // console.log('message received::', data);
-      this.newFeatureMessage(data);
+      if (data.featureId === this.$store.state.feature.get('mongoID')) {
+        this.newFeatureMessage(data);
+      }
     };
     this.$options.sockets.newGeometry = (data) => {
-      console.log('message received::', data);
+      // console.log('message received::', data);
       this.addNewGeometry(data);
     };
   },
@@ -203,5 +271,9 @@ export default {
     max-height: 150px;
     padding: 2px;
     margin: 2px;
+  }
+
+  .date {
+    font-size: 0.55em !important;
   }
 </style>
