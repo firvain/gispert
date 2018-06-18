@@ -40,7 +40,7 @@ router.route('/')
     } else {
       db.collection('conversations').find(
         { "message.featureId": featureId }
-      ).toArray(function handleCursor(error, docs) {
+      ).sort({ "message.date": -1 }).toArray(function handleCursor(error, docs) {
         if (error) {
           res.sendStatus(500);
           console.log(error);

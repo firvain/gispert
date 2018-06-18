@@ -4,21 +4,15 @@
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
       <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
-      <v-list class="message-list">
+      <div class="message-list">
         <!-- <v-chip v-for="user in usersChatting" :key="user">
           <v-avatar class="teal">A</v-avatar>
           {{ user }}
         </v-chip> -->
-        <v-list-tile class="" v-for="message in messages" v-bind:key="message.date">
-          <v-flex xs6 sm4 :offset-xs6="message.userId === $store.state.user._id" :offset-sm8="message.userId === $store.state.user._id">
-            <v-card class="message" :color="message.userId !== $store.state.user._id ? 'white' : 'blue' ">
-              <v-card-text :class="message.userId !== $store.state.user._id ? 'black--text' : 'white--text' ">
-                {{ message.userName }} {{message.content}}
-              </v-card-text>
-            </v-card>
-          </v-flex>
-        </v-list-tile>
-      </v-list>
+        <div class="" v-for="(message, index) in messages" v-bind:key="index">
+          <chat :message= 'message'></chat>
+        </div>
+      </div>
       <v-layout row>
       <v-flex xs10 md10>
         <v-text-field
@@ -42,6 +36,7 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import chat from './chat';
 import config from '../config';
 import olMap from '../js/map';
 import searchLocation from './searchLocation';
@@ -57,7 +52,7 @@ export default {
     usersChatting: [],
   }),
   components: {
-    searchLocation, olMap,
+    searchLocation, olMap, chat,
   },
   computed: {
     currentlySelectedFeature() {
@@ -95,31 +90,27 @@ export default {
           featureId: this.$store.state.feature.get('mongoID'),
         };
         this.$socket.emit('featureMessage', message);
-        this.addToConversation(message);
-        // this.messages.push(`${message.userName}: ${message.content}
-        // (${message.date.getHours()}:${message.date.getMinutes()}:${message.date.getSeconds()})`);
-        this.messages.push(message);
-        console.log('feature message emitted::', message);
+        this.addToConversation(message).then(() => {
+          this.loading = false;
+        });
+        this.messages.unshift(message);
+        console.log('feature message emitted::', JSON.stringify(message));
         this.message_content = '';
       }
     },
     newFeatureMessage(msg) {
-      // if feature open add to dialog box else search in map
-      // const date = new Date(data.date);
-      // this.messages.push(`${data.userName}: ${data.content}
-      // (${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
       let allLayers = [];
       allLayers = olMap.getLayers().getArray();
       allLayers.forEach((layer) => {
         if (layer.getProperties().name === 'customLayer') {
           let alreadyExists = false;
           layer.getSource().forEachFeature((feature) => {
-            console.log('feature to add:: ', msg);
+            console.log('feature to add:: ', JSON.stringify(msg));
             if (feature.get('mongoID') === msg.featureId) {
               alreadyExists = true;
               console.log('setting properties', msg.userName, msg.content);
               feature.setProperties({ messages: `${msg.userName}: ${msg.content}` });
-              this.messages.push(msg);
+              this.messages.unshift(msg);
             }
           });
           if (alreadyExists === false) {
@@ -131,7 +122,6 @@ export default {
     addNewGeometry(msg) {
       const geojsonFormat = new ol.format.GeoJSON();
       const AddedFeature = geojsonFormat.readFeatures(msg.feature);
-
       let allLayers = [];
       allLayers = olMap.getLayers().getArray();
       allLayers.forEach((layer) => {
@@ -140,7 +130,7 @@ export default {
         }
       });
     },
-    loadConversation() {
+    async loadConversation() {
       try {
         this.loading = true;
         this.messages = [];
@@ -163,7 +153,6 @@ export default {
             console.log('error');
             this.loading = false;
           }
-          // console.log('public collections fetched:: ', this.publicCollections);
         });
       } catch (error) {
         console.log(error);
@@ -194,7 +183,9 @@ export default {
   watch: {
     '$store.state.featureId': function handle() {
       console.log('new feature selection');
-      this.loadConversation();
+      this.loadConversation().then(() => {
+        this.loading = false;
+      });
     },
   },
   mounted() {
@@ -204,13 +195,9 @@ export default {
     //   this.usersChatting.push(data);
     // };
     this.$options.sockets.newFeatureMessage = (data) => {
-      // console.log('message received::', data);
-      if (data.featureId === this.$store.state.feature.get('mongoID')) {
-        this.newFeatureMessage(data);
-      }
+      this.newFeatureMessage(data);
     };
     this.$options.sockets.newGeometry = (data) => {
-      // console.log('message received::', data);
       this.addNewGeometry(data);
     };
   },
@@ -251,12 +238,6 @@ export default {
    }
   }
 
-  .chat {
-    font-size: 0.5em !important;
-    overflow-y: auto;
-    padding: 10px;
-    margin: 2px;
-  }
   .floating-bottom {
     position: absolute;
     left: 55%;
@@ -269,11 +250,8 @@ export default {
   .message-list {
     overflow-y: auto;
     max-height: 150px;
-    padding: 2px;
-    margin: 2px;
-  }
-
-  .date {
+    padding: 0px;
+    margin: 0px;
     font-size: 0.55em !important;
   }
 </style>
