@@ -75,16 +75,19 @@ router.route('/feature')
 })
 .get(function get(req, res) {
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-    const featureId = req.query.featureId;
-    // const fId = new ObjectID(featureId);
-
-    console.log('feature get:: ', featureId);
+    const userList = req.query.userList;
+    console.log('userList:: ', userList, typeof (userList));
+    var cids = [];
+    userList.forEach((id) => {
+        cids.push(new ObjectID(id));
+    });
+    console.log('cids:: ', cids);
     if (err) {
       throw err;
     } else {
       db.collection('liveGeodata').find(
-        { "message.featureId": featureId }
-      ).sort({ "message.date": -1 }).toArray(function handleCursor(error, docs) {
+        { "feature.userId": { $in: cids } }
+      ).toArray(function handleCursor(error, docs) {
         if (error) {
           res.sendStatus(500);
           console.log(error);

@@ -26,6 +26,7 @@ export default new Vuex.Store({
     customMaps: [],
     notifications: [],
     openedTimeline: null,
+    liveUsersList: null,
   },
   actions: {
     setFeature(state, data) {
@@ -108,6 +109,9 @@ export default new Vuex.Store({
     },
     addNotificationFromSocket(state, data) {
       state.commit('addNotificationFromSocket', data);
+    },
+    setLiveUsers(state, data) {
+      state.commit('setLiveUsers', data);
     },
   },
   mutations: {
@@ -269,6 +273,9 @@ export default new Vuex.Store({
           }
         }
       }
+    },
+    setLiveUsers (state, data) {
+      state.liveUsersList = data;
     },
   },
   getters: {

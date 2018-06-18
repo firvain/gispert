@@ -552,6 +552,7 @@ export default {
           this.loading = false;
           console.log('joining liveUsers', JSON.stringify(response.data));
           console.log('joining liveUsers', JSON.stringify(response.data[0].liveUsers));
+          this.$store.dispatch('setLiveUsers', response.data[0].liveUsers);
           this.$socket.emit('joinCollections', response.data[0].liveUsers);
           this.$socket.emit('joinCollections', [this.$store.state.user._id]); // eslint-disable-line no-underscore-dangle
         });
@@ -599,6 +600,7 @@ export default {
       this.$store.dispatch('setOpenedCustomTimeline', null);
       this.$store.dispatch('setUserTimeline', null);
       this.$store.dispatch('setCollectionTimeline', null);
+      this.$store.dispatch('setLiveUsers', null);
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
       // this.$store.dispatch('removeNewPostFeature', null);

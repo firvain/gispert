@@ -185,7 +185,7 @@ router.route('/collection')
                 throw err;
             } else {
                 db.collection('collections').updateMany(
-                    { _id: { $in: cidsToFollow} },
+                    { _id: { $in: cidsToFollow } },
                     { $addToSet: { members:  id } }
                 );
                 db.collection('collections').updateMany(

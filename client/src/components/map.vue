@@ -143,6 +143,39 @@ export default {
       }
       return true;
     },
+    loadLiveGeodata() {
+      try {
+        this.loading = true;
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/feature`;
+        console.log('load live geodata for::', this.$store.state.liveUsersList);
+        const users = this.$store.state.liveUsersList;
+        // console.log(users, typeof (users));
+        axios.get(url, {
+          params: {
+            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+            userList: users,
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          console.log('response status:: ', response.status);
+          if (response.status === 200) {
+            console.log('data:: ', response.data);
+            response.data.forEach((f) => {
+              console.log('message:: ', f.feature);
+              this.addNewGeometry(f.feature);
+            });
+            this.loading = false;
+          } else {
+            console.log('error');
+            this.loading = false;
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      this.loading = false;
+      return true;
+    },
     async loadConversation() {
       try {
         this.loading = true;
@@ -200,6 +233,10 @@ export default {
         this.loading = false;
       });
     },
+    '$store.state.liveUsersList': function handle() {
+      console.log('load live geodata');
+      this.loadLiveGeodata();
+    },
     newFeature: function emit() {
       console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));
       const geojson = new ol.format.GeoJSON();
@@ -210,7 +247,7 @@ export default {
         };
         console.log('sending feature to followers', msg);
         this.$socket.emit('newGeometry', msg);
-        this.newGeometryDrawn(msg.feature);
+        this.newGeometryDrawn(msg);
       } else {
         console.log('not undefined');
       }
