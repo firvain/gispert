@@ -55,6 +55,9 @@ export default {
     searchLocation, olMap, chat,
   },
   computed: {
+    newFeature() {
+      return this.$store.state.newpostfeature;
+    },
     currentlySelectedFeature() {
       let feature = {};
       if (typeof this.$store.state.feature !== 'undefined') {
@@ -130,6 +133,16 @@ export default {
         }
       });
     },
+    newGeometryDrawn(feature) {
+      console.log('send this feature to db:: ', feature);
+      try {
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/feature`;
+        axios.post(url, { feature }, { headers: { 'x-access-token': this.$store.state.token } });
+      } catch (error) {
+        console.log(error);
+      }
+      return true;
+    },
     async loadConversation() {
       try {
         this.loading = true;
@@ -186,6 +199,21 @@ export default {
       this.loadConversation().then(() => {
         this.loading = false;
       });
+    },
+    newFeature: function emit() {
+      console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));
+      const geojson = new ol.format.GeoJSON();
+      if (this.$store.state.addingToPost === undefined) {
+        const msg = {
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          feature: geojson.writeFeature(this.$store.state.newpostfeature),
+        };
+        console.log('sending feature to followers', msg);
+        this.$socket.emit('newGeometry', msg);
+        this.newGeometryDrawn(msg.feature);
+      } else {
+        console.log('not undefined');
+      }
     },
   },
   mounted() {
