@@ -3,15 +3,25 @@
     <searchLocation></searchLocation>
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
-      <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <div class="message-list">
         <!-- <v-chip v-for="user in usersChatting" :key="user">
           <v-avatar class="teal">A</v-avatar>
           {{ user }}
         </v-chip> -->
+        <v-progress-circular v-show='loading' indeterminate v-bind:width="3" color="blue"></v-progress-circular>
         <div class="" v-for="(message, index) in messages" v-bind:key="index">
           <chat :message= 'message'></chat>
         </div>
+        <v-btn
+          v-if="$store.state.isUserLoggedIn && endOfMessages === false"
+          v-on:click='messagesStart += 25; messagesEnd += 25; loadConversation()'
+          class="blue-grey white--text"
+          block
+        >
+          {{ $t("message.loadMore")}}
+          <v-icon right dark>navigate_next</v-icon>
+        </v-btn>
+      
       </div>
       <v-layout row>
       <v-flex xs10 md10>
@@ -50,6 +60,11 @@ export default {
     items: [],
     messages: [],
     usersChatting: [],
+    messagesStart: 0,
+    messagesEnd: 25,
+    featuresStart: 0,
+    featuresEnd: 25,
+    endOfMessages: false,
   }),
   components: {
     searchLocation, olMap, chat,
@@ -145,7 +160,6 @@ export default {
     },
     loadLiveGeodata() {
       try {
-        this.loading = true;
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/feature`;
         console.log('load live geodata for::', this.$store.state.liveUsersList);
         const users = this.$store.state.liveUsersList;
@@ -154,56 +168,62 @@ export default {
           params: {
             userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
             userList: users,
+            start: this.featuresStart,
+            end: this.featuresEnd,
           },
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
           console.log('response status:: ', response.status);
           if (response.status === 200) {
-            console.log('data:: ', response.data);
-            response.data.forEach((f) => {
-              console.log('message:: ', f.feature);
-              this.addNewGeometry(f.feature);
-            });
-            this.loading = false;
+            if (response.data.length > 0) {
+              console.log('data:: ', response.data);
+              response.data.forEach((f) => {
+                // console.log('message:: ', f.feature);
+                this.addNewGeometry(f.feature);
+              });
+            }
           } else {
             console.log('error');
-            this.loading = false;
           }
         });
       } catch (error) {
         console.log(error);
       }
-      this.loading = false;
       return true;
     },
-    async loadConversation() {
+    async loadConversation(newSelection) {
       try {
-        this.loading = true;
-        this.messages = [];
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations`;
-        axios.get(url, {
-          params: {
-            featureId: this.$store.state.featureId,
-          },
-          headers: { 'x-access-token': this.$store.state.token },
-        }).then((response) => {
-          console.log('response status:: ', response.status);
-          if (response.status === 200) {
-            console.log('data:: ', response.data);
-            response.data.forEach((r) => {
-              console.log('message:: ', r.message);
-              this.messages.push(r.message);
-            });
-            this.loading = false;
-          } else {
-            console.log('error');
-            this.loading = false;
-          }
-        });
+        if (newSelection) {
+          this.messages = [];
+        }
+        if (this.$store.state.feature) {
+          const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations`;
+          axios.get(url, {
+            params: {
+              featureId: this.$store.state.featureId,
+              start: this.messagesStart,
+              end: this.messagesEnd,
+            },
+            headers: { 'x-access-token': this.$store.state.token },
+          }).then((response) => {
+            console.log('response status:: ', response.status);
+            if (response.status === 200 && response.data.length > 0) {
+              console.log('data:: ', response.data);
+              response.data.forEach((r) => {
+                // console.log('message:: ', r.message);
+                this.messages.push(r.message);
+              });
+            } else {
+              console.log('error');
+              this.loading = false;
+              this.endOfMessages = true;
+            }
+          });
+        }
       } catch (error) {
         console.log(error);
+        this.loading = false;
       }
-      this.loading = false;
       return true;
     },
     async addToConversation(data) {
@@ -229,13 +249,19 @@ export default {
   watch: {
     '$store.state.featureId': function handle() {
       console.log('new feature selection');
-      this.loadConversation().then(() => {
+      this.start = 0;
+      this.end = 25;
+      this.loading = true;
+      this.loadConversation(true).then(() => {
         this.loading = false;
       });
     },
     '$store.state.liveUsersList': function handle() {
       console.log('load live geodata');
-      this.loadLiveGeodata();
+      this.loading = true;
+      this.loadLiveGeodata().then(() => {
+        this.loading = false;
+      });
     },
     newFeature: function emit() {
       console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));

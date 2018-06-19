@@ -72,12 +72,15 @@ router.route('/all')
               "description": 1,
               "showLive" : { $cond: [{ $in: [ "$_id", following ] }, true , false ]} 
             }},
-          {
-            $skip: start
-          },
-          {
-            $limit: end
-          }
+            {
+              $match: {"_id" : { $ne: [ "$id", ObjectID(userId) ] }}
+            },
+            {
+              $skip: start
+            },
+            {
+              $limit: end
+            }
           ], function handleCursor(err, docs) {
             if (err) { throw err} else {
               res.send(docs);

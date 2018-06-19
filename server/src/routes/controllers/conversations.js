@@ -32,6 +32,8 @@ router.route('/')
 .get(function get(req, res) {
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
     const featureId = req.query.featureId;
+    const start = parseInt(req.query.start);
+    const end = parseInt(req.query.end);
     // const fId = new ObjectID(featureId);
 
     console.log('conversation get:: ', featureId);
@@ -40,7 +42,7 @@ router.route('/')
     } else {
       db.collection('conversations').find(
         { "message.featureId": featureId }
-      ).sort({ "message.date": -1 }).toArray(function handleCursor(error, docs) {
+      ).skip(start).limit(end).sort({ "message.date": -1 }).toArray(function handleCursor(error, docs) {
         if (error) {
           res.sendStatus(500);
           console.log(error);
@@ -76,23 +78,23 @@ router.route('/feature')
 .get(function get(req, res) {
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
     const userList = req.query.userList;
+    const start = parseInt(req.query.start);
+    const end = parseInt(req.query.end);
+    const userId = req.query.userId;
+    userList.push(userId);
     console.log('userList:: ', userList, typeof (userList));
-    var cids = [];
-    userList.forEach((id) => {
-        cids.push(new ObjectID(id));
-    });
-    console.log('cids:: ', cids);
+
     if (err) {
       throw err;
     } else {
       db.collection('liveGeodata').find(
-        { "feature.userId": { $in: cids } }
-      ).toArray(function handleCursor(error, docs) {
+        { "feature.userId": { $in: userList } }
+      ).skip(start).limit(end).toArray(function handleCursor(error, docs) {
         if (error) {
           res.sendStatus(500);
           console.log(error);
         } else {
-          // console.log(docs);
+          console.log(docs);
           res.status(200).send(docs);
           db.close();
         }
