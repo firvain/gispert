@@ -10,7 +10,7 @@
             <a md12 @click="exploreCollection(post.collectionData[0]._id)" v-if="post.collectionData[0]">
               {{post.collectionData[0].title}}
             </a>,&nbsp;
-            <i>{{timestamp}}</i>
+            <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
           </v-flex>
         </v-card-title>
         <v-card-actions class="white">
@@ -134,7 +134,7 @@
 <script>
 // import { mapActions, mapGetters } from 'vuex';
 import ol from 'openlayers';
-import moment from 'moment';
+// import moment from 'moment';
 import axios from 'axios';
 import clipboard from 'clipboard-copy';
 import config from '../config';
@@ -314,9 +314,9 @@ export default {
     },
   },
   computed: {
-    timestamp() {
-      return moment(parseInt(this.post.timestamp, 0)).format('lll');
-    },
+    // timestamp() {
+    //   return moment(parseInt(this.post.timestamp, 0)).format('lll');
+    // },
     sharePostUrl() {
       const url = `${window.location.href}/${this.post._id}`; // eslint-disable-line
       return url;

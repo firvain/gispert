@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import VueI18n from 'vue-i18n';
 import VueSocketio from 'vue-socket.io';
+import moment from 'moment';
 
 import 'vuetify/dist/vuetify.min.css';
 import App from './App';
@@ -28,6 +29,7 @@ Vue.use(VueHello, HelloJs);
 
 /* eslint-disable */
 Vue.prototype.$eventHub = new Vue(); // Global event bus
+Vue.prototype.moment = moment;
 
 Vue.config.productionTip = false;
 

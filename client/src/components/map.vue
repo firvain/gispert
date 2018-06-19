@@ -27,7 +27,7 @@
       <v-flex xs10 md10>
         <v-text-field
           name="input-1"
-          :label="new_message_label"
+          :label="$t('message.newMessage')"
           id="testing"
           width='50'
           v-on:keyup.enter="sendMessage"
@@ -54,8 +54,6 @@ import searchLocation from './searchLocation';
 export default {
   name: 'mw',
   data: () => ({
-    new_message_label: 'Νέο Μήνυμα',
-    send_label: 'Αποστολή',
     message_content: '',
     items: [],
     messages: [],
@@ -158,7 +156,7 @@ export default {
       }
       return true;
     },
-    loadLiveGeodata() {
+    async loadLiveGeodata() {
       try {
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/feature`;
         console.log('load live geodata for::', this.$store.state.liveUsersList);
@@ -214,21 +212,19 @@ export default {
                 this.messages.push(r.message);
               });
             } else {
-              console.log('error');
-              this.loading = false;
               this.endOfMessages = true;
+              this.loading = false;
+              console.log('error', this.loading);
             }
           });
         }
       } catch (error) {
         console.log(error);
-        this.loading = false;
       }
       return true;
     },
     async addToConversation(data) {
       try {
-        this.loading = true;
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations`;
         axios.post(url, { data }, {
           headers: { 'x-access-token': this.$store.state.token },
@@ -238,7 +234,6 @@ export default {
           } else {
             console.log('error');
           }
-          this.loading = false;
         });
       } catch (error) {
         console.log(error);
@@ -251,17 +246,20 @@ export default {
       console.log('new feature selection');
       this.start = 0;
       this.end = 25;
-      this.loading = true;
-      this.loadConversation(true).then(() => {
+      // this.loading = true;
+      this.loadConversation(this.loading).then(() => {
+        console.log('conversation loaded');
         this.loading = false;
       });
+      // this.loading = false;
     },
     '$store.state.liveUsersList': function handle() {
       console.log('load live geodata');
-      this.loading = true;
+      // this.loading = true;
       this.loadLiveGeodata().then(() => {
         this.loading = false;
       });
+      // this.loading = false;
     },
     newFeature: function emit() {
       console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));

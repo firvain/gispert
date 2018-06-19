@@ -96,6 +96,8 @@ module.exports = {
       accept: 'Accept',
       decline: 'Decline',
       byUser: 'by user',
+      newMessage: 'New message',
+      sendMessage: 'Send',
     },
   },
   el_GR: {
@@ -195,6 +197,8 @@ module.exports = {
       accept: 'Αποδοχή',
       decline: 'Απόρριψη',
       byUser: 'από τον χρήστη',
+      newMessage: 'Νέο μήνυμα',
+      sendMessage: 'Αποστολή',
     },
   },
   fr: {
@@ -294,6 +298,8 @@ module.exports = {
       accept: 'Accepter',
       decline: 'Déclin',
       byUser: "par l'utilisateur",
+      newMessage: 'Nouveau message',
+      sendMessage: 'Envoyer',
     },
   },
   de: {
@@ -393,6 +399,8 @@ module.exports = {
       accept: 'Akzeptieren',
       decline: 'Rückgang',
       byUser: 'von Benutzer',
+      newMessage: 'Neue Nachricht',
+      sendMessage: 'Senden',
     },
   },
   it: {
@@ -492,6 +500,8 @@ module.exports = {
       accept: 'Accettare',
       decline: 'Declino',
       byUser: "dall'utente",
+      newMessage: 'Nuovo messaggio',
+      sendMessage: 'Invia',
     },
   },
   es: {
@@ -591,6 +601,8 @@ module.exports = {
       accept: 'Aceptar',
       decline: 'Disminución',
       byUser: 'por usuario',
+      newMessage: 'Nuevo mensaje',
+      sendMessage: 'Enviar',
     },
   },
   nn: {
@@ -690,6 +702,8 @@ module.exports = {
       accept: 'Godta',
       decline: 'Nedgang',
       byUser: 'av bruker',
+      newMessage: 'Ny melding',
+      sendMessage: 'Send',
     },
   },
 };
