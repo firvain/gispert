@@ -142,7 +142,16 @@ export default {
       allLayers = olMap.getLayers().getArray();
       allLayers.forEach((layer) => {
         if (layer.getProperties().name === 'customLayer') {
-          layer.getSource().addFeatures(AddedFeature);
+          let alreadyExists = false;
+          // console.log('added feature::', AddedFeature[0]);
+          layer.getSource().forEachFeature((feature) => {
+            if (feature.get('mongoID') === AddedFeature[0].getProperties().mongoID) { // eslint-disable-line no-underscore-dangle
+              alreadyExists = true;
+            }
+          });
+          if (alreadyExists === false) {
+            layer.getSource().addFeatures(AddedFeature);
+          }
         }
       });
     },
@@ -244,6 +253,7 @@ export default {
   watch: {
     '$store.state.featureId': function handle() {
       console.log('new feature selection');
+      this.messages = [];
       this.start = 0;
       this.end = 25;
       // this.loading = true;
@@ -256,10 +266,11 @@ export default {
     '$store.state.liveUsersList': function handle() {
       console.log('load live geodata');
       // this.loading = true;
-      this.loadLiveGeodata().then(() => {
-        this.loading = false;
-      });
-      // this.loading = false;
+      if (this.$store.state.isUserLoggedIn) {
+        this.loadLiveGeodata().then(() => {
+          this.loading = false;
+        });
+      }
     },
     newFeature: function emit() {
       console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));
@@ -271,6 +282,7 @@ export default {
         };
         console.log('sending feature to followers', msg);
         this.$socket.emit('newGeometry', msg);
+        this.$eventHub.$emit('drawEnd', 'drawEnd');
         this.newGeometryDrawn(msg);
       } else {
         console.log('not undefined');
@@ -289,6 +301,16 @@ export default {
     this.$options.sockets.newGeometry = (data) => {
       this.addNewGeometry(data);
     };
+    this.$eventHub.$on('previousFeatures', () => {
+      this.featuresStart -= 25;
+      this.featuresEnd -= 25;
+      this.loadLiveGeodata();
+    });
+    this.$eventHub.$on('nextFeatures', () => {
+      this.featuresStart += 25;
+      this.featuresEnd += 25;
+      this.loadLiveGeodata();
+    });
   },
 };
 </script>

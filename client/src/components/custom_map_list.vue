@@ -151,9 +151,9 @@ export default {
     },
   },
   mounted() {
-    // if (this.$store.state.customMaps.length === 0) {
-    //   this.loadMaps();
-    // }
+    if (this.$store.state.customMaps.length === 0) {
+      this.loadMaps();
+    }
 
     this.$eventHub.$on('logged-in', () => {
       if (this.$store.state.customMaps.length === 0) {

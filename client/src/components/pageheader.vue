@@ -140,6 +140,7 @@
             <v-text-field
               :label = "$t('message.name')"
               v-model="credentials.email"
+              v-on:keyup.enter="login"
             ></v-text-field>
             <br>
             <v-text-field
@@ -147,6 +148,7 @@
               type="password"
               v-model="credentials.password"
               autocomplete="new-password"
+              v-on:keyup.enter="login"
             ></v-text-field>
           </form>
           </v-card-text>

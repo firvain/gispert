@@ -11,6 +11,7 @@
               v-model="searchCollections"
               min="4"
               append-icon="search"
+              v-on:keyup.enter="searchInCollections"
             ></v-text-field>
           </v-flex>
           <v-flex md4>
@@ -106,15 +107,15 @@
       </v-container>
     </v-container>
 
-    <v-subheader inset v-if="this.$store.state.isUserLoggedIn && this.$store.state.openedTimeline === null && mode === 'search'">
+    <v-subheader inset v-if="$store.state.isUserLoggedIn && $store.state.openedTimeline === null && mode === 'search'">
       {{ $t('message.searchResults')}}
     </v-subheader>
-    <v-container fluid v-if="this.$store.state.openedTimeline === null && mode === 'search'">
+    <v-container fluid v-if="$store.state.openedTimeline === null && mode === 'search'">
       <v-list
         v-for="collection in searchResultsCollections"
         :key="collection._id"
       >
-        <collection v-if="this.$store.state.openedTimeline === null || openedCollection === collection._id" :collection='collection'></collection>
+        <collection v-if="$store.state.openedTimeline === null || openedCollection === collection._id" :collection='collection'></collection>
       </v-list>
       <p v-if="searchResultsCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noResults')}}
       </p>
@@ -169,7 +170,6 @@ export default {
         title: null,
         description: null,
         visibility: '',
-        // username: this.$store.state.user.name,
       },
       message: '',
       snackbar: false,
@@ -179,7 +179,6 @@ export default {
       mode: 'normal',
       searchResultsCollections: [],
     };
-    // eslint-disable-line no-underscore-dangle
   },
   components: {
     collection, collectionView, userTimeline,
@@ -290,17 +289,17 @@ export default {
     searchInCollections() {
       this.loading = true;
       this.mode = 'search';
-
+      console.log('started search');
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/search`;
       axios.get(url, {
         params: {
-          userId: this.getUserId(),
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
           keyword: this.searchCollections,
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         this.searchResultsCollections = response.data;
-        // console.log('public collections fetched:: ', this.publicCollections);
+        console.log('public collections fetched:: ', this.publicCollections);
       }).then(() => {
         this.loading = false;
         // this.$store.dispatch('setPublicCollections', this.publicCollections);

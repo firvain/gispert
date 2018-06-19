@@ -10,6 +10,7 @@
             v-model="searchUsers"
             min="4"
             append-icon="search"
+            v-on:keyup.enter="searchInUsers"
           ></v-text-field>
         </v-flex>
         <v-flex md4>

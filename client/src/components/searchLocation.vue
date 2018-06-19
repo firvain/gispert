@@ -2,6 +2,19 @@
   <div>
     <v-card flat height="0px">
       <v-toolbar class="white overflowing" absolute dense offset-xs2>
+        <v-tooltip bottom>
+          <v-btn fab small slot="activator" @click="$eventHub.$emit('previousFeatures')">
+            <v-icon dark>chevron_left</v-icon>
+          </v-btn>
+          <span>Δες προηγούμενα γεωδεδομένα</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <v-btn fab small slot="activator" @click="$eventHub.$emit('nextFeatures')">
+            <v-icon dark>chevron_right</v-icon>
+          </v-btn>
+          <span>Δες επόμενα γεωδεδομένα</span>
+        </v-tooltip>
+
         <v-text-field prepend-icon="search" hide-details single-line></v-text-field>
         <v-btn icon v-bind:color="selectColor" @click="toggle_map_tools('selectFeatures')" v-if="this.$store.state.isUserLoggedIn">
           <v-icon>crop_free</v-icon>
@@ -10,6 +23,7 @@
           <v-icon>location_on</v-icon>
         </v-btn>
       </v-toolbar>
+
       <v-container class="text-xs-center" v-if="selectedTool === 'drawFeatures' && this.$store.state.isUserLoggedIn">
         <br><br>
         <v-tooltip bottom>
@@ -118,6 +132,9 @@ export default {
       if (this.selectedTool === 'selectFeatures') {
         this.toggle_map_tools('drawFeatures');
       }
+    });
+    this.$eventHub.$on('drawEnd', () => {
+      this.toggle_map_tools('selectFeatures');
     });
   },
   methods: {

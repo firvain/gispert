@@ -11,10 +11,10 @@
           <v-icon>search</v-icon>
           {{ $t("message.explore") }}
         </v-tabs-item>
-        <v-tabs-item :to="{name: 'customMapsNoId'}">
+        <!-- <v-tabs-item :to="{name: 'customMapsNoId'}">
           <v-icon>map</v-icon>
           {{ $t("message.maps") }}
-        </v-tabs-item>
+        </v-tabs-item> -->
         <v-tabs-item :to="{name: 'userList'}">
           <v-icon>fa-user-o</v-icon>
           {{ $t("message.users") }}
