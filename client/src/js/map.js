@@ -46,9 +46,9 @@ const getHashtags = function getText(feature) {
 
 const createVectorStyleFunction = function setStyle() {
   return function getStyle(feature) {
-    const strokeWidth = feature.get('strokeWidth');
-    const strokeColor = feature.get('strokeColor');
-    const fillColor = feature.get('fillColor');
+    const strokeWidth = feature.get('strkWdth');
+    const strokeColor = feature.get('strkClr');
+    const fillColor = feature.get('fllClr');
 
     let setStrokeWidth;
     let setStrokeColor;

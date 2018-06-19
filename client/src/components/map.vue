@@ -1,8 +1,35 @@
 <template>
   <div id='mw' class="mapStyle">
+    <link rel="stylesheet" href="https://unpkg.com/vue-swatches/dist/vue-swatches.min.css">
     <searchLocation></searchLocation>
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
+      <div class="custom-ui-class">
+        <v-flex md12>
+          <swatches
+            v-model="outlineColor"
+            inline
+            swatch-size='16'
+            @input="outlineColorChanged"
+          ></swatches>
+          <swatches
+            v-model="fillColor"
+            inline
+            swatch-size='16'
+            @input="fillColorChanged"
+          ></swatches>
+          <v-slider
+            color="orange"
+            label="Πάχος"
+            hint="Πάχος Γραμμής"
+            min="1"
+            max="8"
+            thumb-label
+            v-model="strokeWidth"
+            :rules="strokeWidthRule"
+          ></v-slider>
+        </v-flex>
+      </div>
       <div class="message-list">
         <!-- <v-chip v-for="user in usersChatting" :key="user">
           <v-avatar class="teal">A</v-avatar>
@@ -46,6 +73,8 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import Swatches from 'vue-swatches';
+// import 'vue-swatches/dist/vue-swatches.min.css';
 import chat from './chat';
 import config from '../config';
 import olMap from '../js/map';
@@ -63,9 +92,14 @@ export default {
     featuresStart: 0,
     featuresEnd: 25,
     endOfMessages: false,
+    colorPicker: '',
+    strokeWidth: '',
+    strokeWidthRule: [
+      val => val < 10 || 'I believe you!',
+    ],
   }),
   components: {
-    searchLocation, olMap, chat,
+    searchLocation, olMap, chat, Swatches,
   },
   computed: {
     newFeature() {
@@ -113,6 +147,12 @@ export default {
         console.log('feature message emitted::', JSON.stringify(message));
         this.message_content = '';
       }
+    },
+    outlineColorChanged() {
+      console.log('outline color changed');
+    },
+    fillColorChanged() {
+      console.log('fill color changed');
     },
     newFeatureMessage(msg) {
       let allLayers = [];
