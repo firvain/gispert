@@ -4,32 +4,48 @@
     <searchLocation></searchLocation>
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
-      <div class="custom-ui-class">
-        <v-flex md12>
-          <swatches
-            v-model="outlineColor"
-            inline
-            swatch-size='16'
-            @input="outlineColorChanged"
-          ></swatches>
-          <swatches
-            v-model="fillColor"
-            inline
-            swatch-size='16'
-            @input="fillColorChanged"
-          ></swatches>
-          <v-slider
-            color="orange"
-            label="Πάχος"
-            hint="Πάχος Γραμμής"
-            min="1"
-            max="8"
-            thumb-label
-            v-model="strokeWidth"
-            :rules="strokeWidthRule"
-          ></v-slider>
-        </v-flex>
-      </div>
+
+    <v-expansion-panel>
+      <v-expansion-panel-content>
+        <div slot="header">Symbology</div>
+        <div class="custom-ui-class">
+          <v-flex md12>
+            <swatches
+              v-model="outlineColor"
+              inline
+              swatch-size='16'
+              @input="outlineColorChanged"
+            ></swatches>
+            <swatches
+              v-model="fillColor"
+              inline
+              swatch-size='16'
+              @input="fillColorChanged"
+            ></swatches>
+            <v-layout row wrap>
+              <v-flex md10>
+                <v-slider
+                  color="orange"
+                  label="Πάχος"
+                  hint="Πάχος Γραμμής"
+                  min="1"
+                  max="8"
+                  thumb-label
+                  v-model="strokeWidth"
+                  :rules="strokeWidthRule"
+                ></v-slider>
+              </v-flex>
+              <v-flex md2>
+                <v-btn fab dark small color="green" @click="saveSymbology">
+                  <v-icon dark>save</v-icon>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </div>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+
       <div class="message-list">
         <!-- <v-chip v-for="user in usersChatting" :key="user">
           <v-avatar class="teal">A</v-avatar>
@@ -93,10 +109,12 @@ export default {
     featuresEnd: 25,
     endOfMessages: false,
     colorPicker: '',
-    strokeWidth: '',
     strokeWidthRule: [
       val => val < 10 || 'I believe you!',
     ],
+    outlineColor: '',
+    fillColor: '',
+    strokeWidth: '',
   }),
   components: {
     searchLocation, olMap, chat, Swatches,
@@ -150,9 +168,11 @@ export default {
     },
     outlineColorChanged() {
       console.log('outline color changed');
+      this.setSymbology();
     },
     fillColorChanged() {
       console.log('fill color changed');
+      this.setSymbology();
     },
     newFeatureMessage(msg) {
       let allLayers = [];
@@ -289,6 +309,47 @@ export default {
       }
       return true;
     },
+    setSymbology() {
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          // console.log('added feature::', AddedFeature[0]);
+          layer.getSource().forEachFeature((feature) => {
+            if (feature.get('mongoID') === this.$store.state.featureId) {
+              feature.setProperties({
+                strkWdth: this.strokeWidth,
+                strkClr: this.outlineColor,
+                fllClr: this.fillColor,
+              });
+            }
+          });
+        }
+      });
+    },
+    saveSymbology() {
+      try {
+        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/setsymbology`;
+        const data = {
+          featureId: this.$store.state.featureId,
+          strkWdth: this.strokeWidth,
+          strkClr: this.outlineColor,
+          fllClr: this.fillColor,
+        };
+        axios.post(url, { data }, {
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          if (response.status === 200) {
+            console.log('OK');
+          } else {
+            console.log('error');
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      return true;
+    },
   },
   watch: {
     '$store.state.featureId': function handle() {
@@ -311,6 +372,10 @@ export default {
           this.loading = false;
         });
       }
+    },
+    strokeWidth: function handle() {
+      console.log('width changed');
+      this.setSymbology();
     },
     newFeature: function emit() {
       console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));

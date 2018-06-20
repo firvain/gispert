@@ -58,7 +58,6 @@ router.route('/')
 });
 
 
-
 router.route('/feature')
 .post(function set(req, res) {
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
@@ -103,4 +102,33 @@ router.route('/feature')
     db.close();
   });    
 });
+
+
+router.route('/setsymbology')
+.post(function set(req, res) {
+  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+    const featureId = req.body.data.featureId;
+    console.log('feature add:: ', req.body.data.featureId);
+    if (err) {
+      throw err;
+      res.sendStatus(500);
+    } else {
+      const regexValue = ".*" + featureId + ".*";
+      console.log(regexValue);
+      db.collection('liveGeodata').find(
+        { "feature.feature": { "$regex": regexValue} }
+      ).toArray(function handle(err, res) {
+        if (err) {
+          throw err;
+        } else {
+          console.log('result', res);
+        }
+      });
+      res.sendStatus(200);
+    }
+    db.close();
+  });
+});
+
+
 module.exports = router;

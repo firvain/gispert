@@ -67,12 +67,12 @@ const createVectorStyleFunction = function setStyle() {
     if (fillColor !== undefined) {
       setFillColor = fillColor;
     } else {
-      setFillColor = 'rgba(255, 255, 255, 0.2)';
+      setFillColor = 'rgba(255, 255, 255, 0.4)';
     }
 
     const style = new ol.style.Style({
       fill: new ol.style.Fill({
-        color: 'rgba(255, 255, 255, 0.2)',
+        color: 'rgba(255, 255, 255, 0.4)',
       }),
       stroke: new ol.style.Stroke({
         color: setStrokeColor,
