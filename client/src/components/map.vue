@@ -4,48 +4,46 @@
     <searchLocation></searchLocation>
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
-
-    <v-expansion-panel>
-      <v-expansion-panel-content>
-        <div slot="header">Symbology</div>
-        <div class="custom-ui-class">
-          <v-flex md12>
-            <swatches
-              v-model="outlineColor"
-              inline
-              swatch-size='16'
-              @input="outlineColorChanged"
-            ></swatches>
-            <swatches
-              v-model="fillColor"
-              inline
-              swatch-size='16'
-              @input="fillColorChanged"
-            ></swatches>
-            <v-layout row wrap>
-              <v-flex md10>
-                <v-slider
-                  color="orange"
-                  label="Πάχος"
-                  hint="Πάχος Γραμμής"
-                  min="1"
-                  max="8"
-                  thumb-label
-                  v-model="strokeWidth"
-                  :rules="strokeWidthRule"
-                ></v-slider>
-              </v-flex>
-              <v-flex md2>
-                <v-btn fab dark small color="green" @click="saveSymbology">
-                  <v-icon dark>save</v-icon>
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </div>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
-
+      <v-expansion-panel>
+        <v-expansion-panel-content>
+          <div slot="header">Symbology</div>
+          <div class="custom-ui-class">
+            <v-flex md12>
+              <swatches
+                v-model="outlineColor"
+                inline
+                swatch-size='16'
+                @input="outlineColorChanged"
+              ></swatches>
+              <swatches
+                v-model="fillColor"
+                inline
+                swatch-size='16'
+                @input="fillColorChanged"
+              ></swatches>
+              <v-layout row wrap>
+                <v-flex md10>
+                  <v-slider
+                    color="orange"
+                    label="Πάχος"
+                    hint="Πάχος Γραμμής"
+                    min="1"
+                    max="8"
+                    thumb-label
+                    v-model="strokeWidth"
+                    :rules="strokeWidthRule"
+                  ></v-slider>
+                </v-flex>
+                <v-flex md2 v-show="$store.state.feature.get('userId') === $store.state.user._id">
+                  <v-btn fab dark small color="green" @click="saveSymbology">
+                    <v-icon dark>save</v-icon>
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+          </div>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
       <div class="message-list">
         <!-- <v-chip v-for="user in usersChatting" :key="user">
           <v-avatar class="teal">A</v-avatar>
@@ -107,7 +105,7 @@ export default {
     messagesEnd: 25,
     featuresStart: 0,
     featuresEnd: 25,
-    endOfMessages: false,
+    endOfMessages: true,
     colorPicker: '',
     strokeWidthRule: [
       val => val < 10 || 'I believe you!',
@@ -280,6 +278,11 @@ export default {
                 // console.log('message:: ', r.message);
                 this.messages.push(r.message);
               });
+              if (response.data.length < 25) {
+                this.endOfMessages = true;
+              } else {
+                this.endOfMessages = false;
+              }
             } else {
               this.endOfMessages = true;
               this.loading = false;

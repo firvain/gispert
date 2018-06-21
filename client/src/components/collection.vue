@@ -14,31 +14,40 @@
             <v-icon color="blue lighten-1" v-if="details === false">folder</v-icon>
           </v-btn>
         </v-list-tile-action>
-        <v-list-tile-action>
+        <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id">
           <v-btn fab small outline
-            @click="unfollowCollectionDialog = true" v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id">
+            @click="unfollowCollectionDialog = true">
             <v-icon color="red lighten-1">visibility_off</v-icon>
           </v-btn>
         </v-list-tile-action>
-        <v-list-tile-action>
-          <v-btn fab small outline
-            @click="deleteCollectionDialog = true"
-            v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+        <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+          <v-btn fab small outline @click="deleteCollectionDialog = true">
             <v-icon color="red lighten-1">delete</v-icon>
           </v-btn>
         </v-list-tile-action>
-        <v-list-tile-action>
-          <v-btn fab small outline v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+        <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+          <v-btn fab small outline>
             <v-icon color="orange lighten-1">edit</v-icon>
           </v-btn>
         </v-list-tile-action>
-        <v-list-tile-action>
-          <v-btn fab small outline @click="shareDialog = true"
-            v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+        <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+          <v-btn fab small outline @click="shareDialog = true">
             <v-icon color="green lighten-1">share</v-icon>
           </v-btn>
         </v-list-tile-action>
+        <v-list-tile-action v-if="collection.visibility === 'public'">
+            <v-tooltip bottom>
+              <v-btn outline fab small 
+                slot="activator" 
+                @click="shareLink = !shareLink; copyToClipboard();"
+              >
+                <v-icon color="green lighten-1">link</v-icon>
+              </v-btn>
+              <span>{{ $t("message.shareLink") }}!</span>
+            </v-tooltip>
+        </v-list-tile-action>
       </v-list-tile>
+
       <v-dialog v-model="shareDialog" persistent max-width="350">
         <v-card>
           <v-card-title class="headline">{{ $t('message.chooseUsersToShare')}}</v-card-title>
@@ -88,21 +97,22 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-
-      <!-- <v-layout row wrap v-if="details">
-        <v-flex
-          md12
-          v-for="post in posts"
-          :key="post._id"
-        >
-          <post :post='post'></post>
-        </v-flex>
-      </v-layout> -->
-      <!-- <collectionView v-if="details" :id="collection._id"></collectionView> -->
+      <v-dialog v-model="shareLink" persistent max-width="500px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">{{ $t("message.shareLink") }}</span>
+          </v-card-title>
+          <v-card-text>
+            <p>{{ $t("message.linkCopied") }}</p>
+            <v-btn color="blue darken-1" flat @click.native="shareLink = false">{{ $t("message.close") }}</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </v-flex>
 </template>
 <script>
 import axios from 'axios';
+import clipboard from 'clipboard-copy';
 import config from '../config';
 import post from './post';
 // import collectionView from './collectionView';
@@ -118,6 +128,7 @@ export default {
     deleteCollectionDialog: false,
     unfollowCollectionDialog: false,
     members: [],
+    shareLink: false,
   }),
   components: {
     post,
@@ -140,6 +151,11 @@ export default {
       //   thisCollectionUsers.remove(c);
       // });
       return thisCollectionUsers;
+    },
+    shareMapUrl() {
+      const url = `${window.location.href}/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
+      // console.log(this.customMap.id);
+      return url;
     },
   },
   methods: {
@@ -230,6 +246,9 @@ export default {
       }).then(() => {
         this.loading = false;
       });
+    },
+    copyToClipboard() {
+      clipboard(this.shareMapUrl);
     },
   },
 };

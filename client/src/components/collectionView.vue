@@ -22,7 +22,7 @@
     </v-container>
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-btn
-      v-if="$store.state.timeline.length > 0"
+      v-if="$store.state.collectionTimeline.length > 0"
       v-on:click='next_page'
       class="blue-grey white--text"
       block
@@ -138,10 +138,12 @@ export default {
       let collectionToOpen = '';
 
       if (this.$store.state.isUserLoggedIn) {
+        console.log('loading specific collection');
         url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
         userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
       } else {
-        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
+        console.log('user has the link so show the collection');
+        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collection`;
         userID = '';
       }
       if (timelineId) {

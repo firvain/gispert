@@ -2,7 +2,7 @@
   <v-container fluid class="pa-0">
   <Pageheader></Pageheader>
       <v-layout row wrap>
-        <v-flex xs5 md5>
+        <v-flex xs4 md4>
 
           <v-dialog v-model="postOpen" max-width="700px">
             <v-card>
@@ -18,7 +18,7 @@
 
           <tabs></tabs>
         </v-flex>
-        <v-flex xs7 md7>
+        <v-flex xs8 md8>
           <mapDiv></mapDiv>
         </v-flex>
       </v-layout>

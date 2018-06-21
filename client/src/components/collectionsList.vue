@@ -2,7 +2,7 @@
   <v-container id='collectionList'>
     <v-container id='list' v-if="this.$store.state.isUserLoggedIn && this.$store.state.openedTimeline === null">
       <v-container v-if="this.$store.state.isUserLoggedIn">
-        <v-layout row wrap>
+        <v-layout row wrap> {{ openedPersonsTL }}
           <v-flex md8>
             <v-text-field
               name="search-input"
@@ -315,6 +315,12 @@ export default {
     if (this.$route.params.id && this.$route.name === 'searchCollection') {
       this.openedPersonsTL = this.$route.params.id;
       console.log('loading collection from permalink, found this id:: ', this.openedPersonsTL);
+      const tl = {
+        id: this.$route.params.id,
+        type: 'collection',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
+
       // this.$eventHub.$emit('openTimeline', this.openedPersonsTL);
       this.mode = 'userTL';
     }
