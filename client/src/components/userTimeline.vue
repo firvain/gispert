@@ -142,6 +142,7 @@ export default {
       let userID;
 
       if (this.$store.state.isUserLoggedIn) {
+        console.log('loading timeline');
         url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/person`;
         if (timelineId) {
           userID = timelineId;

@@ -66,6 +66,11 @@ export default new Router({
           name: 'searchCollection',
           component: Search,
         },
+        {
+          path: 'search/usertimeline/:id',
+          name: 'searchTimeline',
+          component: Search,
+        },
       ],
     },
   ],

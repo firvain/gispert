@@ -91,7 +91,7 @@ router.route('/feature')
     } else {
       db.collection('liveGeodata').find(
         { "feature.userId": { $in: userList } }
-      ).skip(start).limit(end).toArray(function handleCursor(error, docs) {
+      ).sort( [['_id', -1]] ).skip(start).limit(end).toArray(function handleCursor(error, docs) {
         if (error) {
           res.sendStatus(500);
           console.log(error);

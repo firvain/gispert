@@ -301,7 +301,7 @@ export default {
       };
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       console.log('explore:: ', userId);
-      this.$router.push({ path: `/main/search/collection/${userId}` });
+      this.$router.push({ path: `/main/search/usertimeline/${userId}` });
     },
     exploreCollection(collectionId) {
       const tl = {
