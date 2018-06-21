@@ -84,8 +84,8 @@ const createVectorStyleFunction = function setStyle() {
           color: setFillColor,
         }),
         stroke: new ol.style.Stroke({
-          color: 'blue',
-          width: 4,
+          color: setStrokeColor,
+          width: setStrokeWidth,
         }),
       }),
       text: new ol.style.Text({

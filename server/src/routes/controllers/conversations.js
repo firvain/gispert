@@ -61,8 +61,7 @@ router.route('/')
 router.route('/feature')
 .post(function set(req, res) {
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-    const feature = req.body.feature;
-    console.log('feature add:: ', feature);
+    const feature = JSON.parse(req.body.feature.feature);
     if (err) {
       throw err;
     } else {
@@ -89,14 +88,15 @@ router.route('/feature')
     if (err) {
       throw err;
     } else {
+      // TODO: graphlookup to show the last message from conversations
       db.collection('liveGeodata').find(
-        { "feature.userId": { $in: userList } }
+        { "feature.properties.userId": { $in: userList } }
       ).sort( [['_id', -1]] ).skip(start).limit(end).toArray(function handleCursor(error, docs) {
         if (error) {
           res.sendStatus(500);
           console.log(error);
         } else {
-          // console.log(docs);
+          console.log('live geodata found:: ', docs);
           res.status(200).send(docs);
           db.close();
         }
@@ -109,34 +109,24 @@ router.route('/feature')
 
 router.route('/setsymbology')
 .post(function set(req, res) {
-  const Database = require('../database'), dbUrl = 'mongodb://' + config.mongodbHost + config.dbName
-  const database = new Database(dbUrl);
-  const featureId = req.body.data.featureId;
-  database.connect()
-  .then((res) => {
-    return res = database.findLiveGeodata(featureId);
-  })
-  .then(function (cursor) {
-    return cursor.toArray();
-  })
-  .then((res) => {
-    const updatedFeature = JSON.parse(res[0].feature.feature);
-    updatedFeature.id = res[0]._id;
-    updatedFeature.properties.strkClr = req.body.data.strkClr;
-    updatedFeature.properties.strkWdth = req.body.data.strkWdth;
-    updatedFeature.properties.fllClr = req.body.data.fllClr;
-    return updatedFeature;
-  })
-  .then(function (feature) {
-    console.log('sending symbology');
-    const id = database.setFeatureSymbology(feature);
-    return id;
-  })
-  // .then(function(id) {
-  //   console.log('updated:: ' , id);
-  // })
-  .catch(function (err) {
-    throw err;
+  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+    const feature = req.body.data;
+    console.log('feature is :: ', feature);
+    if (err) {
+      throw err;
+    } else {
+      db.collection('liveGeodata').update({
+        "feature.properties.mongoID": feature.featureId
+      }, {
+        $set:{
+            "feature.properties.strkWdth": feature.strkWdth,
+            "feature.properties.strkClr": feature.strkClr,
+            "feature.properties.fllClr": feature.fllClr
+        }
+      });
+      res.sendStatus(200);
+    }
+    db.close();
   });
 });
 

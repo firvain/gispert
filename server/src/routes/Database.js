@@ -122,50 +122,6 @@ class Database {
             );
         })
     }
-
-    findLiveGeodata(featureId) {
-        return new Promise((resolve, reject) => {
-            const regexValue = ".*" + featureId + ".*";
-            this.db.collection('liveGeodata').find({ "feature.feature": { "$regex": regexValue} }, 
-            function handler(err, doc) {
-                    console.log(err);
-                }, (err, docs) => {
-                   if(err) {
-                       reject(err);
-                   } else {
-                       resolve(docs);
-                   }
-                }
-            );
-        })
-    }
-
-    setFeatureSymbology(feature) {
-        return new Promise((resolve, reject) => {
-            console.log(feature, JSON.stringify(feature));
-            this.db.collection('liveGeodata').update({
-                _id: ObjectId(feature.id)
-              }, {
-                $set:{
-                    "feature": {
-                        "userId": feature.properties.userId,
-                        "feature": JSON.stringify(feature)
-                    }
-                }
-              },
-              (err, docs) => {
-                console.log('handling docs');
-                if(err) {
-                    console.log(err);
-                    reject(err);
-                   } else {
-                       console.log('setting symbology');
-                       resolve(docs);
-                   }
-                }
-            );
-        })
-    }
 }
 
 module.exports = Database;

@@ -194,8 +194,9 @@ export default {
       });
     },
     addNewGeometry(msg) {
+      console.log('adding new geometry from livegeodata', JSON.stringify(msg));
       const geojsonFormat = new ol.format.GeoJSON();
-      const AddedFeature = geojsonFormat.readFeatures(msg.feature);
+      const AddedFeature = geojsonFormat.readFeatures(JSON.stringify(msg));
       let allLayers = [];
       allLayers = olMap.getLayers().getArray();
       allLayers.forEach((layer) => {
@@ -330,6 +331,26 @@ export default {
         }
       });
     },
+    setSymbologyFromSocket(data) {
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          // console.log('added feature::', AddedFeature[0]);
+          layer.getSource().forEachFeature((feature) => {
+            if (feature.get('mongoID') === data.featureId) {
+              console.log('found the feature and setting properties', data);
+              feature.setProperties({
+                strkWdth: data.strkWdth,
+                strkClr: data.strkClr,
+                fllClr: data.fllClr,
+              });
+              console.log('set properties', feature.getProperties());
+            }
+          });
+        }
+      });
+    },
     saveSymbology() {
       try {
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/setsymbology`;
@@ -342,7 +363,9 @@ export default {
         axios.post(url, { data }, {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
+          data.userId = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
           if (response.status === 200) {
+            this.$socket.emit('setSymbology', data);
             console.log('OK');
           } else {
             console.log('error');
@@ -408,6 +431,10 @@ export default {
     };
     this.$options.sockets.newGeometry = (data) => {
       this.addNewGeometry(data);
+    };
+    this.$options.sockets.setSymbology = (data) => {
+      console.log('symbology received');
+      this.setSymbologyFromSocket(data);
     };
     this.$eventHub.$on('previousFeatures', () => {
       this.featuresStart -= 25;

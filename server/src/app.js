@@ -110,6 +110,11 @@ io.on('connection', function(socket) {
       socket.broadcast.to(msg.userId).emit('newGeometry', msg);
     });
 
+    socket.on('setSymbology', function handlesymbology(msg) {
+      console.log('new symbols received from client::', msg);
+      socket.broadcast.to(msg.userId).emit('setSymbology', msg);
+    });
+
     socket.on('unfollowedCollection', function handleunfollow(data) {
       console.log('catched an unfollow::', data);
       socket.broadcast.to(data.collectionId).emit('unfollowedCollection', data);
