@@ -77,9 +77,12 @@ router.route('/feature')
 .get(function get(req, res) {
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
     const userList = req.query.userList;
-    const start = parseInt(req.query.start);
+    let start = parseInt(req.query.start);
     const end = parseInt(req.query.end);
     const userId = req.query.userId;
+    if (start < 0) {
+      start = 0;
+    }
     userList.push(userId);
     console.log('userList:: ', userList, typeof (userList));
 
@@ -106,27 +109,34 @@ router.route('/feature')
 
 router.route('/setsymbology')
 .post(function set(req, res) {
-  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-    const featureId = req.body.data.featureId;
-    console.log('feature add:: ', req.body.data.featureId);
-    if (err) {
-      throw err;
-      res.sendStatus(500);
-    } else {
-      const regexValue = ".*" + featureId + ".*";
-      console.log(regexValue);
-      db.collection('liveGeodata').find(
-        { "feature.feature": { "$regex": regexValue} }
-      ).toArray(function handle(err, res) {
-        if (err) {
-          throw err;
-        } else {
-          console.log('result', res);
-        }
-      });
-      res.sendStatus(200);
-    }
-    db.close();
+  const Database = require('../database'), dbUrl = 'mongodb://' + config.mongodbHost + config.dbName
+  const database = new Database(dbUrl);
+  const featureId = req.body.data.featureId;
+  database.connect()
+  .then((res) => {
+    return res = database.findLiveGeodata(featureId);
+  })
+  .then(function (cursor) {
+    return cursor.toArray();
+  })
+  .then((res) => {
+    const updatedFeature = JSON.parse(res[0].feature.feature);
+    updatedFeature.id = res[0]._id;
+    updatedFeature.properties.strkClr = req.body.data.strkClr;
+    updatedFeature.properties.strkWdth = req.body.data.strkWdth;
+    updatedFeature.properties.fllClr = req.body.data.fllClr;
+    return updatedFeature;
+  })
+  .then(function (feature) {
+    console.log('sending symbology');
+    const id = database.setFeatureSymbology(feature);
+    return id;
+  })
+  // .then(function(id) {
+  //   console.log('updated:: ' , id);
+  // })
+  .catch(function (err) {
+    throw err;
   });
 });
 
