@@ -113,7 +113,9 @@ export default {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
           if (response.data.success === false) {
-            this.endOfUsers = true;
+            if (response.data.length < 25) {
+              this.endOfUsers = true;
+            }
             // console.log(response.data);
             // console.log('not logged in to see others');
           } else {
@@ -140,7 +142,9 @@ export default {
       }).then((response) => {
         if (response.data.length === 0) {
           console.log('success::', response.data.success);
-          this.endOfUsers = true;
+          if (response.data.length < 25) {
+            this.endOfUsers = true;
+          }
           // console.log(response.data);
           // console.log('not logged in to see others');
         } else {
@@ -159,6 +163,7 @@ export default {
         const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/search`;
         axios.get(url, {
           params: {
+            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
             keyword: this.searchUsers,
           },
           headers: { 'x-access-token': this.$store.state.token },

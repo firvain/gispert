@@ -84,7 +84,7 @@ router.route('/feature')
       start = 0;
     }
     userList.push(userId);
-    console.log('userList:: ', userList, typeof (userList));
+    // console.log('userList:: ', userList, typeof (userList));
 
     if (err) {
       throw err;
@@ -96,7 +96,7 @@ router.route('/feature')
           res.sendStatus(500);
           console.log(error);
         } else {
-          console.log(docs);
+          // console.log(docs);
           res.status(200).send(docs);
           db.close();
         }
