@@ -35,7 +35,10 @@
                   ></v-slider>
                 </v-flex>
                 <v-flex md2 v-show="$store.state.feature.get('userId') === $store.state.user._id">
-                  <v-btn fab dark small color="green" @click="saveSymbology">
+                  <v-btn fab dark small
+                    v-if="(outlineColorChange || fillColorChange || strokeWidthChange)"
+                    color="green"
+                    @click="saveSymbology">
                     <v-icon dark>save</v-icon>
                   </v-btn>
                 </v-flex>
@@ -113,6 +116,9 @@ export default {
     outlineColor: '',
     fillColor: '',
     strokeWidth: '',
+    outlineColorChange: false,
+    fillColorChange: false,
+    strokeWidthChange: false,
   }),
   components: {
     searchLocation, olMap, chat, Swatches,
@@ -166,10 +172,12 @@ export default {
     },
     outlineColorChanged() {
       console.log('outline color changed');
+      this.outlineColorChange = true;
       this.setSymbology();
     },
     fillColorChanged() {
       console.log('fill color changed');
+      this.fillColorChange = true;
       this.setSymbology();
     },
     newFeatureMessage(msg) {
@@ -340,11 +348,21 @@ export default {
           layer.getSource().forEachFeature((feature) => {
             if (feature.get('mongoID') === data.featureId) {
               console.log('found the feature and setting properties', data);
-              feature.setProperties({
-                strkWdth: data.strkWdth,
-                strkClr: data.strkClr,
-                fllClr: data.fllClr,
-              });
+              if (this.outlineColorChange) {
+                feature.setProperties({
+                  strkClr: data.strkClr,
+                });
+              }
+              if (this.fillColorChange) {
+                feature.setProperties({
+                  fllClr: data.fllClr,
+                });
+              }
+              if (this.strokeWidthChange) {
+                feature.setProperties({
+                  strkWdth: data.strkWdth,
+                });
+              }
               console.log('set properties', feature.getProperties());
             }
           });
@@ -360,6 +378,15 @@ export default {
           strkClr: this.outlineColor,
           fllClr: this.fillColor,
         };
+        if (this.outlineColorChange) {
+          data.strkClr = data.strkClr;
+        }
+        if (this.fillColorChange) {
+          data.fllClr = data.fllClr;
+        }
+        if (this.strokeWidthChange) {
+          data.strkWdth = data.strkWdth;
+        }
         axios.post(url, { data }, {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
@@ -401,6 +428,7 @@ export default {
     },
     strokeWidth: function handle() {
       console.log('width changed');
+      this.strokeWidthChange = true;
       this.setSymbology();
     },
     newFeature: function emit() {

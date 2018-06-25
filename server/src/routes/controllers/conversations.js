@@ -115,15 +115,33 @@ router.route('/setsymbology')
     if (err) {
       throw err;
     } else {
-      db.collection('liveGeodata').update({
-        "feature.properties.mongoID": feature.featureId
-      }, {
-        $set:{
-            "feature.properties.strkWdth": feature.strkWdth,
-            "feature.properties.strkClr": feature.strkClr,
-            "feature.properties.fllClr": feature.fllClr
-        }
-      });
+      if (feature.strkWdth) {
+        db.collection('liveGeodata').update({
+          "feature.properties.mongoID": feature.featureId
+        }, {
+          $set:{
+              "feature.properties.strkWdth": feature.strkWdth,
+          }
+        });  
+      }
+      if (feature.strkClr) {
+        db.collection('liveGeodata').update({
+          "feature.properties.mongoID": feature.featureId
+        }, {
+          $set:{
+              "feature.properties.strkClr": feature.strkClr,
+          }
+        });
+      }
+      if (feature.fllClr) {
+        db.collection('liveGeodata').update({
+          "feature.properties.mongoID": feature.featureId
+        }, {
+          $set:{
+              "feature.properties.fllClr": feature.fllClr
+          }
+        });
+      }
       res.sendStatus(200);
     }
     db.close();
