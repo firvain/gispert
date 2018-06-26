@@ -28,18 +28,20 @@
             <v-btn flat @click='logoutUser' v-if="$store.state.isUserLoggedIn === true">
               {{ $t("message.logout") }}
             </v-btn>
-            <v-select
-              class="top"
-              @change="setLocale"
-              v-bind:items="languages"
-              item-text="name"
-              item-value="id"
-              v-model="language"
-              label="Select"
-              single-line
-              bottom
-            ></v-select>
         </v-toolbar-items>
+        <v-flex md1>
+          <v-select
+            class="top"
+            @change="setLocale"
+            v-bind:items="languages"
+            item-text="name"
+            item-value="id"
+            v-model="language"
+            label="Select"
+            single-line
+            bottom
+          ></v-select>
+        </v-flex>
 
       <v-dialog v-model="dialogRegister" max-width="400">
         <v-tabs icons grow dark>
@@ -340,12 +342,12 @@ export default {
       language: { id: 'en', name: 'English' },
       languages: [
         { id: 'en', name: 'English' },
-        { id: 'fr', name: 'French' },
+        { id: 'fr', name: 'Français' },
         { id: 'el_GR', name: 'Ελληνικά' },
-        { id: 'de', name: 'German' },
-        { id: 'it', name: 'Italian' },
-        { id: 'es', name: 'Spanish' },
-        { id: 'nn', name: 'Norwegian' },
+        { id: 'de', name: 'Deutsche' },
+        { id: 'it', name: 'Italiano' },
+        { id: 'es', name: 'Español' },
+        { id: 'nn', name: 'Norsk' },
       ],
       currentBell: null,
     };

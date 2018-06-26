@@ -74,7 +74,9 @@ router.route('/feature')
   });
 })
 .get(function get(req, res) {
-  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+  .then(function (db) {
+    var collection = db.collection('liveGeodata');
     const userList = req.query.userList;
     let start = parseInt(req.query.start);
     const end = parseInt(req.query.end);
@@ -83,28 +85,63 @@ router.route('/feature')
       start = 0;
     }
     userList.push(userId);
-    // console.log('userList:: ', userList, typeof (userList));
 
-    if (err) {
-      throw err;
-    } else {
-      // TODO: graphlookup to show the last message from conversations
-      db.collection('liveGeodata').find(
-        { "feature.properties.userId": { $in: userList } }
-      ).sort( [['_id', -1]] ).skip(start).limit(end).toArray(function handleCursor(error, docs) {
-        if (error) {
-          res.sendStatus(500);
-          console.log(error);
-        } else {
-          console.log('live geodata found:: ', docs);
-          res.status(200).send(docs);
-          db.close();
+    return collection.aggregate([
+      { $match : { "feature.properties.userId" : { $in: userList } }},
+      { $graphLookup: {
+          from: "conversations",
+          startWith: "$feature.properties.mongoID",
+          connectFromField: "feature.properties.mongoID",
+          connectToField: "message.featureId",
+          as: "messages",
+       }},
+       { $project: {
+          "feature" : 1,
+          "messages" : { $arrayElemAt: [ "$messages", 0 ] },
         }
-      });
+      },
+      { $project: {
+        "feature.type": 1,
+        "feature.geometry" : 1,
+        "feature.properties.mongoID" : 1,
+        "feature.properties.name" : 1,
+        "feature.properties.userId" : 1,
+        "feature.properties.strkWdth" : 1,
+        "feature.properties.strkClr" : 1,
+        "feature.properties.fllClr" : 1,
+        "feature.properties.messages" : "$messages.message.content",
+      }
     }
+  ]);
     db.close();
-  });    
+    })
+  .then(function (cursor) {
+    return cursor.toArray();
+  })
+  .then(function (content) {
+    // console.log(content);
+    res.status(200).json(content);
+    // db.close();
+  })
+  .catch(function (err) {
+    throw err;
+  });
 });
+
+
+    //   db.collection('liveGeodata').find(
+    //     { "feature.properties.userId": { $in: userList } }
+    //   ).sort( [['_id', -1]] ).skip(start).limit(end).toArray(function handleCursor(error, docs) {
+    //     if (error) {
+    //       res.sendStatus(500);
+    //       console.log(error);
+    //     } else {
+    //       console.log('live geodata found:: ', docs);
+    //       res.status(200).send(docs);
+    //       db.close();
+    //     }
+    //   });
+    // }
 
 
 router.route('/setsymbology')

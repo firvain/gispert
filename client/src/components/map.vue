@@ -6,15 +6,17 @@
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
       <v-expansion-panel>
         <v-expansion-panel-content>
-          <div slot="header">Symbology</div>
+          <div slot="header">{{ $t("message.symbologyStyle")}}</div>
           <div class="custom-ui-class">
             <v-flex md12>
+              {{ $t("message.outlineColor")}}
               <swatches
                 v-model="outlineColor"
                 inline
                 swatch-size='16'
                 @input="outlineColorChanged"
               ></swatches>
+              {{ $t("message.fillColor")}}
               <swatches
                 v-model="fillColor"
                 inline
@@ -22,11 +24,10 @@
                 @input="fillColorChanged"
               ></swatches>
               <v-layout row wrap>
+                {{ $t("message.strokeWidth")}}
                 <v-flex md10>
                   <v-slider
                     color="orange"
-                    label="Πάχος"
-                    hint="Πάχος Γραμμής"
                     min="1"
                     max="8"
                     thumb-label
@@ -34,11 +35,10 @@
                     :rules="strokeWidthRule"
                   ></v-slider>
                 </v-flex>
-                <v-flex md2 v-show="$store.state.feature.get('userId') === $store.state.user._id">
+                <v-flex md2 v-show="$store.state.feature.get('userId') === $store.state.user._id && saveButtonShow">
                   <v-btn fab dark small
-                    v-if="(outlineColorChange || fillColorChange || strokeWidthChange)"
                     color="green"
-                    @click="saveSymbology">
+                    @click="saveSymbology()">
                     <v-icon dark>save</v-icon>
                   </v-btn>
                 </v-flex>
@@ -119,6 +119,7 @@ export default {
     outlineColorChange: false,
     fillColorChange: false,
     strokeWidthChange: false,
+    saveButtonShow: false,
   }),
   components: {
     searchLocation, olMap, chat, Swatches,
@@ -322,6 +323,7 @@ export default {
       return true;
     },
     setSymbology() {
+      this.saveButtonShow = true;
       let allLayers = [];
       allLayers = olMap.getLayers().getArray();
       allLayers.forEach((layer) => {
@@ -403,11 +405,21 @@ export default {
       }
       return true;
     },
+    resetSymbologyMenu() {
+      this.saveButtonShow = false;
+      this.outlineColor = '';
+      this.fillColor = '';
+      this.strokeWidth = 1;
+      this.outlineColorChange = false;
+      this.fillColorChange = false;
+      this.strokeWidthChange = false;
+    },
   },
   watch: {
     '$store.state.featureId': function handle() {
       console.log('new feature selection');
       this.messages = [];
+      this.resetSymbologyMenu();
       this.start = 0;
       this.end = 25;
       // this.loading = true;
