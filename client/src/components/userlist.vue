@@ -14,10 +14,10 @@
           ></v-text-field>
         </v-flex>
         <v-flex md4>
-          <v-btn fab outline v-on:click='searchInUsers'>
+          <v-btn fab small outline v-on:click='searchInUsers'>
             <v-icon color="green lighten-1">search</v-icon>
           </v-btn>
-          <v-btn fab outline v-on:click="mode = 'normal'">
+          <v-btn fab small outline v-on:click="mode = 'normal'">
             <v-icon color="green lighten-1">clear</v-icon>
           </v-btn>
         </v-flex>

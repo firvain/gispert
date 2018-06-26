@@ -15,10 +15,10 @@
             ></v-text-field>
           </v-flex>
           <v-flex md4>
-            <v-btn fab outline v-on:click='searchInCollections'>
+            <v-btn fab small outline v-on:click='searchInCollections'>
               <v-icon color="green lighten-1">search</v-icon>
             </v-btn>
-            <v-btn fab outline v-on:click="mode = 'normal'">
+            <v-btn fab small outline v-on:click="mode = 'normal'">
               <v-icon color="green lighten-1">clear</v-icon>
             </v-btn>
           </v-flex>
@@ -129,7 +129,7 @@
       color= snackbarColor
     >{{ message }}
     </v-snackbar>
-    <collectionView 
+    <collectionView
       v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'collection'" 
       :id="$store.state.openedTimeline.id">
     </collectionView>

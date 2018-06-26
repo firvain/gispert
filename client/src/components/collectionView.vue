@@ -72,8 +72,6 @@ export default {
       'setFeature',
     ]),
     refresh_page() {
-      //  TODO: do the correct API call
-      // console.log('refreshing page');
       this.loading = true;
       const userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
       const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
@@ -98,7 +96,6 @@ export default {
       });
     },
     next_page() {
-      //  TODO: do the correct API call
       this.loading = true;
       this.startPage += 100;
       const userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
