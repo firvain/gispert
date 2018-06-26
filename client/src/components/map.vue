@@ -25,7 +25,7 @@
               ></swatches>
               <v-layout row wrap>
                 {{ $t("message.strokeWidth")}}
-                <v-flex md10>
+                <v-flex md8>
                   <v-slider
                     color="orange"
                     min="1"
