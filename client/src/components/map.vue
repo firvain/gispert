@@ -35,7 +35,9 @@
                     :rules="strokeWidthRule"
                   ></v-slider>
                 </v-flex>
-                <v-flex md2 v-show="$store.state.feature.get('userId') === $store.state.user._id && saveButtonShow">
+                <v-flex md2 
+                  v-show="$store.state.feature.get('userId') === $store.state.user._id && saveButtonShow && $store.state.addingToPost === undefined"
+                >
                   <v-btn fab dark small
                     color="green"
                     @click="saveSymbology()">
