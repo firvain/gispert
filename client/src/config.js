@@ -8,8 +8,10 @@ const APIhttpType = 'http';
 
 const appUrl = `${APIhttpType}://${APIhost}:${APIhostPort}/${APIversion}`;
 const socketUrl = `${APIhttpType}://${APIhost}:${APIhostPort}`;
+const shareUrl = `${APIhttpType}://${APIhost}:${APIhostPort}`;
 
 module.exports = {
   url: appUrl,
   surl: socketUrl,
+  share: shareUrl,
 };

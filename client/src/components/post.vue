@@ -3,7 +3,7 @@
     <v-flex xs12 sm12>
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
-          <v-flex class="text-xs-left">
+          <v-flex class="text-xs-left"> {{ sharePostUrl }}
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
             {{ $t("message.inCollection")}}:&nbsp;
@@ -292,7 +292,7 @@ export default {
       // }
     },
     copyToClipboard() {
-      clipboard(this.shareUrl);
+      clipboard(this.sharePostUrl);
     },
     exploreTimeline(userId) {
       const tl = {
@@ -318,7 +318,7 @@ export default {
     //   return moment(parseInt(this.post.timestamp, 0)).format('lll');
     // },
     sharePostUrl() {
-      const url = `${window.location.href}/${this.post._id}`; // eslint-disable-line
+      const url = `${config.share}/#/main/search/${this.post._id}`; // eslint-disable-line
       return url;
     },
   },
