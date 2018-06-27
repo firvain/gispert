@@ -70,7 +70,7 @@ export default {
     refresh_page() {
       // console.log('refreshing page');
       this.loading = true;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+      const url = `${config.url}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
       axios.get(url, {
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
@@ -88,7 +88,7 @@ export default {
     next_page() {
       this.loading = true;
       this.startPage += 50;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+      const url = `${config.url}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
       axios.get(url, {
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
@@ -118,10 +118,10 @@ export default {
         this.posts = this.$store.state.timeline;
       }
       if (this.$store.state.isUserLoggedIn) {
-        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/all`;
+        url = `${config.url}/posts/all`;
         userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
       } else {
-        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/timeline`;
+        url = `${config.url}/public/timeline`;
         userID = '';
       }
       axios.get(url, {

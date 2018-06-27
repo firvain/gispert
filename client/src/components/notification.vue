@@ -224,7 +224,7 @@ export default {
     },
     markAsRead() {
       this.notification.read = 1;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/notifications/markAsRead`;
+      const url = `${config.url}/notifications/markAsRead`;
       const data = {
         id: this.notification._id, // eslint-disable-line no-underscore-dangle
       };
@@ -238,7 +238,7 @@ export default {
     invitationDeclined(e) {
       console.log('declined this invitation:: ', e);
       this.notification.read = 1;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/notifications/markAsRead`;
+      const url = `${config.url}/notifications/markAsRead`;
       const data = {
         id: this.notification._id, // eslint-disable-line no-underscore-dangle
       };
@@ -249,7 +249,7 @@ export default {
     },
     invitationAccepted(collectionId) {
       console.log(collectionId);
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/addMember`;
+      const url = `${config.url}/collections/addMember`;
       const data = {
         memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         collectionsId:

@@ -228,7 +228,7 @@ export default {
     newGeometryDrawn(feature) {
       console.log('send this feature to db:: ', feature);
       try {
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/feature`;
+        const url = `${config.url}/conversations/feature`;
         axios.post(url, { feature }, { headers: { 'x-access-token': this.$store.state.token } });
       } catch (error) {
         console.log(error);
@@ -237,7 +237,7 @@ export default {
     },
     async loadLiveGeodata() {
       try {
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/feature`;
+        const url = `${config.url}/conversations/feature`;
         console.log('load live geodata for::', this.$store.state.liveUsersList);
         const users = this.$store.state.liveUsersList;
         // console.log(users, typeof (users));
@@ -274,7 +274,7 @@ export default {
           this.messages = [];
         }
         if (this.$store.state.feature) {
-          const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations`;
+          const url = `${config.url}/conversations`;
           axios.get(url, {
             params: {
               featureId: this.$store.state.featureId,
@@ -309,7 +309,7 @@ export default {
     },
     async addToConversation(data) {
       try {
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations`;
+        const url = `${config.url}/conversations`;
         axios.post(url, { data }, {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
@@ -375,7 +375,7 @@ export default {
     },
     saveSymbology() {
       try {
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/conversations/setsymbology`;
+        const url = `${config.url}/conversations/setsymbology`;
         const data = {
           featureId: this.$store.state.featureId,
           strkWdth: this.strokeWidth,

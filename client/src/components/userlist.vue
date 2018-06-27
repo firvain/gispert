@@ -103,7 +103,7 @@ export default {
       console.log('loading users in userlist load users!');
       if (this.$store.state.isUserLoggedIn) {
         this.loading = true;
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+        const url = `${config.url}/users/all`;
         axios.get(url, {
           params: {
             userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
@@ -131,7 +131,7 @@ export default {
     nextPageLoadUsers() {
       console.log('loading next user page');
       this.loading = true;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+      const url = `${config.url}/users/all`;
       axios.get(url, {
         params: {
           userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
@@ -160,7 +160,7 @@ export default {
       this.mode = 'search';
       if (this.$store.state.isUserLoggedIn) {
         this.loading = true;
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/search`;
+        const url = `${config.url}/users/search`;
         axios.get(url, {
           params: {
             userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle

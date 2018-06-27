@@ -160,7 +160,7 @@ export default {
         replies: [],
       };
       // console.log('this is the post to publish', userPost);
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts`;
+      const url = `${config.url}/posts`;
       const members = this.findMembersOfThisCollection();
       console.log('members :: ', JSON.stringify(members));
       if (textToPost !== '' || userFeats !== null) {

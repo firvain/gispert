@@ -423,7 +423,7 @@ export default {
     },
     login(credentials) {
       // console.log('snack:: ', this.snackbar);
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/login`;
+      const url = `${config.url}/login`;
       axios.get(url, {
         params: {
           name: credentials.email,
@@ -455,7 +455,7 @@ export default {
         console.log('loading users in pageheader!');
         if (this.$store.state.users.length === 0) {
           this.loading = true;
-          const urlUsers = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+          const urlUsers = `${config.url}/users/all`;
           axios.get(urlUsers, {
             params: {
               userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
@@ -490,7 +490,7 @@ export default {
         if (vuexCollections && vuexCollections.length > 0) {
           this.privateCollections = this.$store.state.privateCollections;
         }
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+        const url = `${config.url}/collections`;
         axios.get(url, {
           params: {
             userId: this.getUserId(),
@@ -520,7 +520,7 @@ export default {
         if (vuexCollections && vuexCollections.length > 0) {
           this.publicCollections = this.$store.state.publicCollections;
         }
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
+        const url = `${config.url}/public/collections`;
         axios.get(url, {
           params: {
             userId: this.getUserId(),
@@ -546,7 +546,7 @@ export default {
     async loadLiveUsers() {
       try {
         this.loading = true;
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/LiveMapChatForUser`;
+        const url = `${config.url}/users/LiveMapChatForUser`;
         axios.get(url, {
           params: {
             id: this.getUserId(),
@@ -575,7 +575,7 @@ export default {
       return id;
     },
     updateProfile() {
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/updateprofile`;
+      const url = `${config.url}/users/updateprofile`;
       const updateInfo = {
         id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         email: this.emailEdit,
@@ -615,7 +615,7 @@ export default {
       // console.log('setting locale to ::', value);
       app.$i18n.locale = value;
       if (this.$store.state.isUserLoggedIn) {
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/setlocale`;
+        const url = `${config.url}/users/setlocale`;
         const updateInfo = {
           id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
           locale: value,

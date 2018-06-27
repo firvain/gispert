@@ -204,7 +204,7 @@ export default {
       }
       this.loadingReplies = true;
       this.socketReplies = 0;
-      const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/replies`;
+      const serverUrl = `${config.url}/posts/replies`;
       axios.get(serverUrl, { params: {
         ids: this.post.replies,
         start: this.startPage.toString(),

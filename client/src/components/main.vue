@@ -85,11 +85,11 @@ export default {
       let postContentNew;
       // console.log(id);
       if (this.$store.state.isUserLoggedIn) {
-        pUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/id`;
+        pUrl = `${config.url}/posts/id`;
         userIdCurrent = this.$store.state.user.id;
         token = this.$store.state.token;
       } else {
-        pUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/postid`;
+        pUrl = `${config.url}/public/postid`;
         userIdCurrent = null;
         token = null;
       }

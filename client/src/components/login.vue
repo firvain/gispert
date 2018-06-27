@@ -63,7 +63,7 @@ export default {
   methods: {
     login(credentials) {
       // console.log('snack:: ', this.snackbar);
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/login`;
+      const url = `${config.url}/login`;
       // console.log('connect to connect login url:: ', url);
       axios.get(url, {
         params: {

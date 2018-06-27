@@ -156,5 +156,5 @@ io.on('connection', function(socket) {
   });
 
 // app.listen(process.env.PORT || 8081);
-app.use(serveStatic(path.resolve(__dirname, './dist')));
-server.listen(8081);
+// app.use(serveStatic(path.resolve(__dirname, './dist')));
+server.listen(process.env.PORT || 8081);

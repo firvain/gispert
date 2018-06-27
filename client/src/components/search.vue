@@ -45,7 +45,7 @@ export default {
   // },
   methods: {
     getPublicCollections() {
-      const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+      const serverUrl = `${config.url}/collections`;
       axios.get(serverUrl, { params: {
         type: 'public',
       },
@@ -56,7 +56,7 @@ export default {
       });
     },
     getPrivateCollections() {
-      const serverUrl = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+      const serverUrl = `${config.url}/collections`;
       axios.get(serverUrl, { params: {
         type: 'private',
       },

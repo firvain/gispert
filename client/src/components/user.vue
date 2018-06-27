@@ -87,7 +87,7 @@ export default {
       });
     },
     setMembershipToCollections() {
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/setMembership`;
+      const url = `${config.url}/collections/setMembership`;
       const data = {
         memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         collectionsToFollow: this.followThese,
@@ -114,7 +114,7 @@ export default {
     },
     getCollections(id) {
       this.loading = true;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/collectionsOfUser`;
+      const url = `${config.url}/users/collectionsOfUser`;
       axios.get(url, {
         params: {
           userId: id,
@@ -148,7 +148,7 @@ export default {
     'user.showLive': function toggle() {
       console.log('show live changed');
       if (this.user.showLive) {
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/LiveMapChatForUser`;
+        const url = `${config.url}/users/LiveMapChatForUser`;
         const data = {
           id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
           liveId: this.user._id, // eslint-disable-line no-underscore-dangle
@@ -163,7 +163,7 @@ export default {
           }
         });
       } else {
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/removeLiveMapChatForUser`;
+        const url = `${config.url}/users/removeLiveMapChatForUser`;
         const data = {
           id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
           liveId: this.user._id, // eslint-disable-line no-underscore-dangle

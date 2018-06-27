@@ -179,7 +179,7 @@ export default {
     },
     deleteCollection(id) {
       this.deleteCollectionDialog = false;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/delete`;
+      const url = `${config.url}/collections/delete`;
       // console.log('id to delete:: ', id);
       axios.post(url, { id }, {
         headers: { 'x-access-token': this.$store.state.token },
@@ -197,7 +197,7 @@ export default {
     },
     unfollowCollection(id) {
       this.unfollowCollectionDialog = false;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/unfollow`;
+      const url = `${config.url}/collections/unfollow`;
       // console.log('id to delete:: ', id);
       const data = {
         memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
@@ -220,7 +220,7 @@ export default {
       });
     },
     inviteMembersToCollection(id) {
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/notifications/inviteMembers`;
+      const url = `${config.url}/notifications/inviteMembers`;
       const ids = this.members;
       const data = {
         members: ids,
@@ -234,7 +234,7 @@ export default {
       });
     },
     loadMembersOfThisCollection(id) {
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/members`;
+      const url = `${config.url}/collections/members`;
       axios.get(url, {
         params: {
           collectionId: id,

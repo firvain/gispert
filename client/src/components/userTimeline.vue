@@ -84,7 +84,7 @@ export default {
       // console.log('refreshing page');
       this.loading = true;
       const userID = this.id; // eslint-disable-line no-underscore-dangle
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/person`;
+      const url = `${config.url}/posts/person`;
       axios.get(url, {
         params: {
           start: this.startPage.toString(),
@@ -109,7 +109,7 @@ export default {
       this.loading = true;
       this.startPage += 25;
       const userID = this.id; // eslint-disable-line no-underscore-dangle
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/person`;
+      const url = `${config.url}/posts/person`;
       axios.get(url, {
         params: {
           start: this.startPage.toString(),
@@ -143,7 +143,7 @@ export default {
 
       if (this.$store.state.isUserLoggedIn) {
         console.log('loading timeline');
-        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/posts/person`;
+        url = `${config.url}/posts/person`;
         if (timelineId) {
           userID = timelineId;
         } else {

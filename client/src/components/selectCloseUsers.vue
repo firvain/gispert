@@ -62,7 +62,7 @@ export default {
     loadUsers() {
       if (this.$store.state.isUserLoggedIn) {
         this.loading = true;
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/usersToChatWith`;
+        const url = `${config.url}/users/usersToChatWith`;
         axios.get(url, {
           // eslint-disable-next-line
           params: { userId: this.$store.state.user._id },

@@ -74,7 +74,7 @@ export default {
     refresh_page() {
       this.loading = true;
       const userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
+      const url = `${config.url}/collections/collection`;
       axios.get(url, {
         params: {
           start: this.startPage.toString(),
@@ -99,7 +99,7 @@ export default {
       this.loading = true;
       this.startPage += 100;
       const userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
+      const url = `${config.url}/collections/collection`;
       axios.get(url, {
         params: {
           start: this.startPage.toString(),
@@ -136,11 +136,11 @@ export default {
 
       if (this.$store.state.isUserLoggedIn) {
         console.log('loading specific collection');
-        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/collection`;
+        url = `${config.url}/collections/collection`;
         userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
       } else {
         console.log('user has the link so show the collection');
-        url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collection`;
+        url = `${config.url}/public/collection`;
         userID = '';
       }
       if (timelineId) {

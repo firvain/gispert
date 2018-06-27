@@ -94,7 +94,7 @@ export default {
       if (this.$store.state.isUserLoggedIn) {
         this.$store.dispatch('setCustomMaps', 'empty');
         this.loading = true;
-        const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
+        const url = `${config.url}/fileLayers`;
         axios.get(url, {
           params: {
             pageFrom: 0,
@@ -115,7 +115,7 @@ export default {
     },
     nextPageLoadMaps() {
       this.loading = true;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers`;
+      const url = `${config.url}/fileLayers`;
       axios.get(url, {
         params: {
           pageFrom: this.page,
@@ -135,7 +135,7 @@ export default {
     searchCustomMaps() {
       this.mode = 'search';
       this.loading = true;
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/fileLayers/search`;
+      const url = `${config.url}/fileLayers/search`;
       axios.get(url, {
         params: {
           keyword: this.searchMaps,

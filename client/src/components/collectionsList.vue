@@ -202,7 +202,7 @@ export default {
       this.newCollection.visibility = 'public';
     },
     createCollection() {
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+      const url = `${config.url}/collections`;
       const newCollection = this.newCollection;
       newCollection.user = this.getUserId();
       newCollection.username = this.$store.state.user.name;
@@ -237,7 +237,7 @@ export default {
       if (vuexCollections && vuexCollections.length > 0) {
         this.privateCollections = this.$store.state.privateCollections;
       }
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections`;
+      const url = `${config.url}/collections`;
       axios.get(url, {
         params: {
           userId: this.getUserId(),
@@ -257,7 +257,7 @@ export default {
       if (vuexCollections && vuexCollections.length > 0) {
         this.publicCollections = this.$store.state.publicCollections;
       }
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/public/collections`;
+      const url = `${config.url}/public/collections`;
       axios.get(url, {
         params: {
           userId: this.getUserId(),
@@ -271,7 +271,7 @@ export default {
       });
     },
     getUsersList() {
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/users/all`;
+      const url = `${config.url}/users/all`;
       axios.get(url, {
         params: {
           userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
@@ -290,7 +290,7 @@ export default {
       this.loading = true;
       this.mode = 'search';
       console.log('started search');
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/collections/search`;
+      const url = `${config.url}/collections/search`;
       axios.get(url, {
         params: {
           userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle

@@ -36,7 +36,7 @@ Vue.config.productionTip = false;
 Vue.use(Vuex);
 Vue.use(SocialSharing);
 Vue.use(VueI18n);
-Vue.use(VueSocketio, `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}`);
+Vue.use(VueSocketio, `${config.surl}`);
 
 const i18n = new VueI18n({
   locale: 'en', // set locale

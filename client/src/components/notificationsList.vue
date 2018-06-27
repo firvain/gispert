@@ -96,7 +96,7 @@ export default {
   methods: {
     getNotifications() {
       console.log('getting notifications');
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/notifications/user`;
+      const url = `${config.url}/notifications/user`;
       axios.get(url, {
         params: {
           id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle

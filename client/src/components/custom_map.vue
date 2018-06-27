@@ -71,7 +71,7 @@ export default {
   methods: {
     explore(mid) {
       // this.$emit('explore', this.customMap); TODO send this on user profile!
-      const url = `${config.APIhttpType}://${config.APIhost}:${config.APIhostPort}/${config.APIversion}/filelayers/id`;
+      const url = `${config.url}/filelayers/id`;
       axios.get(url, {
         params: { id: mid },
         headers: { 'x-access-token': this.$store.state.token },
