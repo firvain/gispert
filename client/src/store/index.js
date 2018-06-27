@@ -119,9 +119,11 @@ export default new Vuex.Store({
       state.notifications = data;
     },
     setSelected(state, data) {
-      state.feature = data;
-      if (data.get('mongoID')) {
-        state.featureId = data.get('mongoID');
+      if (data) {
+        state.feature = data;
+        if (data.get('mongoID')) {
+          state.featureId = data.get('mongoID');
+        }
       }
     },
     newPostFeature(state, data) {
