@@ -1,20 +1,7 @@
 <template>
-  <div>
-    <!-- <v-toolbar color="orange" dark>
-      <v-toolbar-side-icon></v-toolbar-side-icon>
-      <v-toolbar-title>Συλλογές</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>search</v-icon>
-      </v-btn>
-      <v-btn icon>
-        <v-icon>view_module</v-icon>
-      </v-btn>
-    </v-toolbar> -->
     <v-layout row>
       <collectionsList></collectionsList>
     </v-layout>
-  </div>
 </template>
 <script>
 import axios from 'axios';
@@ -31,18 +18,6 @@ export default {
   components: {
     collectionsList, post,
   },
-  // watch: {
-  //   '$route.params.id': function handle() {
-  //     console.log('router changed in search!!!!!!');
-  //     this.loadPostFromPermalink();
-  //   },
-  // },
-  // mounted() {
-  //   this.$eventHub.$on('routerChanged', () => {
-  //     console.log('router changed through main!!!!!!');
-  //     this.loadPostFromPermalink();
-  //   });
-  // },
   methods: {
     getPublicCollections() {
       const serverUrl = `${config.url}/collections`;

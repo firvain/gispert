@@ -1,8 +1,6 @@
 <template>
   <div id='home'>
-    <v-layout row wrap>
-      <timeline></timeline>
-    </v-layout>
+    <timeline></timeline>
   </div>
 </template>
 <script>
@@ -23,4 +21,9 @@ export default {
 };
 </script>
 <style>
+  #home {
+    color: black;
+    max-height: 82vh;
+    overflow-y: scroll;
+  }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <v-container id='collectionList'>
+  <v-container id='collectionList' pa-0>
     <v-container id='list' v-if="this.$store.state.isUserLoggedIn && this.$store.state.openedTimeline === null">
       <v-container v-if="this.$store.state.isUserLoggedIn">
         <v-layout row wrap>

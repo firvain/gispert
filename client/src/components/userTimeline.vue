@@ -1,5 +1,4 @@
 <template>
-  <v-flex md12 id='timeline'>
     <v-container md9 fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
       <v-btn md8 color="secondary" dark
         block
@@ -9,29 +8,28 @@
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
       </v-btn>
-    <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collectionid="id"></newPost>
-    <v-layout row wrap>
-      <v-flex
-        md12
-        v-for="post in posts"
-        :key="post._id"
+      <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collectionid="id"></newPost>
+      <v-layout row wrap>
+        <v-flex
+          md12
+          v-for="post in posts"
+          :key="post._id"
+        >
+          <post :post='post'></post>
+        </v-flex>
+      </v-layout>
+      <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+      <v-btn
+        v-if="$store.state.userTimeline.length > 0 && endOfPosts === false"
+        v-on:click='next_page'
+        class="blue-grey white--text"
+        block
       >
-        <post :post='post'></post>
-      </v-flex>
-    </v-layout>
+        {{ $t('message.loadMore')}}
+        <v-icon right dark>navigate_next</v-icon>
+      </v-btn>
+      <span v-if="$store.state.userTimeline.length === 0">{{ $t('message.noPosts')}}</span>
     </v-container>
-    <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
-    <v-btn
-      v-if="$store.state.timeline.length > 0"
-      v-on:click='next_page'
-      class="blue-grey white--text"
-      block
-    >
-      {{ $t('message.loadMore')}}
-      <v-icon right dark>navigate_next</v-icon>
-    </v-btn>
-    <span v-if="$store.state.timeline.length === 0">{{ $t('message.noPosts')}}</span>
-  </v-flex>
 </template>
 <script>
 import axios from 'axios';
@@ -57,6 +55,7 @@ export default {
       newPostTextColor: 'white--text darken-1',
       newPostText: this.$t('message.newPostInThisCollection'),
       loading: false,
+      endOfPosts: false,
     };
   },
   components: {
@@ -105,9 +104,8 @@ export default {
       });
     },
     next_page() {
-      //  TODO: do the correct API call
       this.loading = true;
-      this.startPage += 25;
+      this.startPage += this.limitPage;
       const userID = this.id; // eslint-disable-line no-underscore-dangle
       const url = `${config.url}/posts/person`;
       axios.get(url, {
@@ -118,9 +116,13 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        response.data.forEach((d) => {
-          this.posts.push(d);
-        });
+        if (response.data.length < this.limitPage) {
+          this.endOfPosts = true;
+        } else {
+          response.data.forEach((d) => {
+            this.posts.push(d);
+          });
+        }
       }).then(() => {
         this.loading = false;
       });
