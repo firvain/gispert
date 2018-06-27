@@ -1,29 +1,28 @@
 <template>
   <div id='userList'>
-    <v-container>
+    <v-container class="pa-1">
       <v-layout row wrap v-if="$store.state.users.length > 0">
-        <v-flex md8>
-          <v-text-field
-            name="search-input"
-            :label="$t('message.search')"
-            :hint="$t('message.searchHint')"
-            v-model="searchUsers"
-            min="4"
-            append-icon="search"
-            v-on:keyup.enter="searchInUsers"
-          ></v-text-field>
-        </v-flex>
-        <v-flex md4>
-          <v-btn fab small outline v-on:click='searchInUsers'>
-            <v-icon color="green lighten-1">search</v-icon>
-          </v-btn>
-          <v-btn fab small outline v-on:click="mode = 'normal'">
-            <v-icon color="green lighten-1">clear</v-icon>
-          </v-btn>
-        </v-flex>
+        <v-text-field
+          name="search-input"
+          :label="$t('message.search')"
+          :hint="$t('message.searchHint')"
+          v-model="searchUsers"
+          min="4"
+          append-icon="search"
+          v-on:keyup.enter="searchInUsers"
+        ></v-text-field>
+        <!-- <v-btn fab small outline v-on:click='searchInUsers'>
+          <v-icon color="green lighten-1">search</v-icon>
+        </v-btn> -->
+        <v-btn fab small outline v-on:click="mode = 'normal'">
+          <v-icon color="green lighten-1">clear</v-icon>
+        </v-btn>
       </v-layout>
     </v-container>
-    <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 'normal'">
+    <v-container fluid 
+      v-bind="{ [`grid-list-${size}`]: true }" 
+      v-if="mode === 'normal'"
+      class="pa-1">
       <v-layout row wrap>
         <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
 
