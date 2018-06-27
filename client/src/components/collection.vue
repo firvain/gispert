@@ -9,46 +9,48 @@
           <v-btn v-if="collection.members" flat disabled small color="primary">{{ $t('message.membersNumber')}}: {{ collection.members.length }}</v-btn>
         </div>
       </v-card-title>
-      <v-list-tile>
-        <v-list-tile-action>
-          <v-btn fab small outline @click="exploreCollection(collection._id)">
-            <v-icon color="blue lighten-1" v-if="details">folder_open</v-icon>
-            <v-icon color="blue lighten-1" v-if="details === false">folder</v-icon>
-          </v-btn>
-        </v-list-tile-action>
-        <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id">
-          <v-btn fab small outline
-            @click="unfollowCollectionDialog = true">
-            <v-icon color="red lighten-1">visibility_off</v-icon>
-          </v-btn>
-        </v-list-tile-action>
-        <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-          <v-btn fab small outline @click="deleteCollectionDialog = true">
-            <v-icon color="red lighten-1">delete</v-icon>
-          </v-btn>
-        </v-list-tile-action>
-        <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-          <v-btn fab small outline>
-            <v-icon color="orange lighten-1">edit</v-icon>
-          </v-btn>
-        </v-list-tile-action>
-        <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-          <v-btn fab small outline @click="shareDialog = true">
-            <v-icon color="green lighten-1">share</v-icon>
-          </v-btn>
-        </v-list-tile-action>
-        <v-list-tile-action v-if="collection.visibility === 'public'">
-            <v-tooltip bottom>
-              <v-btn outline fab small 
-                slot="activator" 
-                @click="shareLink = !shareLink; copyToClipboard();"
-              >
-                <v-icon color="green lighten-1">link</v-icon>
-              </v-btn>
-              <span>{{ $t("message.shareLink") }}!</span>
-            </v-tooltip>
-        </v-list-tile-action>
-      </v-list-tile>
+      <v-card-actions class="grey lighten-3">
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-btn fab small outline @click="exploreCollection(collection._id)">
+              <v-icon color="blue lighten-1" v-if="details">folder_open</v-icon>
+              <v-icon color="blue lighten-1" v-if="details === false">folder</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id">
+            <v-btn fab small outline
+              @click="unfollowCollectionDialog = true">
+              <v-icon color="red lighten-1">visibility_off</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+            <v-btn fab small outline @click="deleteCollectionDialog = true">
+              <v-icon color="red lighten-1">delete</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+            <v-btn fab small outline>
+              <v-icon color="orange lighten-1">edit</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+            <v-btn fab small outline @click="shareDialog = true">
+              <v-icon color="green lighten-1">share</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+          <v-list-tile-action v-if="collection.visibility === 'public'">
+              <v-tooltip bottom>
+                <v-btn outline fab small 
+                  slot="activator" 
+                  @click="shareLink = !shareLink; copyToClipboard();"
+                >
+                  <v-icon color="green lighten-1">link</v-icon>
+                </v-btn>
+                <span>{{ $t("message.shareLink") }}!</span>
+              </v-tooltip>
+          </v-list-tile-action>
+        </v-list-tile>
+      </v-card-actions>
 
       <v-dialog v-model="shareDialog" persistent max-width="350">
         <v-card>

@@ -13,7 +13,7 @@
             <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
           </v-flex>
         </v-card-title>
-        <v-card-actions class="white">
+        <v-card-actions class="grey lighten-3">
             <v-tooltip bottom>
               <v-btn slot="activator"
                 fab small
