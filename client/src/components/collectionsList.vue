@@ -29,7 +29,7 @@
           <v-icon dark>add</v-icon>
         </v-btn>
         <v-tooltip bottom>
-          <span slot="activator">{{ $t("message.privateCollections") }}</span>
+          <span class = 'title' slot="activator">{{ $t("message.privateCollections") }}</span>
           <span>{{ $t('message.privateCollectionsHint')}}</span>
         </v-tooltip>
       </v-subheader>
@@ -71,7 +71,7 @@
           <v-icon dark>add</v-icon>
         </v-btn>
         <v-tooltip bottom>
-          <span slot="activator">{{ $t("message.publicCollections") }}</span>
+          <span class = 'title' slot="activator">{{ $t("message.publicCollections") }}</span>
           <span>{{ $t('message.publicCollectionsHint') }}</span>
         </v-tooltip>
       </v-subheader>

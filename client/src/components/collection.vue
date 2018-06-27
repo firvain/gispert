@@ -1,13 +1,15 @@
 <template>
-    <v-flex xs12 sm12>
+    <v-card xs12 sm12>
+      <v-card-title>
+        <div>
+          <h3 class="subheading ma-0 pa-0">
+            {{ collection.title }} {{ $t('message.ofTheUser')}} {{collection.username}}
+          </h3>
+          {{ collection.description }}
+          <v-btn v-if="collection.members" flat disabled small color="primary">{{ $t('message.membersNumber')}}: {{ collection.members.length }}</v-btn>
+        </div>
+      </v-card-title>
       <v-list-tile>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ collection.title }} {{ $t('message.ofTheUser')}} {{collection.username}}</v-list-tile-title>
-          <v-list-tile-sub-title>
-            {{ collection.description }}
-            <v-btn v-if="collection.members" flat disabled small color="primary">{{ $t('message.membersNumber')}}: {{ collection.members.length }}</v-btn>
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
         <v-list-tile-action>
           <v-btn fab small outline @click="exploreCollection(collection._id)">
             <v-icon color="blue lighten-1" v-if="details">folder_open</v-icon>
@@ -53,19 +55,18 @@
           <v-card-title class="headline">{{ $t('message.chooseUsersToShare')}}</v-card-title>
           <v-card-text>
             <v-flex xs12 sm12>
-              <!-- TODO: must exclude this user from this list v-bind:items="this.$store.state.users  -->
-            <v-select v-if="this.$store.state.users"
-              label="Επιλογή"
-              v-bind:items="this.$store.state.users"
-              v-model="members"
-              item-text="name"
-              item-value="_id"
-              multiple
-              chips
-              max-height="300px"
-              autocomplete
-            >
-            </v-select>
+              <v-select v-if="this.$store.state.users"
+                label="Επιλογή"
+                v-bind:items="this.$store.state.users"
+                v-model="members"
+                item-text="name"
+                item-value="_id"
+                multiple
+                chips
+                max-height="300px"
+                autocomplete
+              >
+              </v-select>
             </v-flex>
           </v-card-text>
           <v-card-actions>
@@ -108,7 +109,7 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-    </v-flex>
+    </v-card>
 </template>
 <script>
 import axios from 'axios';
