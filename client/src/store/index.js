@@ -124,6 +124,8 @@ export default new Vuex.Store({
         if (data.get('mongoID')) {
           state.featureId = data.get('mongoID');
         }
+      } else {
+        state.feature = undefined;
       }
     },
     newPostFeature(state, data) {

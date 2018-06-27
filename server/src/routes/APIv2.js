@@ -12,6 +12,7 @@ const groups = require('./controllers/groups');
 const collections = require('./controllers/collections');
 const notifications = require('./controllers/notifications');
 const conversations = require('./controllers/conversations');
+const features = require('./controllers/features');
 
 const login = require('./controllers/login');
 const register = require('./controllers/register');
@@ -60,5 +61,6 @@ router.use('/groups', groups);
 router.use('/collections', collections);
 router.use('/notifications', notifications);
 router.use('/conversations', conversations);
+router.use('/features', features);
 
 module.exports = router;

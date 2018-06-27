@@ -228,7 +228,7 @@ export default {
     newGeometryDrawn(feature) {
       console.log('send this feature to db:: ', feature);
       try {
-        const url = `${config.url}/conversations/feature`;
+        const url = `${config.url}/features/feature`;
         axios.post(url, { feature }, { headers: { 'x-access-token': this.$store.state.token } });
       } catch (error) {
         console.log(error);
@@ -237,7 +237,7 @@ export default {
     },
     async loadLiveGeodata() {
       try {
-        const url = `${config.url}/conversations/feature`;
+        const url = `${config.url}/features/feature`;
         console.log('load live geodata for::', this.$store.state.liveUsersList);
         const users = this.$store.state.liveUsersList;
         // console.log(users, typeof (users));
@@ -375,7 +375,7 @@ export default {
     },
     saveSymbology() {
       try {
-        const url = `${config.url}/conversations/setsymbology`;
+        const url = `${config.url}/features/setsymbology`;
         const data = {
           featureId: this.$store.state.featureId,
           strkWdth: this.strokeWidth,

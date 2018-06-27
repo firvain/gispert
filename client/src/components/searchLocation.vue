@@ -67,7 +67,7 @@
           <span>Μέτρησέ το</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[0]" slot="activator" @click="setDraw('Delete')">
+          <v-btn fab small :color="toolColors[0]" slot="activator" @click="deleteFeature()">
             <v-icon dark>delete</v-icon>
           </v-btn>
           <span>Διέγραψέ το</span>
@@ -105,6 +105,8 @@
 </template>
 <script>
 import ol from 'openlayers';
+import axios from 'axios';
+import config from '../config';
 import userSelector from './selectCloseUsers';
 import olMap from '../js/map';
 
@@ -191,6 +193,47 @@ export default {
     addToPost() {
       console.log(this.$store.state.feature);
       this.$store.commit('newPostFeature', this.$store.state.feature);
+    },
+    deleteFeature() {
+      // delete in vuex
+      // search in vector source and delete from ol3js
+      try {
+        // axios.post(url, { feature }, { headers: { 'x-access-token': this.$store.state.token } });
+        const url = `${config.url}/features/delete`;
+        const data = {
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          featureId: this.$store.state.feature.get('mongoID'),
+        };
+        axios.post(url, { data }, { headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          console.log('response status:: ', response.status);
+          if (response.status === 200) {
+            this.$store.commit('setSelected', undefined);
+            console.log('deleted');
+          } else {
+            console.log('error');
+          }
+        }).then(() => {
+          let allLayers = [];
+          allLayers = olMap.getLayers().getArray();
+          allLayers.forEach((layer) => {
+            if (layer.getProperties().name === 'customLayer') {
+              layer.getSource().forEachFeature((feature) => {
+                if (feature.get('mongoID') === this.$store.state.featureId) {
+                  layer.getSource().removeFeature(feature);
+                  olMap.getInteractions().forEach((interaction) => {
+                    if (interaction instanceof ol.interaction.Select) {
+                      interaction.getFeatures().clear();
+                    }
+                  });
+                }
+              });
+            }
+          });
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
     setActiveAnalysis(type) {
       this.activeAnalysis = type;
