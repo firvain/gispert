@@ -3,7 +3,7 @@
     <v-flex xs12 sm12>
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
-          <v-flex class="text-xs-left"> {{ sharePostUrl }}
+          <v-flex class="text-xs-left">
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
             {{ $t("message.inCollection")}}:&nbsp;
