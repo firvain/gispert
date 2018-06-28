@@ -3,6 +3,13 @@ const APIhostPort = '8081';
 const APIversion = 'v1';
 const APIhttpType = 'http';
 const hostPost = '8080';
+
+// const APIhost = 'geobabel.herokuapp.com';
+// const APIhostPort = '8081';
+// const APIversion = 'v1';
+// const APIhttpType = 'https';
+// const hostPost = '8080';
+
 // const google_id = '';
 // const facebook_id = '';
 

@@ -140,7 +140,8 @@ router.route('/collection')
             { 'isReplyTo': '' },
             {$or: [
                 { "collectionData.members": ObjectID(userId) }, 
-                { "collectionData.user": ObjectID(userId) }
+                { "collectionData.user": ObjectID(userId) },
+                { "collectionData.visibility": 'public' }
             ]}
           ]}
         },

@@ -161,8 +161,11 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        // console.log(response);
-        this.posts = response.data;
+        if (response.data.length > 0) {
+          this.posts = response.data;
+        } else {
+          this.loading = false;
+        }
       }).then(() => {
         this.loading = false;
         this.$store.dispatch('setCollectionTimeline', this.posts);
