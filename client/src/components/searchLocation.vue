@@ -73,7 +73,9 @@
           <span>Διέγραψέ το</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[0]" slot="activator" @click="setDraw('Buffer')">
+          <v-btn fab small :color="toolColors[0]"
+            v-if="$store.state.feature.getGeometry().getType() === 'Point'"
+            slot="activator" @click="createBufferDialog = true;">
             <v-icon dark>panorama_fish_eye</v-icon>
           </v-btn>
           <span>Βρες τη ζώνη επιρροής</span>
@@ -101,11 +103,29 @@
     <v-dialog v-model="userSelector" scrollable max-width="300px"> 
       <userSelector v-show="userSelector" :active = 'userSelector'></userSelector>
     </v-dialog>
+    <v-dialog v-model="createBufferDialog" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span>Απόσταση;</span>
+          <v-spacer></v-spacer>
+        </v-card-title>
+        <v-card-actions>
+          <v-text-field
+            name="distance"
+            label="Απόσταση"
+            v-model="bufferDistance"
+          ></v-text-field>          
+          <v-btn color="primary" flat @click.stop="createBufferDialog=false">Κλείσιμο</v-btn>
+          <v-btn color="primary" flat @click.stop="createBuffer()">Εκτέλεση</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import turf from 'turf';
 import config from '../config';
 import userSelector from './selectCloseUsers';
 import olMap from '../js/map';
@@ -123,6 +143,8 @@ export default {
     selectedFeature: olMap.selectedFeature,
     activeAnalysis: null,
     userSelector: false,
+    createBufferDialog: false,
+    bufferDistance: 500,
   }),
   computed: {
     currentlySelectedFeature() {
@@ -234,6 +256,27 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    createBuffer() {
+      const geojsonFormat = new ol.format.GeoJSON();
+      const units = 'kilometers';
+      const point = turf.point(this.$store.state.feature.getGeometry().getCoordinates());
+      console.log(point);
+      const buffer = turf.buffer(point, this.bufferDistance * 100, units);
+      console.log(buffer);
+      const g = geojsonFormat.readFeatures(buffer);
+      g[0].setProperties({
+        mongoID: `${this.$store.state.user._id} ${Date.now()}`, // eslint-disable-line no-underscore-dangle
+        name: `@${this.$store.state.user.name}`,
+        userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+      });
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().addFeatures(g);
+        }
+      });
     },
     setActiveAnalysis(type) {
       this.activeAnalysis = type;
