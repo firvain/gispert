@@ -61,7 +61,9 @@
           <span>Δες σχετικές αναρτήσεις</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('measure')">
+          <v-btn fab small :color="toolColors[2]"
+            v-if="$store.state.feature.getGeometry().getType() === 'Polygon' || $store.state.feature.getGeometry().getType() === 'LineString'"
+            slot="activator" @click="measure()">
             <v-icon dark>straighten</v-icon>
           </v-btn>
           <span>Μέτρησέ το</span>
@@ -81,13 +83,17 @@
           <span>Βρες τη ζώνη επιρροής</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[1]" slot="activator" @click="setDraw('Union')">
+          <v-btn fab small :color="toolColors[1]"
+            v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
+            slot="activator" @click="setDraw('Union')">
             <v-icon dark>flip_to_back</v-icon>
           </v-btn>
           <span>Ένωσέ το με ένα άλλο</span>
         </v-tooltip>
         <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('Clip')">
+          <v-btn fab small :color="toolColors[2]"
+            v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
+            slot="activator" @click="setDraw('Clip')">
             <v-icon dark>layers</v-icon>
           </v-btn>
           <span>Βρες κοινή περιοχή με ένα άλλο</span>
@@ -120,6 +126,12 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="dialogMeasurements" max-width="500" color='white'>
+      <v-card>
+        <v-card-title>{{ measurement }}</v-card-title>
+        <v-btn color="primary" flat @click.stop="dialogMeasurements=false">Κλείσιμο</v-btn>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -145,6 +157,8 @@ export default {
     userSelector: false,
     createBufferDialog: false,
     bufferDistance: 500,
+    measurement: '',
+    dialogMeasurements: false,
   }),
   computed: {
     currentlySelectedFeature() {
@@ -277,6 +291,21 @@ export default {
           layer.getSource().addFeatures(g);
         }
       });
+    },
+    measure() {
+      const geojsonFormat = new ol.format.GeoJSON();
+      const g = geojsonFormat.writeFeatureObject(this.$store.state.feature);
+      const units = 'kilometers';
+      if (this.$store.state.feature.getGeometry().getType() === 'Polygon') {
+        console.log('area:: ', turf.area(g));
+        this.dialogMeasurements = true;
+        this.measurement = `${Math.round(turf.area(g) / 10000000000)} m2`;
+      }
+      if (this.$store.state.feature.getGeometry().getType() === 'LineString') {
+        console.log('length:: ', turf.lineDistance(g, units));
+        this.dialogMeasurements = true;
+        this.measurement = `${Math.round(turf.lineDistance(g, units)) / 100} m`;
+      }
     },
     setActiveAnalysis(type) {
       this.activeAnalysis = type;

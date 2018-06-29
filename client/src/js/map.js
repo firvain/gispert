@@ -44,8 +44,9 @@ const getHashtags = function getText(feature) {
   return text;
 };
 
-const createVectorStyleFunction = function setStyle() {
-  return function getStyle(feature) {
+function normalStyle(feature) {
+  let style;
+  if (feature.getGeometry().getType() === 'Point') {
     const strokeWidth = feature.get('strkWdth');
     const strokeColor = feature.get('strkClr');
     const fillColor = feature.get('fllClr');
@@ -70,7 +71,7 @@ const createVectorStyleFunction = function setStyle() {
       setFillColor = 'rgba(255, 255, 255, 0.4)';
     }
 
-    const style = new ol.style.Style({
+    style = new ol.style.Style({
       fill: new ol.style.Fill({
         color: 'rgba(255, 255, 255, 0.4)',
       }),
@@ -101,17 +102,117 @@ const createVectorStyleFunction = function setStyle() {
         offsetY: -15,
       }),
     });
-    return [style];
-  };
-};
+  }
+  if (feature.getGeometry().getType() === 'LineString') {
+    const strokeWidth = feature.get('strkWdth');
+    const strokeColor = feature.get('strkClr');
+    // const start = feature.getGeometry().getFirstCoordinate();
+    // const end = feature.getGeometry().getLastCoordinate();
 
-const createSelectedStyleFunction = function setStyle() {
-  return function getStyle(feature) {
-    const setstrkWidth = 2;
-    const setstrkColor = 'white';
-    const setFillColor = 'rgba(0, 0, 255, 0.2)';
+    // const dx = end[0] - start[0];
+    // const dy = end[1] - start[1];
+    // const rotation = Math.atan2(dy, dx);
 
-    const style = new ol.style.Style({
+    let setStrokeWidth;
+    let setStrokeColor;
+
+    if (strokeWidth !== undefined) {
+      setStrokeWidth = strokeWidth;
+    } else {
+      setStrokeWidth = 2;
+    }
+    if (strokeColor !== undefined) {
+      setStrokeColor = strokeColor;
+    } else {
+      setStrokeColor = 'blue';
+    }
+
+    style = new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: setStrokeColor,
+        width: setStrokeWidth,
+      }),
+      text: new ol.style.Text({
+        font: 'bold 12px Verdana',
+        text: getHashtags(feature),
+        fill: new ol.style.Fill({
+          color: 'blue',
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'white',
+          width: 3.5,
+        }),
+        offsetY: -15,
+      }),
+    });
+  }
+  if (feature.getGeometry().getType() === 'Polygon') {
+    const strokeWidth = feature.get('strkWdth');
+    const strokeColor = feature.get('strkClr');
+    const fillColor = feature.get('fllClr');
+
+    let setStrokeWidth;
+    let setStrokeColor;
+    let setFillColor;
+
+    if (strokeWidth !== undefined) {
+      setStrokeWidth = strokeWidth;
+    } else {
+      setStrokeWidth = 2;
+    }
+    if (strokeColor !== undefined) {
+      setStrokeColor = strokeColor;
+    } else {
+      setStrokeColor = 'blue';
+    }
+    if (fillColor !== undefined) {
+      setFillColor = fillColor;
+    } else {
+      setFillColor = 'rgba(255, 255, 255, 0.4)';
+    }
+
+    style = new ol.style.Style({
+      fill: new ol.style.Fill({
+        color: 'rgba(255, 255, 255, 0.4)',
+      }),
+      stroke: new ol.style.Stroke({
+        color: setStrokeColor,
+        width: setStrokeWidth,
+      }),
+      image: new ol.style.Circle({
+        radius: 5,
+        fill: new ol.style.Fill({
+          color: setFillColor,
+        }),
+        stroke: new ol.style.Stroke({
+          color: setStrokeColor,
+          width: setStrokeWidth,
+        }),
+      }),
+      text: new ol.style.Text({
+        font: 'bold 12px Verdana',
+        text: getHashtags(feature),
+        fill: new ol.style.Fill({
+          color: 'blue',
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'white',
+          width: 3.5,
+        }),
+        offsetY: -15,
+      }),
+    });
+  }
+  return [style];
+}
+
+function selectedStyle(feature) {
+  const setstrkWidth = 2;
+  const setstrkColor = 'white';
+  const setFillColor = 'rgba(0, 0, 255, 0.2)';
+  let style;
+  if (feature.getGeometry().getType() === 'Point') {
+    style = new ol.style.Style({
       fill: new ol.style.Fill({
         color: setFillColor,
       }),
@@ -142,13 +243,66 @@ const createSelectedStyleFunction = function setStyle() {
         offsetY: -15,
       }),
     });
-    return [style];
-  };
-};
+  }
+  if (feature.getGeometry().getType() === 'LineString') {
+    style = new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: setstrkColor,
+        width: setstrkWidth,
+      }),
+      text: new ol.style.Text({
+        font: 'bold 12px Verdana',
+        text: getHashtags(feature),
+        fill: new ol.style.Fill({
+          color: 'blue',
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'white',
+          width: 3.5,
+        }),
+        offsetY: -15,
+      }),
+    });
+  }
+  if (feature.getGeometry().getType() === 'Polygon') {
+    style = new ol.style.Style({
+      fill: new ol.style.Fill({
+        color: setFillColor,
+      }),
+      stroke: new ol.style.Stroke({
+        color: setstrkColor,
+        width: setstrkWidth,
+      }),
+      image: new ol.style.Circle({
+        radius: 5,
+        fill: new ol.style.Fill({
+          color: setFillColor,
+        }),
+        stroke: new ol.style.Stroke({
+          color: setstrkColor,
+          width: setstrkWidth,
+        }),
+      }),
+      text: new ol.style.Text({
+        font: 'bold 12px Verdana',
+        text: getHashtags(feature),
+        fill: new ol.style.Fill({
+          color: 'blue',
+        }),
+        stroke: new ol.style.Stroke({
+          color: 'white',
+          width: 3.5,
+        }),
+        offsetY: -15,
+      }),
+    });
+  }
+  return [style];
+}
 
 
 const customLayer = new ol.layer.Vector({
-  style: createVectorStyleFunction(),
+  style: normalStyle,
   source: new ol.source.Vector(),
   name: 'customLayer',
 });
@@ -186,7 +340,7 @@ const collection = new ol.Collection();
 const selectClick = new ol.interaction.Select({
   layers: [customLayer],
   condition: ol.events.condition.click,
-  style: createSelectedStyleFunction(),
+  style: selectedStyle,
 });
 selectClick.getFeatures().on('change:length', () => {
   const length = selectClick.getFeatures().getLength();

@@ -29,7 +29,7 @@ router.route('/')
     collections: ObjectId(req.body.userPost.collections),
     replies: req.body.userPost.replies
   };
-  const Database = require('../database')
+  const Database = require('../Database')
       , dbUrl = 'mongodb://' + config.mongodbHost + config.dbName
   const database = new Database(dbUrl);
   database.connect()
