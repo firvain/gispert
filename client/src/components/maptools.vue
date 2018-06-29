@@ -1,31 +1,9 @@
 <template>
   <div>
     <v-card flat height="0px">
-      <v-toolbar class="white overflowing" absolute dense offset-xs2>
-        <v-tooltip bottom>
-          <v-btn fab small slot="activator" @click="$eventHub.$emit('previousFeatures')">
-            <v-icon dark>chevron_left</v-icon>
-          </v-btn>
-          <span>Δες προηγούμενα γεωδεδομένα</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small slot="activator" @click="$eventHub.$emit('nextFeatures')">
-            <v-icon dark>chevron_right</v-icon>
-          </v-btn>
-          <span>Δες επόμενα γεωδεδομένα</span>
-        </v-tooltip>
-
-        <v-text-field prepend-icon="search" hide-details single-line></v-text-field>
-        <v-btn icon v-bind:color="selectColor" @click="toggle_map_tools('selectFeatures')" v-if="this.$store.state.isUserLoggedIn">
-          <v-icon>crop_free</v-icon>
-        </v-btn>
-        <v-btn icon v-bind:color="drawColor" @click="toggle_map_tools('drawFeatures')" v-if="this.$store.state.isUserLoggedIn">
-          <v-icon>location_on</v-icon>
-        </v-btn>
-      </v-toolbar>
-
-      <v-container class="text-xs-center" v-if="selectedTool === 'drawFeatures' && this.$store.state.isUserLoggedIn">
-        <br><br>
+      <v-toolbar class="white" absolute dense offset-xs2>
+      <v-layout class="text-xs-center" v-if="selectedTool === 'drawFeatures' && this.$store.state.isUserLoggedIn">
+        <!-- <br><br> -->
         <v-tooltip bottom>
           <v-btn fab small :color="toolColors[0]" slot="activator" @click="setDraw('Point')">
             <v-icon dark>location_on</v-icon>
@@ -44,67 +22,88 @@
         </v-btn>
           <span>Βάλε στο χάρτη ένα πολύγωνο</span>
         </v-tooltip>
-      </v-container>
+      </v-layout>
+        <!-- <v-tooltip bottom>
+          <v-btn fab small slot="activator" @click="$eventHub.$emit('previousFeatures')">
+            <v-icon dark>chevron_left</v-icon>
+          </v-btn>
+          <span>Δες προηγούμενα γεωδεδομένα</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <v-btn fab small slot="activator" @click="$eventHub.$emit('nextFeatures')">
+            <v-icon dark>chevron_right</v-icon>
+          </v-btn>
+          <span>Δες επόμενα γεωδεδομένα</span>
+        </v-tooltip> -->
 
-      <v-container class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
-        <br><br>
-        <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]" slot="activator" @click="addToPost()">
-            <v-icon dark>loupe</v-icon>
-          </v-btn>
-          <span>Πρόσθεσέ το στην ανάρτηση</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('contains')">
-            <v-icon dark>explore</v-icon>
-          </v-btn>
-          <span>Δες σχετικές αναρτήσεις</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]"
-            v-if="$store.state.feature.getGeometry().getType() === 'Polygon' || $store.state.feature.getGeometry().getType() === 'LineString'"
-            slot="activator" @click="measure()">
-            <v-icon dark>straighten</v-icon>
-          </v-btn>
-          <span>Μέτρησέ το</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[0]" slot="activator" @click="deleteFeature()">
-            <v-icon dark>delete</v-icon>
-          </v-btn>
-          <span>Διέγραψέ το</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[0]"
-            v-if="$store.state.feature.getGeometry().getType() === 'Point'"
-            slot="activator" @click="createBufferDialog = true;">
-            <v-icon dark>panorama_fish_eye</v-icon>
-          </v-btn>
-          <span>Βρες τη ζώνη επιρροής</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[1]"
-            v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
-            slot="activator" @click="setDraw('Union')">
-            <v-icon dark>flip_to_back</v-icon>
-          </v-btn>
-          <span>Ένωσέ το με ένα άλλο</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]"
-            v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
-            slot="activator" @click="setDraw('Clip')">
-            <v-icon dark>layers</v-icon>
-          </v-btn>
-          <span>Βρες κοινή περιοχή με ένα άλλο</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[2]" slot="activator" @click="chatOnThisFeature()">
-            <v-icon dark>send</v-icon>
-          </v-btn>
-          <span>Στείλτο σε άλλους χρήστες</span>
-        </v-tooltip>
-      </v-container>
+        <!-- <v-text-field prepend-icon="search" hide-details single-line></v-text-field> -->
+        <!-- <v-btn icon v-bind:color="selectColor" @click="toggle_map_tools('selectFeatures')" v-if="this.$store.state.isUserLoggedIn">
+          <v-icon>crop_free</v-icon>
+        </v-btn>
+        <v-btn icon v-bind:color="drawColor" @click="toggle_map_tools('drawFeatures')" v-if="this.$store.state.isUserLoggedIn">
+          <v-icon>location_on</v-icon>
+        </v-btn> -->
+        <v-layout class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
+          <!-- <br><br> -->
+          <!-- <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[2]" slot="activator" @click="addToPost()">
+              <v-icon dark>loupe</v-icon>
+            </v-btn>
+            <span>Πρόσθεσέ το στην ανάρτηση</span>
+          </v-tooltip> -->
+          <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('contains')">
+              <v-icon dark>explore</v-icon>
+            </v-btn>
+            <span>Δες σχετικές αναρτήσεις</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[2]"
+              v-if="$store.state.feature.getGeometry().getType() === 'Polygon' || $store.state.feature.getGeometry().getType() === 'LineString'"
+              slot="activator" @click="measure()">
+              <v-icon dark>straighten</v-icon>
+            </v-btn>
+            <span>Μέτρησέ το</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[0]" slot="activator" @click="deleteFeature()">
+              <v-icon dark>delete</v-icon>
+            </v-btn>
+            <span>Διέγραψέ το</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[0]"
+              v-if="$store.state.feature.getGeometry().getType() === 'Point'"
+              slot="activator" @click="createBufferDialog = true;">
+              <v-icon dark>panorama_fish_eye</v-icon>
+            </v-btn>
+            <span>Βρες τη ζώνη επιρροής</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[1]"
+              v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
+              slot="activator" @click="setDraw('Union')">
+              <v-icon dark>flip_to_back</v-icon>
+            </v-btn>
+            <span>Ένωσέ το με ένα άλλο</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[2]"
+              v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
+              slot="activator" @click="setDraw('Clip')">
+              <v-icon dark>layers</v-icon>
+            </v-btn>
+            <span>Βρες κοινή περιοχή με ένα άλλο</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[2]" slot="activator" @click="chatOnThisFeature()">
+              <v-icon dark>send</v-icon>
+            </v-btn>
+            <span>Στείλτο σε άλλους χρήστες</span>
+          </v-tooltip>
+        </v-layout>
+      </v-toolbar>
+
     </v-card>
     <v-dialog v-model="userSelector" scrollable max-width="300px"> 
       <userSelector v-show="userSelector" :active = 'userSelector'></userSelector>
@@ -148,7 +147,6 @@ export default {
     userSelector,
   },
   data: () => ({
-    selectedTool: 'selectFeatures',
     selectColor: 'green',
     drawColor: 'white',
     toolColors: ['white', 'white', 'white'],
@@ -164,16 +162,24 @@ export default {
     currentlySelectedFeature() {
       return this.$store.state.feature;
     },
+    selectedTool() {
+      return this.$store.state.activeMapTool;
+    },
+  },
+  watch: {
+    '$store.state.activeMapTool': function () {
+      this.toggle_map_tools(this.selectedTool);
+    },
   },
   created() {
-    this.$root.$on('showTools', () => {
-      if (this.selectedTool === 'selectFeatures') {
-        this.toggle_map_tools('drawFeatures');
-      }
-    });
-    this.$eventHub.$on('drawEnd', () => {
-      this.toggle_map_tools('selectFeatures');
-    });
+    // this.$root.$on('showTools', () => {
+    //   if (this.selectedTool === 'selectFeatures') {
+    //     this.toggle_map_tools('drawFeatures');
+    //   }
+    // });
+    // this.$eventHub.$on('drawEnd', () => {
+    //   this.toggle_map_tools('selectFeatures');
+    // });
   },
   methods: {
     toggle_map_tools(selectedTool) {

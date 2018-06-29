@@ -1,7 +1,5 @@
 <template>
-  <div id='home'>
-    <timeline></timeline>
-  </div>
+  <timeline></timeline>
 </template>
 <script>
 // import axios from 'axios';
@@ -21,9 +19,4 @@ export default {
 };
 </script>
 <style>
-  #home {
-    color: black;
-    max-height: 82vh;
-    overflow-y: scroll;
-  }
 </style>

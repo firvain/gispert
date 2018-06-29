@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
+    <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0" id="timeline">
       <v-tooltip bottom>
         <v-btn slot="activator" block color="secondary" dark
           width="50px"
@@ -101,7 +101,9 @@ export default {
         this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
         this.$store.commit('addingToPost', undefined);
+        this.$store.commit('setActiveMapTool', 'selectFeatures');
       } else {
+        this.$store.commit('setActiveMapTool', 'drawFeatures');
         this.newPostText = this.$t('message.cancel');
         this.newPostColor = 'red';
       }

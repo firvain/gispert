@@ -27,8 +27,12 @@ export default new Vuex.Store({
     notifications: [],
     openedTimeline: null,
     liveUsersList: null,
+    activeMapTool: 'selectFeatures',
   },
   actions: {
+    setActiveMapTool(state, data) {
+      state.commit('setActiveMapTool', data);
+    },
     setFeature(state, data) {
       state.commit('setSelected', data);
     },
@@ -280,6 +284,9 @@ export default new Vuex.Store({
     },
     setLiveUsers (state, data) {
       state.liveUsersList = data;
+    },
+    setActiveMapTool (state, data) {
+      state.activeMapTool = data;
     },
   },
   getters: {

@@ -19,7 +19,7 @@
           </v-flex>
         </v-layout>
         <v-flex v-if="drawnFeatures !== undefined">
-          <v-tooltip bottom>
+          <!-- <v-tooltip bottom>
             <v-btn :outline="this.id !== this.$store.state.addingToPost" small fab slot="activator"
               class="indigo--text"
               color="green"
@@ -27,7 +27,7 @@
               <v-icon>edit</v-icon>
             </v-btn>
             <span>{{ $t('message.sketchToAddToPost') }}</span>
-          </v-tooltip>
+          </v-tooltip> -->
           <v-chip close v-for="f in drawnFeatures" :key='f.drawId' @input="remove(f.drawId)">
             {{ f.getGeometry().getType() }}
           </v-chip>

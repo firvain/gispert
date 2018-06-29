@@ -1,7 +1,7 @@
 <template>
   <div id='mw' class="mapStyle">
     <link rel="stylesheet" href="https://unpkg.com/vue-swatches/dist/vue-swatches.min.css">
-    <searchLocation></searchLocation>
+    <mapTools></mapTools>
     <div id='mapDiv' class="mapStyle"></div>
     <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
       <v-expansion-panel>
@@ -49,11 +49,7 @@
           </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
-      <div class="message-list">
-        <!-- <v-chip v-for="user in usersChatting" :key="user">
-          <v-avatar class="teal">A</v-avatar>
-          {{ user }}
-        </v-chip> -->
+      <!-- <div class="message-list">
         <v-progress-circular v-show='loading' indeterminate v-bind:width="3" color="blue"></v-progress-circular>
         <div class="" v-for="(message, index) in messages" v-bind:key="index">
           <chat :message= 'message'></chat>
@@ -68,8 +64,8 @@
           <v-icon right dark>navigate_next</v-icon>
         </v-btn>
       
-      </div>
-      <v-layout row>
+      </div> -->
+      <!-- <v-layout row>
       <v-flex xs10 md10>
         <v-text-field
           name="input-1"
@@ -85,19 +81,19 @@
           <v-icon dark>send</v-icon>
         </v-btn>
       </v-flex>
-      </v-layout>
+      </v-layout> -->
     </v-container>
   </div>
 </template>
 <script>
-import ol from 'openlayers';
+// import ol from 'openlayers';
 import axios from 'axios';
 import Swatches from 'vue-swatches';
 // import 'vue-swatches/dist/vue-swatches.min.css';
 import chat from './chat';
 import config from '../config';
 import olMap from '../js/map';
-import searchLocation from './searchLocation';
+import mapTools from './maptools';
 
 export default {
   name: 'mw',
@@ -124,7 +120,7 @@ export default {
     saveButtonShow: false,
   }),
   components: {
-    searchLocation, olMap, chat, Swatches,
+    mapTools, olMap, chat, Swatches,
   },
   computed: {
     newFeature() {
@@ -139,40 +135,40 @@ export default {
       }
       return feature;
     },
-    currentMessages() {
-      let messages = '';
-      if (Object.keys(this.$store.state.feature).length > 0) {
-        const featureKeys = this.$store.state.feature.getKeys();
-        if (featureKeys.indexOf('messages') > 0) {
-          messages = [];
-          messages = this.$store.state.feature.get('messages').split('\n');
-        }
-      } else {
-        messages = [];
-      }
-      this.messages = this.$store.state.feature.get('messages').split('\n');
-      return messages;
-    },
+    // currentMessages() {
+    //   let messages = '';
+    //   if (Object.keys(this.$store.state.feature).length > 0) {
+    //     const featureKeys = this.$store.state.feature.getKeys();
+    //     if (featureKeys.indexOf('messages') > 0) {
+    //       messages = [];
+    //       messages = this.$store.state.feature.get('messages').split('\n');
+    //     }
+    //   } else {
+    //     messages = [];
+    //   }
+    //   this.messages = this.$store.state.feature.get('messages').split('\n');
+    //   return messages;
+    // },
   },
   methods: {
-    sendMessage() {
-      if (this.content !== '') {
-        const message = {
-          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-          userName: this.$store.state.user.name,
-          content: this.message_content,
-          date: new Date(),
-          featureId: this.$store.state.feature.get('mongoID'),
-        };
-        this.$socket.emit('featureMessage', message);
-        this.addToConversation(message).then(() => {
-          this.loading = false;
-        });
-        this.messages.unshift(message);
-        console.log('feature message emitted::', JSON.stringify(message));
-        this.message_content = '';
-      }
-    },
+    // sendMessage() {
+    //   if (this.content !== '') {
+    //     const message = {
+    //       userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+    //       userName: this.$store.state.user.name,
+    //       content: this.message_content,
+    //       date: new Date(),
+    //       featureId: this.$store.state.feature.get('mongoID'),
+    //     };
+    //     this.$socket.emit('featureMessage', message);
+    //     this.addToConversation(message).then(() => {
+    //       this.loading = false;
+    //     });
+    //     this.messages.unshift(message);
+    //     console.log('feature message emitted::', JSON.stringify(message));
+    //     this.message_content = '';
+    //   }
+    // },
     outlineColorChanged() {
       console.log('outline color changed');
       this.outlineColorChange = true;
@@ -183,147 +179,148 @@ export default {
       this.fillColorChange = true;
       this.setSymbology();
     },
-    newFeatureMessage(msg) {
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          let alreadyExists = false;
-          layer.getSource().forEachFeature((feature) => {
-            console.log('feature to add:: ', JSON.stringify(msg));
-            if (feature.get('mongoID') === msg.featureId) {
-              alreadyExists = true;
-              console.log('setting properties', msg.userName, msg.content);
-              feature.setProperties({ messages: `${msg.userName}: ${msg.content}` });
-              this.messages.unshift(msg);
-            }
-          });
-          if (alreadyExists === false) {
-            console.log('must ajax it');
-          }
-        }
-      });
-    },
-    addNewGeometry(msg) {
-      console.log('adding new geometry from livegeodata', JSON.stringify(msg));
-      const geojsonFormat = new ol.format.GeoJSON();
-      const AddedFeature = geojsonFormat.readFeatures(JSON.stringify(msg));
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          let alreadyExists = false;
-          // console.log('added feature::', AddedFeature[0]);
-          layer.getSource().forEachFeature((feature) => {
-            if (feature.get('mongoID') === AddedFeature[0].getProperties().mongoID) { // eslint-disable-line no-underscore-dangle
-              alreadyExists = true;
-            }
-          });
-          if (alreadyExists === false) {
-            layer.getSource().addFeatures(AddedFeature);
-          }
-        }
-      });
-    },
-    newGeometryDrawn(feature) {
-      console.log('send this feature to db:: ', feature);
-      try {
-        const url = `${config.url}/features/feature`;
-        axios.post(url, { feature }, { headers: { 'x-access-token': this.$store.state.token } });
-      } catch (error) {
-        console.log(error);
-      }
-      return true;
-    },
-    async loadLiveGeodata() {
-      try {
-        const url = `${config.url}/features/feature`;
-        console.log('load live geodata for::', this.$store.state.liveUsersList);
-        const users = this.$store.state.liveUsersList;
-        // console.log(users, typeof (users));
-        axios.get(url, {
-          params: {
-            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-            userList: users,
-            start: this.featuresStart,
-            end: this.featuresEnd,
-          },
-          headers: { 'x-access-token': this.$store.state.token },
-        }).then((response) => {
-          console.log('response status:: ', response.status);
-          if (response.status === 200) {
-            if (response.data.length > 0) {
-              console.log('data:: ', response.data);
-              response.data.forEach((f) => {
-                // console.log('message:: ', f.feature);
-                this.addNewGeometry(f.feature);
-              });
-            }
-          } else {
-            console.log('error');
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      return true;
-    },
-    async loadConversation(newSelection) {
-      try {
-        if (newSelection) {
-          this.messages = [];
-        }
-        if (this.$store.state.feature) {
-          const url = `${config.url}/conversations`;
-          axios.get(url, {
-            params: {
-              featureId: this.$store.state.featureId,
-              start: this.messagesStart,
-              end: this.messagesEnd,
-            },
-            headers: { 'x-access-token': this.$store.state.token },
-          }).then((response) => {
-            console.log('response status:: ', response.status);
-            if (response.status === 200 && response.data.length > 0) {
-              console.log('data:: ', response.data);
-              response.data.forEach((r) => {
-                // console.log('message:: ', r.message);
-                this.messages.push(r.message);
-              });
-              if (response.data.length < 25) {
-                this.endOfMessages = true;
-              } else {
-                this.endOfMessages = false;
-              }
-            } else {
-              this.endOfMessages = true;
-              this.loading = false;
-              console.log('error', this.loading);
-            }
-          });
-        }
-      } catch (error) {
-        console.log(error);
-      }
-      return true;
-    },
-    async addToConversation(data) {
-      try {
-        const url = `${config.url}/conversations`;
-        axios.post(url, { data }, {
-          headers: { 'x-access-token': this.$store.state.token },
-        }).then((response) => {
-          if (response.status === 200) {
-            this.loading = false;
-          } else {
-            console.log('error');
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      return true;
-    },
+    // newFeatureMessage(msg) {
+    //   let allLayers = [];
+    //   allLayers = olMap.getLayers().getArray();
+    //   allLayers.forEach((layer) => {
+    //     if (layer.getProperties().name === 'customLayer') {
+    //       let alreadyExists = false;
+    //       layer.getSource().forEachFeature((feature) => {
+    //         console.log('feature to add:: ', JSON.stringify(msg));
+    //         if (feature.get('mongoID') === msg.featureId) {
+    //           alreadyExists = true;
+    //           console.log('setting properties', msg.userName, msg.content);
+    //           feature.setProperties({ messages: `${msg.userName}: ${msg.content}` });
+    //           this.messages.unshift(msg);
+    //         }
+    //       });
+    //       if (alreadyExists === false) {
+    //         console.log('must ajax it');
+    //       }
+    //     }
+    //   });
+    // },
+    // addNewGeometry(msg) {
+    //   console.log('adding new geometry from livegeodata', JSON.stringify(msg));
+    //   const geojsonFormat = new ol.format.GeoJSON();
+    //   const AddedFeature = geojsonFormat.readFeatures(JSON.stringify(msg));
+    //   let allLayers = [];
+    //   allLayers = olMap.getLayers().getArray();
+    //   allLayers.forEach((layer) => {
+    //     if (layer.getProperties().name === 'customLayer') {
+    //       let alreadyExists = false;
+    //       // console.log('added feature::', AddedFeature[0]);
+    //       layer.getSource().forEachFeature((feature) => {
+    //         if (feature.get('mongoID') === AddedFeature[0].getProperties().mongoID) {
+    // eslint-disable-line no-underscore-dangle
+    //           alreadyExists = true;
+    //         }
+    //       });
+    //       if (alreadyExists === false) {
+    //         layer.getSource().addFeatures(AddedFeature);
+    //       }
+    //     }
+    //   });
+    // },
+    // newGeometryDrawn(feature) {
+    //   console.log('send this feature to db:: ', feature);
+    //   try {
+    //     const url = `${config.url}/features/feature`;
+    //     axios.post(url, { feature }, { headers: { 'x-access-token': this.$store.state.token } });
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //   return true;
+    // },
+    // async loadLiveGeodata() {
+    //   try {
+    //     const url = `${config.url}/features/feature`;
+    //     console.log('load live geodata for::', this.$store.state.liveUsersList);
+    //     const users = this.$store.state.liveUsersList;
+    //     // console.log(users, typeof (users));
+    //     axios.get(url, {
+    //       params: {
+    //         userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+    //         userList: users,
+    //         start: this.featuresStart,
+    //         end: this.featuresEnd,
+    //       },
+    //       headers: { 'x-access-token': this.$store.state.token },
+    //     }).then((response) => {
+    //       console.log('response status:: ', response.status);
+    //       if (response.status === 200) {
+    //         if (response.data.length > 0) {
+    //           console.log('data:: ', response.data);
+    //           response.data.forEach((f) => {
+    //             // console.log('message:: ', f.feature);
+    //             this.addNewGeometry(f.feature);
+    //           });
+    //         }
+    //       } else {
+    //         console.log('error');
+    //       }
+    //     });
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //   return true;
+    // },
+    // async loadConversation(newSelection) {
+    //   try {
+    //     if (newSelection) {
+    //       this.messages = [];
+    //     }
+    //     if (this.$store.state.feature) {
+    //       const url = `${config.url}/conversations`;
+    //       axios.get(url, {
+    //         params: {
+    //           featureId: this.$store.state.featureId,
+    //           start: this.messagesStart,
+    //           end: this.messagesEnd,
+    //         },
+    //         headers: { 'x-access-token': this.$store.state.token },
+    //       }).then((response) => {
+    //         console.log('response status:: ', response.status);
+    //         if (response.status === 200 && response.data.length > 0) {
+    //           console.log('data:: ', response.data);
+    //           response.data.forEach((r) => {
+    //             // console.log('message:: ', r.message);
+    //             this.messages.push(r.message);
+    //           });
+    //           if (response.data.length < 25) {
+    //             this.endOfMessages = true;
+    //           } else {
+    //             this.endOfMessages = false;
+    //           }
+    //         } else {
+    //           this.endOfMessages = true;
+    //           this.loading = false;
+    //           console.log('error', this.loading);
+    //         }
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //   return true;
+    // },
+    // async addToConversation(data) {
+    //   try {
+    //     const url = `${config.url}/conversations`;
+    //     axios.post(url, { data }, {
+    //       headers: { 'x-access-token': this.$store.state.token },
+    //     }).then((response) => {
+    //       if (response.status === 200) {
+    //         this.loading = false;
+    //       } else {
+    //         console.log('error');
+    //       }
+    //     });
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //   return true;
+    // },
     setSymbology() {
       this.saveButtonShow = true;
       let allLayers = [];
@@ -422,45 +419,42 @@ export default {
       console.log('new feature selection');
       this.messages = [];
       this.resetSymbologyMenu();
-      this.start = 0;
-      this.end = 25;
-      // this.loading = true;
-      this.loadConversation(this.loading).then(() => {
-        console.log('conversation loaded');
-        this.loading = false;
-      });
-      // this.loading = false;
+      // this.start = 0;
+      // this.end = 25;
+      // this.loadConversation(this.loading).then(() => {
+      //   console.log('conversation loaded');
+      //   this.loading = false;
+      // });
     },
-    '$store.state.liveUsersList': function handle() {
-      console.log('load live geodata');
-      // this.loading = true;
-      if (this.$store.state.isUserLoggedIn) {
-        this.loadLiveGeodata().then(() => {
-          this.loading = false;
-        });
-      }
-    },
+    // '$store.state.liveUsersList': function handle() {
+    //   console.log('load live geodata');
+    //   if (this.$store.state.isUserLoggedIn) {
+    //     this.loadLiveGeodata().then(() => {
+    //       this.loading = false;
+    //     });
+    //   }
+    // },
     strokeWidth: function handle() {
       console.log('width changed');
       this.strokeWidthChange = true;
       this.setSymbology();
     },
-    newFeature: function emit() {
-      console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));
-      const geojson = new ol.format.GeoJSON();
-      if (this.$store.state.addingToPost === undefined) {
-        const msg = {
-          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-          feature: geojson.writeFeature(this.$store.state.newpostfeature),
-        };
-        console.log('sending feature to followers', msg);
-        this.$socket.emit('newGeometry', msg);
-        this.$eventHub.$emit('drawEnd', 'drawEnd');
-        this.newGeometryDrawn(msg);
-      } else {
-        console.log('not undefined');
-      }
-    },
+    // newFeature: function emit() {
+    //   console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));
+    //   const geojson = new ol.format.GeoJSON();
+    //   if (this.$store.state.addingToPost === undefined) {
+    //     const msg = {
+    //       userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+    //       feature: geojson.writeFeature(this.$store.state.newpostfeature),
+    //     };
+    //     console.log('sending feature to followers', msg);
+    //     this.$socket.emit('newGeometry', msg);
+    //     this.$eventHub.$emit('drawEnd', 'drawEnd');
+    //     this.newGeometryDrawn(msg);
+    //   } else {
+    //     console.log('not undefined');
+    //   }
+    // },
   },
   mounted() {
     olMap.setTarget('mapDiv');
@@ -468,26 +462,26 @@ export default {
     //   console.log('user joined::', data);
     //   this.usersChatting.push(data);
     // };
-    this.$options.sockets.newFeatureMessage = (data) => {
-      this.newFeatureMessage(data);
-    };
-    this.$options.sockets.newGeometry = (data) => {
-      this.addNewGeometry(data);
-    };
+    // this.$options.sockets.newFeatureMessage = (data) => {
+    //   this.newFeatureMessage(data);
+    // };
+    // this.$options.sockets.newGeometry = (data) => {
+    //   this.addNewGeometry(data);
+    // };
     this.$options.sockets.setSymbology = (data) => {
       console.log('symbology received');
       this.setSymbologyFromSocket(data);
     };
-    this.$eventHub.$on('previousFeatures', () => {
-      this.featuresStart -= 25;
-      this.featuresEnd -= 25;
-      this.loadLiveGeodata();
-    });
-    this.$eventHub.$on('nextFeatures', () => {
-      this.featuresStart += 25;
-      this.featuresEnd += 25;
-      this.loadLiveGeodata();
-    });
+    // this.$eventHub.$on('previousFeatures', () => {
+    //   this.featuresStart -= 25;
+    //   this.featuresEnd -= 25;
+    //   this.loadLiveGeodata();
+    // });
+    // this.$eventHub.$on('nextFeatures', () => {
+    //   this.featuresStart += 25;
+    //   this.featuresEnd += 25;
+    //   this.loadLiveGeodata();
+    // });
   },
 };
 </script>

@@ -9,12 +9,12 @@
           {{user.description}}
         </v-card-text>
         <v-card-actions class="grey lighten-3">
-          <v-switch
+          <!-- <v-switch
             slot="activator"
             :label="$t('message.liveMapUpdate')"
             v-model="user.showLive"
             color="success"
-          ></v-switch>
+          ></v-switch> -->
           <v-btn color="primary" dark fab outline small @click="dialogCollections = true; getCollections(user._id);">
             <v-icon color="green lighten-1">list</v-icon>
           </v-btn>
@@ -145,40 +145,42 @@ export default {
     },
   },
   watch: {
-    'user.showLive': function toggle() {
-      console.log('show live changed');
-      if (this.user.showLive) {
-        const url = `${config.url}/users/LiveMapChatForUser`;
-        const data = {
-          id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-          liveId: this.user._id, // eslint-disable-line no-underscore-dangle
-        };
-        axios.post(url, { data }, {
-          headers: { 'x-access-token': this.$store.state.token },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            this.$socket.emit('joinCollections', [this.user._id]); // eslint-disable-line no-underscore-dangle
-            console.log('live user added');
-          }
-        });
-      } else {
-        const url = `${config.url}/users/removeLiveMapChatForUser`;
-        const data = {
-          id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-          liveId: this.user._id, // eslint-disable-line no-underscore-dangle
-        };
-        axios.post(url, { data }, {
-          headers: { 'x-access-token': this.$store.state.token },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            this.$socket.emit('leaveCollections', [this.user._id]); // eslint-disable-line no-underscore-dangle
-            console.log('live user removed');
-          }
-        });
-      }
-    },
+    // 'user.showLive': function toggle() {
+    //   console.log('show live changed');
+    //   if (this.user.showLive) {
+    //     const url = `${config.url}/users/LiveMapChatForUser`;
+    //     const data = {
+    //       id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+    //       liveId: this.user._id, // eslint-disable-line no-underscore-dangle
+    //     };
+    //     axios.post(url, { data }, {
+    //       headers: { 'x-access-token': this.$store.state.token },
+    //     })
+    //     .then((res) => {
+    //       if (res.status === 200) {
+    //         this.$socket.emit('joinCollections', [this.user._id]);
+    // eslint-disable-line no-underscore-dangle
+    //         console.log('live user added');
+    //       }
+    //     });
+    //   } else {
+    //     const url = `${config.url}/users/removeLiveMapChatForUser`;
+    //     const data = {
+    //       id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+    //       liveId: this.user._id, // eslint-disable-line no-underscore-dangle
+    //     };
+    //     axios.post(url, { data }, {
+    //       headers: { 'x-access-token': this.$store.state.token },
+    //     })
+    //     .then((res) => {
+    //       if (res.status === 200) {
+    //         this.$socket.emit('leaveCollections', [this.user._id]);
+    // eslint-disable-line no-underscore-dangle
+    //         console.log('live user removed');
+    //       }
+    //     });
+    //   }
+    // },
   },
   mounted() {
     this.userCollections = this.user.collectionData;
