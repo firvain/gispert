@@ -95,12 +95,12 @@
             </v-btn>
             <span>Βρες κοινή περιοχή με ένα άλλο</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <!-- <v-tooltip bottom>
             <v-btn fab small :color="toolColors[2]" slot="activator" @click="chatOnThisFeature()">
               <v-icon dark>send</v-icon>
             </v-btn>
             <span>Στείλτο σε άλλους χρήστες</span>
-          </v-tooltip>
+          </v-tooltip> -->
         </v-layout>
       </v-toolbar>
 
@@ -142,7 +142,7 @@ import userSelector from './selectCloseUsers';
 import olMap from '../js/map';
 
 export default {
-  name: 'searchLocation',
+  name: 'mapTools',
   components: {
     userSelector,
   },

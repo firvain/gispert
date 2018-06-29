@@ -28,8 +28,12 @@ export default new Vuex.Store({
     openedTimeline: null,
     liveUsersList: null,
     activeMapTool: 'selectFeatures',
+    activeTab: 'home',
   },
   actions: {
+    setActiveTab(state, data) {
+      state.commit('setActiveTab', data);
+    },
     setActiveMapTool(state, data) {
       state.commit('setActiveMapTool', data);
     },
@@ -144,7 +148,7 @@ export default new Vuex.Store({
         'name': '@' + state.user.name,
         'userId': state.user._id,
       });
-      if (typeof (post) !== 'undefined') {
+      if (typeof (post) !== undefined) {
         if (state.storage.length > 0) {
           const objIndex = state.storage.findIndex((obj => obj.id == post));
           if (objIndex > -1) {
@@ -171,7 +175,7 @@ export default new Vuex.Store({
       const allFeatures = state.storage;
       allFeatures.forEach((p) => {
         const toDelete = new Set([data]);
-        p.features = p.features.filter(obj => !toDelete.has(obj.drawId));
+        p.features = p.features.filter(obj => !toDelete.has(obj.get('mongoID')));
       });
     },
     setuser(state, data) {
@@ -287,6 +291,9 @@ export default new Vuex.Store({
     },
     setActiveMapTool (state, data) {
       state.activeMapTool = data;
+    },
+    setActiveTab (state, data) {
+      state.activeTab = data;
     },
   },
   getters: {

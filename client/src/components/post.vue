@@ -276,8 +276,10 @@ export default {
         // this.answerPostText = this.$t('message.reply');
         this.answerPostColor = 'green';
         this.$store.commit('addingToPost', undefined);
+        this.$store.commit('setActiveMapTool', 'selectFeatures');
       } else {
         // this.answerPostText = this.$t('message.cancel');
+        this.$store.commit('setActiveMapTool', 'drawFeatures');
         this.answerPostColor = 'red';
       }
     },

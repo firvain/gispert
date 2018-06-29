@@ -1,7 +1,7 @@
 <template>
   <v-tabs dark grow icons centered v-model="active">
     <v-tabs-bar class="orange lighten-2">
-      <v-tabs-slider color="yellow"></v-tabs-slider>
+      <v-tabs-slider color="red"></v-tabs-slider>
       <v-tabs-item href="#home">
         <v-icon>timeline</v-icon>
         {{ $t("message.timeline") }}
@@ -47,8 +47,20 @@ export default {
     timeline, explore, userList,
   },
   data: () => ({
-    active: null,
+    active: 'home',
   }),
+  watch: {
+    active: function () {
+      console.log('active changed');
+      this.changeTab();
+    },
+  },
+  methods: {
+    changeTab() {
+      console.log('change tab');
+      this.$store.commit('setActiveTab', this.active);
+    },
+  },
 };
 </script>
 <style>

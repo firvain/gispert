@@ -28,7 +28,7 @@
             </v-btn>
             <span>{{ $t('message.sketchToAddToPost') }}</span>
           </v-tooltip> -->
-          <v-chip close v-for="f in drawnFeatures" :key='f.drawId' @input="remove(f.drawId)">
+          <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')" @input="remove(f.get('mongoID'))">
             {{ f.getGeometry().getType() }}
           </v-chip>
         </v-flex>
@@ -47,7 +47,9 @@
             ></v-select>
           </v-flex>
           <v-flex xs6 sm6 md6>
-            <v-btn flat class="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}<v-icon right dark>insert_comment</v-icon></v-btn>
+            <v-btn flat class="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}
+              <v-icon right dark>insert_comment</v-icon>
+            </v-btn>
             <v-btn small fab class="green white--text">
               <v-icon white--text dark>help_outline</v-icon>
             </v-btn>
@@ -234,19 +236,36 @@ export default {
       }
     },
     showMapTools() {
-      this.$root.$emit('showTools');
+      this.$store.commit('setActiveMapTool', 'drawFeatures');
       // console.log('post id:: ', this.id);
       if (this.id !== undefined) {
         this.$store.commit('addingToPost', this.id);
       } else {
-        this.$store.commit('addingToPost', 'newPost');
+        this.$store.commit('addingToPost', undefined);
       }
     },
     setCenter() {
       olMap.getView().setCenter(0, 0);
     },
-    remove(item) {
-      this.$store.commit('deleteFeatureFromPost', item);
+    remove(id) {
+      this.$store.commit('deleteFeatureFromPost', id);
+      console.log('deleting :: ', id);
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().forEachFeature((feature) => {
+            if (feature.get('mongoID') === id) {
+              layer.getSource().removeFeature(feature);
+              olMap.getInteractions().forEach((interaction) => {
+                if (interaction instanceof ol.interaction.Select) {
+                  interaction.getFeatures().clear();
+                }
+              });
+            }
+          });
+        }
+      });
     },
   },
   computed: {
@@ -255,7 +274,7 @@ export default {
       let objIndex = null;
       const allFeatures = this.$store.getters.getDrawnFeatures;
       if (this.id === undefined && allFeatures !== undefined) {
-        objIndex = allFeatures.findIndex((obj => obj.id === 'newPost'));
+        objIndex = allFeatures.findIndex((obj => obj.id === undefined));
       } else {
         objIndex = allFeatures.findIndex((obj => obj.id === this.id));
       }
