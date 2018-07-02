@@ -1,14 +1,14 @@
 <template>
     <v-container md9 fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
-      <v-btn md8 color="secondary" dark
+      <!-- <v-btn md8 color="secondary" dark
         block
         large
         v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"  v-if="$store.state.isUserLoggedIn === true"
       >
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
-      </v-btn>
-      <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collectionid="id"></newPost>
+      </v-btn> -->
+      <!-- <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collectionid="id"></newPost> -->
       <v-layout row wrap>
         <v-flex
           md12
