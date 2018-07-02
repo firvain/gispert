@@ -119,13 +119,13 @@
 
     <v-list-tile-action v-if="notification.type === 'invitedToFeatureChat'">
       <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
-      <v-btn dark outline small color="green" 
-        @click="invitationToFeatureChatAccepted(notification.feature, notification.featureId)" 
+      <v-btn dark outline small color="green"
+        @click="invitationToFeatureChatAccepted(notification.feature, notification.featureId)"
         v-if="notification.read === 0">
         {{ $t("message.accept")}}
       </v-btn>
-      <v-btn dark outline small color="grey" 
-        @click="invitationDeclined(notification.feature)" 
+      <v-btn dark outline small color="grey"
+        @click="invitationDeclined(notification.feature)"
         v-if="notification.read === 0">
         {{ $t("message.decline")}}
       </v-btn>
@@ -160,9 +160,10 @@ export default {
         type: 'collection',
       };
       console.log('load users tl::', e);
-      const goToPath = `/main/search/collection/${e}`;
-      console.log('going to path:: ', goToPath);
-      this.$router.push({ path: goToPath });
+      // const goToPath = `/main/search/collection/${e}`;
+      // console.log('going to path:: ', goToPath);
+      // this.$router.push({ path: goToPath });
+      this.$store.commit('setActiveTab', 'explore');
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       // this.$eventHub.$emit('openCollection', e);
     },
@@ -172,9 +173,10 @@ export default {
         type: 'timeline',
       };
       console.log('load users tl::', e);
-      const goToPath = `/main/search/collection/${e}`;
-      console.log('going to path:: ', goToPath);
-      this.$router.push({ path: goToPath });
+      // const goToPath = `/main/search/collection/${e}`;
+      // console.log('going to path:: ', goToPath);
+      // this.$router.push({ path: goToPath });
+      this.$store.commit('setActiveTab', 'explore');
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       // this.$eventHub.$emit('openTimeline', e);
     },

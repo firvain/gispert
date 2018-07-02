@@ -1,5 +1,5 @@
 <template>
-  <v-tabs dark grow icons centered v-model="active">
+  <v-tabs dark grow icons centered v-model="$store.state.activeTab">
     <v-tabs-bar class="orange lighten-2">
       <v-tabs-slider color="red"></v-tabs-slider>
       <v-tabs-item href="#home" active-class="orange lighten-1" ripple>

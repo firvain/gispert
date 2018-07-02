@@ -36,7 +36,7 @@
               <span>{{ $t("message.replyTooltip") }}!</span>
             </v-tooltip>
             <v-tooltip bottom v-if="post.replies && replies < 1">
-              <v-btn color="green" slot="activator" outline small fab 
+              <v-btn color="green" slot="activator" outline small fab
                 v-if="post.repliesData == undefined && post.replies.length > 0"
                 @click="showMoreReplies">
                 <v-icon large color="grey">insert_comment</v-icon>
@@ -303,7 +303,8 @@ export default {
       };
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       console.log('explore:: ', userId);
-      this.$router.push({ path: `/main/search/usertimeline/${userId}` });
+      this.$store.commit('setActiveTab', 'explore');
+      // this.$router.push({ path: `/main/search/usertimeline/${userId}` });
     },
     exploreCollection(collectionId) {
       const tl = {
@@ -312,7 +313,8 @@ export default {
       };
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       console.log('explore:: ', collectionId);
-      this.$router.push({ path: `/main/search/collection/${collectionId}` });
+      this.$store.commit('setActiveTab', 'explore');
+      // this.$router.push({ path: `/main/search/collection/${collectionId}` });
     },
   },
   computed: {
