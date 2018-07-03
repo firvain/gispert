@@ -84,29 +84,29 @@ router.route('/setsymbology')
       throw err;
     } else {
       if (feature.strkWdth) {
-        db.collection('liveGeodata').update({
-          "feature.properties.mongoID": feature.featureId
+        db.collection('features').update({
+          "properties.mongoID": feature.featureId
         }, {
           $set:{
-              "feature.properties.strkWdth": feature.strkWdth,
+              "properties.strkWdth": feature.strkWdth,
           }
         });  
       }
       if (feature.strkClr) {
-        db.collection('liveGeodata').update({
-          "feature.properties.mongoID": feature.featureId
+        db.collection('features').update({
+          "properties.mongoID": feature.featureId
         }, {
           $set:{
-              "feature.properties.strkClr": feature.strkClr,
+              "properties.strkClr": feature.strkClr,
           }
         });
       }
       if (feature.fllClr) {
-        db.collection('liveGeodata').update({
-          "feature.properties.mongoID": feature.featureId
+        db.collection('features').update({
+          "properties.mongoID": feature.featureId
         }, {
           $set:{
-              "feature.properties.fllClr": feature.fllClr
+              "properties.fllClr": feature.fllClr
           }
         });
       }
@@ -116,28 +116,28 @@ router.route('/setsymbology')
   });
 });
 
-router.route('/delete')
-.post(function set(req, res) {
-  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-    const feature = req.body.data.featureId;
-    const userId = req.body.data.userId;
-    console.log('deleting:: ', feature, userId);
-    if (err) {
-      throw err;
-    } else {
-      db.collection('liveGeodata').deleteOne(
-        { $and: [
-            { "feature.properties.mongoID": feature },
-            { "feature.properties.userId": userId }
-        ]}
-      );
-      db.collection('conversations').deleteMany(
-            { "message.featureId": feature }
-      );
-      res.sendStatus(200);
-    }
-    db.close();
-  });
-});
+// router.route('/delete')
+// .post(function set(req, res) {
+//   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+//     const feature = req.body.data.featureId;
+//     const userId = req.body.data.userId;
+//     console.log('deleting:: ', feature, userId);
+//     if (err) {
+//       throw err;
+//     } else {
+//       db.collection('liveGeodata').deleteOne(
+//         { $and: [
+//             { "feature.properties.mongoID": feature },
+//             { "feature.properties.userId": userId }
+//         ]}
+//       );
+//       db.collection('conversations').deleteMany(
+//             { "message.featureId": feature }
+//       );
+//       res.sendStatus(200);
+//     }
+//     db.close();
+//   });
+// });
 
 module.exports = router;

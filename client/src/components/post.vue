@@ -12,14 +12,22 @@
             </a>,&nbsp;
             <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
           </v-flex>
+          <v-chip
+            v-if="f.properties"
+            v-for="f in post.featureData" 
+            :key="f.properties.mongoID">
+            {{ f.geometry.type }}
+          </v-chip>
+
+          <!-- feature data:: {{ post.featureData }} -->
         </v-card-title>
         <v-card-actions class="grey lighten-3">
             <v-tooltip bottom>
               <v-btn slot="activator"
                 fab small
-                v-if='post.userFeatures != "{\"type\":\"FeatureCollection\",\"features\":[]}" && post.userFeatures !== null'
+                v-if='post.featureData.length > 0'
                 class="green white--text darken-1"
-                @click="explore(post)">
+                @click="zoom(post)">
                 <!-- {{ $t("message.showOnMap") }} -->
                 <v-icon dark>language</v-icon>
               </v-btn>
@@ -228,54 +236,73 @@ export default {
     },
     explore(post) {
       const geojsonFormat = new ol.format.GeoJSON();
-      const newFeature = post.userFeatures;
-      if (newFeature !== '{"type":"FeatureCollection","features":[]}' && newFeature !== null) {
+      const featureCollection = {
+        type: 'FeatureCollection',
+        features: post.featureData,
+      };
+      console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
+      const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
+      if (featuresToLoad.length > 0) {
         let allLayers = [];
         allLayers = olMap.getLayers().getArray();
         allLayers.forEach((layer) => {
           if (layer.getProperties().name === 'customLayer') {
-            const AddedFeature = geojsonFormat.readFeatures(newFeature);
-            let alreadyExists = false;
-            layer.getSource().forEachFeature((feature) => {
-              // console.log(AddedFeature);
-              if (feature.get('mongoID') === AddedFeature[0].getProperties().mongoID) {
-                alreadyExists = true;
+            featuresToLoad.forEach((f) => {
+              let alreadyExists = false;
+              layer.getSource().forEachFeature((feature) => {
+                if (feature.get('mongoID') === f.getProperties().mongoID) {
+                  alreadyExists = true;
+                }
+              });
+              if (!alreadyExists) {
+                console.log('added feature :: ', f);
+                layer.getSource().addFeature(f);
+                const cs = f.getStyle();
+
+                f.setStyle(styles.BoldLineString);
+
+                setTimeout(() => {
+                  f.setStyle(cs);
+                  olMap.updateSize();
+                }, 500);
               }
             });
-            if (!AddedFeature[0].getProperties().mongoID) {
-              alreadyExists = false;
-            }
-            const g = AddedFeature[0].getGeometry().getExtent();
-            if (alreadyExists === false) {
-              layer.getSource().addFeatures(AddedFeature);
-            }
-            if (g[0] - g[2] < 500) {
-              g[0] -= 200;
-              g[2] += 200;
-            }
-            if (g[1] - g[3] < 500) {
-              g[1] -= 200;
-              g[3] += 200;
-            }
-            olMap.getView().fit(g, olMap.getSize());
-            const cs = AddedFeature[0].getStyle();
-
-            AddedFeature[0].setStyle(styles.BoldLineString);
-
-            setTimeout(() => {
-              AddedFeature[0].setStyle(cs);
-              olMap.updateSize();
-            }, 500);
           }
         });
       }
+    },
+    zoom(post) {
+      const geojsonFormat = new ol.format.GeoJSON();
+      const featureCollection = {
+        type: 'FeatureCollection',
+        features: post.featureData,
+      };
+      console.log('zooming to a post feature data:: ', JSON.stringify(featureCollection));
+      const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
+      const g = featuresToLoad[0].getGeometry().getExtent();
+      if (g[0] - g[2] < 500) {
+        g[0] -= 200;
+        g[2] += 200;
+      }
+      if (g[1] - g[3] < 500) {
+        g[1] -= 200;
+        g[3] += 200;
+      }
+      olMap.getView().fit(g, olMap.getSize());
+      const cs = featuresToLoad[0].getStyle();
+
+      featuresToLoad[0].setStyle(styles.BoldLineString);
+
+      setTimeout(() => {
+        featuresToLoad[0].setStyle(cs);
+        olMap.updateSize();
+      }, 500);
     },
     toggle_answer() {
       this.answerPost = !this.answerPost;
       if (this.answerPost === false) {
         // this.answerPostText = this.$t('message.reply');
         this.answerPostColor = 'green';
-        this.$store.commit('addingToPost', undefined);
         this.$store.commit('setActiveMapTool', 'selectFeatures');
       } else {
         // this.answerPostText = this.$t('message.cancel');

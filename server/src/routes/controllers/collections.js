@@ -96,6 +96,14 @@ router.route('/collection')
           }
         },
         { $graphLookup: {
+            from: "features",
+            startWith: "$userFeatures",
+            connectFromField: "userFeatures",
+            connectToField: "properties.mongoID",
+            as: "featureData",
+          }
+        },
+        { $graphLookup: {
             from: "collections",
             startWith: "$collections",
             connectFromField: "collections",
@@ -121,6 +129,7 @@ router.route('/collection')
             "userFeatures": 1,
             "isReplyTo":1,
             "replies":1,
+            "featureData":1,
             "collectionData": {
                "$filter": {
                    "input": "$collectionData",

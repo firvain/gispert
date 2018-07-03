@@ -47,6 +47,23 @@ class Database {
         })
     }
 
+    addPostFeatures(features) {
+        return new Promise((resolve, reject) => {
+                this.db.collection('features').insertMany(
+                    features, (err, docs) => {
+                    if(err) {
+                        console.log('Failed to add features');
+                        reject(err);
+                    } else {
+                        // console.log('doc added :: ', docs.insertedId);
+                        resolve(docs.insertedId);
+                        // insertedid = docs.insertedId;
+                    }
+                }
+            )
+        })
+    }
+
     notifyPost(notification) {
         return new Promise((resolve, reject) => {
             this.db.collection('notifications').insertOne(

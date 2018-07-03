@@ -64,6 +64,7 @@ export default {
   },
   watch: {
     '$store.state.openedTimeline': function changed() {
+      olMap.getLayers().getArray()[1].getSource().clear();
       this.loadTimeline(this.$store.state.openedTimeline.id);
     },
   },
@@ -125,7 +126,6 @@ export default {
       if (this.newPostText === this.$t('message.cancel')) {
         this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
-        this.$store.commit('addingToPost', undefined);
       } else {
         this.newPostText = this.$t('message.cancel');
         this.newPostColor = 'red';
@@ -133,7 +133,6 @@ export default {
     },
     loadTimeline(timelineId) {
       console.log('loading collection view id::', this.id);
-      olMap.getLayers().getArray()[1].getSource().clear();
       this.loading = true;
       let url;
       let userID;

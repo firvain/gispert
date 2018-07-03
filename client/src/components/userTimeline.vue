@@ -64,6 +64,7 @@ export default {
   },
   watch: {
     '$store.state.openedTimeline': function changed() {
+      olMap.getLayers().getArray()[1].getSource().clear();
       this.loadTimeline(this.$store.state.openedTimeline.id);
     },
   },
@@ -127,17 +128,6 @@ export default {
       }).then(() => {
         this.loading = false;
       });
-    },
-    toggle_new_post() {
-      this.newPost = !this.newPost;
-      if (this.newPostText === this.$t('message.cancel')) {
-        this.newPostText = this.$t('message.newPost');
-        this.newPostColor = 'blue-grey';
-        this.$store.commit('addingToPost', undefined);
-      } else {
-        this.newPostText = this.$t('message.cancel');
-        this.newPostColor = 'red';
-      }
     },
     loadTimeline(timelineId) {
       olMap.getLayers().getArray()[1].getSource().clear();

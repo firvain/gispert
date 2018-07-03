@@ -2,39 +2,29 @@
   <v-layout>
     <v-flex xs12 sm12>
       <v-card>
-        <v-layout row wrap>
-          <v-flex md12>
-            <v-text-field @focus="showMapTools"
-              autofocus
-              name="input-1"
-              :label="$t('message.youMayWriteText')"
-              :hint="$t('message.youMayWriteAndSketch')"
-              v-model="postText"
-              id="postText"
-              counter
-              max="200"
-              textarea
-              box
-            ></v-text-field>
-          </v-flex>
-        </v-layout>
+        <v-flex>
+          <v-text-field @focus="showMapTools"
+            autofocus
+            name="input-1"
+            :label="$t('message.youMayWriteText')"
+            :hint="$t('message.youMayWriteAndSketch')"
+            v-model="postText"
+            id="postText"
+            counter
+            max="200"
+            textarea
+            box
+          ></v-text-field>
+        </v-flex>
+        <mapTools></mapTools>
         <v-flex v-if="drawnFeatures !== undefined">
-          <!-- <v-tooltip bottom>
-            <v-btn :outline="this.id !== this.$store.state.addingToPost" small fab slot="activator"
-              class="indigo--text"
-              color="green"
-              @click= "showMapTools">
-              <v-icon>edit</v-icon>
-            </v-btn>
-            <span>{{ $t('message.sketchToAddToPost') }}</span>
-          </v-tooltip> -->
-          <mapTools></mapTools>
           <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')" @input="remove(f.get('mongoID'))">
             {{ f.getGeometry().getType() }}
           </v-chip>
         </v-flex>
+
         <v-card-actions>
-          <v-flex  xs6 sm6 md6 v-if="this.id === undefined && this.collection === undefined">
+          <v-flex xs3 sm6 md6 v-if="this.id === undefined && this.collection === undefined">
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollections"
@@ -47,13 +37,13 @@
               persistent-hint
             ></v-select>
           </v-flex>
-          <v-flex xs6 sm6 md6>
+          <v-flex xs3 sm6 md6>
             <v-btn flat class="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}
               <v-icon right dark>insert_comment</v-icon>
             </v-btn>
-            <v-btn small fab class="green white--text">
+            <!-- <v-btn small fab class="green white--text">
               <v-icon white--text dark>help_outline</v-icon>
-            </v-btn>
+            </v-btn> -->
           </v-flex>
         </v-card-actions>
       </v-card>
@@ -170,7 +160,7 @@ export default {
       const url = `${config.url}/posts`;
       const members = this.findMembersOfThisCollection();
       console.log('members :: ', JSON.stringify(members));
-      if (textToPost !== '' || userFeats !== null) {
+      if (textToPost !== '') {
         axios.post(url, { userPost }, {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
@@ -183,8 +173,9 @@ export default {
           this.snackbarNewPost = true;
 
           this.$store.commit('clearNewPostFeatures', 'newPost');
-          if (this.id === undefined) {
-            // console.log('totally new post');
+          console.log('response from API is:: ', response.data.isReplyTo);
+          if (response.data.isReplyTo === '') {
+            console.log('totally new post');
             // console.log('this is the userpost newpost:: ', userPost);
             // console.log('emitting to::', members);
             userPost._id = response.data.id; // eslint-disable-line no-underscore-dangle
@@ -193,9 +184,12 @@ export default {
               title: members.title,
               _id: members._id, // eslint-disable-line no-underscore-dangle
             }];
+            userPost.featureData = JSON.parse(userFeats).features;
+            console.log(JSON.parse(userFeats));
             console.log('new post userPost for socket:: ', JSON.stringify(userPost), 'res::', response.data.id);
             // this.$socket.emit('newPost', userPost);
             userPost.members.push(members.user); // add the creator of the collection
+            console.log('check if feature data present::', JSON.stringify(userPost));
             this.$store.dispatch('addPostToTimeline', userPost);
             if (this.$store.state.openedTimeline &&
               this.$store.state.openedTimeline.type === 'collection'
@@ -228,6 +222,7 @@ export default {
               _id: response.data.id }]; // eslint-disable-line no-underscore-dangle
             userPost.members.push(this.userToNotify); // add the creator TODO: no need, deprecated
             userPost.isReplyTo = response.data.isReplyTo;
+            userPost.featureData = JSON.parse(userFeats).features;
             console.log('reply userPost for socket:: ', JSON.stringify(userPost));
             this.$store.dispatch('addReplyToPost', userPost);
             this.$eventHub.$emit('newReply', userPost);
@@ -244,9 +239,14 @@ export default {
       this.$store.commit('setActiveMapTool', 'drawFeatures');
       // console.log('post id:: ', this.id);
       if (this.id !== undefined) {
-        this.$store.commit('addingToPost', this.id);
+        this.$store.commit('addingToPost', { type: 'reply', id: this.id });
       } else {
-        this.$store.commit('addingToPost', undefined);
+        if (this.$store.state.activeTab === 'home') {
+          this.$store.commit('addingToPost', { type: 'home', id: undefined });
+        }
+        if (this.$store.state.activeTab === 'explore') {
+          this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline });
+        }
       }
     },
     setCenter() {

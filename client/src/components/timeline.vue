@@ -17,7 +17,7 @@
         v-for="post in posts"
         :key="post._id"
       >
-        <post :post='post' @explore="explore"></post>
+        <post :post='post'></post>
       </v-flex>
       <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <v-btn
@@ -58,11 +58,11 @@ export default {
     post, newPost,
   },
   methods: {
-    explore(estate) {
-      this.mode = 1;
-      this.explore_estate = estate;
-      return estate;
-    },
+    // explore(estate) {
+    //   this.mode = 1;
+    //   this.explore_estate = estate;
+    //   return estate;
+    // },
     refresh_page() {
       // console.log('refreshing page');
       this.loading = true;
@@ -100,7 +100,6 @@ export default {
       if (this.newPostText === this.$t('message.cancel')) {
         this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
-        this.$store.commit('addingToPost', undefined);
         this.$store.commit('setActiveMapTool', 'selectFeatures');
       } else {
         this.$store.commit('setActiveMapTool', 'drawFeatures');

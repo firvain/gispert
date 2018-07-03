@@ -19,12 +19,19 @@ function dynamicSort(property) {
 
 router.route('/')
  .post(function setpost(req, res) {
+  const features = JSON.parse(req.body.userPost.userFeatures);
+  console.log('features to add::', features);
+
+  const featuresIds = [];
+  features.features.forEach((f) => {
+    featuresIds.push(f.properties.mongoID);
+  });
   var post = {
     userId: req.body.userPost.userId,
     userName: req.body.userPost.userName,
     timestamp: String(Math.trunc(req.body.userPost.timestamp)),
     text: req.body.userPost.text,
-    userFeatures: req.body.userPost.userFeatures,
+    userFeatures: featuresIds,
     isReplyTo: req.body.userPost.isReplyTo,
     collections: ObjectId(req.body.userPost.collections),
     replies: req.body.userPost.replies
@@ -35,6 +42,10 @@ router.route('/')
   database.connect()
     .then((id) => { 
       return id = database.addPost(post);
+    })
+    .then((id) => {
+      database.addPostFeatures(features.features);
+      return id;
     })
     .then((id) => {
       console.log('sending back the new generated id::', id, req.body.userPost.isReplyTo);
@@ -61,7 +72,7 @@ router.route('/')
           timestamp: post.timestamp,
           userCreated: new ObjectId(creator[0].userId),
           text: creator[0].text,
-          features: creator[0].userFeatures,
+          features: featuresIds,
           read: 0
         };
         console.log('a reply notification:::', notification);
@@ -83,7 +94,7 @@ router.route('/')
           timestamp: post.timestamp,
           // userCreated: new ObjectId(repliedPostCreator[0].userId),
           text: req.body.userPost.text,
-          features: req.body.userPost.userFeatures,
+          features: featuresIds,
           read: 0
         };
         database.notifyPost(notification);
@@ -118,6 +129,14 @@ router.route('/all')
           }
         },
         { $graphLookup: {
+          from: "features",
+          startWith: "$userFeatures",
+          connectFromField: "userFeatures",
+          connectToField: "properties.mongoID",
+          as: "featureData",
+        }
+      },
+      { $graphLookup: {
             from: "collections",
             startWith: "$collections",
             connectFromField: "collections",
@@ -137,6 +156,7 @@ router.route('/all')
             "userFeatures": 1,
             "isReplyTo":1,
             "replies":1,
+            "featureData":1,
             "collectionData": {
                "$filter": {
                    "input": "$collectionData",
@@ -205,6 +225,14 @@ router.route('/replies')
         }
       },
       { $graphLookup: {
+        from: "features",
+        startWith: "$userFeatures",
+        connectFromField: "userFeatures",
+        connectToField: "properties.mongoID",
+        as: "featureData",
+      }
+    },
+    { $graphLookup: {
           from: "collections",
           startWith: "$collections",
           connectFromField: "collections",
@@ -224,6 +252,7 @@ router.route('/replies')
           "userFeatures": 1,
           "isReplyTo":1,
           "replies":1,
+          "featureData":1,
           "collectionData": {
              "$filter": {
                  "input": "$collectionData",
@@ -273,6 +302,14 @@ router.route('/id')
             as: "repliesData",
           }
         },
+        { $graphLookup: {
+          from: "features",
+          startWith: "$userFeatures",
+          connectFromField: "userFeatures",
+          connectToField: "properties.mongoID",
+          as: "featureData",
+        }
+      },
         {
           $graphLookup: {
             from: "collections",
@@ -295,6 +332,7 @@ router.route('/id')
             "userFeatures": 1,
             "isReplyTo": 1,
             "replies": 1,
+            "featureData":1,
             "collectionData": {
               "$filter": {
                 "input": "$collectionData",
@@ -354,6 +392,14 @@ router.route('/person')
           }
         },
         { $graphLookup: {
+          from: "features",
+          startWith: "$userFeatures",
+          connectFromField: "userFeatures",
+          connectToField: "properties.mongoID",
+          as: "featureData",
+        }
+      },
+        { $graphLookup: {
             from: "collections",
             startWith: "$collections",
             connectFromField: "collections",
@@ -373,6 +419,7 @@ router.route('/person')
             "userFeatures": 1,
             "isReplyTo": 1,
             "replies": 1,
+            "featureData":1,
             "collectionData": {
                "$filter": {
                    "input": "$collectionData",

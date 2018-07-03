@@ -169,6 +169,7 @@ export default new Vuex.Store({
       state.storage = restResponses;
     },
     addingToPost(state, data) {
+      console.log('setting adding to post:: ', JSON.stringify(data));
       state.addingToPost = data;
     },
     deleteFeatureFromPost(state, data) {

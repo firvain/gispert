@@ -2,47 +2,6 @@
   <div>
     <v-card flat height="0px">
       <v-toolbar class="white" absolute dense offset-xs2>
-      <!-- <v-layout class="text-xs-center" v-if="selectedTool === 'drawFeatures' && this.$store.state.isUserLoggedIn"> -->
-        <!-- <br><br> -->
-        <!-- <v-tooltip bottom>
-          <v-btn fab small :color="toolColors[0]" slot="activator" @click="setDraw('Point')">
-            <v-icon dark>location_on</v-icon>
-          </v-btn>
-          <span>Βάλε στο χάρτη ένα σημείο</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-        <v-btn fab small :color="toolColors[1]" slot="activator" @click="setDraw('LineString')">
-          <v-icon dark>linear_scale</v-icon>
-        </v-btn>
-          <span>Βάλε στο χάρτη μία γραμμή</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-        <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('Polygon')">
-          <v-icon dark>rounded_corner</v-icon>
-        </v-btn>
-          <span>Βάλε στο χάρτη ένα πολύγωνο</span>
-        </v-tooltip>
-      </v-layout> -->
-        <!-- <v-tooltip bottom>
-          <v-btn fab small slot="activator" @click="$eventHub.$emit('previousFeatures')">
-            <v-icon dark>chevron_left</v-icon>
-          </v-btn>
-          <span>Δες προηγούμενα γεωδεδομένα</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <v-btn fab small slot="activator" @click="$eventHub.$emit('nextFeatures')">
-            <v-icon dark>chevron_right</v-icon>
-          </v-btn>
-          <span>Δες επόμενα γεωδεδομένα</span>
-        </v-tooltip> -->
-
-        <!-- <v-text-field prepend-icon="search" hide-details single-line></v-text-field> -->
-        <!-- <v-btn icon v-bind:color="selectColor" @click="toggle_map_tools('selectFeatures')" v-if="this.$store.state.isUserLoggedIn">
-          <v-icon>crop_free</v-icon>
-        </v-btn>
-        <v-btn icon v-bind:color="drawColor" @click="toggle_map_tools('drawFeatures')" v-if="this.$store.state.isUserLoggedIn">
-          <v-icon>location_on</v-icon>
-        </v-btn> -->
         <v-layout class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
           <!-- <br><br> -->
           <!-- <v-tooltip bottom>
