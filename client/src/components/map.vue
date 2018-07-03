@@ -93,7 +93,7 @@ import Swatches from 'vue-swatches';
 import chat from './chat';
 import config from '../config';
 import olMap from '../js/map';
-import mapTools from './maptools';
+import mapTools from './maptoolsanalysis';
 
 export default {
   name: 'mw',

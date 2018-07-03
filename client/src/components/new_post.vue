@@ -28,6 +28,7 @@
             </v-btn>
             <span>{{ $t('message.sketchToAddToPost') }}</span>
           </v-tooltip> -->
+          <mapTools></mapTools>
           <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')" @input="remove(f.get('mongoID'))">
             {{ f.getGeometry().getType() }}
           </v-chip>
@@ -67,6 +68,7 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import mapTools from '@/components/maptoolsdraw';
 import olMap from '../js/map';
 import config from '../config';
 
@@ -83,6 +85,9 @@ export default {
     snackbarNewPost: false,
     snackbarColor: '',
   }),
+  components: {
+    mapTools,
+  },
   mounted() {
     console.log('new post for reply mounted');
     // if (this.id) {

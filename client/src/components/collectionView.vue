@@ -3,7 +3,7 @@
       <v-btn md8 color="secondary" dark
         block
         large
-        v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"  v-if="$store.state.isUserLoggedIn === true"
+        v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post" v-if="$store.state.isUserLoggedIn === true"
       >
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
@@ -37,6 +37,7 @@ import { mapActions } from 'vuex';
 import post from './post';
 import newPost from './new_post';
 import config from '../config';
+import olMap from '../js/map';
 
 export default {
   props: ['id'],
@@ -131,7 +132,8 @@ export default {
       }
     },
     loadTimeline(timelineId) {
-      // console.log('loading collection view id::', this.id);
+      console.log('loading collection view id::', this.id);
+      olMap.getLayers().getArray()[1].getSource().clear();
       this.loading = true;
       let url;
       let userID;

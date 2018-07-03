@@ -37,6 +37,7 @@ import { mapGetters, mapActions } from 'vuex';
 import post from './post';
 import newPost from './new_post';
 import config from '../config';
+import olMap from '../js/map';
 
 export default {
   props: ['id'],
@@ -139,6 +140,7 @@ export default {
       }
     },
     loadTimeline(timelineId) {
+      olMap.getLayers().getArray()[1].getSource().clear();
       this.loading = true;
       let url;
       let userID;

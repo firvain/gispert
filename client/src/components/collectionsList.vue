@@ -119,6 +119,12 @@
       color= snackbarColor
     >{{ message }}
     </v-snackbar>
+    <v-btn block dark outline small color="green"
+      @click="closeCollectionView"
+      v-if="$store.state.openedTimeline !== null">
+      <v-icon dark>undo</v-icon>
+      {{ $t('message.back')}}
+    </v-btn>
     <collectionView
       v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'collection'" 
       :id="$store.state.openedTimeline.id">

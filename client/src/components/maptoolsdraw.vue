@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card flat height="0px">
-      <v-toolbar class="white" absolute dense offset-xs2>
+      <!-- <v-toolbar class="white" absolute dense offset-xs2> -->
       <v-layout class="text-xs-center" v-if="selectedTool === 'drawFeatures' && this.$store.state.isUserLoggedIn">
         <!-- <br><br> -->
         <v-tooltip bottom>
@@ -43,7 +43,7 @@
         <v-btn icon v-bind:color="drawColor" @click="toggle_map_tools('drawFeatures')" v-if="this.$store.state.isUserLoggedIn">
           <v-icon>location_on</v-icon>
         </v-btn> -->
-        <v-layout class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
+        <!-- <v-layout class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn"> -->
           <!-- <br><br> -->
           <!-- <v-tooltip bottom>
             <v-btn fab small :color="toolColors[2]" slot="activator" @click="addToPost()">
@@ -51,7 +51,7 @@
             </v-btn>
             <span>Πρόσθεσέ το στην ανάρτηση</span>
           </v-tooltip> -->
-          <v-tooltip bottom>
+          <!-- <v-tooltip bottom>
             <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('contains')">
               <v-icon dark>explore</v-icon>
             </v-btn>
@@ -94,15 +94,15 @@
               <v-icon dark>layers</v-icon>
             </v-btn>
             <span>Βρες κοινή περιοχή με ένα άλλο</span>
-          </v-tooltip>
+          </v-tooltip> -->
           <!-- <v-tooltip bottom>
             <v-btn fab small :color="toolColors[2]" slot="activator" @click="chatOnThisFeature()">
               <v-icon dark>send</v-icon>
             </v-btn>
             <span>Στείλτο σε άλλους χρήστες</span>
           </v-tooltip> -->
-        </v-layout>
-      </v-toolbar>
+        <!-- </v-layout> -->
+      <!-- </v-toolbar> -->
 
     </v-card>
     <v-dialog v-model="userSelector" scrollable max-width="300px"> 
@@ -169,6 +169,12 @@ export default {
   watch: {
     '$store.state.activeMapTool': function () {
       this.toggle_map_tools(this.selectedTool);
+    },
+    '$store.state.activeTab': function () {
+      this.toggle_map_tools('selectFeatures');
+    },
+    '$store.state.newpostfeature': function () {
+      this.toggle_map_tools('selectFeatures');
     },
   },
   created() {
