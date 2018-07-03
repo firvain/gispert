@@ -1,18 +1,18 @@
 <template>
   <v-tabs dark grow icons centered v-model="$store.state.activeTab">
-    <v-tabs-bar class="orange lighten-2">
+    <v-tabs-bar class="blue-grey">
       <v-tabs-slider color="red"></v-tabs-slider>
-      <v-tabs-item href="#home" active-class="orange lighten-1" ripple>
+      <v-tabs-item href="#home" active-class="blue-grey lighten-3" ripple>
         <v-icon>timeline</v-icon>
-        {{ $t("message.timeline") }}
+        <b>{{ $t("message.timeline") }}</b>
       </v-tabs-item>
-      <v-tabs-item href="#explore" active-class="orange lighten-1" ripple>
+      <v-tabs-item href="#explore" active-class="blue-grey lighten-3" ripple>
         <v-icon>search</v-icon>
-        {{ $t("message.explore") }}
+        <b>{{ $t("message.explore") }}</b>
       </v-tabs-item>
-      <v-tabs-item href="#users" active-class="orange lighten-1" ripple>
+      <v-tabs-item href="#users" active-class="blue-grey lighten-3" ripple>
         <v-icon>fa-user-o</v-icon>
-        {{ $t("message.users") }}
+        <b>{{ $t("message.users") }}</b>
       </v-tabs-item>
     </v-tabs-bar>
     <v-tabs-items>

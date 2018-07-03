@@ -49,28 +49,28 @@ router.route('/all')
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
       .then(function (db) {
         // console.log(db)
-        const liveMapUsers = db.collection('liveMapUsers');
+        // const liveMapUsers = db.collection('liveMapUsers');
         const allUsers = db.collection('users');
         const start = parseInt(req.query.pageFrom);
         const end = parseInt(req.query.pageTo);
         const userId = req.query.userId;
-        liveMapUsers.findOne({
-          "_id" : ObjectID(userId)
-        }).then((res) => {
-            console.log(res);
-            let following = [];
-            res.liveUsers.forEach((u) => {
-              following.push(ObjectID(u))
-        });
-        return following;
-        }).then((following) => {
-          console.log('following:: ', following);
+        // liveMapUsers.findOne({
+        //   "_id" : ObjectID(userId)
+        // }).then((res) => {
+        //     console.log(res);
+        //     let following = [];
+        //     res.liveUsers.forEach((u) => {
+        //       following.push(ObjectID(u))
+        // });
+        // return following;
+        // }).then((following) => {
+        //   console.log('following:: ', following);
           allUsers.aggregate([
             { "$project": {
               "_id": 1,
               "name": 1,
               "description": 1,
-              "showLive" : { $cond: [{ $in: [ "$_id", following ] }, true , false ]} 
+              // "showLive" : { $cond: [{ $in: [ "$_id", following ] }, true , false ]} 
             }},
             {
               $match: {"_id" : { $ne: ObjectID(userId) }}
@@ -88,10 +88,10 @@ router.route('/all')
           });
           db.close();
         })
-        .catch(function (err) {
-          throw err;
-        });;
-      })
+      //   .catch(function (err) {
+      //     throw err;
+      //   });
+      // })
       .catch(function (err) {
         throw err;
       });

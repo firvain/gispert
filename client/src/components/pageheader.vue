@@ -1,6 +1,6 @@
 <template>
   <v-layout column>
-    <v-toolbar class="orange no-padding" dark>
+    <v-toolbar class="orange lighten-2 no-padding" dark>
       <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
       <v-spacer></v-spacer>
         <v-toolbar-items>
@@ -12,10 +12,10 @@
             </v-btn>
               <!-- {{notificationsBell.number}}{{notificationsBell.color}},  -->
               <!-- {{$store.state.notifications.length}} :: {{notificationsGetter}} -->
-              <v-btn color="orange" flat dark @click="dialogNotifications = true" v-if="$store.state.isUserLoggedIn === true">
+              <v-btn flat dark @click="dialogNotifications = true" v-if="$store.state.isUserLoggedIn === true">
                 <v-badge left color='blue'>
                   <span slot="badge" color='blue' v-if='bell.number > 0'>{{ bell.number }}</span>
-                  <v-icon :color='bell.color'>notifications</v-icon>{{bell.number}}
+                  <v-icon :color='bell.color'>notifications</v-icon>
                 </v-badge>
               </v-btn>
 
@@ -475,7 +475,7 @@ export default {
             console.log('connected as ::', this.$store.state.user.name);
             this.loadPublicCollections();
             this.loadPrivateCollections();
-            this.loadLiveUsers();
+            // this.loadLiveUsers();
           }).then(() => {
             this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
             this.loading = false;
