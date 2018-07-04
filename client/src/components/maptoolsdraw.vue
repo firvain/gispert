@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-layout class="text-xs-center" v-if="selectedTool === 'drawFeatures' && this.$store.state.isUserLoggedIn">
+    <v-layout class="text-xs-center">
       <v-tooltip bottom>
         <v-btn fab small :color="toolColors[0]" slot="activator" @click="setDraw('Point')">
           <v-icon dark>location_on</v-icon>

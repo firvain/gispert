@@ -3,20 +3,22 @@
     <v-flex xs12 sm12>
       <v-card>
         <v-flex>
-          <v-text-field @focus="showMapTools"
+          <v-text-field
+            @blur="hideMapTools()"
+            @focus="showMapTools()"
             autofocus
             name="input-1"
-            :label="$t('message.youMayWriteText')"
-            :hint="$t('message.youMayWriteAndSketch')"
+            :label="$t('message.youMayWriteAndSketch')"
             v-model="postText"
             id="postText"
             counter
             max="200"
             textarea
-            box
+            rows=2
           ></v-text-field>
+            <!-- :hint="$t('message.youMayWriteAndSketch')" -->
         </v-flex>
-        <mapTools></mapTools>
+        <mapTools v-if="showingMapTool"></mapTools>
         <v-flex v-if="drawnFeatures !== undefined">
           <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')" @input="remove(f.get('mongoID'))">
             {{ f.getGeometry().getType() }}
@@ -74,6 +76,7 @@ export default {
     newPostInfo: '',
     snackbarNewPost: false,
     snackbarColor: '',
+    showingMapTool: false,
   }),
   components: {
     mapTools,
@@ -235,7 +238,12 @@ export default {
         this.snackbarNewPost = true;
       }
     },
+    hideMapTools() {
+      this.showingMapTool = false;
+      this.$store.commit('setActiveMapTool', 'selectFeatures');
+    },
     showMapTools() {
+      this.showingMapTool = true;
       this.$store.commit('setActiveMapTool', 'drawFeatures');
       // console.log('post id:: ', this.id);
       if (this.id !== undefined) {
@@ -245,7 +253,8 @@ export default {
           this.$store.commit('addingToPost', { type: 'home', id: undefined });
         }
         if (this.$store.state.activeTab === 'explore') {
-          this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline });
+          // console.log({ type: 'collection', id: this.$store.state.openedTimeline.id });
+          this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline.id });
         }
       }
     },

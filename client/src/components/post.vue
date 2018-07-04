@@ -45,7 +45,7 @@
             </v-tooltip>
             <v-tooltip bottom v-if="post.replies && replies < 1">
               <v-btn color="green" slot="activator" outline small fab
-                v-if="post.repliesData == undefined && post.replies.length > 0"
+                v-if="post.repliesData == undefined && post.replies.length > 0 && $store.state.isUserLoggedIn === true"
                 @click="showMoreReplies">
                 <v-icon large color="grey">insert_comment</v-icon>
                 {{ post.replies.length }}
