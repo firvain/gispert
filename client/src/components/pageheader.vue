@@ -300,6 +300,7 @@
 import axios from 'axios';
 import { mapGetters } from 'vuex';
 import AuthenticationService from '@/services/AuthenticationService';
+import olMap from '../js/map';
 import config from '../config';
 import { app } from '../main';
 import notificationsList from './notificationsList';
@@ -605,6 +606,7 @@ export default {
       this.$store.dispatch('setUserTimeline', null);
       this.$store.dispatch('setCollectionTimeline', null);
       this.$store.dispatch('setLiveUsers', null);
+      olMap.getLayers().getArray()[1].getSource().clear();
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
       // this.$store.dispatch('removeNewPostFeature', null);

@@ -256,8 +256,8 @@ export default {
               });
               if (!alreadyExists) {
                 let message = '';
-                if (post.text.length > 10) {
-                  message = `${post.text.substr(0, 10)}...`;
+                if (post.text.length > 20) {
+                  message = `${post.text.substr(0, 20)}...`;
                 } else {
                   message = post.text;
                 }
