@@ -168,8 +168,9 @@ export default {
           this.loading = false;
         }
       }).then(() => {
-        this.loading = false;
         this.$store.dispatch('setCollectionTimeline', this.posts);
+      }).then(() => {
+        this.loading = false;
       });
     },
   },
