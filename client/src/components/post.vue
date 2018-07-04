@@ -255,6 +255,15 @@ export default {
                 }
               });
               if (!alreadyExists) {
+                let message = '';
+                if (post.text.length > 10) {
+                  message = `${post.text.substr(0, 10)}...`;
+                } else {
+                  message = post.text;
+                }
+                f.setProperties({
+                  messages: message,
+                });
                 console.log('added feature :: ', f);
                 layer.getSource().addFeature(f);
                 const cs = f.getStyle();
