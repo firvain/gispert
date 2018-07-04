@@ -37,7 +37,7 @@ export default {
   data: () => ({
     selectColor: 'green',
     drawColor: 'white',
-    toolColors: ['white', 'white', 'white'],
+    toolColors: ['green', 'white', 'white'],
     selectedFeature: olMap.selectedFeature,
     activeAnalysis: null,
     userSelector: false,

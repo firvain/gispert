@@ -3,8 +3,8 @@
     <link rel="stylesheet" href="https://unpkg.com/vue-swatches/dist/vue-swatches.min.css">
     <mapTools></mapTools>
     <div id='mapDiv' class="mapStyle"></div>
-    <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn">
-      <v-expansion-panel>
+    <!-- <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn"> -->
+      <!-- <v-expansion-panel>
         <v-expansion-panel-content>
           <div slot="header">{{ $t("message.symbologyStyle")}}</div>
           <div class="custom-ui-class">
@@ -48,7 +48,7 @@
             </v-flex>
           </div>
         </v-expansion-panel-content>
-      </v-expansion-panel>
+      </v-expansion-panel> -->
       <!-- <div class="message-list">
         <v-progress-circular v-show='loading' indeterminate v-bind:width="3" color="blue"></v-progress-circular>
         <div class="" v-for="(message, index) in messages" v-bind:key="index">
@@ -82,7 +82,7 @@
         </v-btn>
       </v-flex>
       </v-layout> -->
-    </v-container>
+    <!-- </v-container>  -->
   </div>
 </template>
 <script>

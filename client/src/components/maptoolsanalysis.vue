@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card flat height="0px">
-      <v-toolbar class="white" absolute dense offset-xs2>
+      <!-- <v-toolbar class="white" absolute dense offset-xs2> -->
         <v-layout class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
           <!-- <br><br> -->
           <!-- <v-tooltip bottom>
@@ -38,7 +38,7 @@
             </v-btn>
             <span>Βρες τη ζώνη επιρροής</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <!-- <v-tooltip bottom>
             <v-btn fab small :color="toolColors[1]"
               v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
               slot="activator" @click="setDraw('Union')">
@@ -53,7 +53,7 @@
               <v-icon dark>layers</v-icon>
             </v-btn>
             <span>Βρες κοινή περιοχή με ένα άλλο</span>
-          </v-tooltip>
+          </v-tooltip> -->
           <!-- <v-tooltip bottom>
             <v-btn fab small :color="toolColors[2]" slot="activator" @click="chatOnThisFeature()">
               <v-icon dark>send</v-icon>
@@ -61,7 +61,7 @@
             <span>Στείλτο σε άλλους χρήστες</span>
           </v-tooltip> -->
         </v-layout>
-      </v-toolbar>
+      <!-- </v-toolbar> -->
 
     </v-card>
     <v-dialog v-model="userSelector" scrollable max-width="300px"> 
