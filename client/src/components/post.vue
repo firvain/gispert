@@ -358,7 +358,7 @@ export default {
     //   return moment(parseInt(this.post.timestamp, 0)).format('lll');
     // },
     sharePostUrl() {
-      const url = `${config.share}/#/main/search/${this.post._id}`; // eslint-disable-line
+      const url = `${config.share}/#/post/${this.post._id}`; // eslint-disable-line
       return url;
     },
   },

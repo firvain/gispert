@@ -359,7 +359,17 @@ export default {
     }),
     landingPageOpen: {
       get: function get() {
-        return !this.$store.state.isUserLoggedIn;
+        let open = false;
+        if (this.$store.state.isUserLoggedIn) {
+          open = false;
+        }
+        if (!this.$store.state.isUserLoggedIn && this.$route.params) {
+          open = false;
+        }
+        if (!this.$store.state.isUserLoggedIn && !this.$route.params) {
+          open = true;
+        }
+        return open;
       },
       set: function set() {
         return true;

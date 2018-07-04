@@ -30,48 +30,18 @@ export default new Router({
       path: '/',
       name: 'main',
       component: Main,
-      // children: [
-      //   {
-      //     path: 'home',
-      //     name: 'home',
-      //     component: Home,
-      //   },
-      //   {
-      //     path: 'userList',
-      //     name: 'userList',
-      //     component: userList,
-      //   },
-      //   {
-      //     path: 'custommaps',
-      //     name: 'customMapsNoId',
-      //     component: customMaps,
-      //   },
-      //   {
-      //     path: 'custommaps/:id',
-      //     name: 'customMaps',
-      //     component: customMaps,
-      //   },
-      //   {
-      //     path: 'search',
-      //     name: 'search',
-      //     component: Search,
-      //   },
-      //   {
-      //     path: 'search/:id',
-      //     name: 'searchId',
-      //     component: Search,
-      //   },
-      //   {
-      //     path: 'search/collection/:id',
-      //     name: 'searchCollection',
-      //     component: Search,
-      //   },
-      //   {
-      //     path: 'search/usertimeline/:id',
-      //     name: 'searchTimeline',
-      //     component: Search,
-      //   },
-      // ],
+      children: [
+        {
+          path: 'post/:id',
+          name: 'post',
+          component: Main,
+        },
+        {
+          path: 'collection/:id',
+          name: 'collection',
+          component: Main,
+        },
+      ],
     },
   ],
 });

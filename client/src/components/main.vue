@@ -3,19 +3,6 @@
   <Pageheader></Pageheader>
       <v-layout row wrap>
         <v-flex xs4 md4>
-
-          <v-dialog v-model="postOpen" max-width="700px">
-            <v-card>
-              <v-card-title>
-                <span class="headline">{{ $t("message.post") }}</span>
-              </v-card-title>
-              <v-card-text>
-                <post :post='postContent' v-if="postContent !== null"></post>
-                <v-btn color="blue darken-1" flat @click.native="postOpen = false">{{ $t("message.close") }}</v-btn>
-              </v-card-text>
-            </v-card>
-          </v-dialog>
-
           <tabs></tabs>
         </v-flex>
         <v-flex xs8 md8>
@@ -31,17 +18,17 @@
 
 <script>
 import Pageheader from '@/components/pageheader';
-import axios from 'axios';
+// import axios from 'axios';
 // import timeline from './timeline';
 import tabs from './tabs';
 import mapDiv from './map';
-import post from './post';
-import config from '../config';
+// import post from './post';
+// import config from '../config';
 
 export default {
   name: 'mainpage',
   components: {
-    tabs, mapDiv, Pageheader, post,
+    tabs, mapDiv, Pageheader,
   },
   data() {
     return {
@@ -60,67 +47,39 @@ export default {
   mounted() {
     this.olMap = true;
     this.$socket.emit('refreshPosts', 'refreshPosts');
+    if (this.$route.name === 'post') {
+      // console.log('loading post from permalink');
+      this.loadPostFromPermalink(this.$route.params.id);
+    }
+    if (this.$route.name === 'collection') {
+      console.log('loading collection from permalink');
+      this.loadCollectionFromPermalink(this.$route.params.id);
+    }
   },
   watch: {
     '$route.params': function handle() {
       // console.log('main router changed and emitting!!!!!!', this.$route.params.id);
-      if (this.$route.params.id && this.$route.name === 'searchId') {
+      if (this.$route.name === 'post') {
         // console.log('loading post from permalink');
-        this.loadPostFromPermalink();
+        this.loadPostFromPermalink(this.$route.params.id);
       }
-      // if (this.$route.params.id && this.$route.name === 'searchCollection') {
-        // console.log('loading collection from permalink');
-        // this.loadCollectionFromPermalink(this.$route.params.id);
-      // }
+      if (this.$route.name === 'collection') {
+        console.log('loading collection from permalink');
+        this.loadCollectionFromPermalink(this.$route.params.id);
+      }
       // this.$eventHub.$emit('routerChanged', 'routerChanged');
     },
   },
   methods: {
-    loadPostFromPermalink() {
-      this.postContent = null;
-      const id = this.$route.params.id;
-      let pUrl;
-      let userIdCurrent;
-      let token;
-      let postContentNew;
-      // console.log(id);
-      if (this.$store.state.isUserLoggedIn) {
-        pUrl = `${config.url}/posts/id`;
-        userIdCurrent = this.$store.state.user.id;
-        token = this.$store.state.token;
-      } else {
-        pUrl = `${config.url}/public/postid`;
-        userIdCurrent = null;
-        token = null;
-      }
-      if (id) {
-        // console.log('before axios');
-        axios.get(pUrl, {
-          params: {
-            pId: id,
-            userId: userIdCurrent,
-          },
-          headers: { 'x-access-token': token },
-        }).then((resp) => {
-          if (resp.data) {
-            // console.log(resp);
-            this.postContent = resp.data[0];
-            // console.log('postContent:: ', this.postContent, this.postContent.text);
-            this.postOpen = true;
-            // console.log('postContent:: ', this.postOpen);
-            postContentNew = this.postContent;
-          }
-        }).then(() => {
-          this.postContent = postContentNew;
-          this.loading = false;
-          // console.log('postContent:: ', this.postContent, this.postContent.text);
-        });
-      }
+    loadPostFromPermalink(id) {
+      this.$store.commit('setActiveTab', 'explore');
+      this.$eventHub.$emit('openPost', id);
     },
-    // loadCollectionFromPermalink(id) {
-    //   console.log('loading collection from permalink');
-    //   this.$eventHub.$emit('openedcollection', id);
-    // },
+    loadCollectionFromPermalink(id) {
+      console.log('loading collection from permalink::', id);
+      this.$store.commit('setActiveTab', 'explore');
+      this.$eventHub.$emit('openCollection', id);
+    },
   },
 
 };

@@ -133,6 +133,7 @@
       v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'timeline'"
       :id="$store.state.openedTimeline.id"
     ></userTimeline>
+    <post :post='postContent' v-if="postContent !== null"></post>
     <v-btn block dark outline small color="green"
       @click="closeCollectionView"
       v-if="$store.state.openedTimeline !== null">
@@ -144,10 +145,11 @@
 </template>
 <script>
 import axios from 'axios';
+import post from '@/components/post';
+import collection from '@/components/collection';
+import collectionView from '@/components/collectionView';
+import userTimeline from '@/components/userTimeline';
 import config from '../config';
-import collection from './collection';
-import collectionView from './collectionView';
-import userTimeline from './userTimeline';
 
 export default {
   name: 'collectionList',
@@ -174,10 +176,11 @@ export default {
       openedPersonsTL: null,
       mode: 'normal',
       searchResultsCollections: [],
+      postContent: null,
     };
   },
   components: {
-    collection, collectionView, userTimeline,
+    collection, collectionView, userTimeline, post,
   },
   methods: {
     getUserId() {
@@ -301,37 +304,54 @@ export default {
         // this.$store.dispatch('setPublicCollections', this.publicCollections);
       });
     },
+    loadPostFromPermalink(id) {
+      this.postContent = null;
+      let pUrl;
+      let userIdCurrent;
+      let token;
+      let postContentNew;
+      // console.log(id);
+      if (this.$store.state.isUserLoggedIn) {
+        pUrl = `${config.url}/posts/id`;
+        userIdCurrent = this.$store.state.user.id;
+        token = this.$store.state.token;
+      } else {
+        pUrl = `${config.url}/public/postid`;
+        userIdCurrent = null;
+        token = null;
+      }
+      if (id) {
+        // console.log('before axios');
+        axios.get(pUrl, {
+          params: {
+            pId: id,
+            userId: userIdCurrent,
+          },
+          headers: { 'x-access-token': token },
+        }).then((resp) => {
+          if (resp.data) {
+            // console.log(resp);
+            this.postContent = resp.data[0];
+            // console.log('postContent:: ', this.postContent, this.postContent.text);
+            this.postOpen = true;
+            // console.log('postContent:: ', this.postOpen);
+            postContentNew = this.postContent;
+          }
+        }).then(() => {
+          this.postContent = postContentNew;
+          this.loading = false;
+          // console.log('postContent:: ', this.postContent, this.postContent.text);
+        });
+      }
+    },
     closeCollectionView() {
       this.$store.dispatch('setOpenedCustomTimeline', null);
       this.mode = 'normal';
+      this.postContent = null;
       this.privateCollectionsContainer = true;
     },
   },
   mounted() {
-    if (this.$route.params.id && this.$route.name === 'searchCollection') {
-      this.openedPersonsTL = this.$route.params.id;
-      console.log('loading collection from permalink, found this id:: ', this.openedPersonsTL);
-      const tl = {
-        id: this.$route.params.id,
-        type: 'collection',
-      };
-      this.$store.dispatch('setOpenedCustomTimeline', tl);
-
-      // this.$eventHub.$emit('openTimeline', this.openedPersonsTL);
-      this.mode = 'userTL';
-    }
-    if (this.$route.params.id && this.$route.name === 'searchTimeline') {
-      this.openedPersonsTL = this.$route.params.id;
-      console.log('loading collection from permalink, found this id:: ', this.openedPersonsTL);
-      const tl = {
-        id: this.$route.params.id,
-        type: 'timeline',
-      };
-      this.$store.dispatch('setOpenedCustomTimeline', tl);
-
-      // this.$eventHub.$emit('openTimeline', this.openedPersonsTL);
-      this.mode = 'userTL';
-    }
     if (this.$store.state.isUserLoggedIn) {
       if (this.$store.state.publicCollections.length === 0) {
         this.loadPublicCollections();
@@ -359,15 +379,30 @@ export default {
     // });
     this.$eventHub.$on('openCollection', (id) => {
       console.log('open collection, notification clicked:: ', id);
-      this.openedCollection = id;
-      this.openedPersonsTL = null;
+      const tl = {
+        id: this.$route.params.id,
+        type: 'collection',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
       this.mode = 'collectionView';
     });
     this.$eventHub.$on('openTimeline', (id) => {
       console.log('open timeline from notification:: ', id);
-      this.openedPersonsTL = id;
-      this.openedCollection = null;
+      const tl = {
+        id: this.$route.params.id,
+        type: 'timeline',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
       this.mode = 'userTL';
+    });
+    this.$eventHub.$on('openPost', (id) => {
+      this.loadPostFromPermalink(id);
+      const tl = {
+        id: this.$route.params.id,
+        type: 'post',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
+      this.mode = 'post';
     });
   },
 };

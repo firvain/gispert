@@ -156,7 +156,7 @@ export default {
       return thisCollectionUsers;
     },
     shareMapUrl() {
-      const url = `${window.location.href}/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
+      const url = `${config.share}/#/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
       // console.log(this.customMap.id);
       return url;
     },
