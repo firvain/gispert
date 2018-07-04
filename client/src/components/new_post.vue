@@ -4,7 +4,6 @@
       <v-card>
         <v-flex>
           <v-text-field
-            @blur="hideMapTools()"
             @focus="showMapTools()"
             autofocus
             name="input-1"
@@ -13,12 +12,12 @@
             id="postText"
             counter
             max="200"
-            textarea
+            textarea box
             rows=2
           ></v-text-field>
             <!-- :hint="$t('message.youMayWriteAndSketch')" -->
         </v-flex>
-        <mapTools v-if="showingMapTool"></mapTools>
+        <mapTools v-if="$store.state.addingToPost && $store.state.addingToPost.type === idToMatch"></mapTools>
         <v-flex v-if="drawnFeatures !== undefined">
           <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')" @input="remove(f.get('mongoID'))">
             {{ f.getGeometry().getType() }}
@@ -238,24 +237,19 @@ export default {
         this.snackbarNewPost = true;
       }
     },
-    hideMapTools() {
-      this.showingMapTool = false;
-      this.$store.commit('setActiveMapTool', 'selectFeatures');
-    },
     showMapTools() {
       this.showingMapTool = true;
       this.$store.commit('setActiveMapTool', 'drawFeatures');
       // console.log('post id:: ', this.id);
-      if (this.id !== undefined) {
+      if (this.idToMatch === 'reply') {
         this.$store.commit('addingToPost', { type: 'reply', id: this.id });
-      } else {
-        if (this.$store.state.activeTab === 'home') {
-          this.$store.commit('addingToPost', { type: 'home', id: undefined });
-        }
-        if (this.$store.state.activeTab === 'explore') {
-          // console.log({ type: 'collection', id: this.$store.state.openedTimeline.id });
-          this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline.id });
-        }
+      }
+      if (this.idToMatch === 'home') {
+        this.$store.commit('addingToPost', { type: 'home', id: 'home' });
+      }
+      if (this.idToMatch === 'collection') {
+        // console.log({ type: 'collection', id: this.$store.state.openedTimeline.id });
+        this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline.id });
       }
     },
     setCenter() {
@@ -283,13 +277,30 @@ export default {
     },
   },
   computed: {
+    idToMatch: function findid() {
+      let setid;
+      if (this.id) {
+        setid = 'reply';
+      }
+      if (this.id === undefined && this.$store.state.activeTab === 'home') {
+        setid = 'home';
+      }
+      if (this.id === undefined && this.$store.state.activeTab === 'explore') {
+        setid = 'collection';
+      }
+      return setid;
+    },
     drawnFeatures: function d() {
       let selectedFeatures = null;
       let objIndex = null;
       const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (this.id === undefined && allFeatures !== undefined) {
-        objIndex = allFeatures.findIndex((obj => obj.id === undefined));
-      } else {
+      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+        objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+      }
+      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+        objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+      }
+      if (this.id !== undefined && allFeatures !== undefined) {
         objIndex = allFeatures.findIndex((obj => obj.id === this.id));
       }
       if (objIndex > -1) {

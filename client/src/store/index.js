@@ -137,9 +137,8 @@ export default new Vuex.Store({
       }
     },
     newPostFeature(state, data) {
+      console.log('type :: ', data);
       state.newpostfeature = data;
-      const post = state.addingToPost;
-      console.log('post:: ', post, typeof (post));
       const feature = state.newpostfeature;
       state.featureCount += 1;
       feature.drawId = state.featureCount;
@@ -148,17 +147,16 @@ export default new Vuex.Store({
         'name': '@' + state.user.name,
         'userId': state.user._id,
       });
-      if (typeof (post) !== undefined) {
-        if (state.storage.length > 0) {
-          const objIndex = state.storage.findIndex((obj => obj.id == post));
-          if (objIndex > -1) {
-            state.storage[objIndex].features.push(feature);
-          } else {
-            state.storage.push({ id: post, features: [feature] });
-          }
+      
+      if (state.storage.length > 0) {
+        const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
+        if (objIndex > -1) {
+          state.storage[objIndex].features.push(feature);
         } else {
-          state.storage.push({ id: post, features: [feature] });
+          state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, features: [feature] });
         }
+      } else {
+        state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, features: [feature] });
       }
     },
     clearNewPostFeatures(state) {
