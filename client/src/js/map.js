@@ -397,12 +397,27 @@ selectClick.on('select', () => {
 });
 
 drawPoint.on('drawend', (e) => {
+  e.feature.setProperties({
+    strkWdth: 2,
+    strkClr: '#002AFF',
+    fllClr: '#F39C19',
+  });
   store.commit('newPostFeature', e.feature);
 });
 drawLineString.on('drawend', (e) => {
+  e.feature.setProperties({
+    strkWdth: 2,
+    strkClr: '#002AFF',
+    fllClr: '#F39C19',
+  });
   store.commit('newPostFeature', e.feature);
 });
 drawPolygon.on('drawend', (e) => {
+  e.feature.setProperties({
+    strkWdth: 2,
+    strkClr: '#002AFF',
+    fllClr: '#F39C19',
+  });
   store.commit('newPostFeature', e.feature);
 });
 

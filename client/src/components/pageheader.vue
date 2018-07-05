@@ -554,28 +554,29 @@ export default {
       }
       return true;
     },
-    async loadLiveUsers() {
-      try {
-        this.loading = true;
-        const url = `${config.url}/users/LiveMapChatForUser`;
-        axios.get(url, {
-          params: {
-            id: this.getUserId(),
-          },
-          headers: { 'x-access-token': this.$store.state.token },
-        }).then((response) => {
-          this.loading = false;
-          console.log('joining liveUsers', JSON.stringify(response.data));
-          console.log('joining liveUsers', JSON.stringify(response.data[0].liveUsers));
-          this.$store.dispatch('setLiveUsers', response.data[0].liveUsers);
-          this.$socket.emit('joinCollections', response.data[0].liveUsers);
-          this.$socket.emit('joinCollections', [this.$store.state.user._id]); // eslint-disable-line no-underscore-dangle
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      return true;
-    },
+    // async loadLiveUsers() {
+    //   try {
+    //     this.loading = true;
+    //     const url = `${config.url}/users/LiveMapChatForUser`;
+    //     axios.get(url, {
+    //       params: {
+    //         id: this.getUserId(),
+    //       },
+    //       headers: { 'x-access-token': this.$store.state.token },
+    //     }).then((response) => {
+    //       this.loading = false;
+    //       console.log('joining liveUsers', JSON.stringify(response.data));
+    //       console.log('joining liveUsers', JSON.stringify(response.data[0].liveUsers));
+    //       this.$store.dispatch('setLiveUsers', response.data[0].liveUsers);
+    //       this.$socket.emit('joinCollections', response.data[0].liveUsers);
+    //       this.$socket.emit('joinCollections', [this.$store.state.user._id]);
+    // eslint-disable-line no-underscore-dangle
+    //     });
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //   return true;
+    // },
     getUserId() {
       let id;
       if (this.$store.state.user) { // eslint-disable-line no-underscore-dangle

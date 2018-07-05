@@ -111,9 +111,9 @@ export default {
       this.loading = true;
       let url;
       let userID;
-      if (this.$store.state.timeline.length > 0) {
-        this.posts = this.$store.state.timeline;
-      }
+      // if (this.$store.state.timeline.length > 0) {
+      //   this.posts = this.$store.state.timeline;
+      // }
       if (this.$store.state.isUserLoggedIn) {
         url = `${config.url}/posts/all`;
         userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
@@ -144,6 +144,10 @@ export default {
     } else {
       this.posts = this.$store.state.timeline;
     }
+    this.$eventHub.$on('logged-in', () => {
+      this.$store.dispatch('setTimeline', []);
+      this.load_first_page();
+    });
     this.$eventHub.$on('newPost', () => {
       // this.replies.unshift(data);
       this.toggle_new_post();

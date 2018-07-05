@@ -3,6 +3,7 @@
     <v-flex xs12 sm12>
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
+          <v-icon v-if="post.isReplyTo !== ''">reply</v-icon>
           <v-flex class="text-xs-left">
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
@@ -24,22 +25,22 @@
         <v-card-actions class="grey lighten-3">
             <v-tooltip bottom>
               <v-btn slot="activator"
-                fab small
+                fab small outline
                 v-if='post.featureData.length > 0'
-                class="green white--text darken-1"
+                color="green"
                 @click="zoom(post)">
                 <!-- {{ $t("message.showOnMap") }} -->
-                <v-icon dark>language</v-icon>
+                <v-icon large color='green'>language</v-icon>
               </v-btn>
               <span>{{ $t("message.showOnMapTooltip") }}</span>
             </v-tooltip>
             <v-tooltip bottom>
               <v-btn slot="activator"
-                fab small
-                v-bind:class="[answerPostColor, answerPostTextColor]"
+                fab small outline
+                v-bind:color="answerPostColor"
                 @click="toggle_answer"
                 v-if="$store.state.isUserLoggedIn === true">
-                <v-icon large color="white">insert_comment</v-icon>
+                <v-icon large :color="answerPostTextColor">insert_comment</v-icon>
               </v-btn>
               <span>{{ $t("message.replyTooltip") }}!</span>
             </v-tooltip>
@@ -47,7 +48,7 @@
               <v-btn color="green" slot="activator" outline small fab
                 v-if="post.repliesData == undefined && post.replies.length > 0 && $store.state.isUserLoggedIn === true"
                 @click="showMoreReplies">
-                <v-icon large color="grey">insert_comment</v-icon>
+                <v-icon large color="green">reply</v-icon>
                 {{ post.replies.length }}
               </v-btn>
               <span>{{ $t("message.viewReplies") }}</span>
@@ -63,32 +64,43 @@
             </v-tooltip>
 
               <v-spacer></v-spacer>
-              <social-sharing :url="sharePostUrl" inline-template>
-                <div>
-                  <v-tooltip bottom>
-                    <network slot="activator" network="facebook" class="link-network">
-                      <i class="fa fa-fw fa-facebook"></i>
-                    </network>
-                    <span>{{ $t("message.shareOn") }} Facebook!</span>
-                  </v-tooltip>
-                  <v-tooltip bottom>
-                    <network slot="activator" network="linkedin" class="link-network">
-                      <i class="fa fa-fw fa-linkedin"></i>
-                    </network>
-                    <span>{{ $t("message.shareOn") }} LinkedIn!</span>
-                  </v-tooltip>
-                </div>
-              </social-sharing>
-              <v-tooltip bottom>
-                <v-btn outline fab small
-                  color="black"
-                  slot="activator"
-                  @click="shareLink = !shareLink; copyToClipboard();"
-                  class="link-network">
-                  <i class="fa fa-fw fa-link"></i>
+              <v-menu bottom left>
+                <v-btn icon fab outline small color='green' slot="activator">
+                  <v-icon color='green'>more_vert</v-icon>
                 </v-btn>
-                <span>{{ $t("message.shareLink") }}!</span>
-              </v-tooltip>
+                <v-list>
+                  <v-list-tile>
+                    <v-list-tile-title>
+                        <v-icon @click="shareLink = !shareLink; copyToClipboard();">link</v-icon>
+                        <span
+                          @click="shareLink = !shareLink; copyToClipboard();"
+                          class='caption'>{{ $t("message.shareLink") }}!
+                        </span>
+                    </v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-title>
+                      <social-sharing :url="sharePostUrl" inline-template>
+                        <network slot="activator" network="facebook">
+                          <i class="fa fa-fw fa-facebook"></i>
+                          <span class='caption'>{{ $t("message.shareOn") }} Facebook!</span>
+                        </network>
+                      </social-sharing>
+                    </v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-title>
+                      <social-sharing :url="sharePostUrl" inline-template>
+                        <network slot="activator" network="linkedin">
+                          <i class="fa fa-fw fa-linkedin"></i>
+                          <span class='caption'>{{ $t("message.shareOn") }} LinkedIn!</span>
+                        </network>
+                      </social-sharing>
+                    </v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
+
         </v-card-actions>
         <newPost v-if="answerPost === true && post.collectionData"
           :id="post._id"

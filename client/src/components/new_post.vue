@@ -40,7 +40,7 @@
           </v-flex>
           <v-flex xs3 sm6 md6>
             <v-btn flat class="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}
-              <v-icon right dark>insert_comment</v-icon>
+              <v-icon right dark>send</v-icon>
             </v-btn>
             <!-- <v-btn small fab class="green white--text">
               <v-icon white--text dark>help_outline</v-icon>
