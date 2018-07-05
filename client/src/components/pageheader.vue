@@ -150,7 +150,7 @@
               type="password"
               v-model="credentials.password"
               autocomplete="new-password"
-              v-on:keyup.enter="login"
+              v-on:keyup.enter="login(credentials)"
             ></v-text-field>
           </form>
           </v-card-text>

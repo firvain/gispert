@@ -76,6 +76,21 @@ export default new Vuex.Store({
     setTimeline(state,data) {
       state.commit('setTimeline', data);
     },
+    setCollectionTimeline(state, data) {
+      state.commit('setCollectionTimeline', data);
+    },
+    setUserTimeline(state, data) {
+      state.commit('setUserTimeline', data);
+    },
+    addPageToTimeline(state,data) {
+      state.commit('addPageToTimeline', data);
+    },
+    addPageToCollectionTimeline(state, data) {
+      state.commit('addPageToCollectionTimeline', data);
+    },
+    addPageToUserTimeline(state, data) {
+      state.commit('addPageToUserTimeline', data);
+    },
     addPostToTimeline(state, data) {
       state.commit('addPostToTimeline', data);
     },
@@ -99,12 +114,6 @@ export default new Vuex.Store({
     },
     setNotifications(state, data) {
       state.commit('setNotifications', data);
-    },
-    setCollectionTimeline(state, data) {
-      state.commit('setCollectionTimeline', data);
-    },
-    setUserTimeline(state, data) {
-      state.commit('setUserTimeline', data);
     },
     addPublicCollection(state, data) {
       state.commit('addPublicCollection', data);
@@ -293,6 +302,15 @@ export default new Vuex.Store({
     },
     setActiveTab (state, data) {
       state.activeTab = data;
+    },    
+    addPageToTimeline(state,data) {
+      state.timeline.push(data);
+    },
+    addPageToCollectionTimeline(state, data) {
+      state.collectionTimeline.push(data);
+    },
+    addPageToUserTimeline(state, data) {
+      state.userTimeline.push(data);
     },
   },
   getters: {

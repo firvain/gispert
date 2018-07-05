@@ -69,7 +69,7 @@
                   <v-icon color='green'>more_vert</v-icon>
                 </v-btn>
                 <v-list>
-                  <v-list-tile>
+                  <v-list-tile class='hover'>
                     <v-list-tile-title>
                         <v-icon @click="shareLink = !shareLink; copyToClipboard();">link</v-icon>
                         <span
@@ -78,7 +78,7 @@
                         </span>
                     </v-list-tile-title>
                   </v-list-tile>
-                  <v-list-tile>
+                  <v-list-tile class='hover'>
                     <v-list-tile-title>
                       <social-sharing :url="sharePostUrl" inline-template>
                         <network slot="activator" network="facebook">
@@ -88,7 +88,7 @@
                       </social-sharing>
                     </v-list-tile-title>
                   </v-list-tile>
-                  <v-list-tile>
+                  <v-list-tile class='hover'>
                     <v-list-tile-title>
                       <social-sharing :url="sharePostUrl" inline-template>
                         <network slot="activator" network="linkedin">
@@ -390,5 +390,8 @@ export default {
   .link-network:hover {
     border-style: solid;
     border-color: green;
+  }
+  .hover:hover {
+    background-color: lightgrey;
   }
 </style>
