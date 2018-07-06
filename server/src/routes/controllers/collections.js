@@ -78,97 +78,100 @@ router.route('/delete')
 
 router.route('/collection')
 .get(function getposts(req, res) {
-    var start = parseInt(req.query.start);
-    var end = parseInt(req.query.end);
-    var userId = req.query.userId;
-    var collectionId = req.query.collectionId;
-    // console.log('getting posts for this collection:: ', collectionId, userId, start, end);
-    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
-    .then(function (db) {
-      var collection = db.collection('posts');
-      return collection.aggregate([
-        { $graphLookup: {
-            from: "posts",
-            startWith: "$replies",
-            connectFromField: "_id",
-            connectToField: "_id",
-            as: "repliesData",
-          }
-        },
-        { $graphLookup: {
-            from: "features",
-            startWith: "$userFeatures",
-            connectFromField: "userFeatures",
-            connectToField: "properties.mongoID",
-            as: "featureData",
-          }
-        },
-        { $graphLookup: {
-            from: "collections",
-            startWith: "$collections",
-            connectFromField: "collections",
-            connectToField: "_id",
-            as: "collectionData",
-          }
-        },
-        {
-            $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
-        },
-        {
-            $skip: start
-        },
-        {
-            $limit: end
-        },
-        { "$project": {
-            "_id": 1,
-            "userId": 1,
-            "userName": 1,
-            "timestamp": 1,
-            "text":1,
-            "userFeatures": 1,
-            "isReplyTo":1,
-            "replies":1,
-            "featureData":1,
-            "collectionData": {
-               "$filter": {
-                   "input": "$collectionData",
-                   "as": "child",
-                   "cond": { $or: [ 
-                        { "$eq": [ "$$child.visibility", "public" ] }, 
-                        { "$eq": [ "$$child.visibility", "private" ] }, 
-                        // { "$eq": [ "$$child.user", ObjectID(userId) ] } 
-                    ] }
-               }
-            }
-        }},
-        { $match: {  
-          $and: [
-            /*{ 'isReplyTo': '' }, {'collectionData': { $size: 1 }},*/ 
-            {'collectionData._id': ObjectID(collectionId) },
-            { 'isReplyTo': '' },
-            {$or: [
-                { "collectionData.members": ObjectID(userId) }, 
-                { "collectionData.user": ObjectID(userId) },
-                { "collectionData.visibility": 'public' }
-            ]}
-          ]}
-        },
-        ]);
+  var start = parseInt(req.query.start);
+  var end = parseInt(req.query.end);
+  var userId = req.query.userId;
+  var collectionId = req.query.collectionId;
+  MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+          var collection = db.collection('posts');
+          return collection.aggregate([
+              {
+                  $graphLookup: {
+                      from: "features",
+                      startWith: "$userFeatures",
+                      connectFromField: "userFeatures",
+                      connectToField: "properties.mongoID",
+                      as: "featureData",
+                  }
+              },
+              {
+                  $graphLookup: {
+                      from: "collections",
+                      startWith: "$collections",
+                      connectFromField: "collections",
+                      connectToField: "_id",
+                      as: "collectionData",
+                  }
+              },
+              {
+                  $project: {
+                      "post._id": "$_id",
+                      "post.isReplyTo": "$isReplyTo",
+                      "post.replies": "$replies",
+                      "post.featureData": "$featureData",
+                      "post.collectionData": "$collectionData",
+                      "post.userName": "$userName",
+                      "post.userId": "$userId",
+                      "post.timestamp": "$timestamp",
+                      "post.text": "$text"
+                  }
+              },
+              {
+                $match: {
+                  $and: [
+                    { 'post.collectionData._id': ObjectID(collectionId) },
+                    {
+                      $or: [
+                        { "post.collectionData.members": ObjectID(userId) },
+                        { "post.collectionData.user": ObjectID(userId) },
+                        { "post.collectionData.visibility": 'public' }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                  $sort: { 'post.timestamp': -1 }
+              },
+              {
+                  $group: {
+                      _id: "$post.isReplyTo",
+                      posts: { $push: "$post" },
+                  }
+              },
+              {
+                  $project: {
+                      posts: 1,
+                      count: { $size: "$posts" }
+                  }
+              },
+              {
+                  $sort: { 'posts.timestamp': -1 }
+              },
+              {
+                  $project: {
+                      count: 1,
+                      posts: { $slice: ["$posts", 0, 4] }
+                  }
+              },
+              {
+                  $skip: start
+              },
+              {
+                  $limit: end
+              }
+          ]);
+          db.close();
       })
       .then(function (cursor) {
-        return cursor.toArray();
+          return cursor.toArray();
       })
       .then(function (content) {
-        content.forEach((p) => {
-          if(p.repliesData) {
-              p.repliesData.sort(dynamicSort("timestamp"));
-          }
-        });
-        res.status(200).json(content);
+          res.status(200).json(content);
       })
       .catch(function (err) {
-        throw err;
+          throw err;
       });
     });
 

@@ -1,5 +1,5 @@
 <template>
-    <v-container md9 fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
+    <v-container fluid>
       <v-btn md8 color="secondary" dark
         block
         large
@@ -9,18 +9,16 @@
         <v-icon right dark>insert_comment</v-icon>
       </v-btn>
       <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collection="id"></newPost>
-      <v-layout row wrap>
-        <v-flex
-          md12
-          v-for="post in posts"
-          :key="post._id"
-        >
-          <post :post='post'></post>
-        </v-flex>
-      </v-layout>
+
+      <v-flex
+        md12
+        v-for="thread in $store.state.collectionTimeline"
+        :key="thread._id"
+      >
+        <thread :thread='thread'></thread>
+      </v-flex>
       <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <v-btn
-        v-if="$store.state.collectionTimeline.length > 0 && endOfPosts === false"
         v-on:click='next_page'
         class="blue-grey white--text"
         block
@@ -34,7 +32,7 @@
 <script>
 import axios from 'axios';
 import { mapActions } from 'vuex';
-import post from './post';
+import thread from '@/components/thread';
 import newPost from './new_post';
 import config from '../config';
 import olMap from '../js/map';
@@ -44,11 +42,6 @@ export default {
   name: 'timeline',
   data() {
     return {
-      posts: [],
-      size: 'md',
-      expand: 'md12',
-      mode: 0,
-      explore_estate: null,
       startPage: 0,
       limitPage: 100,
       newPost: false,
@@ -60,7 +53,7 @@ export default {
     };
   },
   components: {
-    post, newPost,
+    thread, newPost,
   },
   watch: {
     '$store.state.openedTimeline': function changed() {
@@ -162,13 +155,7 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        if (response.data.length > 0) {
-          this.posts = response.data;
-        } else {
-          this.loading = false;
-        }
-      }).then(() => {
-        this.$store.dispatch('setCollectionTimeline', this.posts);
+        this.$store.dispatch('setCollectionTimeline', response.data);
       }).then(() => {
         this.loading = false;
       });

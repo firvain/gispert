@@ -1,24 +1,33 @@
 <template>
-    <v-container md9 fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0">
-      <!-- <v-btn md8 color="secondary" dark
-        block
-        large
-        v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"  v-if="$store.state.isUserLoggedIn === true"
-      >
-        {{newPostText}}
-        <v-icon right dark>insert_comment</v-icon>
-      </v-btn> -->
-      <!-- <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collectionid="id"></newPost> -->
+    <v-container fluid>
       <v-layout row wrap>
+
         <v-flex
+          md12
+          v-for="thread in $store.state.userTimeline"
+          :key="thread._id"
+        >
+        <thread :thread='thread'></thread>
+        </v-flex>
+        <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+        <v-btn
+          v-on:click='next_page'
+          class="blue-grey white--text"
+          block
+        >
+          {{ $t('message.loadMore')}}
+          <v-icon right dark>navigate_next</v-icon>
+        </v-btn>
+
+        <!-- <v-flex
           md12
           v-for="post in posts"
           :key="post._id"
         >
           <post :post='post'></post>
-        </v-flex>
+        </v-flex> -->
       </v-layout>
-      <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+      <!-- <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <v-btn
         v-if="$store.state.userTimeline.length > 0 && endOfPosts === false"
         v-on:click='next_page'
@@ -27,15 +36,14 @@
       >
         {{ $t('message.loadMore')}}
         <v-icon right dark>navigate_next</v-icon>
-      </v-btn>
+      </v-btn> -->
       <span v-if="$store.state.userTimeline.length === 0">{{ $t('message.noPosts')}}</span>
     </v-container>
 </template>
 <script>
 import axios from 'axios';
-import { mapGetters, mapActions } from 'vuex';
-import post from './post';
-import newPost from './new_post';
+import thread from '@/components/thread';
+// import newPost from '@/components/new_post';
 import config from '../config';
 import olMap from '../js/map';
 
@@ -44,23 +52,14 @@ export default {
   name: 'timeline',
   data() {
     return {
-      posts: [],
-      size: 'md',
-      expand: 'md12',
-      mode: 0,
       explore_estate: null,
       startPage: 0,
       limitPage: 25,
-      newPost: false,
-      newPostColor: 'blue-grey',
-      newPostTextColor: 'white--text darken-1',
-      newPostText: this.$t('message.newPostInThisCollection'),
       loading: false,
-      endOfPosts: false,
     };
   },
   components: {
-    post, newPost,
+    thread,
   },
   watch: {
     '$store.state.openedTimeline': function changed() {
@@ -68,18 +67,7 @@ export default {
       this.loadTimeline(this.$store.state.openedTimeline.id);
     },
   },
-  computed: mapGetters([
-    'evenOrOdd',
-    'feature',
-  ]),
   methods: {
-    ...mapActions([
-      'setFeature',
-      'increment',
-      'decrement',
-      'incrementIfOdd',
-      'incrementAsync',
-    ]),
     refresh_page() {
       //  TODO: do the correct API call
       // console.log('refreshing page');
@@ -134,7 +122,6 @@ export default {
       this.loading = true;
       let url;
       let userID;
-
       if (this.$store.state.isUserLoggedIn) {
         console.log('loading timeline');
         url = `${config.url}/posts/person`;
@@ -144,7 +131,6 @@ export default {
           userID = this.id; // eslint-disable-line no-underscore-dangle
         }
       }
-
       axios.get(url, {
         params: {
           start: this.startPage.toString(),
@@ -153,11 +139,9 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        // console.log(response);
-        this.posts = response.data;
+        this.$store.dispatch('setUserTimeline', response.data);
       }).then(() => {
         this.loading = false;
-        this.$store.dispatch('setUserTimeline', this.posts);
       });
     },
   },

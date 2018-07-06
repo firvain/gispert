@@ -307,7 +307,6 @@ router.route('/replies')
     .catch(function (err) {
       throw err;
     });
-
 });
 
 router.route('/id')
@@ -406,82 +405,92 @@ router.route('/person')
     var end = parseInt(req.query.end);
     var userId = req.query.userId;
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
-    .then(function (db) {
-      var collection = db.collection('posts');
-      return collection.aggregate([
-        { $graphLookup: {
-            from: "posts",
-            startWith: "$replies",
-            connectFromField: "_id",
-            connectToField: "_id",
-            as: "repliesData",
-          }
-        },
-        { $graphLookup: {
-          from: "features",
-          startWith: "$userFeatures",
-          connectFromField: "userFeatures",
-          connectToField: "properties.mongoID",
-          as: "featureData",
-        }
-      },
-        { $graphLookup: {
-            from: "collections",
-            startWith: "$collections",
-            connectFromField: "collections",
-            connectToField: "_id",
-            as: "collectionData",
-          }
-        },
-        {
-          $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
-        },
-        { "$project": {
-            "_id": 1,
-            "userId": 1,
-            "userName": 1,
-            "timestamp": 1,
-            "text":1,
-            "userFeatures": 1,
-            "isReplyTo": 1,
-            "replies": 1,
-            "featureData":1,
-            "collectionData": {
-               "$filter": {
-                   "input": "$collectionData",
-                   "as": "child",
-                   "cond": { $or: [ 
-                     { "$eq": [ "$$child.visibility", "public" ] } 
-                    ] }
-               }
+      .then(function (db) {
+        var collection = db.collection('posts');
+        return collection.aggregate([
+          {
+            $graphLookup: {
+              from: "features",
+              startWith: "$userFeatures",
+              connectFromField: "userFeatures",
+              connectToField: "properties.mongoID",
+              as: "featureData",
             }
-        }},
-        { $match: {  
-            $and: [
-              { 'isReplyTo': '' }, { 'userId' : userId }
-            ]
+          },
+          {
+            $graphLookup: {
+              from: "collections",
+              startWith: "$collections",
+              connectFromField: "collections",
+              connectToField: "_id",
+              as: "collectionData",
+            }
+          },
+          {
+            $project: {
+              "post._id": "$_id",
+              "post.isReplyTo": "$isReplyTo",
+              "post.replies": "$replies",
+              "post.featureData": "$featureData",
+              "post.collectionData": {
+                "$filter": {
+                  "input": "$collectionData",
+                  "as": "child",
+                  "cond": { $or: [{ "$eq": ["$$child.visibility", "public"] }] }
+                }
+              },
+              "post.userName": "$userName",
+              "post.userId": "$userId",
+              "post.timestamp": "$timestamp",
+              "post.text": "$text"
+            }
+          },
+          {
+            $match: {
+              $and: [ 
+                // { 'post.collectionData': { $ne: [] }},
+                { 'post.userId': userId }
+              ]
+            }
+          },
+          {
+            $sort: { 'post.timestamp': -1 }
+          },
+          {
+            $group: {
+              _id: "$post.isReplyTo",
+              posts: { $push: "$post" },
+            }
+          },
+          {
+            $project: {
+              posts: 1,
+              count: { $size: "$posts" }
+            }
+          },
+          {
+            $sort: { 'posts.timestamp': -1 }
+          },
+          {
+            $project: {
+              count: 1,
+              posts: { $slice: ["$posts", 0, 4] }
+            }
+          },
+          {
+            $skip: start
+          },
+          {
+            $limit: end
           }
-        },
-        {
-          $skip: start
-        },
-        {
-          $limit: end
-        }
-      ]);
+        ]);
         db.close();
       })
       .then(function (cursor) {
         return cursor.toArray();
       })
       .then(function (content) {
-        content.forEach((p) => {
-          if(p.repliesData) {
-              p.repliesData.sort(dynamicSort("timestamp"));
-          }
-        });
         res.status(200).json(content);
-        // db.close();
       })
       .catch(function (err) {
         throw err;
