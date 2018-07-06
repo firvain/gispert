@@ -1,9 +1,9 @@
 <template>
-  <v-layout>
-    <v-flex xs12 sm12>
+  <v-layout ma-0 pa-0>
+    <v-flex xs12 sm12  ma-0 pa-0>
       <v-card @newreply="new_post_sent(arguments[0])">
         <v-card-title primary-title>
-          <v-icon v-if="post.isReplyTo !== ''">reply</v-icon>
+          <v-icon v-if="postType === 'reply'">reply</v-icon>
           <v-flex class="text-xs-left">
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
@@ -14,8 +14,8 @@
             <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
           </v-flex>
           <v-chip
-            v-if="f.properties"
             v-for="f in post.featureData" 
+            v-if="f.properties"
             :key="f.properties.mongoID">
             {{ f.geometry.type }}
           </v-chip>
@@ -39,12 +39,12 @@
                 fab small outline
                 v-bind:color="answerPostColor"
                 @click="toggle_answer"
-                v-if="$store.state.isUserLoggedIn === true">
+                v-if="$store.state.isUserLoggedIn === true && postType === 'original'">
                 <v-icon large :color="answerPostTextColor">insert_comment</v-icon>
               </v-btn>
               <span>{{ $t("message.replyTooltip") }}!</span>
             </v-tooltip>
-            <v-tooltip bottom v-if="post.replies && replies < 1">
+            <!-- <v-tooltip bottom v-if="post.replies && replies < 1">
               <v-btn color="green" slot="activator" outline small fab
                 v-if="post.repliesData == undefined && post.replies.length > 0 && $store.state.isUserLoggedIn === true"
                 @click="showMoreReplies">
@@ -52,7 +52,7 @@
                 {{ post.replies.length }}
               </v-btn>
               <span>{{ $t("message.viewReplies") }}</span>
-            </v-tooltip>
+            </v-tooltip> -->
 
             <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
 
@@ -103,7 +103,7 @@
 
         </v-card-actions>
         <newPost v-if="answerPost === true && post.collectionData"
-          :id="post._id"
+          :id="post.isReplyTo"
           :collection="post.collectionData[0]._id"
           :collectionMembers="post.collectionData[0].members"
           :userToNotify="post.userId">
@@ -118,7 +118,7 @@
           <post :post='post'></post>
         </v-flex> -->
 
-        <v-flex class="ma-0 pa-0"
+        <!-- <v-flex class="ma-0 pa-0"
           md12
           v-if="replies.length > 0"
           v-for="reply in replies"
@@ -129,7 +129,7 @@
         <v-btn block color="white" v-if="replies.length > 0 && replies.length < post.replies.length" @click="showMoreReplies">
           {{ $t('message.loadMore')}}
           <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
-        </v-btn>
+        </v-btn> -->
       </v-card>
     </v-flex>
       <v-snackbar
@@ -163,7 +163,7 @@ import olMap from '../js/map';
 import styles from '../js/styles';
 
 export default {
-  props: ['post'],
+  props: ['post', 'postType'],
   name: 'post',
   data: () => ({
     answerPost: false,

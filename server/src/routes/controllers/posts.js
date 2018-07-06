@@ -21,18 +21,25 @@ router.route('/')
  .post(function setpost(req, res) {
   const features = JSON.parse(req.body.userPost.userFeatures);
   console.log('features to add::', features);
-
   const featuresIds = [];
-  features.features.forEach((f) => {
-    featuresIds.push(f.properties.mongoID);
-  });
+  if (features) {
+    features.features.forEach((f) => {
+      featuresIds.push(f.properties.mongoID);
+    });
+  }
+  let idToReply;
+  if (req.body.userPost.isReplyTo !== '') {
+    idToReply = ObjectId(req.body.userPost.isReplyTo);
+  } else {
+    idToReply = '';
+  }
   var post = {
     userId: req.body.userPost.userId,
     userName: req.body.userPost.userName,
     timestamp: String(Math.trunc(req.body.userPost.timestamp)),
     text: req.body.userPost.text,
     userFeatures: featuresIds,
-    isReplyTo: req.body.userPost.isReplyTo,
+    isReplyTo: idToReply,
     collections: ObjectId(req.body.userPost.collections),
     replies: req.body.userPost.replies
   };
@@ -44,7 +51,9 @@ router.route('/')
       return id = database.addPost(post);
     })
     .then((id) => {
-      database.addPostFeatures(features.features);
+      if (features) {
+        database.addPostFeatures(features.features);
+      }
       return id;
     })
     .then((id) => {
@@ -54,6 +63,8 @@ router.route('/')
         res.json({ id: id, isReplyTo: req.body.userPost.isReplyTo });
         // console.log('the inserted id was :: ', id);
       } else {
+        // database.addReply(id, id);
+        database.setIsReplyTo(id);
         res.json({id: id, isReplyTo: ''});
       }
       return id;
@@ -121,58 +132,57 @@ router.route('/all')
       var collection = db.collection('posts');
       return collection.aggregate([
         { $graphLookup: {
-            from: "posts",
-            startWith: "$replies",
-            connectFromField: "_id",
-            connectToField: "_id",
-            as: "repliesData",
-          }
-        },
-        { $graphLookup: {
           from: "features",
           startWith: "$userFeatures",
           connectFromField: "userFeatures",
           connectToField: "properties.mongoID",
           as: "featureData",
-        }
-      },
-      { $graphLookup: {
-            from: "collections",
-            startWith: "$collections",
-            connectFromField: "collections",
-            connectToField: "_id",
-            as: "collectionData",
-          }
+        }},
+        { $graphLookup: {
+          from: "collections",
+          startWith: "$collections",
+          connectFromField: "collections",
+          connectToField: "_id",
+          as: "collectionData",
+        }},
+        { $project : {
+          "post._id": "$_id",
+          "post.isReplyTo": "$isReplyTo",
+          "post.replies": "$replies",
+          "post.featureData": "$featureData",
+          "post.collectionData": {
+            "$filter": {
+                "input": "$collectionData",
+                "as": "child",
+                "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }, { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
+            }
+         },
+          "post.userName": "$userName",
+          "post.userId": "$userId",
+          "post.timestamp": "$timestamp",
+          "post.text": "$text"
+        }},
+        {
+          $match: {'post.collectionData': { $ne: [] }}
         },
         {
-          $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
+          $sort: { 'post.timestamp' : -1 }
         },
-        { "$project": {
-            "_id": 1,
-            "userId": 1,
-            "userName": 1,
-            "timestamp": 1,
-            "text":1,
-            "userFeatures": 1,
-            "isReplyTo":1,
-            "replies":1,
-            "featureData":1,
-            "collectionData": {
-               "$filter": {
-                   "input": "$collectionData",
-                   "as": "child",
-                   "cond": { $or: [ 
-                     { "$eq": [ "$$child.visibility", "public" ] }, 
-                     { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
-               }
-            }
+        { $group : {
+          _id : "$post.isReplyTo",
+          posts: {$push: "$post"},
         }},
-        { $match: {  
-            $and: [ 
-              { 'isReplyTo': '' }, {'collectionData': { $size: 1 }}
-            ]
-          }
+        { $project: {
+          posts:1,
+          count: { $size: "$posts" }
+        }},
+        {
+          $sort: { 'posts.timestamp' : -1 }
         },
+        { $project: {
+          count:1,
+          posts: { $slice: [ "$posts", 0, 4 ] }
+        }},
         {
           $skip: start
         },
@@ -180,17 +190,17 @@ router.route('/all')
           $limit: end
         }
         ]);
-        db.close();
+      db.close();
       })
       .then(function (cursor) {
         return cursor.toArray();
       })
       .then(function (content) {
-        content.forEach((p) => {
-          if(p.repliesData) {
-              p.repliesData.sort(dynamicSort("timestamp"));
-          }
-        });
+        // content.forEach((p) => {
+        //   if(p.repliesData) {
+        //       p.repliesData.sort(dynamicSort("timestamp"));
+        //   }
+        // });
         res.status(200).json(content);
         // db.close();
       })

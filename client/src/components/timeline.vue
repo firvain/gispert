@@ -14,10 +14,10 @@
       <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true"></newPost>
       <v-flex
         md12
-        v-for="post in posts"
-        :key="post._id"
+        v-for="thread in $store.state.timeline"
+        :key="thread._id"
       >
-        <post :post='post'></post>
+      <thread :thread='thread'></thread>
       </v-flex>
       <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <v-btn
@@ -32,7 +32,8 @@
 </template>
 <script>
 import axios from 'axios';
-import post from './post';
+import thread from '@/components/thread';
+// import post from './post';
 import newPost from './new_post';
 import config from '../config';
 
@@ -55,7 +56,7 @@ export default {
     };
   },
   components: {
-    post, newPost,
+    newPost, thread,
   },
   methods: {
     // explore(estate) {

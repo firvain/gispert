@@ -139,6 +139,30 @@ class Database {
             );
         })
     }
+
+    setIsReplyTo(postId) {
+        console.log('setting post as root:: ', postId);
+        return new Promise((resolve, reject) => {
+            this.db.collection('posts').update(
+                {
+                    _id: ObjectId(postId)
+                },
+                {
+                    $set: {
+                        isReplyTo: postId
+                    }
+                }, function handler(err, doc) {
+                    console.log(err);
+                }, (err, docs) => {
+                   if(err) {
+                       reject(err);
+                   } else {
+                       resolve(docs);
+                   }
+                }
+            );
+        })
+    }    
 }
 
 module.exports = Database;
