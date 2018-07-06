@@ -109,9 +109,9 @@ export default new Vuex.Store({
     resetFeatureCount(state, data) {
       state.commit('resetfeaturecount', data);
     },
-    setCustomMaps(state, data) {
-      state.commit('setcustommaps', data);
-    },
+    // setCustomMaps(state, data) {
+    //   state.commit('setcustommaps', data);
+    // },
     setNotifications(state, data) {
       state.commit('setNotifications', data);
     },
@@ -127,9 +127,9 @@ export default new Vuex.Store({
     addNotificationFromSocket(state, data) {
       state.commit('addNotificationFromSocket', data);
     },
-    setLiveUsers(state, data) {
-      state.commit('setLiveUsers', data);
-    },
+    // setLiveUsers(state, data) {
+    //   state.commit('setLiveUsers', data);
+    // },
   },
   mutations: {
     setNotifications(state, data) {
@@ -151,12 +151,12 @@ export default new Vuex.Store({
       const feature = state.newpostfeature;
       state.featureCount += 1;
       feature.drawId = state.featureCount;
-      feature.setProperties({ 
+      feature.setProperties({
         'mongoID': state.user._id + '' + Date.now(),
         'name': '@' + state.user.name,
         'userId': state.user._id,
       });
-      
+
       if (state.storage.length > 0) {
         const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
         if (objIndex > -1) {
@@ -272,10 +272,12 @@ export default new Vuex.Store({
       this.state.collectionTimeline.unshift(data);
     },
     addReplyToPost (state, data) {
-      const objIndex = state.timeline.findIndex((obj => obj._id == data.isReplyTo));
-      console.log('adding reply to post:: ', objIndex, data);
+      const objIndex = state.timeline.findIndex((obj => obj._id == data._id));
+      console.log('vuex adding reply to post:: ', objIndex, data);
       if (objIndex > -1) {
-        state.timeline[objIndex].replies.push(data._id);
+        data.posts.forEach((p) => {
+          state.timeline[objIndex].posts.push(p);
+        });
       }
       if (state.openedTimeline !== null) {
         if (state.openedTimeline.type === 'collection') {
@@ -302,7 +304,7 @@ export default new Vuex.Store({
     },
     setActiveTab (state, data) {
       state.activeTab = data;
-    },    
+    },
     addPageToTimeline(state,data) {
       state.timeline.push(data);
     },

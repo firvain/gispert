@@ -213,73 +213,82 @@ router.route('/replies')
 .get(function getreplies(req, res) {
   var start = parseInt(req.query.start);
   var end = parseInt(req.query.end);
-  var ids = req.query.ids;
-  var userId = ObjectId(req.query.userId);
+  var userId = req.query.userId;
+  var threadId = req.query.id;
 
-  console.log('ids to fetch ', ids, start, end);
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
-  .then(function (db) {
-    var collection = db.collection('posts');
-    var objectids = [];
-    ids.forEach((id) => {
-      objectids.push(ObjectId(id));
-    });
-
-    return collection.aggregate([
-      { $graphLookup: {
-          from: "posts",
-          startWith: "$replies",
-          connectFromField: "_id",
-          connectToField: "_id",
-          as: "repliesData",
-        }
-      },
-      { $graphLookup: {
-        from: "features",
-        startWith: "$userFeatures",
-        connectFromField: "userFeatures",
-        connectToField: "properties.mongoID",
-        as: "featureData",
-      }
-    },
-    { $graphLookup: {
-          from: "collections",
-          startWith: "$collections",
-          connectFromField: "collections",
-          connectToField: "_id",
-          as: "collectionData",
-        }
-      },
-      {
-        $sort: { 'timestamp': -1, 'repliesData.timestamp' : -1 }
-      },
-      { "$project": {
-          "_id": 1,
-          "userId": 1,
-          "userName": 1,
-          "timestamp": 1,
-          "text":1,
-          "userFeatures": 1,
-          "isReplyTo":1,
-          "replies":1,
-          "featureData":1,
-          "collectionData": {
-             "$filter": {
-                 "input": "$collectionData",
-                 "as": "child",
-                 "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }, { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
-             }
+    .then(function (db) {
+      var collection = db.collection('posts');
+      return collection.aggregate([
+        {
+          $graphLookup: {
+            from: "features",
+            startWith: "$userFeatures",
+            connectFromField: "userFeatures",
+            connectToField: "properties.mongoID",
+            as: "featureData",
           }
-      }},
-      {
-        $match: { "_id": { $in: objectids }}
-      },
-      {
-        $skip: start
-      },
-      {
-        $limit: end
-      }      
+        },
+        {
+          $graphLookup: {
+            from: "collections",
+            startWith: "$collections",
+            connectFromField: "collections",
+            connectToField: "_id",
+            as: "collectionData",
+          }
+        },
+        {
+          $project: {
+            "post._id": "$_id",
+            "post.isReplyTo": "$isReplyTo",
+            "post.replies": "$replies",
+            "post.featureData": "$featureData",
+            "post.collectionData": {
+              "$filter": {
+                "input": "$collectionData",
+                "as": "child",
+                "cond": { $or: [{ "$eq": ["$$child.visibility", "public"] }, { "$eq": ["$$child.user", ObjectId(userId)] }] }
+              }
+            },
+            "post.userName": "$userName",
+            "post.userId": "$userId",
+            "post.timestamp": "$timestamp",
+            "post.text": "$text"
+          }
+        },
+        {
+          $match: {
+            $and: [
+              { 'post.collectionData': { $ne: [] }},
+              { 'post.isReplyTo': ObjectId(threadId) }
+            ]
+          }
+        },
+        {
+          $sort: { 'post.timestamp': -1 }
+        },
+        {
+          $group: {
+            _id: "$post.isReplyTo",
+            posts: { $push: "$post" },
+          }
+        },
+        {
+          $project: {
+            posts: 1,
+            count: { $size: "$posts" }
+          }
+        },
+        {
+          $sort: { 'posts.timestamp': -1 }
+        },
+        {
+          $project: {
+            count: 1,
+            posts: { $slice: ["$posts", start, end] }
+          }
+        }
       ]);
       db.close();
     })
@@ -287,11 +296,18 @@ router.route('/replies')
       return cursor.toArray();
     })
     .then(function (content) {
+      // content.forEach((p) => {
+      //   if(p.repliesData) {
+      //       p.repliesData.sort(dynamicSort("timestamp"));
+      //   }
+      // });
       res.status(200).json(content);
+      // db.close();
     })
     .catch(function (err) {
       throw err;
     });
+
 });
 
 router.route('/id')

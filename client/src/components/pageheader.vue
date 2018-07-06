@@ -610,13 +610,13 @@ export default {
       this.$store.dispatch('setPublicCollections', []);
       this.$store.commit('addingToPost', undefined);
       this.$store.dispatch('resetFeatureCount', 0);
-      this.$store.dispatch('setCustomMaps', 'empty');
+      // this.$store.dispatch('setCustomMaps', 'empty');
       this.$store.dispatch('setUsers', 'empty');
       this.$store.dispatch('setNotifications', []);
       this.$store.dispatch('setOpenedCustomTimeline', null);
       this.$store.dispatch('setUserTimeline', null);
       this.$store.dispatch('setCollectionTimeline', null);
-      this.$store.dispatch('setLiveUsers', null);
+      // this.$store.dispatch('setLiveUsers', null);
       olMap.getLayers().getArray()[1].getSource().clear();
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
