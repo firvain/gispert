@@ -573,24 +573,5 @@ router.route('/person')
 //     });
 // });
 
-// router.route('/allGeodata')
-//   .get(function getusers(req, res) {
-//     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-//       var collection = db.collection('posts');
-//       if (err) {
-//         throw err;
-//       }
-//       collection.find({}, { userFeatures: 1 }).toArray(function handleCursor(error, docs) {
-//         if (err) {
-//           res.sendStatus(500);
-//           console.log(error);
-//         } else {
-//           console.log(docs);
-//           res.send(docs);
-//           db.close();
-//         }
-//       });
-//     });
-//   });
 
 module.exports = router;

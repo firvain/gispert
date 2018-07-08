@@ -40,8 +40,8 @@
           </v-list-tile-action>
           <v-list-tile-action v-if="collection.visibility === 'public'">
               <v-tooltip bottom>
-                <v-btn outline fab small 
-                  slot="activator" 
+                <v-btn outline fab small
+                  slot="activator"
                   @click="shareLink = !shareLink; copyToClipboard();"
                 >
                   <v-icon color="green lighten-1">link</v-icon>
@@ -52,24 +52,45 @@
         </v-list-tile>
       </v-card-actions>
 
-      <v-dialog v-model="shareDialog" persistent max-width="350">
+      <v-dialog v-model="shareDialog" persistent max-width="480">
         <v-card>
           <v-card-title class="headline">{{ $t('message.chooseUsersToShare')}}</v-card-title>
           <v-card-text>
-            <v-flex xs12 sm12>
-              <v-select v-if="this.$store.state.users"
-                label="Επιλογή"
-                v-bind:items="this.$store.state.users"
-                v-model="members"
-                item-text="name"
-                item-value="_id"
-                multiple
-                chips
-                max-height="300px"
-                autocomplete
-              >
-              </v-select>
-            </v-flex>
+            Current members:
+            <v-layout class='userList'>
+              <v-list>
+                <v-list-tile avatar v-for="user in $store.state.users" v-bind:key="user._id">
+                  <v-list-tile-action>
+                    <v-icon color="pink">star</v-icon>
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                    <v-list-tile-title v-text="user.name"></v-list-tile-title>
+                  </v-list-tile-content>
+                  <!-- <v-list-tile-avatar>
+                    <img v-bind:src="item.avatar"/>
+                  </v-list-tile-avatar> -->
+                </v-list-tile>
+              </v-list>
+            </v-layout>
+            <v-text-field
+              name="input-1"
+              label="Label Text"
+              id="testing"
+            ></v-text-field>
+
+            <v-list class='userList'>
+              <v-list-tile avatar v-for="user in $store.state.users" v-bind:key="user._id">
+                <v-list-tile-action>
+                  <v-icon color="pink">star</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-content>
+                  <v-list-tile-title v-text="user.name"></v-list-tile-title>
+                </v-list-tile-content>
+                <!-- <v-list-tile-avatar>
+                  <img v-bind:src="item.avatar"/>
+                </v-list-tile-avatar> -->
+              </v-list-tile>
+            </v-list>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -78,6 +99,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
       <v-dialog v-model="deleteCollectionDialog" persistent max-width="290">
         <v-card>
           <v-card-title class="headline">{{ $t('message.deleteCollection')}}</v-card-title>
@@ -256,3 +278,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+  .userList {
+    max-height: 100px;
+    overflow: hidden;
+  }
+</style>

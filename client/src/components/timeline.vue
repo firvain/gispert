@@ -22,6 +22,7 @@
       <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <v-btn
         v-on:click='next_page'
+        v-if="!endOfPosts"
         class="blue-grey white--text"
         block
       >
@@ -53,35 +54,35 @@ export default {
       newPostTextColor: 'white--text darken-1',
       newPostText: this.$t('message.newPost'),
       loading: false,
+      endOfPosts: false,
     };
   },
   components: {
     newPost, thread,
   },
   methods: {
-    // explore(estate) {
-    //   this.mode = 1;
-    //   this.explore_estate = estate;
-    //   return estate;
+    // refresh_page() {
+    //   // console.log('refreshing page');
+    //   this.loading = true;
+    //   const url = `${config.url}/posts/all?start=
+    // ${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+    //   axios.get(url, {
+    //     headers: { 'x-access-token': this.$store.state.token },
+    //   }).then((response) => {
+    //     response.data.forEach((d) => {
+    //       // eslint-disable-next-line
+    //       if (this.posts.filter(e => e._id === d._id).length === 0) {
+    //         this.posts.unshift(d);
+    //         this.posts.pop();
+    //       }
+    //     });
+    //     if (response.data.length < this.limitPage) {
+    //       this.endOfPosts = true;
+    //     }
+    //   }).then(() => {
+    //     this.loading = false;
+    //   });
     // },
-    refresh_page() {
-      // console.log('refreshing page');
-      this.loading = true;
-      const url = `${config.url}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
-      axios.get(url, {
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        response.data.forEach((d) => {
-          // eslint-disable-next-line
-          if (this.posts.filter(e => e._id === d._id).length === 0) {
-            this.posts.unshift(d);
-            this.posts.pop();
-          }
-        });
-      }).then(() => {
-        this.loading = false;
-      });
-    },
     next_page() {
       this.loading = true;
       this.startPage += 50;
@@ -89,6 +90,9 @@ export default {
       axios.get(url, {
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
+        if (response.data.length < this.limitPage) {
+          this.endOfPosts = true;
+        }
         response.data.forEach((d) => {
           this.posts.push(d);
         });
@@ -130,7 +134,10 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        // console.log(response);
+        console.log('posts fetched are:: ', response.data.length);
+        if (response.data.length < this.limitPage) {
+          this.endOfPosts = true;
+        }
         this.posts = response.data;
       }).then(() => {
         this.loading = false;
@@ -140,11 +147,12 @@ export default {
   },
   mounted() {
     this.newPostText = this.$t('message.newPost');
-    if (this.$store.state.timeline.length === 0) {
+    if (this.$store.state.timeline === []) {
       this.load_first_page();
-    } else {
-      this.posts = this.$store.state.timeline;
     }
+    // else {
+    //   this.posts = this.$store.state.timeline;
+    // }
     this.$eventHub.$on('logged-in', () => {
       this.$store.dispatch('setTimeline', []);
       this.load_first_page();

@@ -12,6 +12,7 @@
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         <v-btn
           v-on:click='next_page'
+          v-if="!endOfPosts"
           class="blue-grey white--text"
           block
         >
@@ -56,6 +57,7 @@ export default {
       startPage: 0,
       limitPage: 25,
       loading: false,
+      endOfPosts: false,
     };
   },
   components: {
@@ -68,31 +70,31 @@ export default {
     },
   },
   methods: {
-    refresh_page() {
-      //  TODO: do the correct API call
-      // console.log('refreshing page');
-      this.loading = true;
-      const userID = this.id; // eslint-disable-line no-underscore-dangle
-      const url = `${config.url}/posts/person`;
-      axios.get(url, {
-        params: {
-          start: this.startPage.toString(),
-          end: this.limitPage.toString(),
-          userId: userID,
-        },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        response.data.forEach((d) => {
-          // eslint-disable-next-line
-          if (this.posts.filter(e => e._id === d._id).length === 0) {
-            this.posts.unshift(d);
-            this.posts.pop();
-          }
-        });
-      }).then(() => {
-        this.loading = false;
-      });
-    },
+    // refresh_page() {
+    //   //  TODO: do the correct API call
+    //   // console.log('refreshing page');
+    //   this.loading = true;
+    //   const userID = this.id; // eslint-disable-line no-underscore-dangle
+    //   const url = `${config.url}/posts/person`;
+    //   axios.get(url, {
+    //     params: {
+    //       start: this.startPage.toString(),
+    //       end: this.limitPage.toString(),
+    //       userId: userID,
+    //     },
+    //     headers: { 'x-access-token': this.$store.state.token },
+    //   }).then((response) => {
+    //     response.data.forEach((d) => {
+    //       // eslint-disable-next-line
+    //       if (this.posts.filter(e => e._id === d._id).length === 0) {
+    //         this.posts.unshift(d);
+    //         this.posts.pop();
+    //       }
+    //     });
+    //   }).then(() => {
+    //     this.loading = false;
+    //   });
+    // },
     next_page() {
       this.loading = true;
       this.startPage += this.limitPage;
@@ -108,9 +110,11 @@ export default {
       }).then((response) => {
         if (response.data.length < this.limitPage) {
           this.endOfPosts = true;
-        } else {
+        }
+        if (response.data.length > 0) {
           response.data.forEach((d) => {
-            this.posts.push(d);
+            // this.posts.push(d);
+            this.$store.state.commit('addPostToUserTimeline', d);
           });
         }
       }).then(() => {
