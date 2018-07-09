@@ -4,8 +4,14 @@
     <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
       <notification v-for="(notification, index) in $store.state.notifications" :key='index' :notification='notification'></notification>
     </v-list>
+    <v-card v-if="$store.state.notifications.length === 0">
+      <v-card-title>
+        There are no notifications
+      </v-card-title>
+    </v-card>
     <v-btn
     v-on:click='next_page'
+    v-if="$store.state.notifications.length > 0"
     class="blue-grey white--text"
     block
     >

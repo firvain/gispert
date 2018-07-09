@@ -208,6 +208,9 @@
               single-line
             ></v-text-field>
           </form>
+          <v-btn block outline @click='exploreTimeline'>
+            My map
+          </v-btn>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -402,6 +405,16 @@ export default {
           */
         });
       });
+    },
+    exploreTimeline(userId) {
+      const tl = {
+        id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        type: 'timeline',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
+      console.log('explore:: ', userId);
+      this.$store.commit('setActiveTab', 'explore');
+      // this.$router.push({ path: `/main/search/usertimeline/${userId}` });
     },
     showRegisterDialogue() {
       this.dialogRegister = true;
