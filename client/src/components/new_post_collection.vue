@@ -114,10 +114,10 @@ export default {
           } else {
             userPost.featureData = [];
           }
-          userPost.collectionData = {
+          userPost.collectionData = [{
             title: this.$store.state.openedTimeline.title,
             _id: this.$store.state.openedTimeline.id, // eslint-disable-line no-underscore-dangle
-          };
+          }];
 
           console.log('user post is:: ', JSON.stringify(userPost));
           const newThread = {
@@ -126,27 +126,10 @@ export default {
             posts: [userPost],
           };
           console.log('new thread:: ', newThread);
-          this.$store.dispatch('addPostToTimeline', newThread);
           this.$socket.emit('newPost', newThread);
           this.$eventHub.$emit('newPost', newThread);
-
-          console.log(JSON.parse(userFeats));
-          console.log('new post userPost for socket:: ', JSON.stringify(userPost), 'res::', response.data.id);
-          // this.$socket.emit('newPost', userPost);
-          console.log('check if feature data present::', JSON.stringify(userPost));
-          if (this.$store.state.openedTimeline &&
-            this.$store.state.openedTimeline.type === 'collection'
-            && this.$store.state.openedTimeline.id ===
-            this.selectCollection._id) { // eslint-disable-line no-underscore-dangle
-            this.$store.dispatch('addPostToCollectionView', newThread);
-          }
-          if (this.$store.state.openedTimeline &&
-            this.$store.state.openedTimeline.type === 'timeline'
-            && this.$store.state.openedTimeline.id ===
-            userPost.userId) { // eslint-disable-line no-underscore-dangle
-            console.log('adding the post to userTimeline');
-            this.$store.dispatch('addPostToUserTimeline', newThread);
-          }
+          this.$store.dispatch('addPostToTimeline', newThread);
+          this.$store.dispatch('addPostToCollectionView', newThread);
         });
       } else {
         this.newPostInfo = this.$t('message.errorNoTextOrSketches');

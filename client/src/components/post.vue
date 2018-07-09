@@ -15,7 +15,7 @@
             <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
           </v-flex>
           <v-chip
-            v-for="f in post.featureData" 
+            v-for="f in post.featureData"
             v-if="f.properties"
             :key="f.properties.mongoID">
             {{ f.geometry.type }}
@@ -336,6 +336,7 @@ export default {
       const tl = {
         id: collectionId,
         type: 'collection',
+        title: this.post.collectionData[0].title,
       };
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       console.log('explore:: ', collectionId);

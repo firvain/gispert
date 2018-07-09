@@ -126,7 +126,7 @@
       {{ $t('message.back')}}
     </v-btn>
     <collectionView
-      v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'collection'" 
+      v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'collection'"
       :id="$store.state.openedTimeline.id">
     </collectionView>
     <userTimeline
@@ -380,11 +380,6 @@ export default {
     // });
     this.$eventHub.$on('openCollection', (id) => {
       console.log('open collection, notification clicked:: ', id);
-      const tl = {
-        id: this.$route.params.id,
-        type: 'collection',
-      };
-      this.$store.dispatch('setOpenedCustomTimeline', tl);
       this.mode = 'collectionView';
     });
     this.$eventHub.$on('openTimeline', (id) => {

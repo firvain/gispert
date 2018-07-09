@@ -272,6 +272,7 @@ export default new Vuex.Store({
       this.state.userTimeline.unshift(data);
     },
     addPostToCollectionView(store, data) {
+      console.log('adding to collection::', data);
       this.state.collectionTimeline.unshift(data);
     },
     addRepliesToPost (state, data) {
