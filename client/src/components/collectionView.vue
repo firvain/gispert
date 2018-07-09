@@ -8,8 +8,8 @@
         {{newPostText}}
         <v-icon right dark>insert_comment</v-icon>
       </v-btn>
-      <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true" :collection="id"></newPost>
-
+      <newPostCollection v-if="newPost===true && $store.state.isUserLoggedIn === true">
+      </newPostCollection>
       <v-flex
         md12
         v-for="thread in $store.state.collectionTimeline"
@@ -34,7 +34,7 @@
 import axios from 'axios';
 import { mapActions } from 'vuex';
 import thread from '@/components/thread';
-import newPost from './new_post';
+import newPostCollection from '@/components/new_post_collection';
 import config from '../config';
 import olMap from '../js/map';
 
@@ -51,10 +51,11 @@ export default {
       newPostText: this.$t('message.newPostInThisCollection'),
       loading: false,
       endOfPosts: false,
+      title: '',
     };
   },
   components: {
-    thread, newPost,
+    thread, newPostCollection,
   },
   watch: {
     '$store.state.openedTimeline': function changed() {

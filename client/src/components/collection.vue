@@ -194,6 +194,7 @@ export default {
         const tl = {
           id: collectionId,
           type: 'collection',
+          title: this.collection.title,
         };
         this.$eventHub.$emit('openCollection', collectionId);
         this.$store.dispatch('setOpenedCustomTimeline', tl);

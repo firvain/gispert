@@ -1,14 +1,15 @@
 <template>
   <v-layout ma-0 pa-0>
     <v-flex xs12 sm12  ma-0 pa-0>
-      <v-card @newreply="new_post_sent(arguments[0])">
+      <!-- <v-card @newreply="new_post_sent(arguments[0])"> -->
+      <v-card>
         <v-card-title primary-title>
           <v-icon v-if="postType === 'reply'">reply</v-icon>
           <v-flex class="text-xs-left">
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
             {{ $t("message.inCollection")}}:&nbsp;
-            <a md12 @click="exploreCollection(post.collectionData[0]._id)" v-if="post.collectionData[0]">
+            <a md12 @click="exploreCollection(post.collectionData[0]._id)" v-if="post.collectionData">
               {{post.collectionData[0].title}}
             </a>,&nbsp;
             <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
@@ -102,34 +103,11 @@
               </v-menu>
 
         </v-card-actions>
-        <newPost v-if="answerPost === true && post.collectionData"
+        <newReply v-if="answerPost === true"
           :id="post.isReplyTo"
-          :collection="post.collectionData[0]._id"
-          :collectionMembers="post.collectionData[0].members"
-          :userToNotify="post.userId">
-        </newPost>
-
-        <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i>
-        <v-flex class="ma-0 pa-0"
-          md12
-          v-for="post in replies"
-          :key="post._id"
-        >
-          <post :post='post'></post>
-        </v-flex> -->
-
-        <!-- <v-flex class="ma-0 pa-0"
-          md12
-          v-if="replies.length > 0"
-          v-for="reply in replies"
-          :key="reply._id"
-        >
-          <post :post='reply'></post>
-        </v-flex>
-        <v-btn block color="white" v-if="replies.length > 0 && replies.length < post.replies.length" @click="showMoreReplies">
-          {{ $t('message.loadMore')}}
-          <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
-        </v-btn> -->
+          :collectionId="post.collectionData[0]._id"
+          :collectionTitle="post.collectionData[0].title">
+        </newReply>
       </v-card>
     </v-flex>
       <v-snackbar
@@ -157,8 +135,9 @@ import ol from 'openlayers';
 // import moment from 'moment';
 import axios from 'axios';
 import clipboard from 'clipboard-copy';
+import newPost from '@/components/new_post';
+import newReply from '@/components/new_reply';
 import config from '../config';
-import newPost from './new_post';
 import olMap from '../js/map';
 import styles from '../js/styles';
 
@@ -181,32 +160,30 @@ export default {
     fetchedReplies: [],
     socketReplies: 0,
     shareLink: false,
-    shareUrl: '',
     loadingReplies: false,
     answerPostText: '',
     myReplies: 0,
   }),
   components: {
-    newPost,
+    newPost, newReply,
   },
   mounted() {
     // this.answerPostText = this.$t('message.reply');
     this.explore(this.post);
     // this.repliesReversed();
-    this.shareUrl = `${config.APIhttpType}://${config.APIhost}:${config.hostPost}/#/main/search/${this.post._id}`; // eslint-disable-line no-underscore-dangle
     this.$options.sockets.newReply = (data) => {
       // console.log('new reply data from server socket:: ', data);
       if (data.isReplyTo === this.post._id) { // eslint-disable-line no-underscore-dangle
         // console.log('must show this reply:: ', data);
         data.socketReply = true; // eslint-disable-line no-param-reassign
-        this.$store.dispatch('addReplyToPost', data); // eslint-disable-line no-underscore-dangle
+        this.$store.dispatch('addReplyToThread', data); // eslint-disable-line no-underscore-dangle
         this.socketReplies += 1;
       }
     };
     this.$eventHub.$on('newReply', (data) => {
-      if (this.post._id === data.isReplyTo) { // eslint-disable-line no-underscore-dangle
-        this.replies.unshift(data);
+      if (this.post.isReplyTo === data.isReplyTo && this.postType === 'original') { // eslint-disable-line no-underscore-dangle
         this.toggle_answer();
+        // this.replies.unshift(data);
         this.myReplies += 1;
       }
     });
@@ -247,49 +224,49 @@ export default {
       this.limitPage += 10;
     },
     explore(post) {
-      const geojsonFormat = new ol.format.GeoJSON();
-      const featureCollection = {
-        type: 'FeatureCollection',
-        features: post.featureData,
-      };
-      console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
-      const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
-      if (featuresToLoad.length > 0) {
-        let allLayers = [];
-        allLayers = olMap.getLayers().getArray();
-        allLayers.forEach((layer) => {
-          if (layer.getProperties().name === 'customLayer') {
-            featuresToLoad.forEach((f) => {
-              let alreadyExists = false;
-              layer.getSource().forEachFeature((feature) => {
-                if (feature.get('mongoID') === f.getProperties().mongoID) {
-                  alreadyExists = true;
+      if (post.featureData.length > 0) {
+        const geojsonFormat = new ol.format.GeoJSON();
+        const featureCollection = {
+          type: 'FeatureCollection',
+          features: post.featureData,
+        };
+        console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
+        const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
+        if (featuresToLoad.length > 0) {
+          let allLayers = [];
+          allLayers = olMap.getLayers().getArray();
+          allLayers.forEach((layer) => {
+            if (layer.getProperties().name === 'customLayer') {
+              featuresToLoad.forEach((f) => {
+                let alreadyExists = false;
+                layer.getSource().forEachFeature((feature) => {
+                  if (feature.get('mongoID') === f.getProperties().mongoID) {
+                    alreadyExists = true;
+                  }
+                });
+                if (!alreadyExists) {
+                  let message = '';
+                  if (post.text.length > 20) {
+                    message = `${post.text.substr(0, 20)}...`;
+                  } else {
+                    message = post.text;
+                  }
+                  f.setProperties({
+                    messages: message,
+                  });
+                  console.log('added feature :: ', f);
+                  layer.getSource().addFeature(f);
+                  const cs = f.getStyle();
+                  f.setStyle(styles.BoldLineString);
+                  setTimeout(() => {
+                    f.setStyle(cs);
+                    olMap.updateSize();
+                  }, 500);
                 }
               });
-              if (!alreadyExists) {
-                let message = '';
-                if (post.text.length > 20) {
-                  message = `${post.text.substr(0, 20)}...`;
-                } else {
-                  message = post.text;
-                }
-                f.setProperties({
-                  messages: message,
-                });
-                console.log('added feature :: ', f);
-                layer.getSource().addFeature(f);
-                const cs = f.getStyle();
-
-                f.setStyle(styles.BoldLineString);
-
-                setTimeout(() => {
-                  f.setStyle(cs);
-                  olMap.updateSize();
-                }, 500);
-              }
-            });
-          }
-        });
+            }
+          });
+        }
       }
     },
     zoom(post) {
@@ -320,6 +297,7 @@ export default {
       }, 500);
     },
     toggle_answer() {
+      console.log('toggling answer box');
       this.answerPost = !this.answerPost;
       if (this.answerPost === false) {
         // this.answerPostText = this.$t('message.reply');
@@ -331,16 +309,16 @@ export default {
         this.answerPostColor = 'red';
       }
     },
-    new_post_sent(reply) {
-      // console.log('event caught::');
-      // if (result === 'success') {
-      this.newPostInfo = 'Δημοσιεύτηκε η απάντηση!';
-      this.snackbarColor = 'green';
-      this.snackbarNewPost = true;
-      this.$parent.$emit('newreply', reply);
-      this.toggle_answer();
-      // }
-    },
+    // new_post_sent(reply) {
+    //   // console.log('event caught::');
+    //   // if (result === 'success') {
+    //   this.newPostInfo = 'Δημοσιεύτηκε η απάντηση!';
+    //   this.snackbarColor = 'green';
+    //   this.snackbarNewPost = true;
+    //   this.$parent.$emit('newreply', reply);
+    //   this.toggle_answer();
+    //   // }
+    // },
     copyToClipboard() {
       clipboard(this.sharePostUrl);
     },

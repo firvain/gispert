@@ -9,14 +9,16 @@
     >
       <post :post='post' :postType='postType[1]'></post>
     </v-flex>
-    <v-btn block color="white" v-if="thread.posts.length > 1" @click="showMoreReplies = !showMoreReplies">
+    <v-flex>
+    <v-btn md6 color="white" v-if="thread.posts.length > 1" @click="showMoreReplies = !showMoreReplies">
       {{ $t('message.viewReplies')}}
       <!-- <v-progress-circular indeterminate color="primary"></v-progress-circular> -->
     </v-btn>
-    <v-btn block color="white" v-if="thread.posts.length < thread.count" @click='loadMoreReplies'>
+    <v-btn md6 color="white" v-if="thread.posts.length < thread.count && showMoreReplies" @click='loadMoreReplies'>
       {{ $t('message.loadMore')}}
       <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
     </v-btn>
+    </v-flex>
   </v-container>
 </template>
 <script>
@@ -37,6 +39,13 @@ export default {
     currentReplyIndex: 4,
     pagingStep: 10,
   }),
+  mounted() {
+    this.$eventHub.$on('newReply', (data) => {
+      if (this.thread._id === data.isReplyTo) { // eslint-disable-line no-underscore-dangle
+        this.currentReplyIndex += 1;
+      }
+    });
+  },
   methods: {
     loadMoreReplies() {
       // if (this.socketReplies > 0 || this.myReplies > 0) {
@@ -62,7 +71,7 @@ export default {
         // this.loading = false;
         console.log('reply response data:: ', response.data[0]);
         this.loadingReplies = false;
-        this.$store.commit('addReplyToPost', response.data[0]);
+        this.$store.commit('addRepliesToPost', response.data[0]);
       });
     },
   },

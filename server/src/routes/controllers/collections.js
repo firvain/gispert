@@ -98,8 +98,8 @@ router.route('/collection')
               {
                   $graphLookup: {
                       from: "collections",
-                      startWith: "$collections",
-                      connectFromField: "collections",
+                      startWith: "$collection",
+                      connectFromField: "collection",
                       connectToField: "_id",
                       as: "collectionData",
                   }

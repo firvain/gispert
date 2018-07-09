@@ -25,10 +25,10 @@
         </v-flex>
 
         <v-card-actions>
-          <v-flex xs3 sm6 md6 v-if="this.id === undefined && this.collection === undefined">
+          <v-flex xs3 sm6 md6>
             <v-select
               v-bind:items="computedCollections"
-              v-model="selectCollections"
+              v-model="selectCollection"
               :label="$t('message.collections')"
               single-line
               item-text="title"
@@ -64,14 +64,12 @@ import olMap from '../js/map';
 import config from '../config';
 
 export default {
-  props: ['id', 'collection', 'collectionMembers', 'userToNotify'],
   name: 'newpost',
   data: () => ({
     postText: '',
     toggle_one: 0,
-    selectCollections: '',
+    selectCollection: '',
     collections: [],
-    collectionMembersToEmit: {},
     newPostInfo: '',
     snackbarNewPost: false,
     snackbarColor: '',
@@ -82,69 +80,18 @@ export default {
   },
   mounted() {
     console.log('new post for reply mounted');
-    // if (this.id) {
-    //   this.collectionMembersToEmit.members = this.collectionMembers;
-    //   console.log('will emit to users:: ', this.collectionMembersToEmit);
-    // } else {
-    //   this.collectionMembersToEmit.members = this.findMembersOfThisCollection();
-    // }
   },
   methods: {
-    findMembersOfThisCollection() {
-      console.log('find members::', this.$store.state.publicCollections,
-        this.$store.state.privateCollections);
-      const allCollections =
-        this.$store.state.publicCollections.concat(this.$store.state.privateCollections);
-      let collectionToFind = '';
-      if (this.collection === undefined) {
-        collectionToFind =
-        this.selectCollections._id; // eslint-disable-line no-underscore-dangle
-      } else {
-        collectionToFind = this.collection;
-      }
-      function search(nameKey, myArray) {
-        let result = '';
-        // console.log('searching for :: ', nameKey);
-        for (let i = 0; i < myArray.length; i += 1) {
-          console.log(myArray[i].title, myArray[i]._id); // eslint-disable-line no-underscore-dangle
-          // eslint-disable-line no-underscore-dangle
-          if (myArray[i]._id === nameKey) { // eslint-disable-line no-underscore-dangle
-            result = myArray[i];
-          }
-        }
-        return result;
-      }
-      const result = search(collectionToFind, allCollections);
-      console.log('search result, members found:: ', result,
-      result.members, result.title, result.user);
-      return result;
-    },
     publishPost() {
       console.log('PUBLISH');
-      const featuresToPost = this.drawnFeatures;
-      // console.log('featuresToPost :: ', featuresToPost);
       const textToPost = this.postText;
+      const featuresToPost = this.drawnFeatures;
       let userFeats;
       if (featuresToPost) {
         const geojsonFormat = new ol.format.GeoJSON();
         userFeats = geojsonFormat.writeFeatures(featuresToPost);
-        // console.log(userFeats, textToPost);
       } else {
         userFeats = null;
-      }
-      let idToReply = '';
-      if (this.id) {
-        idToReply = this.id;
-      } else {
-        idToReply = '';
-      }
-      let collectionToPost = 'not in collection';
-      if (this.selectCollections._id === undefined) { // eslint-disable-line no-underscore-dangle
-        collectionToPost = this.collection;
-        // console.log('detected a reply', this.collection);
-      } else {
-        collectionToPost = this.selectCollections._id; // eslint-disable-line no-underscore-dangle
-        // console.log('detected a new post', this.collection);
       }
       const userPost = {
         // eslint-disable-next-line
@@ -153,15 +100,11 @@ export default {
         text: textToPost,
         timestamp: Date.now(),
         userFeatures: userFeats,
-        isReplyTo: idToReply,
-        collections: collectionToPost, // eslint-disable-line no-underscore-dangle
-        // collections: this.selectCollections,
+        collection: this.selectCollection._id, // eslint-disable-line no-underscore-dangle
         replies: [],
       };
       // console.log('this is the post to publish', userPost);
       const url = `${config.url}/posts`;
-      const members = this.findMembersOfThisCollection();
-      console.log('members :: ', JSON.stringify(members));
       if (textToPost !== '') {
         axios.post(url, { userPost }, {
           headers: { 'x-access-token': this.$store.state.token },
@@ -175,60 +118,50 @@ export default {
           this.snackbarNewPost = true;
 
           this.$store.commit('clearNewPostFeatures', 'newPost');
-          console.log('response from API is:: ', response.data.isReplyTo);
-          if (response.data.isReplyTo === '') {
-            console.log('totally new post');
-            // console.log('this is the userpost newpost:: ', userPost);
-            // console.log('emitting to::', members);
-            userPost._id = response.data.id; // eslint-disable-line no-underscore-dangle
-            userPost.members = members.members; // notify the members TODO: no need, deprecated
-            userPost.collectionData = [{
-              title: members.title,
-              _id: members._id, // eslint-disable-line no-underscore-dangle
-            }];
+          console.log('response from API -is reply to- is:: ', response.data.isReplyTo);
+          console.log('totally new post');
+          // console.log('this is the userpost newpost:: ', userPost);
+          // console.log('emitting to::', members);
+          console.log('user post is:: ', JSON.stringify(userPost));
+          userPost._id = response.data.id; // eslint-disable-line no-underscore-dangle
+          userPost.isReplyTo = response.data.id;
+          if (userFeats !== null) {
             userPost.featureData = JSON.parse(userFeats).features;
-            console.log(JSON.parse(userFeats));
-            console.log('new post userPost for socket:: ', JSON.stringify(userPost), 'res::', response.data.id);
-            // this.$socket.emit('newPost', userPost);
-            userPost.members.push(members.user); // add the creator of the collection
-            console.log('check if feature data present::', JSON.stringify(userPost));
-            this.$store.dispatch('addPostToTimeline', userPost);
-            if (this.$store.state.openedTimeline &&
-              this.$store.state.openedTimeline.type === 'collection'
-              && this.$store.state.openedTimeline.id ===
-              members._id) { // eslint-disable-line no-underscore-dangle
-              this.$store.dispatch('addPostToCollectionView', userPost);
-            }
-            if (this.$store.state.openedTimeline &&
-              this.$store.state.openedTimeline.type === 'timeline'
-              && this.$store.state.openedTimeline.id ===
-              userPost.userId) { // eslint-disable-line no-underscore-dangle
-              console.log('adding the post to userTimeline');
-              this.$store.dispatch('addPostToUserTimeline', userPost);
-            }
-            this.$socket.emit('newPost', userPost);
-            this.$eventHub.$emit('newPost', userPost);
           } else {
-            // eslint-disable-next-line
-            userPost._id = response.data.id;
-            // console.log('this is the userpost new reply:: ', userPost);
-            // console.log('emitting to::', this.collectionMembers);
-            if (this.collectionMembers) {
-              userPost.members = this.collectionMembers;
-              console.log('collectionMembers:: ', this.collectionMembers);
-            } else {
-              userPost.members = members.members;
-              console.log('members.members:: ', members.members);
-            }
-            userPost.collectionData = [{ title: members.title,
-              _id: response.data.id }]; // eslint-disable-line no-underscore-dangle
-            userPost.members.push(this.userToNotify); // add the creator TODO: no need, deprecated
-            userPost.isReplyTo = response.data.isReplyTo;
-            userPost.featureData = JSON.parse(userFeats).features;
-            console.log('reply userPost for socket:: ', JSON.stringify(userPost));
-            this.$store.dispatch('addReplyToPost', userPost);
-            this.$eventHub.$emit('newReply', userPost);
-            this.$socket.emit('newReply', userPost);
+            userPost.featureData = [];
+          }
+          userPost.collectionData = {
+            title: this.selectCollection.title,
+            _id: this.selectCollection._id, // eslint-disable-line no-underscore-dangle
+          };
+
+          console.log('user post is:: ', JSON.stringify(userPost));
+          const newThread = {
+            _id: userPost._id, // eslint-disable-line no-underscore-dangle
+            count: 1,
+            posts: [userPost],
+          };
+          console.log('new thread:: ', newThread);
+          this.$store.dispatch('addPostToTimeline', newThread);
+          this.$socket.emit('newPost', newThread);
+          this.$eventHub.$emit('newPost', newThread);
+
+          console.log(JSON.parse(userFeats));
+          console.log('new post userPost for socket:: ', JSON.stringify(userPost), 'res::', response.data.id);
+          // this.$socket.emit('newPost', userPost);
+          console.log('check if feature data present::', JSON.stringify(userPost));
+          if (this.$store.state.openedTimeline &&
+            this.$store.state.openedTimeline.type === 'collection'
+            && this.$store.state.openedTimeline.id ===
+            this.selectCollection._id) { // eslint-disable-line no-underscore-dangle
+            this.$store.dispatch('addPostToCollectionView', newThread);
+          }
+          if (this.$store.state.openedTimeline &&
+            this.$store.state.openedTimeline.type === 'timeline'
+            && this.$store.state.openedTimeline.id ===
+            userPost.userId) { // eslint-disable-line no-underscore-dangle
+            console.log('adding the post to userTimeline');
+            this.$store.dispatch('addPostToUserTimeline', newThread);
           }
         });
       } else {
@@ -279,13 +212,10 @@ export default {
   computed: {
     idToMatch: function findid() {
       let setid;
-      if (this.id) {
-        setid = 'reply';
-      }
-      if (this.id === undefined && this.$store.state.activeTab === 'home') {
+      if (this.$store.state.activeTab === 'home') {
         setid = 'home';
       }
-      if (this.id === undefined && this.$store.state.activeTab === 'explore') {
+      if (this.$store.state.activeTab === 'explore') {
         setid = 'collection';
       }
       return setid;
@@ -381,9 +311,9 @@ export default {
     // },
   },
   watch: {
-    selectCollections: function handle() {
-      this.findMembersOfThisCollection();
-    },
+    // selectCollections: function handle() {
+    //   this.findMembersOfThisCollection();
+    // },
   },
 };
 </script>

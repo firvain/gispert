@@ -100,8 +100,11 @@ export default new Vuex.Store({
     addPostToCollectionView(state, data) {
       state.commit('addPostToCollectionView', data);
     },
-    addReplyToPost (state, data) {
-      state.commit('addReplyToPost', data);
+    addRepliesToPost (state, data) {
+      state.commit('addRepliesToPost', data);
+    },
+    addReplyToThread (state, data) {
+      state.commit('addReplyToThread', data);
     },
     setUsers(state, data) {
       state.commit('setusers', data);
@@ -271,7 +274,7 @@ export default new Vuex.Store({
     addPostToCollectionView(store, data) {
       this.state.collectionTimeline.unshift(data);
     },
-    addReplyToPost (state, data) {
+    addRepliesToPost (state, data) {
       const objIndex = state.timeline.findIndex((obj => obj._id == data._id));
       console.log('vuex adding reply to post:: ', objIndex, data);
       if (objIndex > -1) {
@@ -300,9 +303,28 @@ export default new Vuex.Store({
         }
       }
     },
-    addReplyToUserTimelinePost(state, data) {
-    },
-    addPostToUserTimeline(state, data) {
+    addReplyToThread (state, data) {
+      const objIndex = state.timeline.findIndex((obj => obj._id == data.isReplyTo));
+      console.log('vuex adding reply to thread:: ', objIndex, data);
+      if (objIndex > -1) {
+        state.timeline[objIndex].posts.unshift(data);
+      }
+      if (state.openedTimeline !== null) {
+        if (state.openedTimeline.type === 'collection') {
+          const objIndex = state.collectionTimeline.findIndex((obj => obj._id == data.isReplyTo));
+          console.log('adding reply to collection:: ', objIndex, data);
+          if (objIndex > -1) {
+            state.collectionTimeline[objIndex].posts.unshift(data);
+          }
+        }
+        if (state.openedTimeline.type === 'timeline') {
+          const objIndex = state.userTimeline.findIndex((obj => obj._id == data.isReplyTo));
+          console.log('adding reply to userTimeline:: ', objIndex, data);
+          if (objIndex > -1) {
+            state.userTimeline[objIndex].posts.unshift(p);
+          }
+        }
+      }
     },
     // setLiveUsers (state, data) {
     //   state.liveUsersList = data;
