@@ -86,12 +86,13 @@
   </div>
 </template>
 <script>
-// import ol from 'openlayers';
-import axios from 'axios';
+import ol from 'openlayers';
+// import axios from 'axios';
 import Swatches from 'vue-swatches';
 // import 'vue-swatches/dist/vue-swatches.min.css';
 import chat from './chat';
-import config from '../config';
+// import config from '../config';
+import styles from '../js/styles';
 import olMap from '../js/map';
 import mapTools from './maptoolsanalysis';
 
@@ -169,16 +170,16 @@ export default {
     //     this.message_content = '';
     //   }
     // },
-    outlineColorChanged() {
-      console.log('outline color changed');
-      this.outlineColorChange = true;
-      this.setSymbology();
-    },
-    fillColorChanged() {
-      console.log('fill color changed');
-      this.fillColorChange = true;
-      this.setSymbology();
-    },
+    // outlineColorChanged() {
+    //   console.log('outline color changed');
+    //   this.outlineColorChange = true;
+    //   this.setSymbology();
+    // },
+    // fillColorChanged() {
+    //   console.log('fill color changed');
+    //   this.fillColorChange = true;
+    //   this.setSymbology();
+    // },
     // newFeatureMessage(msg) {
     //   let allLayers = [];
     //   allLayers = olMap.getLayers().getArray();
@@ -321,104 +322,151 @@ export default {
     //   }
     //   return true;
     // },
-    setSymbology() {
-      this.saveButtonShow = true;
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          // console.log('added feature::', AddedFeature[0]);
-          layer.getSource().forEachFeature((feature) => {
-            if (feature.get('mongoID') === this.$store.state.featureId) {
-              feature.setProperties({
-                strkWdth: this.strokeWidth,
-                strkClr: this.outlineColor,
-                fllClr: this.fillColor,
-              });
-            }
-          });
-        }
-      });
-    },
-    setSymbologyFromSocket(data) {
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          // console.log('added feature::', AddedFeature[0]);
-          layer.getSource().forEachFeature((feature) => {
-            if (feature.get('mongoID') === data.featureId) {
-              console.log('found the feature and setting properties', data);
-              if (this.outlineColorChange) {
-                feature.setProperties({
-                  strkClr: data.strkClr,
-                });
-              }
-              if (this.fillColorChange) {
-                feature.setProperties({
-                  fllClr: data.fllClr,
-                });
-              }
-              if (this.strokeWidthChange) {
-                feature.setProperties({
-                  strkWdth: data.strkWdth,
-                });
-              }
-              console.log('set properties', feature.getProperties());
-            }
-          });
-        }
-      });
-    },
-    saveSymbology() {
-      try {
-        const url = `${config.url}/features/setsymbology`;
-        const data = {
-          featureId: this.$store.state.featureId,
-          strkWdth: this.strokeWidth,
-          strkClr: this.outlineColor,
-          fllClr: this.fillColor,
-        };
-        if (this.outlineColorChange) {
-          data.strkClr = data.strkClr;
-        }
-        if (this.fillColorChange) {
-          data.fllClr = data.fllClr;
-        }
-        if (this.strokeWidthChange) {
-          data.strkWdth = data.strkWdth;
-        }
-        axios.post(url, { data }, {
-          headers: { 'x-access-token': this.$store.state.token },
-        }).then((response) => {
-          data.userId = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
-          if (response.status === 200) {
-            this.$socket.emit('setSymbology', data);
-            console.log('OK');
-          } else {
-            console.log('error');
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      return true;
-    },
-    resetSymbologyMenu() {
-      this.saveButtonShow = false;
-      this.outlineColor = '';
-      this.fillColor = '';
-      this.strokeWidth = 1;
-      this.outlineColorChange = false;
-      this.fillColorChange = false;
-      this.strokeWidthChange = false;
-    },
+    // setSymbology() {
+    //   this.saveButtonShow = true;
+    //   let allLayers = [];
+    //   allLayers = olMap.getLayers().getArray();
+    //   allLayers.forEach((layer) => {
+    //     if (layer.getProperties().name === 'customLayer') {
+    //       // console.log('added feature::', AddedFeature[0]);
+    //       layer.getSource().forEachFeature((feature) => {
+    //         if (feature.get('mongoID') === this.$store.state.featureId) {
+    //           feature.setProperties({
+    //             strkWdth: this.strokeWidth,
+    //             strkClr: this.outlineColor,
+    //             fllClr: this.fillColor,
+    //           });
+    //         }
+    //       });
+    //     }
+    //   });
+    // },
+    // setSymbologyFromSocket(data) {
+    //   let allLayers = [];
+    //   allLayers = olMap.getLayers().getArray();
+    //   allLayers.forEach((layer) => {
+    //     if (layer.getProperties().name === 'customLayer') {
+    //       // console.log('added feature::', AddedFeature[0]);
+    //       layer.getSource().forEachFeature((feature) => {
+    //         if (feature.get('mongoID') === data.featureId) {
+    //           console.log('found the feature and setting properties', data);
+    //           if (this.outlineColorChange) {
+    //             feature.setProperties({
+    //               strkClr: data.strkClr,
+    //             });
+    //           }
+    //           if (this.fillColorChange) {
+    //             feature.setProperties({
+    //               fllClr: data.fllClr,
+    //             });
+    //           }
+    //           if (this.strokeWidthChange) {
+    //             feature.setProperties({
+    //               strkWdth: data.strkWdth,
+    //             });
+    //           }
+    //           console.log('set properties', feature.getProperties());
+    //         }
+    //       });
+    //     }
+    //   });
+    // },
+    // saveSymbology() {
+    //   try {
+    //     const url = `${config.url}/features/setsymbology`;
+    //     const data = {
+    //       featureId: this.$store.state.featureId,
+    //       strkWdth: this.strokeWidth,
+    //       strkClr: this.outlineColor,
+    //       fllClr: this.fillColor,
+    //     };
+    //     if (this.outlineColorChange) {
+    //       data.strkClr = data.strkClr;
+    //     }
+    //     if (this.fillColorChange) {
+    //       data.fllClr = data.fllClr;
+    //     }
+    //     if (this.strokeWidthChange) {
+    //       data.strkWdth = data.strkWdth;
+    //     }
+    //     axios.post(url, { data }, {
+    //       headers: { 'x-access-token': this.$store.state.token },
+    //     }).then((response) => {
+    //       data.userId = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
+    //       if (response.status === 200) {
+    //         this.$socket.emit('setSymbology', data);
+    //         console.log('OK');
+    //       } else {
+    //         console.log('error');
+    //       }
+    //     });
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    //   return true;
+    // },
+    // resetSymbologyMenu() {
+    //   this.saveButtonShow = false;
+    //   this.outlineColor = '';
+    //   this.fillColor = '';
+    //   this.strokeWidth = 1;
+    //   this.outlineColorChange = false;
+    //   this.fillColorChange = false;
+    //   this.strokeWidthChange = false;
+    // },
   },
   watch: {
-    '$store.state.featureId': function handle() {
+    '$store.state.feature': function handle() {
       console.log('new feature selection');
-      this.messages = [];
-      this.resetSymbologyMenu();
+      const features = olMap.getLayers().getArray()[1].getSource().getFeatures();
+      features.forEach((f) => {
+        let message = '';
+        if (f.get('messages').length > 20) {
+          message = `${f.get('messages').substr(0, 20)}...`;
+        } else {
+          message = f.get('messages');
+        }
+        if (this.$store.state.feature && f.getProperties().mongoID === this.$store.state.feature.get('mongoID')) {
+          const labelSelected = new ol.style.Style({
+            text: new ol.style.Text({
+              font: 'bold 14px Verdana',
+              text: message,
+              fill: new ol.style.Fill({
+                color: 'red',
+              }),
+              stroke: new ol.style.Stroke({
+                color: 'white',
+                width: 3.5,
+              }),
+              offsetY: -15,
+            }),
+          });
+          f.setStyle([
+            styles.selectedPoint,
+            styles.selectedLineString,
+            styles.selectedPolygon,
+            labelSelected,
+          ]);
+        } else {
+          const labelNormal = new ol.style.Style({
+            text: new ol.style.Text({
+              font: 'bold 10px Verdana',
+              text: message,
+              fill: new ol.style.Fill({
+                color: 'blue',
+              }),
+              stroke: new ol.style.Stroke({
+                color: 'white',
+                width: 3.5,
+              }),
+              offsetY: -15,
+            }),
+          });
+          f.setStyle([styles.Point, styles.LineString, styles.Polygon, labelNormal]);
+        }
+      });
+      // this.messages = [];
+      // this.resetSymbologyMenu();
       // this.start = 0;
       // this.end = 25;
       // this.loadConversation(this.loading).then(() => {
@@ -434,11 +482,11 @@ export default {
     //     });
     //   }
     // },
-    strokeWidth: function handle() {
-      console.log('width changed');
-      this.strokeWidthChange = true;
-      this.setSymbology();
-    },
+    // strokeWidth: function handle() {
+    //   console.log('width changed');
+    //   this.strokeWidthChange = true;
+    //   this.setSymbology();
+    // },
     // newFeature: function emit() {
     //   console.log('newpostfeature changed', typeof (this.$store.state.addingToPost));
     //   const geojson = new ol.format.GeoJSON();
@@ -468,10 +516,10 @@ export default {
     // this.$options.sockets.newGeometry = (data) => {
     //   this.addNewGeometry(data);
     // };
-    this.$options.sockets.setSymbology = (data) => {
-      console.log('symbology received');
-      this.setSymbologyFromSocket(data);
-    };
+    // this.$options.sockets.setSymbology = (data) => {
+    //   console.log('symbology received');
+    //   this.setSymbologyFromSocket(data);
+    // };
     // this.$eventHub.$on('previousFeatures', () => {
     //   this.featuresStart -= 25;
     //   this.featuresEnd -= 25;
