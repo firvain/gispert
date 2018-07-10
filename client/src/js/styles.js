@@ -1,13 +1,14 @@
 import ol from 'openlayers';
 
 const image = new ol.style.Circle({
-  radius: 5,
+  radius: 4,
   fill: null,
   stroke: new ol.style.Stroke({
-    color: 'red',
+    color: 'blue',
     width: 1,
   }),
 });
+
 
 const styles = {
   Point: new ol.style.Style({
@@ -15,7 +16,7 @@ const styles = {
   }),
   LineString: new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: 'green',
+      color: 'blue',
       width: 1,
     }),
   }),
@@ -46,8 +47,7 @@ const styles = {
   Polygon: new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: 'blue',
-      lineDash: [4],
-      width: 3,
+      width: 1,
     }),
     fill: new ol.style.Fill({
       color: 'rgba(0, 0, 255, 0.1)',
@@ -59,7 +59,7 @@ const styles = {
       width: 2,
     }),
     fill: new ol.style.Fill({
-      color: 'magenta',
+      color: 'rgba(255, 255, 0, 0.1)',
     }),
     image: new ol.style.Circle({
       radius: 10,
@@ -76,6 +76,31 @@ const styles = {
     }),
     fill: new ol.style.Fill({
       color: 'rgba(255,0,0,0.2)',
+    }),
+  }),
+  selectedPoint: new ol.style.Style({
+    image: new ol.style.Circle({
+      radius: 5,
+      fill: null,
+      stroke: new ol.style.Stroke({
+        color: 'red',
+        width: 2,
+      }),
+    }),
+  }),
+  selectedLineString: new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: 'green',
+      width: 1,
+    }),
+  }),
+  selectedPolygon: new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: 'red',
+      width: 3,
+    }),
+    fill: new ol.style.Fill({
+      color: 'rgba(0, 0, 255, 0.1)',
     }),
   }),
 };

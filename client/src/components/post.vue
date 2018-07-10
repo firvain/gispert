@@ -256,12 +256,21 @@ export default {
                   });
                   console.log('added feature :: ', f);
                   layer.getSource().addFeature(f);
-                  const cs = f.getStyle();
-                  f.setStyle(styles.BoldLineString);
-                  setTimeout(() => {
-                    f.setStyle(cs);
-                    olMap.updateSize();
-                  }, 500);
+                  const labelNormal = new ol.style.Style({
+                    text: new ol.style.Text({
+                      font: 'bold 10px Verdana',
+                      text: message,
+                      fill: new ol.style.Fill({
+                        color: 'blue',
+                      }),
+                      stroke: new ol.style.Stroke({
+                        color: 'white',
+                        width: 3.5,
+                      }),
+                      offsetY: -15,
+                    }),
+                  });
+                  f.setStyle([styles.Point, styles.LineString, styles.Polygon, labelNormal]);
                 }
               });
             }
@@ -287,14 +296,60 @@ export default {
         g[3] += 200;
       }
       olMap.getView().fit(g, olMap.getSize());
-      const cs = featuresToLoad[0].getStyle();
+      // const cs = featuresToLoad[0].getStyle();
 
-      featuresToLoad[0].setStyle(styles.BoldLineString);
+      const features = olMap.getLayers().getArray()[1].getSource().getFeatures();
+      features.forEach((f) => {
+        let message = '';
+        if (f.get('messages').length > 20) {
+          message = `${f.get('messages').substr(0, 20)}...`;
+        } else {
+          message = f.get('messages');
+        }
+        if (f.getProperties().mongoID === featureCollection.features[0].properties.mongoID) {
+          const labelSelected = new ol.style.Style({
+            text: new ol.style.Text({
+              font: 'bold 14px Verdana',
+              text: message,
+              fill: new ol.style.Fill({
+                color: 'red',
+              }),
+              stroke: new ol.style.Stroke({
+                color: 'white',
+                width: 3.5,
+              }),
+              offsetY: -15,
+            }),
+          });
+          f.setStyle([
+            styles.selectedPoint,
+            styles.selectedLineString,
+            styles.selectedPolygon,
+            labelSelected,
+          ]);
+        } else {
+          const labelNormal = new ol.style.Style({
+            text: new ol.style.Text({
+              font: 'bold 10px Verdana',
+              text: message,
+              fill: new ol.style.Fill({
+                color: 'blue',
+              }),
+              stroke: new ol.style.Stroke({
+                color: 'white',
+                width: 3.5,
+              }),
+              offsetY: -15,
+            }),
+          });
+          f.setStyle([styles.Point, styles.LineString, styles.Polygon, labelNormal]);
+        }
+      });
 
-      setTimeout(() => {
-        featuresToLoad[0].setStyle(cs);
-        olMap.updateSize();
-      }, 500);
+      // setTimeout(() => {
+      //   featuresToLoad[0].setStyle(cs);
+      //   olMap.updateSize();
+      // }, 500);
     },
     toggle_answer() {
       console.log('toggling answer box');

@@ -44,167 +44,167 @@ const getHashtags = function getText(feature) {
   return text;
 };
 
-function normalStyle(feature) {
-  let style;
-  if (feature.getGeometry().getType() === 'Point') {
-    const strokeWidth = feature.get('strkWdth');
-    const strokeColor = feature.get('strkClr');
-    const fillColor = feature.get('fllClr');
+// function normalStyle(feature) {
+//   let style;
+//   if (feature.getGeometry().getType() === 'Point') {
+//     const strokeWidth = feature.get('strkWdth');
+//     const strokeColor = feature.get('strkClr');
+//     const fillColor = feature.get('fllClr');
 
-    let setStrokeWidth;
-    let setStrokeColor;
-    let setFillColor;
+//     let setStrokeWidth;
+//     let setStrokeColor;
+//     let setFillColor;
 
-    if (strokeWidth !== undefined) {
-      setStrokeWidth = strokeWidth;
-    } else {
-      setStrokeWidth = 2;
-    }
-    if (strokeColor !== undefined) {
-      setStrokeColor = strokeColor;
-    } else {
-      setStrokeColor = 'blue';
-    }
-    if (fillColor !== undefined) {
-      setFillColor = fillColor;
-    } else {
-      setFillColor = 'rgba(255, 255, 255, 0.4)';
-    }
+//     if (strokeWidth !== undefined) {
+//       setStrokeWidth = strokeWidth;
+//     } else {
+//       setStrokeWidth = 2;
+//     }
+//     if (strokeColor !== undefined) {
+//       setStrokeColor = strokeColor;
+//     } else {
+//       setStrokeColor = 'blue';
+//     }
+//     if (fillColor !== undefined) {
+//       setFillColor = fillColor;
+//     } else {
+//       setFillColor = 'rgba(255, 255, 255, 0.4)';
+//     }
 
-    style = new ol.style.Style({
-      fill: new ol.style.Fill({
-        color: 'rgba(255, 255, 255, 0.4)',
-      }),
-      stroke: new ol.style.Stroke({
-        color: setStrokeColor,
-        width: setStrokeWidth,
-      }),
-      image: new ol.style.Circle({
-        radius: 5,
-        fill: new ol.style.Fill({
-          color: setFillColor,
-        }),
-        stroke: new ol.style.Stroke({
-          color: setStrokeColor,
-          width: setStrokeWidth,
-        }),
-      }),
-      text: new ol.style.Text({
-        font: 'bold 12px Verdana',
-        text: getHashtags(feature),
-        fill: new ol.style.Fill({
-          color: 'blue',
-        }),
-        stroke: new ol.style.Stroke({
-          color: 'white',
-          width: 3.5,
-        }),
-        offsetY: -15,
-      }),
-    });
-  }
-  if (feature.getGeometry().getType() === 'LineString') {
-    const strokeWidth = feature.get('strkWdth');
-    const strokeColor = feature.get('strkClr');
-    // const start = feature.getGeometry().getFirstCoordinate();
-    // const end = feature.getGeometry().getLastCoordinate();
+//     style = new ol.style.Style({
+//       fill: new ol.style.Fill({
+//         color: 'rgba(255, 255, 255, 0.4)',
+//       }),
+//       stroke: new ol.style.Stroke({
+//         color: setStrokeColor,
+//         width: setStrokeWidth,
+//       }),
+//       image: new ol.style.Circle({
+//         radius: 5,
+//         fill: new ol.style.Fill({
+//           color: setFillColor,
+//         }),
+//         stroke: new ol.style.Stroke({
+//           color: setStrokeColor,
+//           width: setStrokeWidth,
+//         }),
+//       }),
+//       text: new ol.style.Text({
+//         font: 'bold 12px Verdana',
+//         text: getHashtags(feature),
+//         fill: new ol.style.Fill({
+//           color: 'blue',
+//         }),
+//         stroke: new ol.style.Stroke({
+//           color: 'white',
+//           width: 3.5,
+//         }),
+//         offsetY: -15,
+//       }),
+//     });
+//   }
+//   if (feature.getGeometry().getType() === 'LineString') {
+//     const strokeWidth = feature.get('strkWdth');
+//     const strokeColor = feature.get('strkClr');
+//     // const start = feature.getGeometry().getFirstCoordinate();
+//     // const end = feature.getGeometry().getLastCoordinate();
 
-    // const dx = end[0] - start[0];
-    // const dy = end[1] - start[1];
-    // const rotation = Math.atan2(dy, dx);
+//     // const dx = end[0] - start[0];
+//     // const dy = end[1] - start[1];
+//     // const rotation = Math.atan2(dy, dx);
 
-    let setStrokeWidth;
-    let setStrokeColor;
+//     let setStrokeWidth;
+//     let setStrokeColor;
 
-    if (strokeWidth !== undefined) {
-      setStrokeWidth = strokeWidth;
-    } else {
-      setStrokeWidth = 2;
-    }
-    if (strokeColor !== undefined) {
-      setStrokeColor = strokeColor;
-    } else {
-      setStrokeColor = 'blue';
-    }
+//     if (strokeWidth !== undefined) {
+//       setStrokeWidth = strokeWidth;
+//     } else {
+//       setStrokeWidth = 2;
+//     }
+//     if (strokeColor !== undefined) {
+//       setStrokeColor = strokeColor;
+//     } else {
+//       setStrokeColor = 'blue';
+//     }
 
-    style = new ol.style.Style({
-      stroke: new ol.style.Stroke({
-        color: setStrokeColor,
-        width: setStrokeWidth,
-      }),
-      text: new ol.style.Text({
-        font: 'bold 12px Verdana',
-        text: getHashtags(feature),
-        fill: new ol.style.Fill({
-          color: 'blue',
-        }),
-        stroke: new ol.style.Stroke({
-          color: 'white',
-          width: 3.5,
-        }),
-        offsetY: -15,
-      }),
-    });
-  }
-  if (feature.getGeometry().getType() === 'Polygon') {
-    const strokeWidth = feature.get('strkWdth');
-    const strokeColor = feature.get('strkClr');
-    const fillColor = feature.get('fllClr');
+//     style = new ol.style.Style({
+//       stroke: new ol.style.Stroke({
+//         color: setStrokeColor,
+//         width: setStrokeWidth,
+//       }),
+//       text: new ol.style.Text({
+//         font: 'bold 12px Verdana',
+//         text: getHashtags(feature),
+//         fill: new ol.style.Fill({
+//           color: 'blue',
+//         }),
+//         stroke: new ol.style.Stroke({
+//           color: 'white',
+//           width: 3.5,
+//         }),
+//         offsetY: -15,
+//       }),
+//     });
+//   }
+//   if (feature.getGeometry().getType() === 'Polygon') {
+//     const strokeWidth = feature.get('strkWdth');
+//     const strokeColor = feature.get('strkClr');
+//     const fillColor = feature.get('fllClr');
 
-    let setStrokeWidth;
-    let setStrokeColor;
-    let setFillColor;
+//     let setStrokeWidth;
+//     let setStrokeColor;
+//     let setFillColor;
 
-    if (strokeWidth !== undefined) {
-      setStrokeWidth = strokeWidth;
-    } else {
-      setStrokeWidth = 2;
-    }
-    if (strokeColor !== undefined) {
-      setStrokeColor = strokeColor;
-    } else {
-      setStrokeColor = 'blue';
-    }
-    if (fillColor !== undefined) {
-      setFillColor = fillColor;
-    } else {
-      setFillColor = 'rgba(255, 255, 255, 0.4)';
-    }
+//     if (strokeWidth !== undefined) {
+//       setStrokeWidth = strokeWidth;
+//     } else {
+//       setStrokeWidth = 2;
+//     }
+//     if (strokeColor !== undefined) {
+//       setStrokeColor = strokeColor;
+//     } else {
+//       setStrokeColor = 'blue';
+//     }
+//     if (fillColor !== undefined) {
+//       setFillColor = fillColor;
+//     } else {
+//       setFillColor = 'rgba(255, 255, 255, 0.4)';
+//     }
 
-    style = new ol.style.Style({
-      fill: new ol.style.Fill({
-        color: 'rgba(255, 255, 255, 0.4)',
-      }),
-      stroke: new ol.style.Stroke({
-        color: setStrokeColor,
-        width: setStrokeWidth,
-      }),
-      image: new ol.style.Circle({
-        radius: 5,
-        fill: new ol.style.Fill({
-          color: setFillColor,
-        }),
-        stroke: new ol.style.Stroke({
-          color: setStrokeColor,
-          width: setStrokeWidth,
-        }),
-      }),
-      text: new ol.style.Text({
-        font: 'bold 12px Verdana',
-        text: getHashtags(feature),
-        fill: new ol.style.Fill({
-          color: 'blue',
-        }),
-        stroke: new ol.style.Stroke({
-          color: 'white',
-          width: 3.5,
-        }),
-        offsetY: -15,
-      }),
-    });
-  }
-  return [style];
-}
+//     style = new ol.style.Style({
+//       fill: new ol.style.Fill({
+//         color: 'rgba(255, 255, 255, 0.4)',
+//       }),
+//       stroke: new ol.style.Stroke({
+//         color: setStrokeColor,
+//         width: setStrokeWidth,
+//       }),
+//       image: new ol.style.Circle({
+//         radius: 5,
+//         fill: new ol.style.Fill({
+//           color: setFillColor,
+//         }),
+//         stroke: new ol.style.Stroke({
+//           color: setStrokeColor,
+//           width: setStrokeWidth,
+//         }),
+//       }),
+//       text: new ol.style.Text({
+//         font: 'bold 12px Verdana',
+//         text: getHashtags(feature),
+//         fill: new ol.style.Fill({
+//           color: 'blue',
+//         }),
+//         stroke: new ol.style.Stroke({
+//           color: 'white',
+//           width: 3.5,
+//         }),
+//         offsetY: -15,
+//       }),
+//     });
+//   }
+//   return [style];
+// }
 
 function selectedStyle(feature) {
   const setstrkWidth = 2;
@@ -302,7 +302,7 @@ function selectedStyle(feature) {
 
 
 const customLayer = new ol.layer.Vector({
-  style: normalStyle,
+  // style: normalStyle,
   source: new ol.source.Vector(),
   name: 'customLayer',
 });
