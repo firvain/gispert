@@ -81,22 +81,24 @@ const styles = {
   selectedPoint: new ol.style.Style({
     image: new ol.style.Circle({
       radius: 5,
-      fill: null,
+      fill: new ol.style.Fill({
+        color: 'orange',
+      }),
       stroke: new ol.style.Stroke({
-        color: 'red',
+        color: 'orange',
         width: 2,
       }),
     }),
   }),
   selectedLineString: new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: 'green',
+      color: 'orange',
       width: 1,
     }),
   }),
   selectedPolygon: new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: 'red',
+      color: 'orange',
       width: 3,
     }),
     fill: new ol.style.Fill({

@@ -314,7 +314,7 @@ export default {
               font: 'bold 14px Verdana',
               text: message,
               fill: new ol.style.Fill({
-                color: 'red',
+                color: 'orange',
               }),
               stroke: new ol.style.Stroke({
                 color: 'white',
@@ -406,7 +406,7 @@ export default {
       let isActive;
       console.log(this.post._id, this.$store.state.selectedPost); // eslint-disable-line
       if (this.post._id === this.$store.state.selectedPost) { // eslint-disable-line
-        isActive = 'red lighten-3';
+        isActive = 'orange lighten-3';
       } else {
         isActive = 'grey lighten-3';
       }
