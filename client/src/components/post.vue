@@ -23,7 +23,7 @@
 
           <!-- feature data:: {{ post.featureData }} -->
         </v-card-title>
-        <v-card-actions class="grey lighten-3">
+        <v-card-actions :class="isSelected">
             <v-tooltip bottom>
               <v-btn slot="activator"
                 fab small outline
@@ -163,6 +163,7 @@ export default {
     loadingReplies: false,
     answerPostText: '',
     myReplies: 0,
+    isSelected: 'grey lighten-3',
   }),
   components: {
     newPost, newReply,
@@ -279,6 +280,7 @@ export default {
       }
     },
     zoom(post) {
+      this.$store.commit('setSelectedPost', this.post._id); // eslint-disable-line
       const geojsonFormat = new ol.format.GeoJSON();
       const featureCollection = {
         type: 'FeatureCollection',
@@ -397,6 +399,19 @@ export default {
       console.log('explore:: ', collectionId);
       this.$store.commit('setActiveTab', 'explore');
       // this.$router.push({ path: `/main/search/collection/${collectionId}` });
+    },
+  },
+  watch: {
+    '$store.state.selectedPost': function set() {
+      let isActive;
+      console.log(this.post._id, this.$store.state.selectedPost); // eslint-disable-line
+      if (this.post._id === this.$store.state.selectedPost) { // eslint-disable-line
+        isActive = 'red lighten-3';
+      } else {
+        isActive = 'grey lighten-3';
+      }
+      console.log(isActive);
+      this.isSelected = isActive;
     },
   },
   computed: {

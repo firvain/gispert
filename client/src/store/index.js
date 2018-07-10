@@ -29,8 +29,12 @@ export default new Vuex.Store({
     liveUsersList: null,
     activeMapTool: 'selectFeatures',
     activeTab: 'home',
+    selectedPost: '',
   },
   actions: {
+    setSelectedPost(state, data) {
+      state.commit('setSelectedPost', data);
+    },
     setActiveTab(state, data) {
       state.commit('setActiveTab', data);
     },
@@ -344,6 +348,9 @@ export default new Vuex.Store({
     },
     addPageToUserTimeline(state, data) {
       state.userTimeline.push(data);
+    },
+    setSelectedPost (state, data) {
+      state.selectedPost = data;
     },
   },
   getters: {
