@@ -101,7 +101,7 @@ export default {
           this.snackbarColor = 'green';
           this.snackbarNewPost = true;
 
-          this.$store.commit('clearNewPostFeatures', 'newPost');
+          this.$store.commit('clearNewPostFeatures', this.$store.state.openedTimeline.id);
           console.log('response from API -is reply to- is:: ', response.data.isReplyTo);
           console.log('totally new post');
           // console.log('this is the userpost newpost:: ', userPost);

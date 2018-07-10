@@ -471,8 +471,9 @@ export default {
           this.$eventHub.$emit('logged-in');
           this.emailEdit = this.$store.state.user.email;
           this.descriptionEdit = this.$store.state.user.description;
-          this.setLocale(response.data.user.locale);
+          // this.setLocale(response.data.user.locale);
           this.language = response.data.user.locale;
+          app.$i18n.locale = response.data.user.locale;
         }
       })
       .then(() => {
@@ -639,7 +640,6 @@ export default {
     },
     setLocale(value) {
       // console.log('setting locale to ::', value);
-      app.$i18n.locale = value;
       if (this.$store.state.isUserLoggedIn) {
         const url = `${config.url}/users/setlocale`;
         const updateInfo = {

@@ -17,7 +17,6 @@
           ></v-text-field>
             <!-- :hint="$t('message.youMayWriteAndSketch')" -->
         </v-flex>
-        {{ id }}, {{ collectionId }}
         <mapTools v-if="$store.state.addingToPost && $store.state.addingToPost.type === idToMatch"></mapTools>
         <v-flex v-if="drawnFeatures !== undefined">
           <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')" @input="remove(f.get('mongoID'))">
@@ -105,7 +104,7 @@ export default {
           this.snackbarColor = 'green';
           this.snackbarNewPost = true;
 
-          this.$store.commit('clearNewPostFeatures', 'newPost');
+          this.$store.commit('clearNewPostFeatures', this.id);
           console.log('response from API -is reply to- is:: ', response.data.isReplyTo);
           // eslint-disable-next-line
           userPost._id = response.data.id;

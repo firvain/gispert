@@ -69,49 +69,50 @@ router.route('/')
       }
       return id;
     })
-    // .then((id, creator) => {
-    //   if (req.body.userPost.isReplyTo !== '') {
-    //     const creator = database.findRepliedPost(req.body.userPost.isReplyTo);
-    //     return creator;
-    //   }
-    // }).then((creator, notification) => {
-    //   if (creator) {
-    //     const notification = {
-    //       collectionId: post.collections,
-    //       byUser: new ObjectId(post.userId),
-    //       type: 'replyToMyPost',
-    //       timestamp: post.timestamp,
-    //       userCreated: new ObjectId(creator[0].userId),
-    //       text: creator[0].text,
-    //       features: featuresIds,
-    //       read: 0
-    //     };
-    //     console.log('a reply notification:::', notification);
-    //     return creator, notification;
-    //   }
-    // }).then((notification, creator) => {
-    //   console.log('creator::', creator, 'notification::', notification);
-    //   if (notification) {
-    //     console.log('notifying for reply database');
-    //     database.notifyPost(notification);
-    //   }
-    //   return creator;
-    // }).then((notification, creator) => {
-    //   if(req.body.userPost.isReplyTo === '') {
-    //     const notification = {
-    //       collectionId: post.collections,
-    //       byUser: new ObjectId(post.userId),
-    //       type: 'newPostInCollection',
-    //       timestamp: post.timestamp,
-    //       // userCreated: new ObjectId(repliedPostCreator[0].userId),
-    //       text: req.body.userPost.text,
-    //       features: featuresIds,
-    //       read: 0
-    //     };
-    //     database.notifyPost(notification);
-    //     // console.log('notification of a reply', notification);
-    //   }
-    // })
+    .then((id, creator) => {
+      if (req.body.userPost.isReplyTo !== '') {
+        const creator = database.findRepliedPost(req.body.userPost.isReplyTo);
+        return creator;
+      }
+    }).then((creator, notification) => {
+      console.log('creator is::', creator, creator.length);
+      if (creator.length !== 0) {
+        const notification = {
+          collectionId: post.collection,
+          byUser: new ObjectId(post.userId),
+          type: 'replyToMyPost',
+          timestamp: post.timestamp,
+          userCreated: new ObjectId(creator[0].userId),
+          text: post.text,
+          features: featuresIds,
+          read: 0
+        };
+        console.log('a reply notification:::', notification);
+        return creator, notification;
+      }
+    }).then((notification, creator) => {
+      console.log('creator::', creator, 'notification::', notification);
+      if (notification) {
+        console.log('notifying for reply database');
+        database.notifyPost(notification);
+      }
+      return creator;
+    }).then((creator) => {
+      if(creator === undefined) {
+        const notification = {
+          collectionId: new ObjectId(req.body.userPost.collection),
+          byUser: new ObjectId(req.body.userPost.userId),
+          type: 'newPostInCollection',
+          timestamp: String(Math.trunc(req.body.userPost.timestamp)),
+          // userCreated: new ObjectId(repliedPostCreator[0].userId),
+          text: req.body.userPost.text,
+          features: featuresIds,
+          read: 0
+        };
+        database.notifyPost(notification);
+        // console.log('notification of a reply', notification);
+      }
+    })
     .then(() => {
       database.close();
     })

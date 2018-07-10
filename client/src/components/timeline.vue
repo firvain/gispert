@@ -101,8 +101,9 @@ export default {
       });
     },
     toggle_new_post() {
+      console.log('toggling timeline new post');
       this.newPost = !this.newPost;
-      if (this.newPostText === this.$t('message.cancel')) {
+      if (this.newPost === false) {
         this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
         this.$store.commit('setActiveMapTool', 'selectFeatures');
@@ -146,7 +147,6 @@ export default {
     },
   },
   mounted() {
-    this.newPostText = this.$t('message.newPost');
     if (this.$store.state.timeline === []) {
       this.load_first_page();
     }
@@ -161,6 +161,11 @@ export default {
       // this.replies.unshift(data);
       this.toggle_new_post();
     });
+  },
+  watch: {
+    '$store.state.isUserLoggedIn': function locale() {
+      this.newPostText = this.$t('message.newPost');
+    },
   },
 };
 </script>

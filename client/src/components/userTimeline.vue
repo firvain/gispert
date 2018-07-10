@@ -161,12 +161,6 @@ export default {
       console.log('new post from socket', data);
       this.$store.dispatch('addPostToUserTimeline', data);
     };
-    this.$eventHub.$on('newPost', () => {
-      // console.log('A totally new post has been published :: ', eventPost);
-      this.toggle_new_post();
-      // this.$store.dispatch('addPostToUserTimeline', eventPost);
-    //   this.refresh_page();
-    });
   },
 };
 </script>

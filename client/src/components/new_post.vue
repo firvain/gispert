@@ -117,7 +117,7 @@ export default {
           this.snackbarColor = 'green';
           this.snackbarNewPost = true;
 
-          this.$store.commit('clearNewPostFeatures', 'newPost');
+          this.$store.commit('clearNewPostFeatures', 'home');
           console.log('response from API -is reply to- is:: ', response.data.isReplyTo);
           console.log('totally new post');
           // console.log('this is the userpost newpost:: ', userPost);
@@ -130,10 +130,10 @@ export default {
           } else {
             userPost.featureData = [];
           }
-          userPost.collectionData = {
+          userPost.collectionData = [{
             title: this.selectCollection.title,
             _id: this.selectCollection._id, // eslint-disable-line no-underscore-dangle
-          };
+          }];
 
           console.log('user post is:: ', JSON.stringify(userPost));
           const newThread = {

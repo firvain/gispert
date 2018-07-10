@@ -171,9 +171,9 @@ export default new Vuex.Store({
         state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, features: [feature] });
       }
     },
-    clearNewPostFeatures(state) {
+    clearNewPostFeatures(state, data) {
       let allResponses = state.storage;
-      const toDelete = new Set(['newPost']);
+      const toDelete = new Set([data]);
       // console.log(allResponses);
       const restResponses = allResponses.filter(obj => !toDelete.has(obj.id));
       state.storage = restResponses;

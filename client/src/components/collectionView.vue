@@ -119,11 +119,14 @@ export default {
       });
     },
     toggle_new_post() {
+      console.log('toggling collection new post');
       this.newPost = !this.newPost;
-      if (this.newPostText === this.$t('message.cancel')) {
+      if (this.newPost === false) {
         this.newPostText = this.$t('message.newPost');
         this.newPostColor = 'blue-grey';
+        this.$store.commit('setActiveMapTool', 'selectFeatures');
       } else {
+        this.$store.commit('setActiveMapTool', 'drawFeatures');
         this.newPostText = this.$t('message.cancel');
         this.newPostColor = 'red';
       }
@@ -182,10 +185,9 @@ export default {
       // }
     };
     this.$eventHub.$on('newPost', () => {
-      // console.log('A totally new post has been published :: ', eventPost);
-      this.toggle_new_post();
-      // this.$store.dispatch('addPostToCollectionView', eventPost);
-    //   this.refresh_page();
+      if (this.$store.state.openedTimeline.id === this.id) {
+        this.toggle_new_post();
+      }
     });
   },
 };
