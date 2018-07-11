@@ -85,7 +85,7 @@ const styles = {
         color: 'orange',
       }),
       stroke: new ol.style.Stroke({
-        color: 'orange',
+        color: 'red',
         width: 2,
       }),
     }),

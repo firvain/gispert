@@ -231,7 +231,7 @@ export default {
           type: 'FeatureCollection',
           features: post.featureData,
         };
-        console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
+        // console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
         const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
         if (featuresToLoad.length > 0) {
           let allLayers = [];
@@ -255,7 +255,7 @@ export default {
                   f.setProperties({
                     messages: message,
                   });
-                  console.log('added feature :: ', f);
+                  // console.log('added feature :: ', f);
                   layer.getSource().addFeature(f);
                   const labelNormal = new ol.style.Style({
                     text: new ol.style.Text({
@@ -286,7 +286,7 @@ export default {
         type: 'FeatureCollection',
         features: post.featureData,
       };
-      console.log('zooming to a post feature data:: ', JSON.stringify(featureCollection));
+      // console.log('zooming to a post feature data:: ', JSON.stringify(featureCollection));
       const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
       const g = featuresToLoad[0].getGeometry().getExtent();
       if (g[0] - g[2] < 500) {
@@ -317,8 +317,8 @@ export default {
                 color: 'orange',
               }),
               stroke: new ol.style.Stroke({
-                color: 'white',
-                width: 3.5,
+                color: 'red',
+                width: 2,
               }),
               offsetY: -15,
             }),
@@ -404,13 +404,11 @@ export default {
   watch: {
     '$store.state.selectedPost': function set() {
       let isActive;
-      console.log(this.post._id, this.$store.state.selectedPost); // eslint-disable-line
       if (this.post._id === this.$store.state.selectedPost) { // eslint-disable-line
         isActive = 'orange lighten-3';
       } else {
         isActive = 'grey lighten-3';
       }
-      console.log(isActive);
       this.isSelected = isActive;
     },
   },

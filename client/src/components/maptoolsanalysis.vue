@@ -2,7 +2,7 @@
   <div>
     <v-card flat height="0px">
       <!-- <v-toolbar class="white" absolute dense offset-xs2> -->
-        <v-layout class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
+        <v-flex class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
           <!-- <br><br> -->
           <!-- <v-tooltip bottom>
             <v-btn fab small :color="toolColors[2]" slot="activator" @click="addToPost()">
@@ -10,31 +10,39 @@
             </v-btn>
             <span>Πρόσθεσέ το στην ανάρτηση</span>
           </v-tooltip> -->
+          <v-flex pa-0 ma-0>
           <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('contains')">
-              <v-icon dark>explore</v-icon>
+            <v-btn class='verysmall' icon :color="toolColors[2]" slot="activator" @click="exploreFeaturePosts()">
+              <v-icon class='verysmallicon' dark>explore</v-icon>
             </v-btn>
             <span>Δες σχετικές αναρτήσεις</span>
           </v-tooltip>
+          </v-flex>
+          <!-- <v-tooltip bottom>
+            <v-btn fab small :color="toolColors[2]" slot="activator" @click="postUsingFeature()">
+              <v-icon class='verysmallicon' dark>explore</v-icon>
+            </v-btn>
+            <span>Απάντησε</span>
+          </v-tooltip> -->
           <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[2]"
+            <v-btn class='verysmall' icon :color="toolColors[2]"
               v-if="$store.state.feature.getGeometry().getType() === 'Polygon' || $store.state.feature.getGeometry().getType() === 'LineString'"
               slot="activator" @click="measure()">
-              <v-icon dark>straighten</v-icon>
+              <v-icon class='verysmallicon' dark>straighten</v-icon>
             </v-btn>
             <span>Μέτρησέ το</span>
           </v-tooltip>
           <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[0]" slot="activator" @click="deleteFeature()">
-              <v-icon dark>delete</v-icon>
+            <v-btn class='verysmall' icon :color="toolColors[0]" slot="activator" @click="deleteFeature()">
+              <v-icon class='verysmallicon' dark>delete</v-icon>
             </v-btn>
             <span>Διέγραψέ το</span>
           </v-tooltip>
           <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[0]"
+            <v-btn class='verysmall' icon :color="toolColors[0]"
               v-if="$store.state.feature.getGeometry().getType() === 'Point'"
               slot="activator" @click="createBufferDialog = true;">
-              <v-icon dark>panorama_fish_eye</v-icon>
+              <v-icon class='verysmallicon' dark>panorama_fish_eye</v-icon>
             </v-btn>
             <span>Βρες τη ζώνη επιρροής</span>
           </v-tooltip>
@@ -60,7 +68,7 @@
             </v-btn>
             <span>Στείλτο σε άλλους χρήστες</span>
           </v-tooltip> -->
-        </v-layout>
+        </v-flex>
       <!-- </v-toolbar> -->
 
     </v-card>
@@ -94,9 +102,9 @@
 </template>
 <script>
 import ol from 'openlayers';
-import axios from 'axios';
+// import axios from 'axios';
 import turf from 'turf';
-import config from '../config';
+// import config from '../config';
 import userSelector from './selectCloseUsers';
 import olMap from '../js/map';
 
@@ -202,50 +210,69 @@ export default {
         }
       });
     },
-    addToPost() {
-      console.log(this.$store.state.feature);
-      this.$store.commit('newPostFeature', this.$store.state.feature);
-    },
+    // postUsingFeature() {},
+    // addToPost() {
+    //   console.log(this.$store.state.feature);
+    //   this.$store.commit('newPostFeature', this.$store.state.feature);
+    // },
     deleteFeature() {
-      // delete in vuex
-      // search in vector source and delete from ol3js
-      try {
-        // axios.post(url, { feature }, { headers: { 'x-access-token': this.$store.state.token } });
-        const url = `${config.url}/features/delete`;
-        const data = {
-          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-          featureId: this.$store.state.feature.get('mongoID'),
-        };
-        axios.post(url, { data }, { headers: { 'x-access-token': this.$store.state.token },
-        }).then((response) => {
-          console.log('response status:: ', response.status);
-          if (response.status === 200) {
-            this.$store.commit('setSelected', undefined);
-            console.log('deleted');
-          } else {
-            console.log('error');
-          }
-        }).then(() => {
-          let allLayers = [];
-          allLayers = olMap.getLayers().getArray();
-          allLayers.forEach((layer) => {
-            if (layer.getProperties().name === 'customLayer') {
-              layer.getSource().forEachFeature((feature) => {
-                if (feature.get('mongoID') === this.$store.state.featureId) {
-                  layer.getSource().removeFeature(feature);
-                  olMap.getInteractions().forEach((interaction) => {
-                    if (interaction instanceof ol.interaction.Select) {
-                      interaction.getFeatures().clear();
-                    }
-                  });
+      this.$store.commit('setSelected', undefined);
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().forEachFeature((feature) => {
+            if (feature.get('mongoID') === this.$store.state.featureId) {
+              layer.getSource().removeFeature(feature);
+              olMap.getInteractions().forEach((interaction) => {
+                if (interaction instanceof ol.interaction.Select) {
+                  interaction.getFeatures().clear();
                 }
               });
             }
           });
-        });
-      } catch (error) {
-        console.log(error);
-      }
+        }
+      });
+      // try {
+      //   const url = `${config.url}/features/delete`;
+      //   const data = {
+      //     userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+      //     featureId: this.$store.state.feature.get('mongoID'),
+      //   };
+      //   axios.post(url, { data }, { headers: { 'x-access-token': this.$store.state.token },
+      //   }).then((response) => {
+      //     console.log('response status:: ', response.status);
+      //     if (response.status === 200) {
+      //       this.$store.commit('setSelected', undefined);
+      //       console.log('deleted');
+      //     } else {
+      //       console.log('error');
+      //     }
+      //   }).then(() => {
+      //     let allLayers = [];
+      //     allLayers = olMap.getLayers().getArray();
+      //     allLayers.forEach((layer) => {
+      //       if (layer.getProperties().name === 'customLayer') {
+      //         layer.getSource().forEachFeature((feature) => {
+      //           if (feature.get('mongoID') === this.$store.state.featureId) {
+      //             layer.getSource().removeFeature(feature);
+      //             olMap.getInteractions().forEach((interaction) => {
+      //               if (interaction instanceof ol.interaction.Select) {
+      //                 interaction.getFeatures().clear();
+      //               }
+      //             });
+      //           }
+      //         });
+      //       }
+      //     });
+      //   });
+      // } catch (error) {
+      //   console.log(error);
+      // }
+    },
+    exploreFeaturePosts() {
+      this.$store.state.activeTab = 'explore';
+      this.$eventHub.$emit('openFeaturePosts', this.$store.state.featureId);
     },
     createBuffer() {
       const geojsonFormat = new ol.format.GeoJSON();
@@ -291,9 +318,9 @@ export default {
         }
       });
     },
-    chatOnThisFeature() {
-      this.userSelector = true;
-    },
+    // chatOnThisFeature() {
+    //   this.userSelector = true;
+    // },
   },
 };
 </script>
@@ -301,4 +328,15 @@ export default {
 .overflowing {
   z-index: 99;
 }
+ .verysmall{
+   width: 30px;
+   height: 30px;
+   padding: 0px;
+   margin: 0px;
+ }
+ .verysmallicon{
+   width: 10px;
+   padding: 0px;
+   margin: 0px;
+ }
 </style>

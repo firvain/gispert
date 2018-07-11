@@ -522,33 +522,39 @@ router.route('/person')
 //     });
 // });
 
-// router.route('/feature')
-// .get(function getPersonsPosts(req, res) {
-//    // db.posts.findOne({"text" : {$regex : ".*myron.*"}});
-//     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-//       // Create your schemas and models here.
-//       var featureId;
-//       featureId = req.query.featureId;
-//       console.log(featureId);
-//       var collection = db.collection('posts');
-//       var regexValue = '.*' + featureId + '.*';
+router.route('/feature')
+  .get(function getSpecificPost(req, res) {
+    const Database = require('../Database')
+    , dbUrl = 'mongodb://' + config.mongodbHost + config.dbName
+    // var start = parseInt(req.query.start);
+    // var end = parseInt(req.query.end);
+    var userId = req.query.userId;
+    var mongoId = req.query.mongoId;
+    // console.log(mongoId, userId, start, end);
 
-//       if (err) {
-//         throw err;
-//       }
-//       collection.find({ userFeatures: { $regex : regexValue } }).toArray(
-//         function handleCursor(error, docs) {
-//           if (err) {
-//             res.sendStatus(500);
-//             // console.log(error);
-//           } else {
-//             // console.log(docs);
-//             res.send(docs);
-//             db.close();
-//           }
-//         });
-//     });
-// });
+    const database = new Database(dbUrl);
+    database.connect()
+      .then((post) => { 
+        return post = database.findPostsUsingFeature(mongoId);
+      })
+      .then((post) => {
+        console.log('post in then for aggregate::', post);
+        let thread;
+        if (post) {
+          thread = database.createThreadFromIsReplyTo(post[0].isReplyTo, userId);
+        }
+        return thread;
+      })
+      .then((thread) => {
+        res.send(thread)
+        database.close();
+      })
+      .catch((err) => {
+        if (err){
+          console.log(err);
+        }
+      });
+});
 
 // router.route('/search')
 // .get(function getHashtagPosts(req, res) {

@@ -121,7 +121,7 @@
     </v-snackbar>
     <v-btn block dark outline small color="green"
       @click="closeCollectionView"
-      v-if="$store.state.openedTimeline !== null">
+      v-if="$store.state.openedTimeline !== null && loading === false">
       <v-icon dark>undo</v-icon>
       {{ $t('message.back')}}
     </v-btn>
@@ -133,10 +133,14 @@
       v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'timeline'"
       :id="$store.state.openedTimeline.id"
     ></userTimeline>
+    <thread
+      :thread='openThread[0]'
+      v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'thread' && openThread">
+    </thread>
     <post :post='postContent' v-if="postContent !== null"></post>
     <v-btn block dark outline small color="green"
       @click="closeCollectionView"
-      v-if="$store.state.openedTimeline !== null">
+      v-if="$store.state.openedTimeline !== null && loading === false">
       <v-icon dark>undo</v-icon>
       {{ $t('message.back')}}
     </v-btn>
@@ -149,6 +153,7 @@ import post from '@/components/post';
 import collection from '@/components/collection';
 import collectionView from '@/components/collectionView';
 import userTimeline from '@/components/userTimeline';
+import thread from '@/components/thread';
 import config from '../config';
 
 export default {
@@ -177,10 +182,11 @@ export default {
       mode: 'normal',
       searchResultsCollections: [],
       postContent: null,
+      openThread: null,
     };
   },
   components: {
-    collection, collectionView, userTimeline, post,
+    collection, collectionView, userTimeline, post, thread,
   },
   methods: {
     getUserId() {
@@ -313,7 +319,7 @@ export default {
       // console.log(id);
       if (this.$store.state.isUserLoggedIn) {
         pUrl = `${config.url}/posts/id`;
-        userIdCurrent = this.$store.state.user.id;
+        userIdCurrent = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
         token = this.$store.state.token;
       } else {
         pUrl = `${config.url}/public/postid`;
@@ -339,6 +345,38 @@ export default {
           }
         }).then(() => {
           this.postContent = postContentNew;
+          this.loading = false;
+          // console.log('postContent:: ', this.postContent, this.postContent.text);
+        });
+      }
+    },
+    loadPostFromFeature(mongoId) {
+      this.loading = true;
+      if (mongoId) {
+        // console.log('before axios');
+        axios.get(`${config.url}/posts/feature`, {
+          params: {
+            mongoId: mongoId,
+            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((resp) => {
+          if (resp.data) {
+            // console.log(resp);
+            this.openThread = resp.data;
+            console.log('openThread:: ', this.openThread, resp.data);
+            // this.postOpen = true;
+            // console.log('postContent:: ', this.postOpen);
+            // postContentNew = this.postContent;
+          }
+        }).then(() => {
+          // this.postContent = postContentNew;
+          const tl = {
+            id: mongoId,
+            type: 'thread',
+          };
+          this.$store.dispatch('setOpenedCustomTimeline', tl);
+          this.mode = 'thread';
           this.loading = false;
           // console.log('postContent:: ', this.postContent, this.postContent.text);
         });
@@ -399,6 +437,9 @@ export default {
       };
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       this.mode = 'post';
+    });
+    this.$eventHub.$on('openFeaturePosts', (id) => {
+      this.loadPostFromFeature(id);
     });
   },
 };

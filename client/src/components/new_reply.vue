@@ -19,7 +19,8 @@
         </v-flex>
         <mapTools v-if="$store.state.addingToPost && $store.state.addingToPost.type === idToMatch"></mapTools>
         <v-flex v-if="drawnFeatures !== undefined">
-          <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')" @input="remove(f.get('mongoID'))">
+          <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')"
+            @click='zoomToChip(f)' @input="remove(f.get('mongoID'))">
             {{ f.getGeometry().getType() }}
           </v-chip>
         </v-flex>
@@ -149,8 +150,17 @@ export default {
         this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline.id });
       }
     },
-    setCenter() {
-      olMap.getView().setCenter(0, 0);
+    zoomToChip(f) {
+      const g = f.getGeometry().getExtent();
+      if (g[0] - g[2] < 500) {
+        g[0] -= 200;
+        g[2] += 200;
+      }
+      if (g[1] - g[3] < 500) {
+        g[1] -= 200;
+        g[3] += 200;
+      }
+      olMap.getView().fit(g, olMap.getSize());
     },
     remove(id) {
       this.$store.commit('deleteFeatureFromPost', id);
