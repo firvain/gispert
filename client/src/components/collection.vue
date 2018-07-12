@@ -58,6 +58,7 @@
           <v-card-text>
             Current members:
             <div style="overflow-y: scroll; max-height: 150px">
+              <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
               <v-list>
                 <v-list-tile avatar v-for="user in members" v-bind:key="user._id">
                   <v-list-tile-content>
@@ -89,14 +90,24 @@
         <v-card>
           <v-card-title class="headline">{{ $t('message.chooseUsersToShare')}}</v-card-title>
           <v-card-text>
-            <v-text-field
-              name="input-1"
-              label="Label Text"
-              id="testing"
-            ></v-text-field>
+            <v-layout>
+              <v-flex md10> {{ usersToInvite }}
+                <v-text-field
+                  name="input-1"
+                  label="Search user name"
+                  id="testing"
+                  v-model='userSearchTerm'
+                  v-on:keyup.enter="searchUsers"
+                  autofocus
+                ></v-text-field>
+              </v-flex>
+              <v-flex md2>
+                <v-progress-circular v-show='loading' indeterminate color="primary" v-bind:size="40"></v-progress-circular>
+              </v-flex>
+            </v-layout>
             <div style="overflow-y: scroll; max-height: 150px">
-              <v-list>
-                <v-list-tile avatar v-for="user in membersToAdd" v-bind:key="user._id">
+              <v-list v-if="searchResultUsers !== null">
+                <v-list-tile avatar v-for="user in searchResultUsers" v-bind:key="user._id">
                   <v-list-tile-content>
                     <v-list-tile-title v-text="user.name"></v-list-tile-title>
                   </v-list-tile-content>
@@ -105,9 +116,19 @@
                       <v-icon color='green' dark>add</v-icon>
                     </v-btn>
                   </v-list-tile-action>
-                  <!-- <v-list-tile-avatar>
-                    <img v-bind:src="item.avatar"/>
-                  </v-list-tile-avatar> -->
+                </v-list-tile>
+              </v-list>
+              <v-list v-if='searchResultUsers === null'>
+                <v-list-tile avatar v-for="user in membersToAdd" v-bind:key="user._id">
+                  <v-list-tile-content>
+                    <v-list-tile-title v-text="user.name"></v-list-tile-title>
+                  </v-list-tile-content>
+                  <v-list-tile-action>
+                    <v-btn icon @click='addUserToInvitations(user._id)'>
+                      <v-icon v-if='!usersToInvite.includes(user._id)' color='green' dark>add</v-icon>
+                      <v-icon v-if='usersToInvite.includes(user._id)' color='green' dark>check_circle_outline</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
                 </v-list-tile>
               </v-list>
             </div>
@@ -177,6 +198,9 @@ export default {
     shareLink: false,
     isEditor: true,
     shareDialogAddMembers: false,
+    userSearchTerm: '',
+    searchResultUsers: null,
+    usersToInvite: [],
   }),
   components: {
     post,
@@ -187,18 +211,19 @@ export default {
       this.loadMembersOfThisCollection(data);
     };
   },
+  watch: {
+    userSearchTerm: function handle() {
+      this.searchUsers();
+    },
+  },
   computed: {
     membersToAdd() {
-      // function comparer(otherArray) {
-      //   return (current) => {
-      //     return otherArray.filter((other) => {
-      //       return other.value === current.value && other.display === current.display;
-      //     }).length === 0;
-      //   };
-      // }
-      // const onlyInA = this.members.filter(comparer(this.$store.state.users));
-      // const onlyInB = this.$store.state.users.filter(comparer(this.members));
-      // return onlyInA.concat(onlyInB);
+      // eslint-disable-next-line
+      return this.$store.state.users.filter(function(obj) {
+      // eslint-disable-next-line
+          return !this.has(obj._id);
+      // eslint-disable-next-line
+      }, new Set(this.members.map(obj => obj._id)));
     },
     shareMapUrl() {
       const url = `${config.share}/#/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
@@ -207,6 +232,14 @@ export default {
     },
   },
   methods: {
+    addUserToInvitations(id) {
+      console.log('handling this user id::', id);
+      if (!this.usersToInvite.includes(id)) {
+        this.usersToInvite.push(id);
+      } else {
+        this.usersToInvite.remove(id);
+      }
+    },
     exploreCollection(collectionId) {
       // TODO make correct request
       if (this.details) {
@@ -298,6 +331,26 @@ export default {
     },
     copyToClipboard() {
       clipboard(this.shareMapUrl);
+    },
+    searchUsers() {
+      if (this.$store.state.isUserLoggedIn && this.userSearchTerm.length > 0) {
+        this.loading = true;
+        const url = `${config.url}/users/search`;
+        axios.get(url, {
+          params: {
+            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+            keyword: this.userSearchTerm,
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          if (response.data) {
+            this.searchResultUsers = response.data;
+            // this.users = response.data;
+          }
+        }).then(() => {
+          this.loading = false;
+        });
+      }
     },
   },
 };
