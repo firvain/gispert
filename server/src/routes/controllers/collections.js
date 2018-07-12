@@ -7,74 +7,71 @@ var ObjectID = require('mongodb').ObjectID;
 var config = require('../../config');
 
 router.route('/')
-    .get(function getcollections(req, res) {
-        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var userId = req.query.userId;
-            // console.log('get type:: ', type);
-            var collection = db.collection('collections');
-            if (err) {
-                console.log(err);
-            }
-            if (userId) {
-                // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
-                collection.find({ $or: [
-                    // { members: ObjectID(userId) },
-                    {$and: [
-                        { visibility: 'private' }, 
-                        { user: ObjectID(userId) }
-                    ]}] }, {}).toArray(function handleCursor(error, docs) {
-                    // console.log(docs);
-                    var data = {};
-                    if (err) {
-                        res.sendStatus(500);
-                        console.log(error);
-                    } else {
-                        res.send(docs);
-                        db.close();
-                    }
-                });
-            }
-        });
-    })
-    .post(function setcollection(req, res) {
-        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var newCollection = req.body.newCollection;
-            newCollection.user = ObjectID(req.body.newCollection.user);
-            // console.log(req.body);
-            console.log('a new collection:: ', newCollection);
-            if (err) {
-                throw err;
-            } else {
-                db.collection('collections').insertOne(
-                    newCollection
-                );
-                res.status(200).send(newCollection);
-            }
-            db.close();
-        });
-    });
+  .get(function getcollections(req, res) {
+      MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+          var userId = req.query.userId;
+          // console.log('get type:: ', type);
+          var collection = db.collection('collections');
+          if (err) {
+              console.log(err);
+          }
+          if (userId) {
+              collection.find({ $or: [
+                  {$and: [
+                      { visibility: 'private' }, 
+                      { user: ObjectID(userId) }
+                  ]}] }, {}).toArray(function handleCursor(error, docs) {
+                  // console.log(docs);
+                  if (err) {
+                      res.sendStatus(500);
+                      console.log(error);
+                  } else {
+                      res.send(docs);
+                      db.close();
+                  }
+              });
+          }
+      });
+  })
+  .post(function setcollection(req, res) {
+      MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+          var newCollection = req.body.newCollection;
+          newCollection.user = ObjectID(req.body.newCollection.user);
+          // console.log(req.body);
+          console.log('a new collection:: ', newCollection);
+          if (err) {
+              throw err;
+          } else {
+              db.collection('collections').insertOne(
+                  newCollection
+              );
+              res.status(200).send(newCollection);
+          }
+          db.close();
+      });
+  });
 
 router.route('/delete')
-    .post(function setuser(req, res) {
-        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var _id = req.body.id;
-            var cId = new ObjectID(_id);
-            // console.log('collection id to delete:: ', req.body._id);
+  .post(function setuser(req, res) {
+      MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+          var _id = req.body.id;
+          var cId = new ObjectID(_id);
+          // console.log('collection id to delete:: ', req.body._id);
 
-            if (err) {
-                throw err;
-            } else {
-                db.collection('collections').remove({
-                    _id: cId 
-                });
-                db.collection('posts').deleteMany({
-                    collections : cId
-                });
-                res.status(200).send('OK');
-            }
-            db.close();
-        });
-    });
+          if (err) {
+              throw err;
+          } else {
+              db.collection('collections').remove({
+                  _id: cId 
+              });
+              db.collection('posts').deleteMany({
+                  collection : cId
+              });
+              res.status(200).send('OK');
+          }
+          db.close();
+      });
+  });
 
 router.route('/collection')
 .get(function getposts(req, res) {
@@ -306,38 +303,39 @@ router.route('/collection')
     
 router.route('/members')
     .get(function getmemberscollection(req, res) {
-        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            const userId = req.query.userId;
-            const collectionId = req.query.collectionId;
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+          const collectionId = req.query.collectionId;
+          const userId = req.query.userId;
+          var collection = db.collection('collections');
 
-            // console.log('get type:: ', type);
-            var collection = db.collection('collections');
-            if (err) {
-                console.log(err);
-            }
-            if (userId) {
-                // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
-                collection.find({
-                    $or: [
-                        {
-                            $and: [
-                                { members: ObjectID(userId) },
-                                { _id: ObjectID(collectionId) }
-                            ]
-                        }]
-                }, {}).toArray(function handleCursor(error, docs) {
-                    // console.log(docs);
-                    var data = {};
-                    if (err) {
-                        res.sendStatus(500);
-                        console.log(error);
-                    } else {
-                        res.send(docs[0].members);
-                        db.close();
-                    }
-                });
-            }
-        });
+          return collection.aggregate([
+            { $match: {_id: ObjectID(collectionId) } },
+           {
+               $graphLookup: {
+                   from: "users",
+                   startWith: "$members",
+                   connectFromField: "members",
+                   connectToField: "_id",
+                   as: "users",
+               }
+           },
+           {$project: {
+               "users._id": 1,
+               "users.name":1
+               }}
+        ]);
+          db.close();
+      })
+      .then(function (cursor) {
+          return cursor.toArray();
+      })
+      .then(function (content) {
+          res.status(200).json(content);
+      })
+      .catch(function (err) {
+          throw err;
+      });
     });
 
 

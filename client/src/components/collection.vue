@@ -34,7 +34,7 @@
             </v-btn>
           </v-list-tile-action>
           <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-            <v-btn fab small outline @click="shareDialog = true">
+            <v-btn fab small outline @click="shareDialog = true; loadMembersOfThisCollection(collection._id)">
               <v-icon color="green lighten-1">share</v-icon>
             </v-btn>
           </v-list-tile-action>
@@ -52,53 +52,74 @@
         </v-list-tile>
       </v-card-actions>
 
-      <v-dialog v-model="shareDialog" persistent max-width="480">
+      <v-dialog v-model="shareDialog" persistent max-width="480" height='120'>
         <v-card>
           <v-card-title class="headline">{{ $t('message.chooseUsersToShare')}}</v-card-title>
           <v-card-text>
             Current members:
-            <v-layout class='userList'>
+            <div style="overflow-y: scroll; max-height: 150px">
               <v-list>
-                <v-list-tile avatar v-for="user in $store.state.users" v-bind:key="user._id">
-                  <v-list-tile-action>
-                    <v-icon color="pink">star</v-icon>
-                  </v-list-tile-action>
+                <v-list-tile avatar v-for="user in members" v-bind:key="user._id">
                   <v-list-tile-content>
                     <v-list-tile-title v-text="user.name"></v-list-tile-title>
                   </v-list-tile-content>
                   <!-- <v-list-tile-avatar>
-                    <img v-bind:src="item.avatar"/>
+                    <img src="../../dist/logo.png"/>
                   </v-list-tile-avatar> -->
+                  <v-list-tile-action>
+                    <v-btn icon>
+                      <v-icon dark>delete</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                  <v-list-tile-action>
+                    <v-switch v-model="isEditor"></v-switch>
+                  </v-list-tile-action>
                 </v-list-tile>
               </v-list>
-            </v-layout>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" flat @click.native="shareDialog = false">{{ $t('message.close')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="shareDialogAddMembers = true; shareDialog = false">Προσθήκη μελών</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="shareDialogAddMembers" persistent max-width="480" height='120'>
+        <v-card>
+          <v-card-title class="headline">{{ $t('message.chooseUsersToShare')}}</v-card-title>
+          <v-card-text>
             <v-text-field
               name="input-1"
               label="Label Text"
               id="testing"
             ></v-text-field>
-
-            <v-list class='userList'>
-              <v-list-tile avatar v-for="user in $store.state.users" v-bind:key="user._id">
-                <v-list-tile-action>
-                  <v-icon color="pink">star</v-icon>
-                </v-list-tile-action>
-                <v-list-tile-content>
-                  <v-list-tile-title v-text="user.name"></v-list-tile-title>
-                </v-list-tile-content>
-                <!-- <v-list-tile-avatar>
-                  <img v-bind:src="item.avatar"/>
-                </v-list-tile-avatar> -->
-              </v-list-tile>
-            </v-list>
+            <div style="overflow-y: scroll; max-height: 150px">
+              <v-list>
+                <v-list-tile avatar v-for="user in membersToAdd" v-bind:key="user._id">
+                  <v-list-tile-content>
+                    <v-list-tile-title v-text="user.name"></v-list-tile-title>
+                  </v-list-tile-content>
+                  <v-list-tile-action>
+                    <v-btn icon>
+                      <v-icon color='green' dark>add</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                  <!-- <v-list-tile-avatar>
+                    <img v-bind:src="item.avatar"/>
+                  </v-list-tile-avatar> -->
+                </v-list-tile>
+              </v-list>
+            </div>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" flat @click.native="shareDialog = false">{{ $t('message.close')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="shareDialogAddMembers = false; shareDialog = true;">{{ $t('message.close')}}</v-btn>
             <v-btn color="green darken-1" flat @click.native="inviteMembersToCollection(collection._id)">{{ $t('message.save')}}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
+
 
       <v-dialog v-model="deleteCollectionDialog" persistent max-width="290">
         <v-card>
@@ -154,28 +175,30 @@ export default {
     unfollowCollectionDialog: false,
     members: [],
     shareLink: false,
+    isEditor: true,
+    shareDialogAddMembers: false,
   }),
   components: {
     post,
   },
   mounted() {
-    // console.log('collection mounted');
-    if (this.collection.members) {
-      this.members = this.collection.members;
-    }
     this.$options.sockets.refreshCollectionMembers = (data) => {
       console.log('refreshing members::', JSON.stringify(data));
       this.loadMembersOfThisCollection(data);
     };
   },
   computed: {
-    collectionMembers() { // add members as function property
-      const thisCollectionUsers = this.$store.state.users;
-      // console.log(members);
-      // members.forEach((c) => {
-      //   thisCollectionUsers.remove(c);
-      // });
-      return thisCollectionUsers;
+    membersToAdd() {
+      // function comparer(otherArray) {
+      //   return (current) => {
+      //     return otherArray.filter((other) => {
+      //       return other.value === current.value && other.display === current.display;
+      //     }).length === 0;
+      //   };
+      // }
+      // const onlyInA = this.members.filter(comparer(this.$store.state.users));
+      // const onlyInB = this.$store.state.users.filter(comparer(this.members));
+      // return onlyInA.concat(onlyInB);
     },
     shareMapUrl() {
       const url = `${config.share}/#/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
@@ -268,7 +291,7 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        this.members = response.data;
+        this.members = response.data[0].users;
       }).then(() => {
         this.loading = false;
       });

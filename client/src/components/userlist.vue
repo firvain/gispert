@@ -23,7 +23,7 @@
       v-bind="{ [`grid-list-${size}`]: true }" 
       v-if="mode === 'normal'"
       class="pa-1">
-      <v-layout row wrap>
+      <v-container row wrap>
         <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
 
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
@@ -37,7 +37,7 @@
           <user :user='user' @explore="explore">
           </user>
         </v-flex>
-      </v-layout>
+      </v-container>
       <v-btn
         v-if="$store.state.isUserLoggedIn && endOfUsers === false"
         v-on:click='nextPageLoadUsers'

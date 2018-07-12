@@ -437,7 +437,10 @@ router.route('/person')
                 "$filter": {
                   "input": "$collectionData",
                   "as": "child",
-                  "cond": { $or: [{ "$eq": ["$$child.visibility", "public"] }] }
+                  "cond": { $or: [
+                    { "$eq": ["$$child.visibility", "public"] },
+                    { "$eq": ["$$child.user", ObjectId(userId)] }
+                  ]}
                 }
               },
               "post.userName": "$userName",

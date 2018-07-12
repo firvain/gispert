@@ -12,7 +12,7 @@
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         <v-btn
           v-on:click='next_page'
-          v-if="!endOfPosts"
+          v-if="!endOfPosts && $store.state.userTimeline.length !== 0"
           class="blue-grey white--text"
           block
         >

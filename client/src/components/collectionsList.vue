@@ -133,10 +133,12 @@
       v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'timeline'"
       :id="$store.state.openedTimeline.id"
     ></userTimeline>
-    <thread
-      :thread='openThread[0]'
-      v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'thread' && openThread">
-    </thread>
+    <v-container>
+      <thread
+        :thread='openThread[0]'
+        v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'thread' && openThread">
+      </thread>
+    </v-container>
     <post :post='postContent' v-if="postContent !== null"></post>
     <v-btn block dark outline small color="green"
       @click="closeCollectionView"
