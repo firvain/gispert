@@ -28,7 +28,7 @@ export default new Vuex.Store({
     openedTimeline: null,
     liveUsersList: null,
     activeMapTool: 'selectFeatures',
-    activeTab: 'home',
+    activeTab: 'explore',
     selectedPost: '',
   },
   actions: {

@@ -20,7 +20,12 @@ router.route('/')
                   {$and: [
                       { visibility: 'private' }, 
                       { user: ObjectID(userId) }
-                  ]}] }, {}).toArray(function handleCursor(error, docs) {
+                  ]},
+                  {$and: [
+                    { visibility: 'private' }, 
+                    { members: ObjectID(userId) }
+                  ]},
+                ]}, {}).toArray(function handleCursor(error, docs) {
                   // console.log(docs);
                   if (err) {
                       res.sendStatus(500);
@@ -233,8 +238,10 @@ router.route('/collection')
     .post(function setuser(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
             var cid = req.body.data.collectionId;
+            console.log('collection id to unfollow:: ', cid);
             var cId = new ObjectID(cid);
             var mid = req.body.data.memberId;
+            console.log('collection id to unfollow:: ', mid);
             var mId = new ObjectID(mid);
             var userCreated = new ObjectID(req.body.data.userCreated);
             // console.log('collection id to delete:: ', req.body._id);

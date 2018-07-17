@@ -68,12 +68,18 @@
                     <img src="../../dist/logo.png"/>
                   </v-list-tile-avatar> -->
                   <v-list-tile-action>
-                    <v-btn icon>
+                    <v-btn icon color="red darken-1" @click.native="shareDialog = false">
                       <v-icon dark>delete</v-icon>
                     </v-btn>
+                    <!-- <v-btn icon>
+                      <v-icon dark>delete</v-icon>
+                    </v-btn> -->
                   </v-list-tile-action>
                   <v-list-tile-action>
-                    <v-switch v-model="isEditor"></v-switch>
+                    <v-btn icon color="red darken-1" @click.native="shareDialog = false">
+                      <v-icon dark>edit</v-icon>
+                    </v-btn>
+                    <!-- <v-switch v-model="isEditor"></v-switch> -->
                   </v-list-tile-action>
                 </v-list-tile>
               </v-list>
@@ -91,7 +97,7 @@
           <v-card-title class="headline">{{ $t('message.chooseUsersToShare')}}</v-card-title>
           <v-card-text>
             <v-layout>
-              <v-flex md10> {{ usersToInvite }}
+              <v-flex md10>
                 <v-text-field
                   name="input-1"
                   label="Search user name"
@@ -112,8 +118,9 @@
                     <v-list-tile-title v-text="user.name"></v-list-tile-title>
                   </v-list-tile-content>
                   <v-list-tile-action>
-                    <v-btn icon>
-                      <v-icon color='green' dark>add</v-icon>
+                    <v-btn icon @click='addUserToInvitations(user._id)'>
+                      <v-icon v-if='!usersToInvite.includes(user._id)' color='green' dark>add</v-icon>
+                      <v-icon v-if='usersToInvite.includes(user._id)' color='green' dark>check_circle_outline</v-icon>
                     </v-btn>
                   </v-list-tile-action>
                 </v-list-tile>
@@ -251,6 +258,8 @@ export default {
           id: collectionId,
           type: 'collection',
           title: this.collection.title,
+          visibility: this.collection.visibility,
+          userCreated: this.collection.user,
         };
         this.$eventHub.$emit('openCollection', collectionId);
         this.$store.dispatch('setOpenedCustomTimeline', tl);
@@ -302,8 +311,10 @@ export default {
       });
     },
     inviteMembersToCollection(id) {
+      this.shareDialogAddMembers = false;
+      this.shareDialog = true;
       const url = `${config.url}/notifications/inviteMembers`;
-      const ids = this.members;
+      const ids = this.usersToInvite;
       const data = {
         members: ids,
         collectionId: id,
@@ -350,6 +361,9 @@ export default {
         }).then(() => {
           this.loading = false;
         });
+      }
+      if (this.$store.state.isUserLoggedIn && this.userSearchTerm.length === 0) {
+        this.searchResultUsers = this.$store.state.users;
       }
     },
   },

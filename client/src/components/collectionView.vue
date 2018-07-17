@@ -1,5 +1,17 @@
 <template>
     <v-container fluid>
+      <h5 class="text-xs-center">{{ $store.state.openedTimeline.title }}
+        <v-btn fab small outline
+          v-if='isMember && $store.state.openedTimeline.userCreated !== $store.state.user._id'
+          @click="unfollowCollectionDialog = true">
+          <v-icon color="red lighten-1">visibility_off</v-icon>
+        </v-btn>
+        <v-btn fab small outline
+          v-if='!isMember && $store.state.openedTimeline.userCreated !== $store.state.user._id'
+          @click="followCollection">
+          <v-icon color="green lighten-1">visibility</v-icon>
+        </v-btn>
+      </h5>
       <v-btn md8 color="secondary" dark
         block
         large
@@ -28,6 +40,18 @@
         <v-icon right dark>navigate_next</v-icon>
       </v-btn>
       <span v-if="$store.state.collectionTimeline.length === 0">{{ $t('message.noPosts')}}</span>
+
+      <v-dialog v-model="unfollowCollectionDialog" persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline">{{ $t('message.followCollection')}}</v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" flat @click.native="unfollowCollection($store.state.openedTimeline.id)">{{ $t('message.stopFollowing')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="unfollowCollectionDialog = false">{{ $t('message.cancel')}}</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     </v-container>
 </template>
 <script>
@@ -52,10 +76,29 @@ export default {
       loading: false,
       endOfPosts: false,
       title: '',
+      unfollowCollectionDialog: false,
     };
   },
   components: {
     thread, newPostCollection,
+  },
+  computed: {
+    isMember() {
+      const vuexCollections = [];
+      let isMemberState = false;
+      this.$store.state.privateCollections.forEach((col) => {
+        vuexCollections.push(col._id); // eslint-disable-line no-underscore-dangle
+      });
+      this.$store.state.publicCollections.forEach((col) => {
+        vuexCollections.push(col._id); // eslint-disable-line no-underscore-dangle
+      });
+      if (vuexCollections.includes(this.id)) {
+        isMemberState = true;
+      } else {
+        isMemberState = false;
+      }
+      return isMemberState;
+    },
   },
   watch: {
     '$store.state.openedTimeline': function changed() {
@@ -168,6 +211,45 @@ export default {
         this.$store.dispatch('setCollectionTimeline', response.data);
       }).then(() => {
         this.loading = false;
+      });
+    },
+    unfollowCollection(id) {
+      console.log('id to unfollow:: ', id);
+      this.unfollowCollectionDialog = false;
+      const url = `${config.url}/collections/unfollow`;
+      // console.log('id to delete:: ', id);
+      const data = {
+        memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        collectionId: id,
+        userCreated: this.$store.state.openedTimeline.userCreated,
+      };
+      console.log(data);
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then(() => {
+        this.$store.dispatch('deletePrivateCollection', id);
+        this.$store.dispatch('deletePublicCollection', id);
+        this.$eventHub.$emit('refreshprivatecollections', 'refresh');
+        this.$eventHub.$emit('refreshpubliccollections', 'refresh');
+        this.$socket.emit('unfollowedCollection', data);
+      });
+    },
+    followCollection() {
+      const url = `${config.url}/collections/setMembership`;
+      const data = {
+        memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        collectionsToFollow: [this.$store.state.openedTimeline.id],
+        collectionsToUnfollow: [],
+        userCreated: this.$store.state.openedTimeline.userCreated,
+      };
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      })
+      .then(() => {
+        this.$socket.emit('followedCollection', data);
+        this.$eventHub.$emit('refreshprivatecollections');
+        this.$eventHub.$emit('refreshpubliccollections');
+        // console.log('mark as followed and notify user');
       });
     },
   },

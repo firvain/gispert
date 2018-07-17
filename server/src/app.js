@@ -124,8 +124,8 @@ io.on('connection', function(socket) {
 
     socket.on('followedCollection', function handlefollow(data) {
       console.log('catched a follow::', data);
-      socket.broadcast.to(data.collectionId).emit('followedCollection', data);
-      socket.join(data.collectionId);
+      socket.broadcast.to(data.collectionsToFollow[0]).emit('followedCollection', data);
+      socket.join(data.collectionsToFollow[0]);
     });
 
     socket.on('userConnected', function handleUserConnection(userid) {

@@ -248,7 +248,7 @@
         color='green'
       >OK</v-snackbar>
 
-      <v-dialog v-model="dialogNotifications" max-width="500">
+      <v-dialog v-model="dialogNotifications" max-width="500px">
         <notificationsList v-if='$store.state.isUserLoggedIn'></notificationsList>
       </v-dialog>
 

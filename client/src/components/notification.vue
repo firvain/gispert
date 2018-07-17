@@ -104,7 +104,7 @@
     </v-list-tile-action>
 
     <v-list-tile-action v-if="notification.type === 'invitedToCollection'">
-      <v-list-tile-action-text>{{ notification.action }} {{ notification.collectionId }}</v-list-tile-action-text>
+      <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
       <v-btn dark outline small color="green" @click="invitationAccepted(notification.collectionId)" v-if="notification.read === 0">
         {{ $t("message.accept")}}
       </v-btn>
@@ -251,11 +251,11 @@ export default {
     },
     invitationAccepted(collectionId) {
       console.log(collectionId);
-      const url = `${config.url}/collections/addMember`;
+      const url = `${config.url}/collections/setMembership`;
       const data = {
         memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-        collectionsId:
-          [collectionId], // eslint-disable-line no-underscore-dangle
+        collectionsToFollow: [collectionId],
+        collectionsToUnfollow: [],
         userCreated: this.notification.user[0]._id, // eslint-disable-line no-underscore-dangle
       };
       console.log(data);

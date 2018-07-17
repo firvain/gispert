@@ -155,7 +155,11 @@ router.route('/all')
             "$filter": {
                 "input": "$collectionData",
                 "as": "child",
-                "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }, { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
+                "cond": { $or: [ 
+                  { "$eq": [ "$$child.visibility", "public" ] },
+                  { "$eq": [ "$$child.user", ObjectId(userId) ] },
+                  { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
+                ]}
             }
          },
           "post.userName": "$userName",
