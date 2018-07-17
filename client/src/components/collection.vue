@@ -68,15 +68,12 @@
                     <img src="../../dist/logo.png"/>
                   </v-list-tile-avatar> -->
                   <v-list-tile-action>
-                    <v-btn icon color="red darken-1" @click.native="shareDialog = false">
+                    <v-btn icon outline color="red lighten-1" @click.native="removeUserFromCollection(user._id)">
                       <v-icon dark>delete</v-icon>
                     </v-btn>
-                    <!-- <v-btn icon>
-                      <v-icon dark>delete</v-icon>
-                    </v-btn> -->
                   </v-list-tile-action>
                   <v-list-tile-action>
-                    <v-btn icon color="red darken-1" @click.native="shareDialog = false">
+                    <v-btn icon outline color="orange lighten-1" @click.native="shareDialog = false">
                       <v-icon dark>edit</v-icon>
                     </v-btn>
                     <!-- <v-switch v-model="isEditor"></v-switch> -->
@@ -142,7 +139,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" flat @click.native="shareDialogAddMembers = false; shareDialog = true;">{{ $t('message.close')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="shareDialogAddMembers = false; shareDialog = true; usersToInvite = [];">{{ $t('message.close')}}</v-btn>
             <v-btn color="green darken-1" flat @click.native="inviteMembersToCollection(collection._id)">{{ $t('message.save')}}</v-btn>
           </v-card-actions>
         </v-card>
@@ -239,6 +236,25 @@ export default {
     },
   },
   methods: {
+    removeUserFromCollection(id) {
+      this.members = this.members.filter(e =>
+        e._id !== id); // eslint-disable-line no-underscore-dangle
+      this.loading = true;
+      const url = `${config.url}/collections/unfollow`;
+      // console.log('id to delete:: ', id);
+      const data = {
+        memberId: id,
+        collectionId: this.collection._id, // eslint-disable-line no-underscore-dangle
+        userCreated: this.collection.user,
+      };
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then(() => {
+        this.members.remove(id);
+        this.loading = false;
+        this.$socket.emit('removeUserFromCollection', data);
+      });
+    },
     addUserToInvitations(id) {
       console.log('handling this user id::', id);
       if (!this.usersToInvite.includes(id)) {
