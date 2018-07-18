@@ -2,33 +2,41 @@
   <v-container id='collectionList' pa-0>
     <v-container id='list' v-if="this.$store.state.isUserLoggedIn && this.$store.state.openedTimeline === null">
       <v-layout row wrap>
-        <v-text-field
-          name="search-input"
-          :label="$t('message.search')"
-          :hint="$t('message.searchHint')"
-          v-model="searchCollections"
-          min="4"
-          append-icon="search"
-          v-on:keyup.enter="searchInCollections"
-        ></v-text-field>
-        <v-btn fab small outline v-on:click="mode = 'normal'">
-          <v-icon color="green lighten-1">clear</v-icon>
-        </v-btn>
-        <v-subheader inset v-if="$store.state.isUserLoggedIn && $store.state.openedTimeline === null && mode === 'search'">
-          {{ $t('message.searchResults')}}
-        </v-subheader>
-        <v-container fluid v-if="$store.state.openedTimeline === null && mode === 'search'">
-          <v-list
-            v-for="collection in searchResultsCollections"
-            :key="collection._id"
-          >
-            <collection v-if="$store.state.openedTimeline === null || openedCollection === collection._id" :collection='collection'></collection>
-          </v-list>
-          <p v-if="searchResultsCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noResults')}}
-          </p>
-        </v-container>
+        <v-layout row wrap>
+          <v-flex md10>
+            <v-text-field
+              name="search-input"
+              :label="$t('message.search')"
+              :hint="$t('message.searchHint')"
+              v-model="searchCollections"
+              min="4"
+              append-icon="search"
+              v-on:keyup.enter="searchInCollections"
+            ></v-text-field>
+          </v-flex>
+          <v-flex md2>
+            <v-btn fab small outline v-on:click="mode = 'normal'">
+              <v-icon color="green lighten-1">clear</v-icon>
+            </v-btn>
+          </v-flex>
+        </v-layout>
+        <v-flex>
+          <v-subheader inset v-if="$store.state.isUserLoggedIn && $store.state.openedTimeline === null && mode === 'search'">
+            {{ $t('message.searchResults')}}
+          </v-subheader>
+          <v-container fluid v-if="$store.state.openedTimeline === null && mode === 'search'">
+            <v-list
+              v-for="collection in searchResultsCollections"
+              :key="collection._id"
+            >
+              <collection v-if="$store.state.openedTimeline === null || openedCollection === collection._id" :collection='collection'></collection>
+            </v-list>
+            <p v-if="searchResultsCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noResults')}}
+            </p>
+          </v-container>
+        </v-flex>
       </v-layout>
-      <v-subheader inset>
+      <v-subheader inset v-if="mode === 'normal'">
         <v-btn fab dark outline small color="green" @click="addPrivateCollectionCard">
           <v-icon dark>add</v-icon>
         </v-btn>
@@ -37,7 +45,7 @@
           <span>{{ $t('message.privateCollectionsHint')}}</span>
         </v-tooltip>
       </v-subheader>
-      <v-container fluid>
+      <v-container fluid v-if="mode === 'normal'">
         <form v-if="newPrivateCollectionCard">
           <v-text-field
             v-model="newCollection.title"
@@ -70,7 +78,7 @@
         </p>
       </v-container>
 
-      <v-subheader inset>
+      <v-subheader inset v-if="mode === 'normal'">
         <v-btn fab dark outline small color="green" @click="addPublicCollectionCard">
           <v-icon dark>add</v-icon>
         </v-btn>
@@ -79,7 +87,7 @@
           <span>{{ $t('message.publicCollectionsHint') }}</span>
         </v-tooltip>
       </v-subheader>
-      <v-container fluid>
+      <v-container fluid v-if="mode === 'normal'">
         <form v-if="newPublicCollectionCard">
           <v-text-field
             v-model="newCollection.title"

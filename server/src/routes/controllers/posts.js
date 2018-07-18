@@ -564,29 +564,113 @@ router.route('/feature')
       });
 });
 
-// router.route('/search')
-// .get(function getHashtagPosts(req, res) {
-//     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-//       var term;
-//       term = req.query.term;
-//       var collection = db.collection('posts');
-//       collection.createIndex({text: 'text'});
-
-//       if (err) {
-//         throw err;
-//       }
-//       collection.find({ $text: { $search: term } }).toArray(
-//         function handleCursor(error, docs) {
-//           if (err) {
-//             res.sendStatus(500);
-//           } else {
-//             console.log(docs);
-//             res.send(docs);
-//             db.close();
-//           }
-//         });
-//     });
-// });
+router.route('/search')
+  .get(function getposts(req, res) {
+    var start = parseInt(req.query.start);
+    var end = parseInt(req.query.end);
+    var userId = req.query.userId;
+    var searchTerm = req.query.term;
+    var regexValue = '.*' + searchTerm + '.*';
+    console.log(start, end, userId, searchTerm, regexValue);
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+        var collection = db.collection('posts');
+        return collection.aggregate([
+          {
+            $graphLookup: {
+              from: "features",
+              startWith: "$userFeatures",
+              connectFromField: "userFeatures",
+              connectToField: "properties.mongoID",
+              as: "featureData",
+            }
+          },
+          {
+            $graphLookup: {
+              from: "collections",
+              startWith: "$collection",
+              connectFromField: "collection",
+              connectToField: "_id",
+              as: "collectionData",
+            }
+          },
+          {
+            $project: {
+              "post._id": "$_id",
+              "post.isReplyTo": "$isReplyTo",
+              "post.replies": "$replies",
+              "post.featureData": "$featureData",
+              "post.collectionData": {
+                "$filter": {
+                  "input": "$collectionData",
+                  "as": "child",
+                  "cond": {
+                    $or: [
+                      { "$eq": ["$$child.visibility", "public"] },
+                      { "$eq": ["$$child.user", ObjectId(userId)] },
+                      { "$eq": ["$$child.members", [ObjectId(userId)]] }
+                    ]
+                  }
+                }
+              },
+              "post.userName": "$userName",
+              "post.userId": "$userId",
+              "post.timestamp": "$timestamp",
+              "post.text": "$text"
+            }
+          },
+          {
+            $match: {
+              $and: [
+                {
+                  'post.text': { $regex: regexValue, '$options': 'i' }
+                }
+              ]
+            }
+          },
+          {
+            $sort: { 'post.timestamp': -1 }
+          },
+          {
+            $group: {
+              _id: "$post.isReplyTo",
+              posts: { $push: "$post" },
+            }
+          },
+          {
+            $project: {
+              posts: 1,
+              count: { $size: "$posts" }
+            }
+          },
+          {
+            $sort: { 'posts.timestamp': -1 }
+          },
+          {
+            $project: {
+              count: 1,
+              posts: { $slice: ["$posts", 0, 4] }
+            }
+          },
+          {
+            $skip: start
+          },
+          {
+            $limit: end
+          }
+        ]);
+        db.close();
+      })
+      .then(function (cursor) {
+        return cursor.toArray();
+      })
+      .then(function (content) {
+        res.status(200).json(content);
+      })
+      .catch(function (err) {
+        throw err;
+      });
+  });
 
 
 module.exports = router;
