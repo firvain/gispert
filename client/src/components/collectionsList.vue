@@ -440,6 +440,15 @@ export default {
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       this.mode = 'post';
     });
+    this.$eventHub.$on('openPostFromNotification', (id) => {
+      this.loadPostFromPermalink(id);
+      const tl = {
+        id: id,
+        type: 'post',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
+      this.mode = 'post';
+    });
     this.$eventHub.$on('openFeaturePosts', (id) => {
       this.loadPostFromFeature(id);
     });

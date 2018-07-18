@@ -44,6 +44,7 @@ router.route('/user')
           "user.description": 1,
           "user.name": 1,
           "timestamp": 1,
+          "postId":1,
           "collection.members": 1,
           "collection.title": 1,
           "collection.user": 1,

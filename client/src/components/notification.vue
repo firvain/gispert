@@ -52,7 +52,7 @@
       <v-list-tile-title>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
         <a md12 @click="loadCollection(notification.collection[0])">{{ notification.collection[0].title }}</a>
-        <i><a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a></i>
+        <i><a md12 @click="loadPost(notification.postId)">{{ notification.text }}</a></i>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
@@ -69,7 +69,7 @@
       </v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
         <a md12 @click="loadCollection(notification.collection[0])">{{ notification.collection[0].title }}</a>
-        , <a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a>
+        , <a md12 @click="loadPost(notification.postId)">{{ notification.text }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
@@ -168,6 +168,11 @@ export default {
     };
   },
   methods: {
+    loadPost(id) {
+      console.log('load post from notification::', id);
+      this.$store.commit('setActiveTab', 'explore');
+      this.$eventHub.$emit('openPostFromNotification', id);
+    },
     loadCollection(e) {
       const tl = {
         id: e._id, // eslint-disable-line no-underscore-dangle

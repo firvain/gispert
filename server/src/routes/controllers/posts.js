@@ -248,7 +248,11 @@ router.route('/replies')
               "$filter": {
                 "input": "$collectionData",
                 "as": "child",
-                "cond": { $or: [{ "$eq": ["$$child.visibility", "public"] }, { "$eq": ["$$child.user", ObjectId(userId)] }] }
+                "cond": { $or: [
+                  { "$eq": [ "$$child.visibility", "public" ] },
+                  { "$eq": [ "$$child.user", ObjectId(userId) ] },
+                  { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
+                ] }
               }
             },
             "post.userName": "$userName",
@@ -363,8 +367,9 @@ router.route('/id')
                 "input": "$collectionData",
                 "as": "child",
                 "cond": { $or: [
-                  { "$eq": ["$$child.visibility", "public"] },
-                  // { "$eq": ["$$child.user", ObjectId(userId)] }
+                  { "$eq": [ "$$child.visibility", "public" ] },
+                  { "$eq": [ "$$child.user", ObjectId(userId) ] },
+                  { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
                 ] }
               }
             }
@@ -437,9 +442,10 @@ router.route('/person')
                   "input": "$collectionData",
                   "as": "child",
                   "cond": { $or: [
-                    { "$eq": ["$$child.visibility", "public"] },
-                    { "$eq": ["$$child.user", ObjectId(userId)] }
-                  ]}
+                    { "$eq": [ "$$child.visibility", "public" ] },
+                    { "$eq": [ "$$child.user", ObjectId(userId) ] },
+                    { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
+                    ]}
                 }
               },
               "post.userName": "$userName",

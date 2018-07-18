@@ -4,6 +4,7 @@
 
         <v-flex
           md12
+          v-if="$store.state.userTimeline.length > 0"
           v-for="thread in $store.state.userTimeline"
           :key="thread._id"
         >
