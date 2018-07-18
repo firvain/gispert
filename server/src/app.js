@@ -57,14 +57,16 @@ io.on('connection', function(socket) {
       });
     });
 
-    socket.on('newPost', function handlepost(post) {
-      console.log('new post received from client::', post);
-      socket.broadcast.to(post.collections).emit('newPost', post);
+    socket.on('newPost', function handlepost(thread) {
+      console.log('new post received from client::', thread);
+      console.log('emitting to::', thread.posts[0].collection);
+      socket.broadcast.to(thread.posts[0].collection).emit('newPost', thread);
     });
 
     socket.on('newReply', function handlepost(post) {
       console.log('new reply received from client::', post);
-      socket.broadcast.to(post.collections).emit('newReply', post);
+      console.log('emitting to::', post.collection);
+      socket.broadcast.to(post.collection).emit('newReply', post);
     });
 
     socket.on('inviteToCollection', function handleinvitation(members) {

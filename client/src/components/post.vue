@@ -17,6 +17,7 @@
           <v-chip
             v-for="f in post.featureData"
             v-if="f.properties"
+            @click="zoomToChip(f)"
             :key="f.properties.mongoID">
             {{ f.geometry.type }}
           </v-chip>
@@ -323,6 +324,88 @@ export default {
           message = f.get('messages');
         }
         if (allIdsFromFeatureCollection.includes(f.getProperties().mongoID)) {
+          console.log(message);
+          const labelSelected = new ol.style.Style({
+            text: new ol.style.Text({
+              font: 'bold 14px Verdana',
+              text: message,
+              fill: new ol.style.Fill({
+                color: 'orange',
+              }),
+              stroke: new ol.style.Stroke({
+                color: 'red',
+                width: 2,
+              }),
+              offsetY: -15,
+            }),
+          });
+          f.setStyle([
+            styles.selectedPoint,
+            styles.selectedLineString,
+            styles.selectedPolygon,
+            labelSelected,
+          ]);
+        } else {
+          const labelNormal = new ol.style.Style({
+            text: new ol.style.Text({
+              font: 'bold 10px Verdana',
+              text: message,
+              fill: new ol.style.Fill({
+                color: 'blue',
+              }),
+              stroke: new ol.style.Stroke({
+                color: 'white',
+                width: 3.5,
+              }),
+              offsetY: -15,
+            }),
+          });
+          f.setStyle([styles.Point, styles.LineString, styles.Polygon, labelNormal]);
+        }
+      });
+
+      // setTimeout(() => {
+      //   featuresToLoad[0].setStyle(cs);
+      //   olMap.updateSize();
+      // }, 500);
+    },
+    zoomToChip(data) {
+      this.$store.commit('setSelectedPost', this.post._id); // eslint-disable-line
+      const geojsonFormat = new ol.format.GeoJSON();
+      console.log('zooming to a post feature data:: ', JSON.stringify(data));
+      const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(data));
+      console.log('zooming to a post feature data:: ', featuresToLoad);
+      const g = featuresToLoad[0].getGeometry().getExtent();
+      if (g[0] - g[2] < 500) {
+        g[0] -= 200;
+        g[2] += 200;
+      }
+      if (g[1] - g[3] < 500) {
+        g[1] -= 200;
+        g[3] += 200;
+      }
+      olMap.getView().fit(g, olMap.getSize());
+      // const cs = featuresToLoad[0].getStyle();
+
+      let features = [];
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          features = layer.getSource().getFeatures();
+          if (features.length === 0) {
+            this.explore(this.post);
+          }
+        }
+      });
+      features.forEach((f) => {
+        let message = '';
+        if (f.get('messages').length > 20) {
+          message = `${f.get('messages').substr(0, 20)}...`;
+        } else {
+          message = f.get('messages');
+        }
+        if (data.properties.mongoID === f.getProperties().mongoID) {
           console.log(message);
           const labelSelected = new ol.style.Style({
             text: new ol.style.Text({

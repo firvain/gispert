@@ -87,6 +87,7 @@ export default {
         userFeatures: userFeats,
         collection: this.$store.state.openedTimeline.id, // eslint-disable-line no-underscore-dangle
         replies: [],
+        type: 'new',
       };
       // console.log('this is the post to publish', userPost);
       const url = `${config.url}/posts`;

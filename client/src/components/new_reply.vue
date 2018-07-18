@@ -88,6 +88,7 @@ export default {
         isReplyTo: this.id,
         collection: this.collectionId,
         replies: [],
+        type: 'reply',
       };
       // console.log('this is the post to publish', userPost);
       const url = `${config.url}/posts`;

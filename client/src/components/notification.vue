@@ -89,6 +89,20 @@
 
 
     <v-list-tile-action
+        v-if="notification.type === 'replyToMyPost' ||
+        notification.type === 'newPostInCollection'">
+      <v-list-tile-action-text>{{ notification.action }}</v-list-tile-action-text>
+      <v-btn fab small @click="markAsRead(notification._id)" v-if="notification.read === 0">
+        <v-icon v-if="notification.read === 0"
+          color="orange lighten-1"
+        >warning</v-icon>
+      </v-btn>
+      <v-icon v-if="notification.read === 1"
+        color="green darken-2"
+      >done</v-icon>
+    </v-list-tile-action>
+
+    <v-list-tile-action
         v-if="notification.type === 'unfollowedCollection' ||
         notification.type === 'followedCollection' ||
         notification.type === 'invitationAccepted'">

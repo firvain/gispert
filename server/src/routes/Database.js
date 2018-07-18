@@ -66,10 +66,11 @@ class Database {
 
     notifyPost(notification) {
         return new Promise((resolve, reject) => {
+            console.log('this notification to add in db::', notification);
             this.db.collection('notifications').insertOne(
                 notification, (err, docs) => {
                     if(err) {
-                        console.log('Failed to add notification');
+                        console.log('Failed to add notification:: ', err);
                         reject(err);
                     } else {
                         // console.log('notification added:: ', notification);
@@ -245,12 +246,6 @@ class Database {
                       count:1,
                       posts: { $slice: [ "$posts", 0, 4 ] }
                     }},
-                    // {
-                    //   $skip: start
-                    // },
-                    // {
-                    //   $limit: end
-                    // }
                   ], (err, docs) => {
                    if(err) {
                        reject(err);

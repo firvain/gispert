@@ -57,8 +57,8 @@ router.route('/')
       return id;
     })
     .then((id) => {
-      console.log('sending back the new generated id::', id, req.body.userPost.isReplyTo);
-      if (req.body.userPost.isReplyTo) {
+      console.log('sending back the new generated id::', id);
+      if (req.body.userPost.type === 'reply') {
         database.addReply(req.body.userPost.isReplyTo, id);
         res.json({ id: id, isReplyTo: req.body.userPost.isReplyTo });
         // console.log('the inserted id was :: ', id);
@@ -69,37 +69,34 @@ router.route('/')
       }
       return id;
     })
-    .then((id, creator) => {
-      if (req.body.userPost.isReplyTo !== '') {
-        const creator = database.findRepliedPost(req.body.userPost.isReplyTo);
-        return creator;
+    .then((id) => {
+      if (req.body.userPost.type === 'reply') {
+        const creator = database.findRepliedPost(req.body.userPost.isReplyTo).then((response) => {
+          const notification = {
+            postId: id,
+            collectionId: post.collection,
+            byUser: new ObjectId(post.userId),
+            type: 'replyToMyPost',
+            timestamp: post.timestamp,
+            userCreated: new ObjectId(response.userId),
+            text: post.text,
+            features: featuresIds,
+            read: 0
+          }    
+          console.log('a reply notification:::', notification);
+          console.log('response from find replied post::', response);
+          return notification;
+        }).then((notification) => {
+          console.log('notification::', notification, id);
+          console.log('notifying for reply database');
+          database.notifyPost(notification).then(() => {
+            database.close();
+          });
+        });
       }
-    }).then((creator, notification) => {
-      console.log('creator is::', creator, creator.length);
-      if (creator.length !== 0) {
+      if (req.body.userPost.type === 'new') {
         const notification = {
-          collectionId: post.collection,
-          byUser: new ObjectId(post.userId),
-          type: 'replyToMyPost',
-          timestamp: post.timestamp,
-          userCreated: new ObjectId(creator[0].userId),
-          text: post.text,
-          features: featuresIds,
-          read: 0
-        };
-        console.log('a reply notification:::', notification);
-        return creator, notification;
-      }
-    }).then((notification, creator) => {
-      console.log('creator::', creator, 'notification::', notification);
-      if (notification) {
-        console.log('notifying for reply database');
-        database.notifyPost(notification);
-      }
-      return creator;
-    }).then((creator) => {
-      if(creator === undefined) {
-        const notification = {
+          postId: id,
           collectionId: new ObjectId(req.body.userPost.collection),
           byUser: new ObjectId(req.body.userPost.userId),
           type: 'newPostInCollection',
@@ -109,12 +106,10 @@ router.route('/')
           features: featuresIds,
           read: 0
         };
-        database.notifyPost(notification);
-        // console.log('notification of a reply', notification);
+        database.notifyPost(notification).then(() => {
+          database.close();
+        });
       }
-    })
-    .then(() => {
-      database.close();
     })
     .catch((err) => {
       if (err){
