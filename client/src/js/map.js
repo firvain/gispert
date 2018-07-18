@@ -11,6 +11,8 @@ const mapCenter = [2425483, 4910237];
 
 const bingMapsAerial = new ol.layer.Tile({
   preload: Infinity,
+  visible: false,
+  name: 'bing',
   source: new ol.source.BingMaps({
     key: 'Ap3sskZ5BccP6TvBr0FoLc9orA4_R1uh-8UjpOKYciXL1hNMtAJr_BdxMjTJNkpv',
     imagerySet: 'AerialWithLabels',
@@ -323,6 +325,26 @@ const olMap = new ol.Map({
   interactions: ol.interaction.defaults().extend([dragAndDropInteraction]),
   layers: [
     bingMapsAerial,
+    new ol.layer.Tile({
+      name: 'esri',
+      source: new ol.source.XYZ({
+        attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+            'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
+            'World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+      }),
+    }),
+    // new ol.layer.Tile({
+    //   name: 'here',
+    //   visible: true,
+    //   preload: Infinity,
+    //   source: new ol.source.XYZ({
+    //     url: 'https://{1-4}.{aerial}.maps.cit.api.here.com' +
+    //     '/{maptile}/2.1/maptile/newest/{hybrid.day}/{z}/{x}/{y}/256/png' +
+    //     '?app_id={app_id}&app_code={app_code}',
+    //     attributions: `Map Tiles &copy; ' ${new Date().getFullYear()} '<a href="http://developer.here.com">HERE</a>`,
+    //   }),
+    // }),
     customLayer,
   ],
   // overlays: [overlay],

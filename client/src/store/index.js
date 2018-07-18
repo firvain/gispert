@@ -212,15 +212,19 @@ export default new Vuex.Store({
       state.publicCollections = data;
     },
     deleteprivatecollection(state, id) {
+      console.log('deleting collection::', id);
       let collections = state.privateCollections;
       const toDelete = new Set([id]);
       const restCollections = collections.filter(obj => !toDelete.has(obj._id));
+      state.privateCollections = collections.filter(obj => !toDelete.has(obj._id));
       state.collections = restCollections;
     },
     deletepubliccollection(state, id) {
+      console.log('deleting collection::', id);
       let collections = state.publicCollections;
       const toDelete = new Set([id]);
       const restCollections = collections.filter(obj => !toDelete.has(obj._id));
+      state.publicCollections = collections.filter(obj => !toDelete.has(obj._id));
       state.collections = restCollections;
     },
     editprivatecollection(state, data) {},

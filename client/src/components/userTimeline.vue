@@ -65,7 +65,13 @@ export default {
   },
   watch: {
     '$store.state.openedTimeline': function changed() {
-      olMap.getLayers().getArray()[1].getSource().clear();
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().clear();
+        }
+      });
       this.loadTimeline(this.$store.state.openedTimeline.id);
     },
   },
@@ -122,7 +128,14 @@ export default {
       });
     },
     loadTimeline(timelineId) {
-      olMap.getLayers().getArray()[1].getSource().clear();
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().clear();
+        }
+      });
+
       this.loading = true;
       let url;
       let userID;

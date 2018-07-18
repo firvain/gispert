@@ -286,7 +286,11 @@ export default {
         type: 'FeatureCollection',
         features: post.featureData,
       };
-      // console.log('zooming to a post feature data:: ', JSON.stringify(featureCollection));
+      const allIdsFromFeatureCollection = [];
+      post.featureData.forEach((f) => {
+        allIdsFromFeatureCollection.push(f.properties.mongoID);
+      });
+      console.log('zooming to a post feature data:: ', JSON.stringify(featureCollection));
       const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
       const g = featuresToLoad[0].getGeometry().getExtent();
       if (g[0] - g[2] < 500) {
@@ -300,7 +304,17 @@ export default {
       olMap.getView().fit(g, olMap.getSize());
       // const cs = featuresToLoad[0].getStyle();
 
-      const features = olMap.getLayers().getArray()[1].getSource().getFeatures();
+      let features = [];
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          features = layer.getSource().getFeatures();
+          if (features.length === 0) {
+            this.explore(post);
+          }
+        }
+      });
       features.forEach((f) => {
         let message = '';
         if (f.get('messages').length > 20) {
@@ -308,7 +322,8 @@ export default {
         } else {
           message = f.get('messages');
         }
-        if (f.getProperties().mongoID === featureCollection.features[0].properties.mongoID) {
+        if (allIdsFromFeatureCollection.includes(f.getProperties().mongoID)) {
+          console.log(message);
           const labelSelected = new ol.style.Style({
             text: new ol.style.Text({
               font: 'bold 14px Verdana',
@@ -394,6 +409,8 @@ export default {
         id: collectionId,
         type: 'collection',
         title: this.post.collectionData[0].title,
+        visibility: this.post.collectionData[0].visibility,
+        userCreated: this.post.collectionData[0].user,
       };
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       console.log('explore:: ', collectionId);

@@ -60,7 +60,7 @@ import { mapActions } from 'vuex';
 import thread from '@/components/thread';
 import newPostCollection from '@/components/new_post_collection';
 import config from '../config';
-import olMap from '../js/map';
+// import olMap from '../js/map';
 
 export default {
   props: ['id'],
@@ -102,7 +102,6 @@ export default {
   },
   watch: {
     '$store.state.openedTimeline': function changed() {
-      olMap.getLayers().getArray()[1].getSource().clear();
       this.loadTimeline(this.$store.state.openedTimeline.id);
     },
   },

@@ -177,7 +177,7 @@ router.route('/user')
                   timestamp: Date.now(),
                   read: 0
               });
-              res.status(200).send('OK');
+              res.sendStatus(200);
           }
           db.close();
       });

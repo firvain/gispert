@@ -241,6 +241,7 @@ router.route('/collection')
             console.log('collection id to unfollow:: ', cid);
             var cId = new ObjectID(cid);
             var mid = req.body.data.memberId;
+            var force = req.body.data.force;
             console.log('collection id to unfollow:: ', mid);
             var mId = new ObjectID(mid);
             var userCreated = new ObjectID(req.body.data.userCreated);
@@ -253,14 +254,16 @@ router.route('/collection')
                     { _id: cId },
                     { $pull: { members: mId } }
                 );
-                db.collection('notifications').insertOne({ 
-                    collectionId: cId,
-                    byUser: mId,
-                    type: 'unfollowedCollection',
-                    userCreated: userCreated,
-                    timestamp: Date.now(),
-                    read: 0
-                });
+                if (!force) {
+                    db.collection('notifications').insertOne({ 
+                        collectionId: cId,
+                        byUser: mId,
+                        type: 'unfollowedCollection',
+                        userCreated: userCreated,
+                        timestamp: Date.now(),
+                        read: 0
+                    });
+                }
                 res.status(200).send('OK');
             }
             db.close();

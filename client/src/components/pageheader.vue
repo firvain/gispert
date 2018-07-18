@@ -631,7 +631,13 @@ export default {
       this.$store.dispatch('setUserTimeline', null);
       this.$store.dispatch('setCollectionTimeline', null);
       // this.$store.dispatch('setLiveUsers', null);
-      olMap.getLayers().getArray()[1].getSource().clear();
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().clear();
+        }
+      });
       // this.$store.dispatch('setFeature', null);
       // this.$store.dispatch('addNewPostFeature', null);
       // this.$store.dispatch('removeNewPostFeature', null);

@@ -7,7 +7,7 @@
     <v-list-tile-content v-if="notification.type === 'followedCollection'">
       <v-list-tile-title>{{ $t('message.collectionWasFollowed') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0])">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
@@ -18,7 +18,7 @@
     <v-list-tile-content v-if="notification.type === 'unfollowedCollection'">
       <v-list-tile-title>{{ $t('message.collectionWasUnfollowed') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0])">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
@@ -29,7 +29,7 @@
     <v-list-tile-content v-if="notification.type === 'invitedToCollection'">
       <v-list-tile-title>{{ $t('message.invitedToCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0])">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
@@ -40,7 +40,7 @@
     <v-list-tile-content v-if="notification.type === 'invitationAccepted'">
       <v-list-tile-title>{{ $t('message.invitationToCollectionAccepted') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0])">{{ notification.collection[0].title }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}:
         <a md12 @click="loadUsersTl(notification.user[0]._id)">@{{ notification.user[0].name }}</a>,
@@ -51,7 +51,7 @@
     <v-list-tile-content v-if="notification.type === 'newPostInCollection'">
       <v-list-tile-title>{{ $t('message.newPostInThisCollection') }}</v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0])">{{ notification.collection[0].title }}</a>
         <i><a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a></i>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}:
@@ -68,7 +68,7 @@
       <v-list-tile-title v-else>{{ $t('message.newPostInThisCollection') }}
       </v-list-tile-title>
       <v-list-tile-sub-title class="text--primary">
-        <a md12 @click="loadCollection(notification.collection[0]._id)">{{ notification.collection[0].title }}</a>
+        <a md12 @click="loadCollection(notification.collection[0])">{{ notification.collection[0].title }}</a>
         , <a md12 @click="loadFeatures(notification.features)">{{ notification.text }}</a>
       </v-list-tile-sub-title>
       <v-list-tile-sub-title>{{ $t('message.byUser') }}:
@@ -156,8 +156,11 @@ export default {
   methods: {
     loadCollection(e) {
       const tl = {
-        id: e,
+        id: e._id, // eslint-disable-line no-underscore-dangle
         type: 'collection',
+        title: e.title,
+        visibility: e.visibility,
+        userCreated: e.user,
       };
       console.log('load users tl::', e);
       // const goToPath = `/main/search/collection/${e}`;

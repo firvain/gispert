@@ -68,6 +68,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('inviteToCollection', function handleinvitation(members) {
+      console.log('listened to invitation::', members);
       const receivers = members;
       receivers.forEach(receiver => {
         const toid = userList.filter(user => user.user_id === receiver);

@@ -443,6 +443,11 @@ export default {
     this.$eventHub.$on('openFeaturePosts', (id) => {
       this.loadPostFromFeature(id);
     });
+    this.$options.sockets.removeUserFromCollection = (data) => {
+      console.log('removed from collection', data);
+      this.$store.dispatch('deletePublicCollection', data.collectionId);
+      this.$store.dispatch('deletePrivateCollection', data.collectionId);
+    };
   },
 };
 </script>

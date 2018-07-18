@@ -9,6 +9,10 @@
         <mapTools></mapTools>
       </div>
     </div>
+    <v-container xs3 md3 class="floating-bottom">
+      <v-btn @click="setBasemap('bing')">Aerial</v-btn>
+      <v-btn @click="setBasemap('esri')">Road</v-btn>
+    </v-container>
     <!-- <v-container xs3 md3 class="floating-bottom chat" v-if="currentlySelectedFeature !=='undefined' && currentlySelectedFeature !== null && this.$store.state.isUserLoggedIn"> -->
       <!-- <v-expansion-panel>
         <v-expansion-panel-content>
@@ -158,6 +162,18 @@ export default {
     // },
   },
   methods: {
+    setBasemap(basemap) {
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === basemap) {
+          layer.setVisible(true);
+        }
+        if (layer.getProperties().name !== basemap && layer.getProperties().name !== 'customLayer') {
+          layer.setVisible(false);
+        }
+      });
+    },
     // sendMessage() {
     //   if (this.content !== '') {
     //     const message = {
@@ -424,7 +440,14 @@ export default {
   watch: {
     '$store.state.feature': function handle() {
       console.log('new feature selection');
-      const features = olMap.getLayers().getArray()[1].getSource().getFeatures();
+      let allLayers = [];
+      let features = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          features = layer.getSource().getFeatures();
+        }
+      });
       features.forEach((f) => {
         let message = '';
         if (f.get('messages').length > 20) {
@@ -509,6 +532,16 @@ export default {
     //     console.log('not undefined');
     //   }
     // },
+    '$store.state.openedTimeline': function changed() {
+      console.log('opened timeline changed so clear map features');
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().clear();
+        }
+      });
+    },
   },
   mounted() {
     olMap.setTarget('mapDiv');
@@ -601,10 +634,10 @@ export default {
 
   .floating-bottom {
     position: absolute;
-    left: 55%;
+    left: 35%;
     bottom: 2%;
-    width: 400px;
-    background-color: white;
+    width: 200px;
+    // background-color: white;
     overflow-y: auto;
   }
 

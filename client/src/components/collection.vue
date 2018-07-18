@@ -241,12 +241,13 @@ export default {
         e._id !== id); // eslint-disable-line no-underscore-dangle
       this.loading = true;
       const url = `${config.url}/collections/unfollow`;
-      // console.log('id to delete:: ', id);
       const data = {
         memberId: id,
         collectionId: this.collection._id, // eslint-disable-line no-underscore-dangle
         userCreated: this.collection.user,
+        force: true,
       };
+      // this.$socket.emit('removeUserFromCollection', data);
       axios.post(url, { data }, {
         headers: { 'x-access-token': this.$store.state.token },
       }).then(() => {
@@ -292,14 +293,14 @@ export default {
         headers: { 'x-access-token': this.$store.state.token },
       }).then(() => {
         this.loading = false;
-        if (this.collection.visibility === 'private') {
-          this.$eventHub.$emit('refreshprivatecollections', 'refresh');
-        }
-        if (this.collection.visibility === 'public') {
-          this.$store.dispatch('deletePrivateCollection', id);
-          this.$store.dispatch('deletePublicCollection', id);
-          this.$eventHub.$emit('refreshpubliccollections', 'refresh');
-        }
+        // if (this.collection.visibility === 'private') {
+        //   this.$eventHub.$emit('refreshprivatecollections', 'refresh');
+        // }
+        // if (this.collection.visibility === 'public') {
+        this.$store.dispatch('deletePrivateCollection', id);
+        this.$store.dispatch('deletePublicCollection', id);
+          // this.$eventHub.$emit('refreshpubliccollections', 'refresh');
+        // }
       });
     },
     unfollowCollection(id) {
@@ -338,8 +339,11 @@ export default {
       };
       axios.post(url, { data }, {
         headers: { 'x-access-token': this.$store.state.token },
-      }).then(() => {
-        this.$socket.$emit('inviteToCollection', data.members);
+      }).then((response) => {
+        if (response.status === 200) {
+          console.log('emitting invitation to members::', data);
+          this.$socket.emit('inviteToCollection', ids);
+        }
       });
     },
     loadMembersOfThisCollection(id) {
