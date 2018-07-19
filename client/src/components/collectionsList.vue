@@ -31,7 +31,13 @@
             >
               <collection v-if="$store.state.openedTimeline === null || openedCollection === collection._id" :collection='collection'></collection>
             </v-list>
-            <p v-if="searchResultsCollections.length == 0 && $store.state.isUserLoggedIn">{{ $t('message.noResults')}}
+            <v-list
+              v-for="thread in postsQueryResult"
+              :key="thread._id"
+            >
+              <thread v-if="$store.state.openedTimeline === null || openedCollection === collection._id" :thread='thread'></thread>
+            </v-list>
+            <p v-if="searchResultsCollections.length === 0 && postsQueryResult.length === 0">{{ $t('message.noResults')}}
             </p>
           </v-container>
         </v-flex>
@@ -193,6 +199,7 @@ export default {
       searchResultsCollections: [],
       postContent: null,
       openThread: null,
+      postsQueryResult: null,
     };
   },
   components: {
@@ -315,6 +322,20 @@ export default {
       }).then((response) => {
         this.searchResultsCollections = response.data;
         console.log('public collections fetched:: ', this.publicCollections);
+      }).then(() => {
+        this.loading = false;
+        // this.$store.dispatch('setPublicCollections', this.publicCollections);
+      });
+      const purl = `${config.url}/posts/search`;
+      axios.get(purl, {
+        params: {
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          keyword: this.searchCollections,
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        this.postsQueryResult = response.data;
+        console.log('posts found:: ', this.postsQueryResult);
       }).then(() => {
         this.loading = false;
         // this.$store.dispatch('setPublicCollections', this.publicCollections);

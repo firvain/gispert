@@ -569,7 +569,7 @@ router.route('/search')
     var start = parseInt(req.query.start);
     var end = parseInt(req.query.end);
     var userId = req.query.userId;
-    var searchTerm = req.query.term;
+    var searchTerm = req.query.keyword;
     var regexValue = '.*' + searchTerm + '.*';
     console.log(start, end, userId, searchTerm, regexValue);
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
@@ -652,12 +652,12 @@ router.route('/search')
               posts: { $slice: ["$posts", 0, 4] }
             }
           },
-          {
-            $skip: start
-          },
-          {
-            $limit: end
-          }
+          // {
+          //   $skip: start
+          // },
+          // {
+          //   $limit: end
+          // }
         ]);
         db.close();
       })
