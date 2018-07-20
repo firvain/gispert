@@ -199,6 +199,14 @@ export default {
         }
         this.$store.dispatch('setCollectionTimeline', response.data);
       }).then(() => {
+        const allLayers = olMap.getLayers().getArray();
+        allLayers.forEach((layer) => {
+          if (layer.getProperties().name === 'customLayer') {
+            console.log('extent::', layer.getSource().getExtent());
+            olMap.getView().fit(layer.getSource().getExtent(), olMap.getSize());
+          }
+        });
+
         this.loading = false;
       });
       return true;
