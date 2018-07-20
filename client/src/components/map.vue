@@ -450,10 +450,14 @@ export default {
       });
       features.forEach((f) => {
         let message = '';
-        if (f.get('messages').length > 20) {
+        if (f.get('messages') && f.get('messages').length > 20) {
           message = `${f.get('messages').substr(0, 20)}...`;
-        } else {
+        }
+        if (f.get('messages') && f.get('messages').length < 20) {
           message = f.get('messages');
+        }
+        if (f.get('messages') === undefined) {
+          message = f.get('name');
         }
         if (this.$store.state.feature && f.getProperties().mongoID === this.$store.state.feature.get('mongoID')) {
           const labelSelected = new ol.style.Style({
@@ -533,14 +537,29 @@ export default {
     //   }
     // },
     '$store.state.openedTimeline': function changed() {
-      console.log('opened timeline changed so clear map features');
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          layer.getSource().clear();
-        }
-      });
+      console.log('opened timeline changed so clear map features:: ', this.$store.state.openedTimeline);
+      // this.$store.state.openedTimeline !== this.$store.state.previousOpenedTimeline
+      if (this.$store.state.openedTimeline === null) {
+        let allLayers = [];
+        const geojsonFormat = new ol.format.GeoJSON();
+        allLayers = olMap.getLayers().getArray();
+        allLayers.forEach((layer) => {
+          if (layer.getProperties().name === 'customLayer') {
+            layer.getSource().clear();
+            this.$store.state.timeline.forEach((thread) => {
+              thread.posts.forEach((post) => {
+                const featureCollection = {
+                  type: 'FeatureCollection',
+                  features: post.featureData,
+                };
+                layer.getSource().addFeatures(
+                  geojsonFormat.readFeatures(JSON.stringify(featureCollection)),
+                );
+              });
+            });
+          }
+        });
+      }
     },
   },
   mounted() {

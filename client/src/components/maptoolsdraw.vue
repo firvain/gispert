@@ -31,6 +31,7 @@ import olMap from '../js/map';
 
 export default {
   name: 'mapTools',
+  props: ['idtomatch', 'replyid'],
   components: {
     userSelector,
   },
@@ -111,6 +112,17 @@ export default {
       }
     },
     setDraw(type) {
+      if (this.idtomatch === 'reply') {
+        this.$store.commit('addingToPost', { type: 'reply', id: this.replyid });
+      }
+      if (this.idtomatch === 'home') {
+        this.$store.commit('addingToPost', { type: 'home', id: 'home' });
+      }
+      if (this.idtomatch === 'collection') {
+        // console.log({ type: 'collection', id: this.$store.state.openedTimeline.id });
+        this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline.id });
+      }
+
       olMap.getInteractions().forEach((interaction) => {
         if (type === 'Point') {
           this.toolColors = ['green', 'white', 'white'];

@@ -26,6 +26,7 @@ export default new Vuex.Store({
     customMaps: [],
     notifications: [],
     openedTimeline: null,
+    previousOpenedTimeline: null,
     liveUsersList: null,
     activeMapTool: 'selectFeatures',
     activeTab: 'explore',
@@ -271,6 +272,7 @@ export default new Vuex.Store({
       this.state.privateCollections.push(data);
     },
     setOpenedCustomTimeline(state, data) {
+      this.state.previousOpenedTimeline = this.state.openedTimeline;
       this.state.openedTimeline = data;
     },
     addPostToTimeline(store, data) {

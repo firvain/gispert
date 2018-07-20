@@ -85,19 +85,19 @@ export default {
         this.loading = false;
       });
     },
-    toggle_new_post() {
-      console.log('toggling timeline new post');
-      this.newPost = !this.newPost;
-      if (this.newPost === false) {
-        this.newPostText = this.$t('message.newPost');
-        this.newPostColor = 'blue-grey';
-        this.$store.commit('setActiveMapTool', 'selectFeatures');
-      } else {
-        this.$store.commit('setActiveMapTool', 'drawFeatures');
-        this.newPostText = this.$t('message.cancel');
-        this.newPostColor = 'red';
-      }
-    },
+    // toggle_new_post() {
+    //   console.log('toggling timeline new post');
+    //   this.newPost = !this.newPost;
+    //   if (this.newPost === false) {
+    //     this.newPostText = this.$t('message.newPost');
+    //     this.newPostColor = 'blue-grey';
+    //     this.$store.commit('setActiveMapTool', 'selectFeatures');
+    //   } else {
+    //     this.$store.commit('setActiveMapTool', 'drawFeatures');
+    //     this.newPostText = this.$t('message.cancel');
+    //     this.newPostColor = 'red';
+    //   }
+    // },
     load_first_page() {
       this.loading = true;
       let url;

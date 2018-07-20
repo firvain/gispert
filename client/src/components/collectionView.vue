@@ -52,7 +52,7 @@ import { mapActions } from 'vuex';
 import thread from '@/components/thread';
 import newPostCollection from '@/components/new_post_collection';
 import config from '../config';
-// import olMap from '../js/map';
+import olMap from '../js/map';
 
 export default {
   props: ['id'],
@@ -90,7 +90,9 @@ export default {
   },
   watch: {
     '$store.state.openedTimeline': function changed() {
-      this.loadTimeline(this.$store.state.openedTimeline.id);
+      if (this.$store.state.openedTimeline !== this.$store.state.previousOpenedTimeline) {
+        this.loadTimeline(this.$store.state.openedTimeline.id);
+      }
     },
   },
   methods: {
@@ -148,20 +150,20 @@ export default {
         this.loading = false;
       });
     },
-    toggle_new_post() {
-      console.log('toggling collection new post');
-      this.newPost = !this.newPost;
-      if (this.newPost === false) {
-        this.newPostText = this.$t('message.newPost');
-        this.newPostColor = 'blue-grey';
-        this.$store.commit('setActiveMapTool', 'selectFeatures');
-      } else {
-        this.$store.commit('setActiveMapTool', 'drawFeatures');
-        this.newPostText = this.$t('message.cancel');
-        this.newPostColor = 'red';
-      }
-    },
-    loadTimeline(timelineId) {
+    // toggle_new_post() {
+    //   console.log('toggling collection new post');
+    //   this.newPost = !this.newPost;
+    //   if (this.newPost === false) {
+    //     this.newPostText = this.$t('message.newPost');
+    //     this.newPostColor = 'blue-grey';
+    //     this.$store.commit('setActiveMapTool', 'selectFeatures');
+    //   } else {
+    //     this.$store.commit('setActiveMapTool', 'drawFeatures');
+    //     this.newPostText = this.$t('message.cancel');
+    //     this.newPostColor = 'red';
+    //   }
+    // },
+    async loadTimeline(timelineId) {
       console.log('loading collection view id::', this.id);
       this.loading = true;
       let url;
@@ -199,6 +201,7 @@ export default {
       }).then(() => {
         this.loading = false;
       });
+      return true;
     },
     unfollowCollection(id) {
       console.log('id to unfollow:: ', id);
@@ -239,9 +242,24 @@ export default {
         // console.log('mark as followed and notify user');
       });
     },
+    async clearMap() {
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().clear();
+        }
+      });
+      return true;
+    },
   },
   mounted() {
-    this.loadTimeline(this.id);
+    this.clearMap().then(() => {
+      this.$store.dispatch('setCollectionTimeline', []);
+      this.loadTimeline(this.id).then(() => {
+        console.log('loaded');
+      });
+    });
     this.$eventHub.$on('openCollection', (id) => {
       console.log('open openCollection from notification openCollection:: ', id);
       this.loadTimeline(id);
