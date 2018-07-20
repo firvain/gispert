@@ -12,15 +12,7 @@
           <v-icon color="green lighten-1">visibility</v-icon>
         </v-btn>
       </h5>
-      <v-btn md8 color="secondary" dark
-        block
-        large
-        v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post" v-if="$store.state.isUserLoggedIn === true"
-      >
-        {{newPostText}}
-        <v-icon right dark>insert_comment</v-icon>
-      </v-btn>
-      <newPostCollection v-if="newPost===true && $store.state.isUserLoggedIn === true">
+      <newPostCollection v-if="$store.state.isUserLoggedIn === true">
       </newPostCollection>
       <v-flex
         md12
@@ -69,10 +61,6 @@ export default {
     return {
       startPage: 0,
       limitPage: 50,
-      newPost: false,
-      newPostColor: 'blue-grey',
-      newPostTextColor: 'white--text darken-1',
-      newPostText: this.$t('message.newPostInThisCollection'),
       loading: false,
       endOfPosts: false,
       title: '',

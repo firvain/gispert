@@ -1,6 +1,13 @@
 <template>
   <v-layout>
-    <v-flex xs12 sm12>
+    <v-btn block slot="activator" color="primary" dark large
+      @click="showNewPost = true"
+      v-if="$store.state.isUserLoggedIn === true && !showNewPost"
+    >
+      {{ $t('message.newPost')}}
+      <v-icon right dark>insert_comment</v-icon>
+    </v-btn>
+    <v-flex xs12 sm12 v-show="showNewPost">
       <v-card>
         <v-flex>
           <v-text-field
@@ -17,21 +24,25 @@
           ></v-text-field>
             <!-- :hint="$t('message.youMayWriteAndSketch')" -->
         </v-flex>
-        <mapTools v-if="$store.state.addingToPost && $store.state.addingToPost.type === idToMatch"></mapTools>
+        <mapTools></mapTools>
         <v-flex v-if="drawnFeatures !== undefined">
           <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')"
             @click='zoomToChip(f)' @input="remove(f.get('mongoID'))">
             {{ f.getGeometry().getType() }}
           </v-chip>
         </v-flex>
-
-        <v-card-actions>
-          <v-flex xs3 sm6 md6>
-            <v-btn flat class="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}
+        <v-layout>
+          <v-flex md6>
+            <v-btn block color="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}
               <v-icon right dark>send</v-icon>
             </v-btn>
           </v-flex>
-        </v-card-actions>
+          <v-flex md6>
+            <v-btn block color="error" @click="cancelPost">{{ $t('message.cancel') }}
+              <v-icon right dark>cancel</v-icon>
+            </v-btn>
+          </v-flex>
+        </v-layout>
       </v-card>
       <v-snackbar
         :timeout=5000
@@ -59,6 +70,7 @@ export default {
     snackbarNewPost: false,
     snackbarColor: '',
     showingMapTool: false,
+    showNewPost: false,
   }),
   components: {
     mapTools,
@@ -67,6 +79,35 @@ export default {
     console.log('new post for reply mounted');
   },
   methods: {
+    cancelPost() {
+      this.postText = '';
+      this.selectCollection = '';
+      this.showNewPost = false;
+      const newPostStorage = this.$store.state.storage.filter(obj =>
+        obj.id === this.$store.state.openedTimeline.id);
+      const newPostFeatures = newPostStorage[0].features;
+      const newPostFeaturesIds = [];
+      newPostFeatures.forEach((f) => {
+        newPostFeaturesIds.push(f.get('mongoID'));
+      });
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().forEachFeature((feature) => {
+            if (newPostFeaturesIds.includes(feature.get('mongoID'))) {
+              layer.getSource().removeFeature(feature);
+            }
+          });
+        }
+      });
+      olMap.getInteractions().forEach((interaction) => {
+        if (interaction instanceof ol.interaction.Select) {
+          interaction.getFeatures().clear();
+        }
+      });
+      this.$store.commit('clearNewPostFeatures', this.$store.state.openedTimeline.id);
+    },
     publishPost() {
       console.log('PUBLISH');
       const textToPost = this.postText;

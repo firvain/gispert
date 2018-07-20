@@ -4,7 +4,7 @@
       <!-- <v-card @newreply="new_post_sent(arguments[0])"> -->
       <v-card>
         <v-card-title primary-title>
-          <v-icon v-if="postType === 'reply'">reply</v-icon>
+          <v-icon v-if="postType === 'reply'" color='primary' x-large>forum</v-icon>
           <v-flex class="text-xs-left">
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
@@ -32,7 +32,7 @@
                 color="green"
                 @click="zoom(post)">
                 <!-- {{ $t("message.showOnMap") }} -->
-                <v-icon large color='green'>language</v-icon>
+                <v-icon large color='green'>location_on</v-icon>
               </v-btn>
               <span>{{ $t("message.showOnMapTooltip") }}</span>
             </v-tooltip>
@@ -42,7 +42,7 @@
                 v-bind:color="answerPostColor"
                 @click="toggle_answer"
                 v-if="$store.state.isUserLoggedIn === true && postType === 'original'">
-                <v-icon large :color="answerPostTextColor">insert_comment</v-icon>
+                <v-icon large :color="answerPostTextColor">chat</v-icon>
               </v-btn>
               <span>{{ $t("message.replyTooltip") }}!</span>
             </v-tooltip>
@@ -107,7 +107,8 @@
         <newReply v-if="answerPost === true"
           :id="post.isReplyTo"
           :collectionId="post.collectionData[0]._id"
-          :collectionTitle="post.collectionData[0].title">
+          :collectionTitle="post.collectionData[0].title"
+          v-on:closeReply = "toggle_answer">
         </newReply>
       </v-card>
     </v-flex>
@@ -147,7 +148,7 @@ export default {
   name: 'post',
   data: () => ({
     answerPost: false,
-    answerPostColor: 'green',
+    answerPostColor: 'blue',
     answerPostTextColor: 'white--text darken-1',
     newPostInfo: '',
     snackbarNewPost: false,
@@ -456,7 +457,7 @@ export default {
       this.answerPost = !this.answerPost;
       if (this.answerPost === false) {
         // this.answerPostText = this.$t('message.reply');
-        this.answerPostColor = 'green';
+        this.answerPostColor = 'blue';
         this.$store.commit('setActiveMapTool', 'selectFeatures');
       } else {
         // this.answerPostText = this.$t('message.cancel');

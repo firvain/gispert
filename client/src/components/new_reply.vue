@@ -24,14 +24,18 @@
             {{ f.getGeometry().getType() }}
           </v-chip>
         </v-flex>
-
-        <v-card-actions>
-          <v-flex xs3 sm6 md6>
-            <v-btn flat class="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}
+        <v-layout>
+          <v-flex md6>
+            <v-btn block color="green white--text darken-1" @click="publishPost">{{ $t('message.publish') }}
               <v-icon right dark>send</v-icon>
             </v-btn>
           </v-flex>
-        </v-card-actions>
+          <v-flex md6>
+            <v-btn block color="error" @click="cancelPost">{{ $t('message.cancel') }}
+              <v-icon right dark>cancel</v-icon>
+            </v-btn>
+          </v-flex>
+        </v-layout>
       </v-card>
       <v-snackbar
         :timeout=5000
@@ -66,6 +70,34 @@ export default {
     console.log('new reply mounted');
   },
   methods: {
+    cancelPost() {
+      this.postText = '';
+      this.selectCollection = '';
+      this.$emit('closeReply');
+      const newPostStorage = this.$store.state.storage.filter(obj => obj.id === this.id);
+      const newPostFeatures = newPostStorage[0].features;
+      const newPostFeaturesIds = [];
+      newPostFeatures.forEach((f) => {
+        newPostFeaturesIds.push(f.get('mongoID'));
+      });
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().forEachFeature((feature) => {
+            if (newPostFeaturesIds.includes(feature.get('mongoID'))) {
+              layer.getSource().removeFeature(feature);
+            }
+          });
+        }
+      });
+      olMap.getInteractions().forEach((interaction) => {
+        if (interaction instanceof ol.interaction.Select) {
+          interaction.getFeatures().clear();
+        }
+      });
+      this.$store.commit('clearNewPostFeatures', this.id);
+    },
     publishPost() {
       console.log('PUBLISH');
       const textToPost = this.postText;

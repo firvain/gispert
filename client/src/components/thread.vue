@@ -11,12 +11,12 @@
     </v-flex>
     <v-layout>
       <v-flex xs6 sm6 md6>
-        <v-btn round color="white" v-if="thread.posts.length > 1" @click="showMoreReplies = !showMoreReplies">
+        <v-btn block color="primary" v-if="thread.posts.length > 1" @click="showMoreReplies = !showMoreReplies">
           {{ $t('message.viewReplies')}}
         </v-btn>
       </v-flex>
       <v-flex xs6 sm6 md6>
-        <v-btn round color="white" v-if="thread.posts.length < thread.count && showMoreReplies" @click='loadMoreReplies'>
+        <v-btn block color="primary" v-if="thread.posts.length < thread.count && showMoreReplies" @click='loadMoreReplies'>
           {{ $t('message.loadMore')}}
           <v-progress-circular indeterminate color="primary" v-if='loadingReplies'></v-progress-circular>
         </v-btn>

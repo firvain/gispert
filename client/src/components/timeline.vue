@@ -1,17 +1,6 @@
 <template>
     <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0" id="timeline">
-      <v-tooltip bottom>
-        <v-btn slot="activator" block color="secondary" dark
-          width="50px"
-          large
-          v-bind:class="[newPostColor, newPostTextColor]" @click="toggle_new_post"  v-if="$store.state.isUserLoggedIn === true"
-        >
-          {{newPostText}}
-          <v-icon right dark>insert_comment</v-icon>
-        </v-btn>
-        <span>{{ $t('message.newPostHint')}}!!!</span>
-      </v-tooltip>
-      <newPost v-if="newPost===true && $store.state.isUserLoggedIn === true"></newPost>
+      <newPost v-if="$store.state.isUserLoggedIn === true"></newPost>
       <v-flex
         md12
         v-for="thread in $store.state.timeline"
@@ -49,10 +38,6 @@ export default {
       explore_estate: null,
       startPage: 0,
       limitPage: 50,
-      newPost: false,
-      newPostColor: 'blue-grey',
-      newPostTextColor: 'white--text darken-1',
-      newPostText: this.$t('message.newPost'),
       loading: false,
       endOfPosts: false,
     };
