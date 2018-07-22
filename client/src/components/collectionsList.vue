@@ -141,7 +141,7 @@
     </v-btn>
     <collectionView
       v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'collection'"
-      :id="$store.state.openedTimeline.id">
+      :collection="$store.state.openedTimeline">
     </collectionView>
     <userTimeline
       v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'timeline'"

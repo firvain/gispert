@@ -9,7 +9,7 @@
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
             {{ $t("message.inCollection")}}:&nbsp;
-            <a md12 @click="exploreCollection(post.collectionData[0]._id)" v-if="post.collectionData">
+            <a md12 @click="exploreCollection(post.collectionData[0])" v-if="post.collectionData">
               {{post.collectionData[0].title}}
             </a>,&nbsp;
             <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
@@ -41,7 +41,7 @@
                 fab small outline
                 v-bind:color="answerPostColor"
                 @click="toggle_answer"
-                v-if="$store.state.isUserLoggedIn === true && postType === 'original'">
+                v-if="$store.state.isUserLoggedIn === true && postType === 'original' && post.collectionData[0].isEditor">
                 <v-icon large :color="answerPostTextColor">chat</v-icon>
               </v-btn>
               <span>{{ $t("message.replyTooltip") }}!</span>
@@ -488,16 +488,17 @@ export default {
       this.$store.commit('setActiveTab', 'explore');
       // this.$router.push({ path: `/main/search/usertimeline/${userId}` });
     },
-    exploreCollection(collectionId) {
+    exploreCollection(collection) {
       const tl = {
-        id: collectionId,
+        id: collection._id, // eslint-disable-line no-underscore-dangle
         type: 'collection',
-        title: this.post.collectionData[0].title,
-        visibility: this.post.collectionData[0].visibility,
-        userCreated: this.post.collectionData[0].user,
+        title: collection.title,
+        visibility: collection.visibility,
+        userCreated: collection.user,
+        isEditor: collection.isEditor,
       };
       this.$store.dispatch('setOpenedCustomTimeline', tl);
-      console.log('explore:: ', collectionId);
+      console.log('explore:: ', collection.id);
       this.$store.commit('setActiveTab', 'explore');
       // this.$router.push({ path: `/main/search/collection/${collectionId}` });
     },

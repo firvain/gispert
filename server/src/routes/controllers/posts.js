@@ -157,11 +157,45 @@ router.route('/all')
                 ]}
             }
          },
+          "editors": "$collectionData.editors",
           "post.userName": "$userName",
           "post.userId": "$userId",
           "post.timestamp": "$timestamp",
           "post.text": "$text"
         }},
+        {
+          $project: {
+            "post._id": 1,
+            "post.isReplyTo": 1,
+            "post.replies": 1,
+            "post.featureData": 1,
+            "post.collectionData._id": 1,
+            "post.collectionData.description": 1,
+            "post.collectionData.title": 1,
+            "post.collectionData.user": 1,
+            "post.collectionData.username": 1,
+            "post.collectionData.visibility": 1,
+            "post.collectionData.members": 1,
+            "editors": 1,
+            "post.collectionData.isEditor": {
+              $cond: {
+                if: {
+                  $or: [
+                    { $in: [[ObjectId(userId)], "$editors"] },
+                    { $eq: [userId, "$post.userId"] },
+                    { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
+                  ]
+                },
+                then: true,
+                else: false
+              }
+            },
+            "post.userName": 1,
+            "post.userId": 1,
+            "post.timestamp": 1,
+            "post.text": 1
+          }
+        },
         {
           $match: {'post.collectionData': { $ne: [] }}
         },
@@ -255,10 +289,44 @@ router.route('/replies')
                 ] }
               }
             },
+            "editors": "$collectionData.editors",
             "post.userName": "$userName",
             "post.userId": "$userId",
             "post.timestamp": "$timestamp",
             "post.text": "$text"
+          }
+        },
+        {
+          $project: {
+            "post._id": 1,
+            "post.isReplyTo": 1,
+            "post.replies": 1,
+            "post.featureData": 1,
+            "post.collectionData._id": 1,
+            "post.collectionData.description": 1,
+            "post.collectionData.title": 1,
+            "post.collectionData.user": 1,
+            "post.collectionData.username": 1,
+            "post.collectionData.visibility": 1,
+            "post.collectionData.members": 1,
+            "editors": 1,
+            "post.collectionData.isEditor": {
+              $cond: {
+                if: {
+                  $or: [
+                    { $in: [[ObjectId(userId)], "$editors"] },
+                    { $eq: [userId, "$post.userId"] },
+                    { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
+                  ]
+                },
+                then: true,
+                else: false
+              }
+            },
+            "post.userName": 1,
+            "post.userId": 1,
+            "post.timestamp": 1,
+            "post.text": 1
           }
         },
         {
@@ -372,7 +440,41 @@ router.route('/id')
                   { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
                 ] }
               }
-            }
+            },
+            "editors": "$collectionData.editors"
+          }
+        },
+        {
+          $project: {
+            "post._id": 1,
+            "post.isReplyTo": 1,
+            "post.replies": 1,
+            "post.featureData": 1,
+            "post.collectionData._id": 1,
+            "post.collectionData.description": 1,
+            "post.collectionData.title": 1,
+            "post.collectionData.user": 1,
+            "post.collectionData.username": 1,
+            "post.collectionData.visibility": 1,
+            "post.collectionData.members": 1,
+            "editors": 1,
+            "post.collectionData.isEditor": {
+              $cond: {
+                if: {
+                  $or: [
+                    { $in: [[ObjectId(userId)], "$editors"] },
+                    { $eq: [userId, "$post.userId"] },
+                    { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
+                  ]
+                },
+                then: true,
+                else: false
+              }
+            },
+            "post.userName": 1,
+            "post.userId": 1,
+            "post.timestamp": 1,
+            "post.text": 1
           }
         },
         {
@@ -448,10 +550,44 @@ router.route('/person')
                     ]}
                 }
               },
+              "editors": "$collectionData.editors",
               "post.userName": "$userName",
               "post.userId": "$userId",
               "post.timestamp": "$timestamp",
               "post.text": "$text"
+            }
+          },
+          {
+            $project: {
+              "post._id": 1,
+              "post.isReplyTo": 1,
+              "post.replies": 1,
+              "post.featureData": 1,
+              "post.collectionData._id": 1,
+              "post.collectionData.description": 1,
+              "post.collectionData.title": 1,
+              "post.collectionData.user": 1,
+              "post.collectionData.username": 1,
+              "post.collectionData.visibility": 1,
+              "post.collectionData.members": 1,
+              "editors": 1,
+              "post.collectionData.isEditor": {
+                $cond: {
+                  if: {
+                    $or: [
+                      { $in: [[ObjectId(userId)], "$editors"] },
+                      { $eq: [userId, "$post.userId"] },
+                      { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
+                    ]
+                  },
+                  then: true,
+                  else: false
+                }
+              },
+              "post.userName": 1,
+              "post.userId": 1,
+              "post.timestamp": 1,
+              "post.text": 1
             }
           },
           {
@@ -613,10 +749,44 @@ router.route('/search')
                   }
                 }
               },
+              "editors": "$collectionData.editors",
               "post.userName": "$userName",
               "post.userId": "$userId",
               "post.timestamp": "$timestamp",
               "post.text": "$text"
+            }
+          },
+          {
+            $project: {
+              "post._id": 1,
+              "post.isReplyTo": 1,
+              "post.replies": 1,
+              "post.featureData": 1,
+              "post.collectionData._id": 1,
+              "post.collectionData.description": 1,
+              "post.collectionData.title": 1,
+              "post.collectionData.user": 1,
+              "post.collectionData.username": 1,
+              "post.collectionData.visibility": 1,
+              "post.collectionData.members": 1,
+              "editors": 1,
+              "post.collectionData.isEditor": {
+                $cond: {
+                  if: {
+                    $or: [
+                      { $in: [[ObjectId(userId)], "$editors"] },
+                      { $eq: [userId, "$post.userId"] },
+                      { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
+                    ]
+                  },
+                  then: true,
+                  else: false
+                }
+              },
+              "post.userName": 1,
+              "post.userId": 1,
+              "post.timestamp": 1,
+              "post.text": 1
             }
           },
           {

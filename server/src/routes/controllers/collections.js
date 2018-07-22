@@ -8,34 +8,64 @@ var config = require('../../config');
 
 router.route('/')
   .get(function getcollections(req, res) {
-      MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-          var userId = req.query.userId;
-          // console.log('get type:: ', type);
-          var collection = db.collection('collections');
-          if (err) {
-              console.log(err);
-          }
-          if (userId) {
-              collection.find({ $or: [
-                  {$and: [
-                      { visibility: 'private' }, 
-                      { user: ObjectID(userId) }
-                  ]},
-                  {$and: [
-                    { visibility: 'private' }, 
+    var userId = req.query.userId;
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+        var collection = db.collection('collections');
+        return collection.aggregate([
+          {
+            $match: {
+              $or: [
+                {
+                  $and: [
+                    { visibility: 'private' },
+                    { user: ObjectID(userId) }
+                  ]
+                },
+                {
+                  $and: [
+                    { visibility: 'private' },
                     { members: ObjectID(userId) }
-                  ]},
-                ]}, {}).toArray(function handleCursor(error, docs) {
-                  // console.log(docs);
-                  if (err) {
-                      res.sendStatus(500);
-                      console.log(error);
-                  } else {
-                      res.send(docs);
-                      db.close();
-                  }
-              });
+                  ]
+                },
+              ]
+            }
+          },
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+              description: 1,
+              visibility: 1,
+              user: 1,
+              userName: 1,
+              members: 1,
+              isEditor: {
+                $cond: {
+                  if: {
+                    $or: [
+                      { $eq: [ObjectID(userId), "$editors"] },
+                      { $eq: [ObjectID(userId), "$user"] }
+                    ]
+                  },
+                  then: true,
+                  else: false
+                }
+              }
+            }
           }
+
+        ]);
+        db.close();
+      })
+      .then(function (cursor) {
+        return cursor.toArray();
+      })
+      .then(function (content) {
+        res.status(200).json(content);
+      })
+      .catch(function (err) {
+        throw err;
       });
   })
   .post(function setcollection(req, res) {
@@ -113,11 +143,45 @@ router.route('/collection')
                       "post.replies": "$replies",
                       "post.featureData": "$featureData",
                       "post.collectionData": "$collectionData",
+                      "editors": "$collectionData.editors",
                       "post.userName": "$userName",
                       "post.userId": "$userId",
                       "post.timestamp": "$timestamp",
                       "post.text": "$text"
                   }
+              },
+              {
+                $project: {
+                  "post._id": 1,
+                  "post.isReplyTo": 1,
+                  "post.replies": 1,
+                  "post.featureData": 1,
+                  "post.collectionData._id": 1,
+                  "post.collectionData.description": 1,
+                  "post.collectionData.title": 1,
+                  "post.collectionData.user": 1,
+                  "post.collectionData.username": 1,
+                  "post.collectionData.visibility": 1,
+                  "post.collectionData.members": 1,
+                  "editors": 1,
+                  "post.collectionData.isEditor": {
+                    $cond: {
+                      if: {
+                        $or: [
+                          { $in: [[ObjectID(userId)], "$editors"] },
+                          { $eq: [userId, "$post.userId"] },
+                          { $eq: [ObjectID(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
+                        ]
+                      },
+                      then: true,
+                      else: false
+                    }
+                  },
+                  "post.userName": 1,
+                  "post.userId": 1,
+                  "post.timestamp": 1,
+                  "post.text": 1
+                }
               },
               {
                 $match: {
@@ -348,5 +412,48 @@ router.route('/members')
       });
     });
 
+
+
+router.route('/setEditor')
+  .post(function setuser(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+        const collectionId = req.query.collectionId;
+        const userId = req.query.userId;
+        var collection = db.collection('collections');
+
+        return collection.update(
+          { _id: ObjectID(collectionId) },
+          { editors: { $push: ObjectID(userId) } } );
+        db.close();
+      })
+      .then(() => {
+        res.sendStatus(200);
+      })
+      .catch(function (err) {
+        throw err;
+      });
+  });
+
+router.route('/removeEditor')
+  .post(function setuser(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+        const collectionId = req.query.collectionId;
+        const userId = req.query.userId;
+        var collection = db.collection('collections');
+
+        return collection.update(
+          { _id: ObjectID(collectionId) },
+          { editors: { $pull: ObjectID(userId) } });
+        db.close();
+      })
+      .then(() => {
+        res.sendStatus(200);
+      })
+      .catch(function (err) {
+        throw err;
+      });
+  });
 
 module.exports = router;

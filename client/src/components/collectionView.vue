@@ -12,7 +12,7 @@
           <v-icon color="green lighten-1">visibility</v-icon>
         </v-btn>
       </h5>
-      <newPostCollection v-if="$store.state.isUserLoggedIn === true">
+      <newPostCollection v-if="$store.state.isUserLoggedIn === true && collection.isEditor === true">
       </newPostCollection>
       <v-flex
         md12
@@ -55,7 +55,7 @@ import config from '../config';
 import olMap from '../js/map';
 
 export default {
-  props: ['id'],
+  props: ['collection'],
   name: 'timeline',
   data() {
     return {
@@ -80,7 +80,8 @@ export default {
       this.$store.state.publicCollections.forEach((col) => {
         vuexCollections.push(col._id); // eslint-disable-line no-underscore-dangle
       });
-      if (vuexCollections.includes(this.id)) {
+      if (vuexCollections.includes(
+        this.collection.id)) { // eslint-disable-line no-underscore-dangle
         isMemberState = true;
       } else {
         isMemberState = false;
@@ -109,7 +110,7 @@ export default {
     //       start: this.startPage.toString(),
     //       end: this.limitPage.toString(),
     //       userId: userID,
-    //       collectionId: this.id,
+    //       collectionId: this.collection._id,
     //     },
     //     headers: { 'x-access-token': this.$store.state.token },
     //   }).then((response) => {
@@ -133,8 +134,8 @@ export default {
         params: {
           start: this.startPage.toString(),
           end: this.limitPage.toString(),
-          userId: userID, // eslint-disable-line no-underscore-dangle
-          collectionId: this.id,
+          userId: userID,
+          collectionId: this.collection.id,
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
@@ -164,7 +165,6 @@ export default {
     //   }
     // },
     async loadTimeline(timelineId) {
-      console.log('loading collection view id::', this.id);
       this.loading = true;
       let url;
       let userID;
@@ -182,7 +182,7 @@ export default {
       if (timelineId) {
         collectionToOpen = timelineId;
       } else {
-        collectionToOpen = this.id;
+        collectionToOpen = this.collection.id; // eslint-disable-line no-underscore-dangle
       }
 
       axios.get(url, {
@@ -264,13 +264,14 @@ export default {
   mounted() {
     this.clearMap().then(() => {
       this.$store.dispatch('setCollectionTimeline', []);
-      this.loadTimeline(this.id).then(() => {
-        console.log('loaded');
-      });
+      this.loadTimeline(this.collection.id).then( // eslint-disable-line no-underscore-dangle
+        () => {
+          console.log('loaded');
+        });
     });
-    this.$eventHub.$on('openCollection', (id) => {
-      console.log('open openCollection from notification openCollection:: ', id);
-      this.loadTimeline(id);
+    this.$eventHub.$on('openCollection', (collection) => {
+      // console.log('open openCollection from notification openCollection:: ', id);
+      this.loadTimeline(collection.id); // eslint-disable-line no-underscore-dangle
     });
 
     this.$options.sockets.newPost = (data) => {
@@ -280,7 +281,8 @@ export default {
       // }
     };
     this.$eventHub.$on('newPost', () => {
-      if (this.$store.state.openedTimeline.id === this.id) {
+      if (this.$store.state.openedTimeline.id
+        === this.collection.id) { // eslint-disable-line no-underscore-dangle
         this.toggle_new_post();
       }
     });

@@ -12,7 +12,7 @@
       <v-card-actions class="grey lighten-3">
         <v-list-tile>
           <v-list-tile-action>
-            <v-btn fab small outline @click="exploreCollection(collection._id)">
+            <v-btn fab small outline @click="exploreCollection(collection)">
               <v-icon color="blue lighten-1" v-if="details">folder_open</v-icon>
               <v-icon color="blue lighten-1" v-if="details === false">folder</v-icon>
             </v-btn>
@@ -29,7 +29,7 @@
             </v-btn>
           </v-list-tile-action>
           <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-            <v-btn fab small outline>
+            <v-btn fab small outline v-if="collection.isEditor === false">
               <v-icon color="orange lighten-1">edit</v-icon>
             </v-btn>
           </v-list-tile-action>
@@ -264,7 +264,7 @@ export default {
         this.usersToInvite.remove(id);
       }
     },
-    exploreCollection(collectionId) {
+    exploreCollection(collection) {
       // TODO make correct request
       if (this.details) {
         this.$eventHub.$emit('openCollection', null);
@@ -272,13 +272,14 @@ export default {
         // console.log('collection is open');
       } else {
         const tl = {
-          id: collectionId,
+          id: collection._id, // eslint-disable-line no-underscore-dangle
           type: 'collection',
-          title: this.collection.title,
-          visibility: this.collection.visibility,
-          userCreated: this.collection.user,
+          title: collection.title,
+          visibility: collection.visibility,
+          userCreated: collection.user,
+          isEditor: collection.isEditor,
         };
-        this.$eventHub.$emit('openCollection', collectionId);
+        this.$eventHub.$emit('openCollection', tl); // eslint-disable-line no-underscore-dangle
         this.$store.dispatch('setOpenedCustomTimeline', tl);
         // this.$parent.$parent.$emit('openedcollection', id);
         // console.log('collection closed');
