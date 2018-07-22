@@ -418,13 +418,14 @@ router.route('/setEditor')
   .post(function setuser(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
       .then(function (db) {
-        const collectionId = req.query.collectionId;
-        const userId = req.query.userId;
+        const collectionId = req.body.data.collectionId;
+        const userId = req.body.data.userId;
+        console.log('adding editor:: ', userId, collectionId);
         var collection = db.collection('collections');
 
         return collection.update(
           { _id: ObjectID(collectionId) },
-          { editors: { $push: ObjectID(userId) } } );
+          { $push: { editors: ObjectID(userId) } });
         db.close();
       })
       .then(() => {
@@ -439,13 +440,14 @@ router.route('/removeEditor')
   .post(function setuser(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
       .then(function (db) {
-        const collectionId = req.query.collectionId;
-        const userId = req.query.userId;
+        const collectionId = req.body.data.collectionId;
+        const userId = req.body.data.userId;
+        console.log('removing editor:: ', userId, collectionId);
         var collection = db.collection('collections');
 
         return collection.update(
           { _id: ObjectID(collectionId) },
-          { editors: { $pull: ObjectID(userId) } });
+          { $pull: { editors: ObjectID(userId) } });
         db.close();
       })
       .then(() => {

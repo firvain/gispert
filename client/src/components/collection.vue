@@ -29,7 +29,7 @@
             </v-btn>
           </v-list-tile-action>
           <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-            <v-btn fab small outline v-if="collection.isEditor === false">
+            <v-btn fab small outline>
               <v-icon color="orange lighten-1">edit</v-icon>
             </v-btn>
           </v-list-tile-action>
@@ -73,10 +73,16 @@
                     </v-btn>
                   </v-list-tile-action>
                   <v-list-tile-action>
-                    <v-btn icon outline color="orange lighten-1" @click.native="shareDialog = false">
+                    <v-btn icon outline color="orange lighten-1"
+                        @click.native="makeEditor(user._id, collection._id)"
+                        v-if="collection.isEditor === false">
                       <v-icon dark>edit</v-icon>
                     </v-btn>
-                    <!-- <v-switch v-model="isEditor"></v-switch> -->
+                    <v-btn icon outline color="green lighten-1"
+                        @click.native="removeEditor(user._id, collection._id)"
+                        v-if="collection.isEditor === true">
+                      <v-icon dark>edit</v-icon>
+                    </v-btn>
                   </v-list-tile-action>
                 </v-list-tile>
               </v-list>
@@ -386,6 +392,36 @@ export default {
       if (this.$store.state.isUserLoggedIn && this.userSearchTerm.length === 0) {
         this.searchResultUsers = this.$store.state.users;
       }
+    },
+    makeEditor(userId, collectionId) {
+      const url = `${config.url}/collections/setEditor`;
+      const data = {
+        collectionId,
+        userId,
+      };
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        if (response.status === 200) {
+          this.collection.isEditor = true;
+          this.$socket.emit('youAreEditor', data);
+        }
+      });
+    },
+    removeEditor(userId, collectionId) {
+      const url = `${config.url}/collections/removeEditor`;
+      const data = {
+        collectionId,
+        userId,
+      };
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        if (response.status === 200) {
+          this.collection.isEditor = false;
+          this.$socket.emit('youAreNotEditor', data);
+        }
+      });
     },
   },
 };
