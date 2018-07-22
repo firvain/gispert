@@ -218,6 +218,7 @@ router.route('/collection')
               {
                   $project: {
                       count: 1,
+                    // TODO:  if greater than 4 concatenate slices else don't
                       posts: { $slice: ["$posts", 0, 4] }
                   }
               },

@@ -215,7 +215,15 @@ router.route('/all')
         },
         { $project: {
           count:1,
-          posts: { $slice: [ "$posts", 0, 4 ] }
+          // TODO:  if greater than 4 concatenate slices else don't
+          posts: {
+            $concatArrays: [{
+              $slice: ["$posts", {
+                $subtract: ["$count", 1]
+              }, "$count"]
+            },
+            { $slice: ["$posts", 0, 4] }]
+          }
         }},
         {
           $skip: start
@@ -819,7 +827,12 @@ router.route('/search')
           {
             $project: {
               count: 1,
-              posts: { $slice: ["$posts", 0, 4] }
+              posts: {
+                $concat: [ {
+                  $slice: ["$posts", {
+                    $subtract: ["$count", 1 ] }, "$count"] },
+                  { $slice: ["$posts", 0, 4] } ] 
+              }
             }
           },
           // {
