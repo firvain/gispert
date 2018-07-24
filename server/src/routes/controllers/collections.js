@@ -218,11 +218,30 @@ router.route('/collection')
               {
                   $project: {
                       count: 1,
-                    // TODO:  if greater than 4 concatenate slices else don't
-                      posts: { $slice: ["$posts", 0, 4] }
-                  }
-              },
-              {
+                      posts: { $switch: {
+                        branches: [
+                          { case: { $gt: [ "$count", 4 ] }, then: {
+                              $concatArrays: [{
+                                $slice: ["$posts", {
+                                  $subtract: ["$count", 1]
+                                }, "$count"]
+                              },
+                              { $slice: ["$posts", 0, 4] }]
+                            }
+                          },
+                          { case: { $and : [{$lt: [ "$count", 4 ]}, {$gt: [ "$count", 1 ]} ]}, then: {
+                              $concatArrays: [{
+                                $slice: ["$posts", {
+                                  $subtract: ["$count", 1]
+                                }, "$count"]
+                              },
+                              { $slice: ["$posts", 0, { $subtract: ["$count", 1] }] }
+                            ]}
+                          },
+                        ],
+                        default: { $slice: ["$posts", 0, "$count"] }
+                     }}}},
+                  {
                   $skip: start
               },
               {

@@ -5,13 +5,13 @@
       <v-card>
         <v-card-title primary-title>
           <v-icon v-if="postType === 'reply'" color='primary' x-large>forum</v-icon>
-          <v-flex class="text-xs-left">
+          <v-flex :class="postClass">
             <a md12 @click="exploreTimeline(post.userId)">@{{ post.userName }}: </a>&nbsp;
             <span md12 v-if="post.text" v-html="post.text" v-linkified></span>&nbsp;<br>
-            {{ $t("message.inCollection")}}:&nbsp;
-            <a md12 @click="exploreCollection(post.collectionData[0])" v-if="post.collectionData">
-              {{post.collectionData[0].title}}
-            </a>,&nbsp;
+            <span v-if="postType !== 'reply'">{{ $t("message.inCollection")}}:&nbsp;</span>
+            <a md12 @click="exploreCollection(post.collectionData[0])" v-if="post.collectionData && postType !== 'reply'">
+              {{post.collectionData[0].title}},
+            </a>&nbsp;
             <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
           </v-flex>
           <v-chip
@@ -518,6 +518,9 @@ export default {
     // timestamp() {
     //   return moment(parseInt(this.post.timestamp, 0)).format('lll');
     // },
+    postClass() {
+      return this.postType === 'reply' ? 'text-xs-right' : 'text-xs-left';
+    },
     sharePostUrl() {
       const url = `${config.share}/#/post/${this.post._id}`; // eslint-disable-line
       return url;

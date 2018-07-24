@@ -73,16 +73,20 @@
                     </v-btn>
                   </v-list-tile-action>
                   <v-list-tile-action>
-                    <v-btn icon outline color="orange lighten-1"
-                        @click.native="makeEditor(user._id, collection._id)"
-                        v-if="collection.isEditor === false">
-                      <v-icon dark>edit</v-icon>
-                    </v-btn>
-                    <v-btn icon outline color="green lighten-1"
-                        @click.native="removeEditor(user._id, collection._id)"
-                        v-if="collection.isEditor === true">
-                      <v-icon dark>edit</v-icon>
-                    </v-btn>
+                    <v-flex>
+                      <v-btn icon outline color="orange lighten-1"
+                          @click.native="makeEditor(user._id, collection._id)"
+                          v-if="collection.isEditor === false">
+                        <v-icon dark>edit</v-icon>
+                      </v-btn>
+                    </v-flex>
+                    <v-flex>
+                      <v-btn icon outline color="green lighten-1"
+                          @click.native="removeEditor(user._id, collection._id)"
+                          v-if="collection.isEditor === true">
+                        <v-icon dark>edit</v-icon>
+                      </v-btn>
+                    </v-flex>
                   </v-list-tile-action>
                 </v-list-tile>
               </v-list>
