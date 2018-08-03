@@ -38,7 +38,7 @@ router.route('/')
               description: 1,
               visibility: 1,
               user: 1,
-              userName: 1,
+              username: 1,
               members: 1,
               isEditor: {
                 $cond: {

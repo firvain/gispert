@@ -22,7 +22,7 @@
         </v-layout>
         <v-flex>
           <v-subheader inset v-if="$store.state.isUserLoggedIn && $store.state.openedTimeline === null && mode === 'search'">
-            {{ $t('message.searchResults')}}
+            {{ $t('message.searchResults') }}
           </v-subheader>
           <v-container fluid v-if="$store.state.openedTimeline === null && mode === 'search'">
             <v-list
@@ -153,7 +153,7 @@
         v-if="$store.state.openedTimeline !== null && $store.state.openedTimeline.type === 'thread' && openThread">
       </thread>
     </v-container>
-    <post :post='postContent' v-if="postContent !== null"></post>
+    <!-- <post :post='postContent' v-if="postContent !== null"></post> -->
     <v-btn block dark outline small color="green"
       @click="closeCollectionView"
       v-if="$store.state.openedTimeline !== null && loading === false">
@@ -369,6 +369,7 @@ export default {
           if (resp.data) {
             // console.log(resp);
             this.postContent = resp.data[0];
+            this.openThread = resp.data;
             // console.log('postContent:: ', this.postContent, this.postContent.text);
             this.postOpen = true;
             // console.log('postContent:: ', this.postOpen);
@@ -376,6 +377,13 @@ export default {
           }
         }).then(() => {
           this.postContent = postContentNew;
+          const tl = {
+            id,
+            type: 'thread',
+          };
+          this.$store.dispatch('setOpenedCustomTimeline', tl);
+          this.mode = 'thread';
+          this.loading = false;
           this.loading = false;
           // console.log('postContent:: ', this.postContent, this.postContent.text);
         });
@@ -442,6 +450,7 @@ export default {
     this.$eventHub.$on('logged-in', () => {
       this.loadPrivateCollections();
       this.loadPublicCollections();
+      this.mode = 'normal';
     });
     // this.$on('openedcollection', (id) => {
     //   console.log('opened:: ', id);

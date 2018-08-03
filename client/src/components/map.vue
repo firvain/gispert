@@ -540,25 +540,7 @@ export default {
       console.log('opened timeline changed so clear map features:: ', this.$store.state.openedTimeline);
       // this.$store.state.openedTimeline !== this.$store.state.previousOpenedTimeline
       if (this.$store.state.openedTimeline === null) {
-        let allLayers = [];
-        const geojsonFormat = new ol.format.GeoJSON();
-        allLayers = olMap.getLayers().getArray();
-        allLayers.forEach((layer) => {
-          if (layer.getProperties().name === 'customLayer') {
-            layer.getSource().clear();
-            this.$store.state.timeline.forEach((thread) => {
-              thread.posts.forEach((post) => {
-                const featureCollection = {
-                  type: 'FeatureCollection',
-                  features: post.featureData,
-                };
-                layer.getSource().addFeatures(
-                  geojsonFormat.readFeatures(JSON.stringify(featureCollection)),
-                );
-              });
-            });
-          }
-        });
+        this.$eventHub.$emit('loadTimelineFeatures');
       }
     },
   },

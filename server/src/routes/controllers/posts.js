@@ -150,13 +150,13 @@ router.route('/all')
             "$filter": {
                 "input": "$collectionData",
                 "as": "child",
-                "cond": { $or: [ 
+                "cond": { $or: [
                   { "$eq": [ "$$child.visibility", "public" ] },
                   { "$eq": [ "$$child.user", ObjectId(userId) ] },
-                  { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
+                  { $in: [ObjectId(userId), "$$child.members"] },
                 ]}
             }
-         },
+          },
           "editors": "$collectionData.editors",
           "post.userName": "$userName",
           "post.userId": "$userId",
@@ -306,7 +306,7 @@ router.route('/replies')
                 "cond": { $or: [
                   { "$eq": [ "$$child.visibility", "public" ] },
                   { "$eq": [ "$$child.user", ObjectId(userId) ] },
-                  { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
+                  { $in: [ObjectId(userId), "$$child.members"] },
                 ] }
               }
             },
@@ -412,13 +412,7 @@ router.route('/id')
       var userId = req.query.userId;
       return collection.aggregate([
         {
-          $graphLookup: {
-            from: "posts",
-            startWith: "$replies",
-            connectFromField: "_id",
-            connectToField: "_id",
-            as: "repliesData",
-          }
+          $match: {_id: ObjectId(postId)}
         },
         { $graphLookup: {
           from: "features",
@@ -426,45 +420,36 @@ router.route('/id')
           connectFromField: "userFeatures",
           connectToField: "properties.mongoID",
           as: "featureData",
-        }
-      },
-        {
-          $graphLookup: {
-            from: "collections",
-            startWith: "$collection",
-            connectFromField: "collection",
-            connectToField: "_id",
-            as: "collectionData",
-          }
-        },
-        {
-          $sort: { 'timestamp': -1, 'repliesData.timestamp': -1 }
-        },
-        {
-          "$project": {
-            "_id": 1,
-            "userId": 1,
-            "userName": 1,
-            "timestamp": 1,
-            "text": 1,
-            "userFeatures": 1,
-            "isReplyTo": 1,
-            "replies": 1,
-            "featureData":1,
-            "collectionData": {
-              "$filter": {
+        }},
+        { $graphLookup: {
+          from: "collections",
+          startWith: "$collection",
+          connectFromField: "collection",
+          connectToField: "_id",
+          as: "collectionData",
+        }},
+        { $project : {
+          "post._id": "$_id",
+          "post.isReplyTo": "$isReplyTo",
+          "post.replies": "$replies",
+          "post.featureData": "$featureData",
+          "post.collectionData": {
+            "$filter": {
                 "input": "$collectionData",
                 "as": "child",
                 "cond": { $or: [
                   { "$eq": [ "$$child.visibility", "public" ] },
                   { "$eq": [ "$$child.user", ObjectId(userId) ] },
-                  { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
-                ] }
-              }
-            },
-            "editors": "$collectionData.editors"
-          }
-        },
+                  { $in: [ObjectId(userId), "$$child.members"] },
+                ]}
+            }
+          },
+          "editors": "$collectionData.editors",
+          "post.userName": "$userName",
+          "post.userId": "$userId",
+          "post.timestamp": "$timestamp",
+          "post.text": "$text"
+        }},
         {
           $project: {
             "post._id": 1,
@@ -499,14 +484,48 @@ router.route('/id')
           }
         },
         {
-          $match: {
-            $and: [
-              // { 'collectionData': { $size: 1 }}, 
-              { '_id': ObjectId(postId) }
-            ]
-          }
+          $match: {'post.collectionData': { $ne: [] }}
         },
-      ]);
+        {
+          $sort: { 'post.timestamp' : -1 }
+        },
+        { $group : {
+          _id : "$post.isReplyTo",
+          posts: {$push: "$post"},
+        }},
+        { $project: {
+          posts:1,
+          count: { $size: "$posts" }
+        }},
+        {
+          $sort: { 'posts.timestamp' : -1 }
+        },
+        { $project: {
+          count:1,
+          posts: { $switch: {
+            branches: [
+              { case: { $gt: [ "$count", 4 ] }, then: {
+                  $concatArrays: [{
+                    $slice: ["$posts", {
+                      $subtract: ["$count", 1]
+                    }, "$count"]
+                  },
+                  { $slice: ["$posts", 0, 4] }]
+                }
+              },
+              { case: { $and : [{$lt: [ "$count", 4 ]}, {$gt: [ "$count", 1 ]} ]}, then: {
+                  $concatArrays: [{
+                    $slice: ["$posts", {
+                      $subtract: ["$count", 1]
+                    }, "$count"]
+                  },
+                  { $slice: ["$posts", 0, { $subtract: ["$count", 1] }] }
+                ]}
+              },
+            ],
+            default: { $slice: ["$posts", 0, "$count"] }
+         }}}},
+        ]);
       db.close();
     })
   .then(function (cursor) {
@@ -567,7 +586,7 @@ router.route('/person')
                   "cond": { $or: [
                     { "$eq": [ "$$child.visibility", "public" ] },
                     { "$eq": [ "$$child.user", ObjectId(userId) ] },
-                    { "$eq": [ "$$child.members", [ObjectId(userId)] ] }
+                    { $in: [ObjectId(userId), "$$child.members"] },
                     ]}
                 }
               },
@@ -785,7 +804,7 @@ router.route('/search')
                     $or: [
                       { "$eq": ["$$child.visibility", "public"] },
                       { "$eq": ["$$child.user", ObjectId(userId)] },
-                      { "$eq": ["$$child.members", [ObjectId(userId)]] }
+                      { $in: [ObjectId(userId), "$$child.members"] },
                     ]
                   }
                 }

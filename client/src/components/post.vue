@@ -66,7 +66,7 @@
             </v-tooltip>
 
               <v-spacer></v-spacer>
-              <v-menu bottom left>
+              <v-menu bottom left v-if="postType === 'original'">
                 <v-btn icon fab outline small color='green' slot="activator">
                   <v-icon color='green'>more_vert</v-icon>
                 </v-btn>
@@ -189,6 +189,9 @@ export default {
         // this.replies.unshift(data);
         this.myReplies += 1;
       }
+    });
+    this.$eventHub.$on('loadTimelineFeatures', () => {
+      this.explore(this.post);
     });
   },
   methods: {

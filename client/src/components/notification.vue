@@ -210,6 +210,7 @@ export default {
         allLayers = olMap.getLayers().getArray();
         allLayers.forEach((layer) => {
           if (layer.getProperties().name === 'customLayer') {
+            layer.getSource().clear();
             const AddedFeature = geojsonFormat.readFeatures(newFeature);
             let alreadyExists = false;
             layer.getSource().forEachFeature((feature) => {

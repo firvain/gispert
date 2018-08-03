@@ -24,12 +24,12 @@
       <v-tabs-content
         id="explore"
       >
-      <explore></explore>
+        <explore></explore>
       </v-tabs-content>
       <v-tabs-content
         id="users"
       >
-      <userList></userList>
+        <userList></userList>
       </v-tabs-content>
     </v-tabs-items>
   </v-tabs>
@@ -47,10 +47,14 @@ export default {
     timeline, explore, userList,
   },
   data: () => ({
-    active: 'home',
   }),
+  computed: {
+    active() {
+      return this.$store.state.activeTab;
+    },
+  },
   watch: {
-    active: function () {
+    '$store.state.activeTab': function () {
       console.log('active changed');
       this.changeTab();
     },
