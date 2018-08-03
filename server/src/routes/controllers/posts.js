@@ -153,7 +153,7 @@ router.route('/all')
                 "cond": { $or: [
                   { "$eq": [ "$$child.visibility", "public" ] },
                   { "$eq": [ "$$child.user", ObjectId(userId) ] },
-                  { $in: [ObjectId(userId), "$$child.members"] },
+                  { $in: [[ObjectId(userId)], "$$child.members"] },
                 ]}
             }
           },
