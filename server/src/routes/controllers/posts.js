@@ -182,7 +182,7 @@ router.route('/all')
                 if: {
                   $or: [
                     { $in: [[ObjectId(userId)], "$editors"] },
-                    { $eq: [userId, "$post.userId"] },
+                    // { $eq: [userId, "$post.userId"] },
                     { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                   ]
                 },
@@ -336,7 +336,7 @@ router.route('/replies')
                 if: {
                   $or: [
                     { $in: [[ObjectId(userId)], "$editors"] },
-                    { $eq: [userId, "$post.userId"] },
+                    // { $eq: [userId, "$post.userId"] },
                     { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                   ]
                 },
@@ -469,7 +469,7 @@ router.route('/id')
                 if: {
                   $or: [
                     { $in: [[ObjectId(userId)], "$editors"] },
-                    { $eq: [userId, "$post.userId"] },
+                    // { $eq: [userId, "$post.userId"] },
                     { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                   ]
                 },
@@ -592,6 +592,7 @@ router.route('/person')
                 "cond": {
                   $or: [
                     { "$eq": ["$$child.visibility", "public"] },
+                    { "$eq": ["$$child.user", ObjectId(userIdCl)] },
                     { $in: [ObjectId(userIdCl), "$$child.members"] },
                   ]
                 }
@@ -626,7 +627,7 @@ router.route('/person')
                 if: {
                   $or: [
                     { $in: [ObjectId(userIdCl), "$editors"] },
-                    { $eq: [userIdCl, "$post.userId"] },
+                    // { $eq: [userIdCl, "$post.userId"] },
                     { $eq: [ObjectId(userIdCl), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                   ]
                 },
@@ -691,6 +692,12 @@ router.route('/person')
             }
           }
         },
+        {
+          $skip: start
+        },
+        {
+          $limit: end
+        }
         ]);
         db.close();
       })
@@ -837,8 +844,8 @@ router.route('/search')
                 $cond: {
                   if: {
                     $or: [
-                      { $in: [[ObjectId(userId)], "$editors"] },
-                      { $eq: [userId, "$post.userId"] },
+                      { $in: [ObjectId(userId), "$editors"] },
+                      // { $eq: [userId, "$post.userId"] },
                       { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                     ]
                   },

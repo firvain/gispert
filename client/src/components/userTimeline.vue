@@ -160,6 +160,9 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
+        if (response.data.length < this.limitPage) {
+          this.endOfPosts = true;
+        }
         this.$store.dispatch('setUserTimeline', response.data);
       }).then(() => {
         this.loading = false;

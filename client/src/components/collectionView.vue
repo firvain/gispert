@@ -197,6 +197,7 @@ export default {
         if (response.data.length < this.limitPage) {
           this.endOfPosts = true;
         }
+        console.log('determine load more:: ', response.data.count, this.limitPage);
         this.$store.dispatch('setCollectionTimeline', response.data);
       }).then(() => {
         const allLayers = olMap.getLayers().getArray();
