@@ -153,7 +153,7 @@ router.route('/all')
                 "cond": { $or: [
                   { "$eq": [ "$$child.visibility", "public" ] },
                   { "$eq": [ "$$child.user", ObjectId(userId) ] },
-                  { $in: [[ObjectId(userId)], "$$child.members"] },
+                  { $in: [ObjectId(userId), "$$child.members"] },
                 ]}
             }
           },
@@ -550,118 +550,122 @@ router.route('/person')
   .get(function getposts(req, res) {
     var start = parseInt(req.query.start);
     var end = parseInt(req.query.end);
-    var userId = req.query.userId;
+    var userIdTl = req.query.userIdTl;
+    var userIdCl = req.query.userIdCl;
+    console.log(userIdTl, userIdCl, start, end);
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
       .then(function (db) {
         var collection = db.collection('posts');
-        return collection.aggregate([
-          {
-            $graphLookup: {
-              from: "features",
-              startWith: "$userFeatures",
-              connectFromField: "userFeatures",
-              connectToField: "properties.mongoID",
-              as: "featureData",
-            }
-          },
-          {
-            $graphLookup: {
-              from: "collections",
-              startWith: "$collection",
-              connectFromField: "collection",
-              connectToField: "_id",
-              as: "collectionData",
-            }
-          },
-          {
-            $project: {
-              "post._id": "$_id",
-              "post.isReplyTo": "$isReplyTo",
-              "post.replies": "$replies",
-              "post.featureData": "$featureData",
-              "post.collectionData": {
-                "$filter": {
-                  "input": "$collectionData",
-                  "as": "child",
-                  "cond": { $or: [
-                    { "$eq": [ "$$child.visibility", "public" ] },
-                    { "$eq": [ "$$child.user", ObjectId(userId) ] },
-                    { $in: [ObjectId(userId), "$$child.members"] },
-                    ]}
+        return collection.aggregate([{
+          $graphLookup: {
+            from: "features",
+            startWith: "$userFeatures",
+            connectFromField: "userFeatures",
+            connectToField: "properties.mongoID",
+            as: "featureData",
+          }
+        },
+        {
+          $graphLookup: {
+            from: "collections",
+            startWith: "$collection",
+            connectFromField: "collection",
+            connectToField: "_id",
+            as: "collectionData",
+          }
+        },
+        {
+          $match: {
+              'userId': userIdTl
+          }
+        },
+        {
+          $project: {
+            "post._id": "$_id",
+            "post.isReplyTo": "$isReplyTo",
+            "post.replies": "$replies",
+            "post.featureData": "$featureData",
+            "post.collectionData": {
+              "$filter": {
+                "input": "$collectionData",
+                "as": "child",
+                "cond": {
+                  $or: [
+                    { "$eq": ["$$child.visibility", "public"] },
+                    { $in: [ObjectId(userIdCl), "$$child.members"] },
+                  ]
                 }
-              },
-              "editors": "$collectionData.editors",
-              "post.userName": "$userName",
-              "post.userId": "$userId",
-              "post.timestamp": "$timestamp",
-              "post.text": "$text"
-            }
-          },
-          {
-            $project: {
-              "post._id": 1,
-              "post.isReplyTo": 1,
-              "post.replies": 1,
-              "post.featureData": 1,
-              "post.collectionData._id": 1,
-              "post.collectionData.description": 1,
-              "post.collectionData.title": 1,
-              "post.collectionData.user": 1,
-              "post.collectionData.username": 1,
-              "post.collectionData.visibility": 1,
-              "post.collectionData.members": 1,
-              "editors": 1,
-              "post.collectionData.isEditor": {
-                $cond: {
-                  if: {
-                    $or: [
-                      { $in: [[ObjectId(userId)], "$editors"] },
-                      { $eq: [userId, "$post.userId"] },
-                      { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
-                    ]
-                  },
-                  then: true,
-                  else: false
-                }
-              },
-              "post.userName": 1,
-              "post.userId": 1,
-              "post.timestamp": 1,
-              "post.text": 1
-            }
-          },
-          {
-            $match: {
-              $and: [ 
-                // { 'post.collectionData': { $ne: [] }},
-                { 'post.userId': userId }
-              ]
-            }
-          },
-          {
-            $sort: { 'post.timestamp': -1 }
-          },
-          {
-            $group: {
-              _id: "$post.isReplyTo",
-              posts: { $push: "$post" },
-            }
-          },
-          {
-            $project: {
-              posts: 1,
-              count: { $size: "$posts" }
-            }
-          },
-          {
-            $sort: { 'posts.timestamp': -1 }
-          },
-          {
-            $project: {
-              count: 1,
-              posts: { $switch: {
+              }
+            },
+            "editors": "$collectionData.editors",
+            "post.userName": "$userName",
+            "post.userId": "$userId",
+            "post.timestamp": "$timestamp",
+            "post.text": "$text"
+          }
+        },
+        {
+          $match: { 'post.collectionData': { $ne: [] } }
+        },
+        {
+          $project: {
+            "post._id": 1,
+            "post.isReplyTo": 1,
+            "post.replies": 1,
+            "post.featureData": 1,
+            "post.collectionData._id": 1,
+            "post.collectionData.description": 1,
+            "post.collectionData.title": 1,
+            "post.collectionData.user": 1,
+            "post.collectionData.username": 1,
+            "post.collectionData.visibility": 1,
+            "post.collectionData.members": 1,
+            "editors": 1,
+            "post.collectionData.isEditor": {
+              $cond: {
+                if: {
+                  $or: [
+                    { $in: [ObjectId(userIdCl), "$editors"] },
+                    { $eq: [userIdCl, "$post.userId"] },
+                    { $eq: [ObjectId(userIdCl), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
+                  ]
+                },
+                then: true,
+                else: false
+              }
+            },
+            "post.userName": 1,
+            "post.userId": 1,
+            "post.timestamp": 1,
+            "post.text": 1
+          }
+        },
+        {
+          $sort: { 'post.timestamp': -1 }
+        },
+        {
+          $group: {
+            _id: "$post.isReplyTo",
+            posts: { $push: "$post" },
+          }
+        },
+        {
+          $project: {
+            posts: 1,
+            count: { $size: "$posts" }
+          }
+        },
+        {
+          $sort: { 'posts.timestamp': -1 }
+        },
+        {
+          $project: {
+            count: 1,
+            posts: {
+              $switch: {
                 branches: [
-                  { case: { $gt: [ "$count", 4 ] }, then: {
+                  {
+                    case: { $gt: ["$count", 4] }, then: {
                       $concatArrays: [{
                         $slice: ["$posts", {
                           $subtract: ["$count", 1]
@@ -670,24 +674,23 @@ router.route('/person')
                       { $slice: ["$posts", 0, 4] }]
                     }
                   },
-                  { case: { $and : [{$lt: [ "$count", 4 ]}, {$gt: [ "$count", 1 ]} ]}, then: {
+                  {
+                    case: { $and: [{ $lt: ["$count", 4] }, { $gt: ["$count", 1] }] }, then: {
                       $concatArrays: [{
                         $slice: ["$posts", {
                           $subtract: ["$count", 1]
                         }, "$count"]
                       },
                       { $slice: ["$posts", 0, { $subtract: ["$count", 1] }] }
-                    ]}
+                      ]
+                    }
                   },
                 ],
                 default: { $slice: ["$posts", 0, "$count"] }
-             }}}},
-          {
-            $skip: start
-          },
-          {
-            $limit: end
+              }
+            }
           }
+        },
         ]);
         db.close();
       })

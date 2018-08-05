@@ -106,12 +106,14 @@ export default {
       this.loading = true;
       this.startPage += this.limitPage;
       const userID = this.id; // eslint-disable-line no-underscore-dangle
+      console.log(userID, this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
       const url = `${config.url}/posts/person`;
       axios.get(url, {
         params: {
           start: this.startPage.toString(),
           end: this.limitPage.toString(),
-          userId: userID, // eslint-disable-line no-underscore-dangle
+          userIdTl: userID,
+          userIdCl: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
@@ -153,7 +155,8 @@ export default {
         params: {
           start: this.startPage.toString(),
           end: this.limitPage.toString(),
-          userId: userID, // eslint-disable-line no-underscore-dangle
+          userIdTl: userID,
+          userIdCl: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
