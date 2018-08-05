@@ -144,6 +144,7 @@ export default {
         axios.post(url, { userPost }, {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
+          this.showNewPost = false;
           // console.log('trying to reset component');
           console.log('response from API is:: ', response.data);
           // TODO must handle response

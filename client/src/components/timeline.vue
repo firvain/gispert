@@ -142,10 +142,10 @@ export default {
       this.$store.dispatch('setTimeline', []);
       this.load_first_page();
     });
-    this.$eventHub.$on('newPost', () => {
+    // this.$eventHub.$on('newPost', () => {
       // this.replies.unshift(data);
-      this.toggle_new_post();
-    });
+      // this.toggle_new_post();
+    // });
   },
   watch: {
     '$store.state.isUserLoggedIn': function locale() {
