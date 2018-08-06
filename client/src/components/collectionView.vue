@@ -201,18 +201,20 @@ export default {
           this.endOfPosts = true;
           this.loading = false;
         }
-        console.log('determine load more:: ', response.data.count, this.limitPage);
+        // console.log('determine load more:: ', response.data.count, this.limitPage);
         this.$store.dispatch('setCollectionTimeline', response.data);
+        // this.loading = false;
       }).then(() => {
+        this.loading = false;
         const allLayers = olMap.getLayers().getArray();
         allLayers.forEach((layer) => {
           if (layer.getProperties().name === 'customLayer') {
             console.log('extent::', layer.getSource().getExtent());
-            olMap.getView().fit(layer.getSource().getExtent(), olMap.getSize());
+            if (layer.getSource().getExtent()[0] !== 'Infinity') {
+              olMap.getView().fit(layer.getSource().getExtent(), olMap.getSize());
+            }
           }
         });
-
-        this.loading = false;
       });
       return true;
     },
@@ -271,6 +273,7 @@ export default {
       this.$store.dispatch('setCollectionTimeline', []);
       this.loadTimeline(this.collection.id).then( // eslint-disable-line no-underscore-dangle
         () => {
+          this.loading = false;
           console.log('loaded');
         });
     });

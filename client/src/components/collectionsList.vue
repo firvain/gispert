@@ -239,11 +239,15 @@ export default {
             this.snackbar = true;
             if (this.newCollection.visibility === 'public') {
               // this.loadPublicCollections();
-              this.$store.dispatch('addPublicCollection', response.data);
+              const addedCollection = response.data;
+              addedCollection.isEditor = true;
+              this.$store.dispatch('addPublicCollection', addedCollection);
               this.newPublicCollectionCard = false;
             } else {
               // this.loadPrivateCollections();
-              this.$store.dispatch('addPrivateCollection', response.data);
+              const addedCollection = response.data;
+              addedCollection.isEditor = true;
+              this.$store.dispatch('addPrivateCollection', addedCollection);
               this.newPrivateCollectionCard = false;
             }
             this.newCollection.title = '';
