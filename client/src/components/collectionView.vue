@@ -24,14 +24,14 @@
       <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <v-btn
         v-on:click='next_page'
-        v-if="!endOfPosts"
+        v-if="!endOfPosts && !loading"
         class="blue-grey white--text"
         block
       >
         {{ $t('message.loadMore')}}
         <v-icon right dark>navigate_next</v-icon>
       </v-btn>
-      <span v-if="$store.state.collectionTimeline.length === 0">{{ $t('message.noPosts')}}</span>
+      <span v-if="$store.state.collectionTimeline.length === 0 && !loading">{{ $t('message.noPosts')}}</span>
 
       <v-dialog v-model="unfollowCollectionDialog" persistent max-width="290">
         <v-card>
@@ -197,6 +197,10 @@ export default {
         if (response.data.length < this.limitPage) {
           this.endOfPosts = true;
         }
+        if (response.data.length === 0) {
+          this.endOfPosts = true;
+          this.loading = false;
+        }
         console.log('determine load more:: ', response.data.count, this.limitPage);
         this.$store.dispatch('setCollectionTimeline', response.data);
       }).then(() => {
@@ -284,7 +288,7 @@ export default {
     this.$eventHub.$on('newPost', () => {
       if (this.$store.state.openedTimeline.id
         === this.collection.id) { // eslint-disable-line no-underscore-dangle
-        this.toggle_new_post();
+        // this.toggle_new_post();
       }
     });
   },
