@@ -351,6 +351,7 @@ const olMap = new ol.Map({
   view: new ol.View({
     center: mapCenter,
     zoom: 16,
+    maxZoom: 19,
   }),
   selectedItem: null,
 });

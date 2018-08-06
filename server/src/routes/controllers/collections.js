@@ -395,7 +395,7 @@ router.route('/collection')
         });
     });
 
-    
+
 router.route('/members')
     .get(function getmemberscollection(req, res) {
         MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
@@ -433,6 +433,42 @@ router.route('/members')
       });
     });
 
+router.route('/editors')
+    .get(function getmemberscollection(req, res) {
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+          const collectionId = req.query.collectionId;
+          const userId = req.query.userId;
+          var collection = db.collection('collections');
+
+          return collection.aggregate([
+            { $match: {_id: ObjectID(collectionId) } },
+           {
+               $graphLookup: {
+                   from: "users",
+                   startWith: "$editors",
+                   connectFromField: "editors",
+                   connectToField: "_id",
+                   as: "users",
+               }
+           },
+           {$project: {
+               "users._id": 1,
+               "users.name":1
+            }}
+        ]);
+          db.close();
+      })
+      .then(function (cursor) {
+          return cursor.toArray();
+      })
+      .then(function (content) {
+          res.status(200).json(content);
+      })
+      .catch(function (err) {
+          throw err;
+      });
+    });
 
 
 router.route('/setEditor')

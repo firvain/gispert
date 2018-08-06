@@ -565,7 +565,7 @@ export default {
     olMap.on('singleclick', (evt) => {
       if (this.$store.state.feature) {
         const coordinate = evt.coordinate;
-        overlay.setPosition(coordinate);
+        overlay.setPosition([coordinate[0] + 5, coordinate[1] - 10]);
       } else {
         overlay.setPosition(undefined);
       }

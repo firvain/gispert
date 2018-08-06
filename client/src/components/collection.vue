@@ -34,7 +34,7 @@
             </v-btn>
           </v-list-tile-action>
           <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-            <v-btn fab small outline @click="shareDialog = true; loadMembersOfThisCollection(collection._id)">
+            <v-btn fab small outline @click="shareDialog = true; loadMembersOfThisCollection(collection._id); loadEditorsOfThisCollection(collection._id)">
               <v-icon color="green lighten-1">share</v-icon>
             </v-btn>
           </v-list-tile-action>
@@ -68,25 +68,22 @@
                     <img src="../../dist/logo.png"/>
                   </v-list-tile-avatar> -->
                   <v-list-tile-action>
-                    <v-btn icon outline color="red lighten-1" @click.native="removeUserFromCollection(user._id)">
-                      <v-icon dark>delete</v-icon>
-                    </v-btn>
-                  </v-list-tile-action>
-                  <v-list-tile-action>
-                    <v-flex>
+                    <v-layout row wrap>
+                      <v-btn icon outline color="red lighten-1" @click.native="removeUserFromCollection(user._id)">
+                        <v-icon dark>delete</v-icon>
+                      </v-btn>
+                      <v-spacer></v-spacer>
                       <v-btn icon outline color="orange lighten-1"
                           @click.native="makeEditor(user._id, collection._id)"
-                          v-if="collection.isEditor === false">
+                          v-if="!editors.includes(user._id)">
                         <v-icon dark>edit</v-icon>
                       </v-btn>
-                    </v-flex>
-                    <v-flex>
                       <v-btn icon outline color="green lighten-1"
                           @click.native="removeEditor(user._id, collection._id)"
-                          v-if="collection.isEditor === true">
+                          v-if="editors.includes(user._id)">
                         <v-icon dark>edit</v-icon>
                       </v-btn>
-                    </v-flex>
+                    </v-layout>
                   </v-list-tile-action>
                 </v-list-tile>
               </v-list>
@@ -209,6 +206,7 @@ export default {
     deleteCollectionDialog: false,
     unfollowCollectionDialog: false,
     members: [],
+    editors: [],
     shareLink: false,
     isEditor: true,
     shareDialogAddMembers: false,
@@ -371,6 +369,24 @@ export default {
         this.loading = false;
       });
     },
+    loadEditorsOfThisCollection(id) {
+      const url = `${config.url}/collections/editors`;
+      axios.get(url, {
+        params: {
+          collectionId: id,
+          userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        },
+        headers: { 'x-access-token': this.$store.state.token },
+      }).then((response) => {
+        response.data[0].users.forEach((u) => {
+          this.editors.push(u._id); // eslint-disable-line no-underscore-dangle
+        });
+        // this.editors = response.data[0].users;
+      }).then(() => {
+        console.log('loading editors:: ', JSON.stringify(this.editors));
+        this.loading = false;
+      });
+    },
     copyToClipboard() {
       clipboard(this.shareMapUrl);
     },
@@ -407,7 +423,7 @@ export default {
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         if (response.status === 200) {
-          this.collection.isEditor = true;
+          this.editors.push(userId);
           this.$socket.emit('youAreEditor', data);
         }
       });
@@ -422,7 +438,7 @@ export default {
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         if (response.status === 200) {
-          this.collection.isEditor = false;
+          this.editors.remove(userId);
           this.$socket.emit('youAreNotEditor', data);
         }
       });
