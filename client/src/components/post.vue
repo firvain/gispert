@@ -36,12 +36,13 @@
               </v-btn>
               <span>{{ $t("message.showOnMapTooltip") }}</span>
             </v-tooltip>
+
             <v-tooltip bottom>
               <v-btn slot="activator"
                 fab small outline
                 v-bind:color="answerPostColor"
                 @click="toggle_answer"
-                v-if="$store.state.isUserLoggedIn === true && postType === 'original' && $store.state.openedTimeline && $store.state.openedTimeline.isEditor">
+                v-if="showAnswerButton">
                 <v-icon large :color="answerPostTextColor">chat</v-icon>
               </v-btn>
               <span>{{ $t("message.replyTooltip") }}!</span>
@@ -521,6 +522,23 @@ export default {
     // timestamp() {
     //   return moment(parseInt(this.post.timestamp, 0)).format('lll');
     // },
+    showAnswerButton() {
+      let show;
+      if (this.$store.state.isUserLoggedIn === true
+          && this.postType === 'original'
+          && this.$store.state.openedTimeline
+          && this.$store.state.openedTimeline.isEditor
+          && this.$store.state.activeTab === 'explore') {
+        show = true;
+      }
+      if (this.$store.state.isUserLoggedIn === true
+          && this.postType === 'original'
+          && this.post.collectionData[0].isEditor
+          && this.$store.state.activeTab === 'home') {
+        show = true;
+      }
+      return show;
+    },
     postClass() {
       return this.postType === 'reply' ? 'text-xs-right' : 'text-xs-left';
     },
