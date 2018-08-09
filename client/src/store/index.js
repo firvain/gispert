@@ -135,6 +135,12 @@ export default new Vuex.Store({
     addNotificationFromSocket(state, data) {
       state.commit('addNotificationFromSocket', data);
     },
+    addEditor(state,data) {
+      state.commit('addEditor', data);
+    },
+    removeEditor(state,data) {
+      state.commit('removeEditor', data);
+    },
     // setLiveUsers(state, data) {
     //   state.commit('setLiveUsers', data);
     // },
@@ -358,6 +364,34 @@ export default new Vuex.Store({
     },
     setSelectedPost (state, data) {
       state.selectedPost = data;
+    },
+    addEditor (state, data) {
+      console.log('adding editor::', data);
+      const collectionId = data;
+      const objIndexPrivate = state.privateCollections.findIndex((obj => obj._id == collectionId));
+      const objIndexPublic = state.publicCollections.findIndex((obj => obj._id == collectionId));
+      console.log('search results:: ', objIndexPrivate, objIndexPublic);
+      
+      if (objIndexPrivate !== -1) {
+        state.privateCollections[objIndexPrivate].isEditor = true;
+      }
+      if (objIndexPublic !== -1) {
+        state.publicCollections[objIndexPublic].isEditor = true;
+      }
+    },
+    removeEditor (state, data) {
+      console.log('removing editor::', data);
+      const collectionId = data;
+      const objIndexPrivate = state.privateCollections.findIndex((obj => obj._id == collectionId));
+      const objIndexPublic = state.publicCollections.findIndex((obj => obj._id == collectionId));
+      console.log('search results:: ', objIndexPrivate, objIndexPublic);
+      
+      if (objIndexPrivate !== -1) {
+        state.privateCollections[objIndexPrivate].isEditor = false;
+      }
+      if (objIndexPublic !== -1) {
+        state.publicCollections[objIndexPublic].isEditor = false;
+      }
     },
   },
   getters: {

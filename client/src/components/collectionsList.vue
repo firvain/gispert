@@ -499,6 +499,14 @@ export default {
       this.$store.dispatch('deletePublicCollection', data.collectionId);
       this.$store.dispatch('deletePrivateCollection', data.collectionId);
     };
+    this.$options.sockets.youAreEditor = (data) => {
+      console.log('I am added as editor', data);
+      this.$store.dispatch('addEditor', data);
+    };
+    this.$options.sockets.youAreNotEditor = (data) => {
+      console.log('I am removed as editor', data);
+      this.$store.dispatch('removeEditor', data);
+    };
   },
 };
 </script>

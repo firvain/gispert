@@ -238,7 +238,9 @@ export default {
       }
       if (this.idToMatch === 'collection') {
         // console.log({ type: 'collection', id: this.$store.state.openedTimeline.id });
-        this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline.id });
+        if (this.$store.state.openedTimeline) {
+          this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline.id });
+        }
       }
     },
     zoomToChip(f) {

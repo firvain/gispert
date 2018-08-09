@@ -294,6 +294,14 @@ export default {
         // this.toggle_new_post();
       }
     });
+    this.$options.sockets.youAreEditor = (data) => {
+      console.log('I am added as editor', data);
+      this.collection.isEditor = true;
+    };
+    this.$options.sockets.youAreNotEditor = (data) => {
+      console.log('I am removed as editor', data);
+      this.collection.isEditor = false;
+    };
   },
 };
 </script>

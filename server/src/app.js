@@ -135,6 +135,13 @@ io.on('connection', function(socket) {
       socket.broadcast.to(data.collectionId).emit('removeUserFromCollection', data);
     });
 
+    socket.on('youAreEditor', function handleunfollow(data) {
+      socket.broadcast.to(data.userId).emit('youAreEditor', data.collectionId);
+    });
+    socket.on('youAreNotEditor', function handleunfollow(data) {
+      socket.broadcast.to(data.userId).emit('youAreNotEditor', data.collectionId);
+    });
+
     socket.on('userConnected', function handleUserConnection(userid) {
       const user = {
         id: socket.id,
@@ -142,6 +149,7 @@ io.on('connection', function(socket) {
       };
       // userAdded = true;
       userList.push(user);
+      socket.join(user.user_id);
       // io.emit('refreshUserList', userList);
       console.log('userList is:', userList);
       // console.log('socket id::', socket.userid);

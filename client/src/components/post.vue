@@ -41,7 +41,7 @@
                 fab small outline
                 v-bind:color="answerPostColor"
                 @click="toggle_answer"
-                v-if="$store.state.isUserLoggedIn === true && postType === 'original' && post.collectionData[0].isEditor">
+                v-if="$store.state.isUserLoggedIn === true && postType === 'original' && $store.state.openedTimeline && $store.state.openedTimeline.isEditor">
                 <v-icon large :color="answerPostTextColor">chat</v-icon>
               </v-btn>
               <span>{{ $t("message.replyTooltip") }}!</span>
