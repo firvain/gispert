@@ -147,7 +147,9 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" flat @click.native="shareDialogAddMembers = false; shareDialog = true; usersToInvite = [];">{{ $t('message.close')}}</v-btn>
-            <v-btn color="green darken-1" flat @click.native="inviteMembersToCollection(collection._id)">{{ $t('message.save')}}</v-btn>
+            <v-btn color="green darken-1" flat @click.native="inviteMembersToCollection(collection._id)">
+              {{ $t('message.sendMessage')}}
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -218,9 +220,17 @@ export default {
     post,
   },
   mounted() {
-    this.$options.sockets.refreshCollectionMembers = (data) => {
-      console.log('refreshing members::', JSON.stringify(data));
-      this.loadMembersOfThisCollection(data);
+    // this.$options.sockets.refreshCollectionMembers = (data) => {
+    //   console.log('refreshing members::', JSON.stringify(data));
+    //   this.loadMembersOfThisCollection(data);
+    // };
+    this.$options.sockets.unfollowedCollection = (data) => {
+      console.log('unfollowedCollection', data);
+      this.loadMembersOfThisCollection(data.collectionId);
+    };
+    this.$options.sockets.followedCollection = (data) => {
+      console.log('followedCollection', data);
+      this.loadMembersOfThisCollection(data.collectionId);
     };
   },
   watch: {
@@ -332,6 +342,7 @@ export default {
           this.$store.dispatch('deletePrivateCollection', id);
           this.$store.dispatch('deletePublicCollection', id);
           this.$eventHub.$emit('refreshpubliccollections', 'refresh');
+          this.$eventHub.$emit('refreshTimeline', data);
           this.$socket.emit('unfollowedCollection', data);
         }
       });

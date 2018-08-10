@@ -292,6 +292,10 @@ router.route('/collection')
                     { _id: { $in: cidsToUnfollow} },
                     { $pull: { members:  id } }
                 );
+                db.collection('collections').updateMany(
+                    { _id: { $in: cidsToUnfollow } },
+                    { $pull: { editors: id } }
+                );
 
                 cidsToFollow.forEach((cid) => {
                     db.collection('notifications').insertOne({ 
@@ -338,6 +342,10 @@ router.route('/collection')
                 db.collection('collections').update(
                     { _id: cId },
                     { $pull: { members: mId } }
+                );
+                db.collection('collections').update(
+                    { _id: cId },
+                    { $pull: { editors: mId } }
                 );
                 if (!force) {
                     db.collection('notifications').insertOne({ 

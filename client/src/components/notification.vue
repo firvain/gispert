@@ -292,6 +292,7 @@ export default {
           this.markAsRead();
           this.$eventHub.$emit('refreshpubliccollections', data);
           this.$eventHub.$emit('refreshprivatecollections', data);
+          this.$eventHub.$emit('refreshTimeline', data);
           this.$socket.emit('joinCollections', [collectionId]);
         });
     },

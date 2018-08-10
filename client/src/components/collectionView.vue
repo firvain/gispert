@@ -236,6 +236,7 @@ export default {
         this.$store.dispatch('deletePublicCollection', id);
         this.$eventHub.$emit('refreshprivatecollections', 'refresh');
         this.$eventHub.$emit('refreshpubliccollections', 'refresh');
+        this.$eventHub.$emit('refreshTimeline', data);
         this.$socket.emit('unfollowedCollection', data);
       });
     },
