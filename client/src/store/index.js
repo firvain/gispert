@@ -371,7 +371,7 @@ export default new Vuex.Store({
       const objIndexPrivate = state.privateCollections.findIndex((obj => obj._id == collectionId));
       const objIndexPublic = state.publicCollections.findIndex((obj => obj._id == collectionId));
       console.log('search results:: ', objIndexPrivate, objIndexPublic);
-      
+
       if (objIndexPrivate !== -1) {
         state.privateCollections[objIndexPrivate].isEditor = true;
       }
@@ -385,13 +385,20 @@ export default new Vuex.Store({
       const objIndexPrivate = state.privateCollections.findIndex((obj => obj._id == collectionId));
       const objIndexPublic = state.publicCollections.findIndex((obj => obj._id == collectionId));
       console.log('search results:: ', objIndexPrivate, objIndexPublic);
-      
+
       if (objIndexPrivate !== -1) {
         state.privateCollections[objIndexPrivate].isEditor = false;
       }
       if (objIndexPublic !== -1) {
         state.publicCollections[objIndexPublic].isEditor = false;
       }
+    },
+    removeCollectionFromTimeline(state, data) {
+      console.log('removing collection from TL::', data, state.timeline);
+      state.timeline = state.timeline.filter(function (obj) {
+        return obj.posts[0].collectionData[0]._id !== data;
+      });
+      console.log('new timeline:: ', state.timeline);
     },
   },
   getters: {

@@ -337,12 +337,13 @@ export default {
         this.loading = false;
         if (this.collection.visibility === 'private') {
           this.$eventHub.$emit('refreshprivatecollections', 'refresh');
+          this.$store.commit('removeCollectionFromTimeline', id);
         }
         if (this.collection.visibility === 'public') {
           this.$store.dispatch('deletePrivateCollection', id);
           this.$store.dispatch('deletePublicCollection', id);
+          this.$store.commit('removeCollectionFromTimeline', id);
           this.$eventHub.$emit('refreshpubliccollections', 'refresh');
-          this.$eventHub.$emit('refreshTimeline', data);
           this.$socket.emit('unfollowedCollection', data);
         }
       });

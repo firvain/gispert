@@ -52,13 +52,13 @@ export default {
     console.log('mounting notification list');
     this.getNotifications();
     this.$options.sockets.unfollowedCollection = (data) => {
-      console.log('unfollowedCollection', data);
+      console.log('unfollowedCollection:: ', data);
       this.getNotifications();
       // this.socketMessage = 'unfollowedCollection';
       // this.$store.commit('addNotificationFromSocket', data);
     };
     this.$options.sockets.followedCollection = (data) => {
-      console.log('followedCollection', data);
+      console.log('followedCollection:: ', data);
       // this.socketMessage = 'followedCollection';
       this.getNotifications();
       // this.$store.commit('addNotificationFromSocket', data);
