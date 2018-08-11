@@ -18,50 +18,79 @@ function dynamicSort(property) {
 }
 
 router.route('/collections')
-    .get(function getcollections(req, res) {
-        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var userid = req.query.userId;
-            // console.log('public of user:: ', userid);
-            var collection = db.collection('collections');
-            if (err) {
-                console.log(err);
+  .get(function getcollections(req, res) {
+    var userId = req.query.userId;
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+      .then(function (db) {
+        var collection = db.collection('collections');
+        return collection.aggregate([
+          {
+            $match: {
+              $or: [
+                {
+                  $and: [
+                    { visibility: 'public' },
+                    { user: ObjectID(userId) }
+                  ]
+                },
+                {
+                  $and: [
+                    { visibility: 'public' },
+                    { members: ObjectID(userId) }
+                  ]
+                },
+              ]
             }
-
-            collection.find({
-                $or: [{
-                    $and: [
-                        { visibility: 'public' }, 
-                        { members: ObjectID(userid) }
-                    ]    
-                }, {
-                    $and: [
-                        { visibility: 'public' }, 
-                        { user: ObjectID(userid) }
-                    ]                        
-                }]
-            }, {}).toArray(function handleCursor(error, docs) {
-                // var data = {};
-                if (err) {
-                    res.sendStatus(500);
-                    console.log(error);
-                } else {
-                    // docs.unshift({ title: 'Δημόσια Συλλογή', id: '0', description: 'Συλλογή που μπορούν να δουν όλοι' });
-                    var result = [];
-                    docs.forEach((d) => {
-                        // console.log(d.user.toString(), userid);
-                        if (d.user.toString() === userid) {
-                            result.unshift(d);
-                        } else {
-                            result.push(d);
-                        }
-                    });
-                    // console.log(docs);
-                    res.send(result);
-                    db.close();
+          },
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+              description: 1,
+              visibility: 1,
+              user: 1,
+              username: 1,
+              members: 1,
+              isEditor: {
+                $cond: {
+                  if: {
+                    $or: [
+                      { $in: [ObjectID(userId), "$editors"] },
+                      //   { $eq: [ObjectID(userId), "$editors"] },
+                      { $eq: [ObjectID(userId), "$user"] }
+                    ]
+                  },
+                  then: true,
+                  else: false
                 }
-            });
-        });
-    })
+              },
+              isMember: {
+                $cond: {
+                  if: {
+                    $and: [
+                      { $in: [ObjectID(userId), "$members"] },
+                    ]
+                  },
+                  then: true,
+                  else: false
+                }
+              }
+            }
+          }
+        ]);
+        db.close();
+      })
+      .then(function (cursor) {
+        return cursor.toArray();
+      })
+      .then(function (content) {
+        res.status(200).json(content);
+      })
+      .catch(function (err) {
+        throw err;
+      });
+  });
+
 
 router.route('/timeline')
 .get(function getcollections(req, res) {

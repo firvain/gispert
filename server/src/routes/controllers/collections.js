@@ -52,10 +52,20 @@ router.route('/')
                   then: true,
                   else: false
                 }
-              }
-            }
+              },
+               isMember: {
+                    $cond: {
+                        if: {
+                            $and: [
+                                { $in: [ObjectID(userId), "$members"] },
+                            ]
+                        },
+                        then: true,
+                        else: false
+                    }
+                } 
+           }
           }
-
         ]);
         db.close();
       })
@@ -73,6 +83,8 @@ router.route('/')
       MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
           var newCollection = req.body.newCollection;
           newCollection.user = ObjectID(req.body.newCollection.user);
+          newCollection.members = [];
+          newCollection.editors = [];
           // console.log(req.body);
           console.log('a new collection:: ', newCollection);
           if (err) {
@@ -268,6 +280,7 @@ router.route('/collection')
             const userId = req.body.data.memberId;
             const collectionsToFollow = req.body.data.collectionsToFollow;
             const collectionsToUnfollow = req.body.data.collectionsToUnfollow;
+            console.log('data:: ', req.body.data);
             // console.log('adding user to collection:: ', userId, collectionsId);
             const id = new ObjectID(userId);
 
@@ -363,45 +376,162 @@ router.route('/collection')
         });
     });        
 
-    router.route('/search')
-    .get(function searchcollections(req, res) {
-        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-            var userId = req.query.userId;
-            var keyword = req.query.keyword;
-            // console.log('get type:: ', type);
-            var collection = db.collection('collections');
-            if (err) {
-                console.log(err);
-            }
-            if (userId) {
-                // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
-                collection.find({
-                    $and: [
-                    {title: {$regex : ".*"+keyword+".*", '$options' : 'i'}},
-                    {$or: [
-                        { 
-                            visibility: 'public'
-                        },
-                        {
+
+router.route('/search')
+    .get(function getmemberscollection(req, res) {
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+            .then(function (db) {
+                var userId = req.query.userId;
+                var keyword = req.query.keyword;
+                // console.log('get type:: ', type);
+                var collection = db.collection('collections');
+
+                return collection.aggregate([
+                    {
+                        $match: {
                             $and: [
-                                { visibility: 'private' }, 
-                                { user: ObjectID(userId) }
-                            ]
+                                { title: { $regex: ".*" + keyword + ".*", '$options': 'i' } },
+                                {
+                                    $or: [
+                                        {
+                                            visibility: 'public'
+                                        },
+                                        {
+                                            $and: [
+                                                { visibility: 'private' },
+                                                { user: ObjectID(userId) }
+                                            ]
+                                        }
+                                    ]
+                            }] 
+                        } 
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            title: 1,
+                            description: 1,
+                            visibility: 1,
+                            user: 1,
+                            username: 1,
+                            // members: 1,
+                            isEditor: {
+                                $cond: {
+                                    if: {
+                                        $or: [
+                                            { $in: [ObjectID(userId), "$editors"] },
+                                            //   { $eq: [ObjectID(userId), "$editors"] },
+                                            { $eq: [ObjectID(userId), "$user"] }
+                                        ]
+                                    },
+                                    then: true,
+                                    else: false
+                                }
+                            },
+                            isMember: {
+                                $cond: {
+                                    if: {
+                                        $and: [
+                                            { $in: [ObjectID(userId), "$members"] },
+                                        ]
+                                    },
+                                    then: true,
+                                    else: false
+                                }
+                            }
                         }
-                    ]}] }, {}).toArray(function handleCursor(error, docs) {
-                    // console.log(docs);
-                    var data = {};
-                    if (err) {
-                        res.sendStatus(500);
-                        console.log(error);
-                    } else {
-                        res.send(docs);
-                        db.close();
-                    }
-                });
-            }
-        });
+                    }, 
+                ]);
+                db.close();
+            })
+            .then(function (cursor) {
+                return cursor.toArray();
+            })
+            .then(function (content) {
+                res.status(200).json(content);
+            })
+            .catch(function (err) {
+                throw err;
+            });
     });
+
+
+    // router.route('/search')
+    // .get(function searchcollections(req, res) {
+    //     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+    //         var userId = req.query.userId;
+    //         var keyword = req.query.keyword;
+    //         // console.log('get type:: ', type);
+    //         var collection = db.collection('collections');
+    //         if (err) {
+    //             console.log(err);
+    //         }
+    //         if (userId) {
+    //             // collection.find({ user: ObjectID(userId) }).toArray(function handleCursor(error, docs) {
+    //             collection.find({
+    //                 $and: [
+    //                 {title: {$regex : ".*"+keyword+".*", '$options' : 'i'}},
+    //                 {$or: [
+    //                     { 
+    //                         visibility: 'public'
+    //                     },
+    //                     {
+    //                         $and: [
+    //                             { visibility: 'private' }, 
+    //                             { user: ObjectID(userId) }
+    //                         ]
+    //                     }
+    //                 ]}] }
+    //                 ,
+    //                 // {
+    //                     // $project: {
+    //                     //     _id: 1,
+    //                     //     title: 1,
+    //                     //     description: 1,
+    //                     //     visibility: 1,
+    //                     //     user: 1,
+    //                     //     username: 1,
+    //                     //     members: 1,
+    //                         // isEditor: {
+    //                         //     $cond: {
+    //                         //         if: {
+    //                         //             $or: [
+    //                         //                 { $in: [ObjectID(userId), "$editors"] },
+    //                         //                 //   { $eq: [ObjectID(userId), "$editors"] },
+    //                         //                 { $eq: [ObjectID(userId), "$user"] }
+    //                         //             ]
+    //                         //         },
+    //                         //         then: true,
+    //                         //         else: false
+    //                         //     }
+    //                         // },
+    //                         // isMember: {
+    //                         //     $cond: {
+    //                         //         if: {
+    //                         //             $and: [
+    //                         //                 { $in: [ObjectID(userId), "$members"] },
+    //                         //             ]
+    //                         //         },
+    //                         //         then: true,
+    //                         //         else: false
+    //                         //     }
+    //                         // }
+    //                     // }
+    //                 // }, 
+    //                 {}).toArray(function handleCursor(error, docs) {
+    //                 // console.log(docs);
+    //                 var data = {};
+    //                 if (err) {
+    //                     res.sendStatus(500);
+    //                     console.log(error);
+    //                 } else {
+    //                     res.send(docs);
+    //                     db.close();
+    //                 }
+    //             });
+    //         }
+    //     });
+    // });
 
 
 router.route('/members')

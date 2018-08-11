@@ -17,10 +17,16 @@
               <v-icon color="blue lighten-1" v-if="details === false">folder</v-icon>
             </v-btn>
           </v-list-tile-action>
-          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id">
+          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id && collection.isMember === true">
             <v-btn fab small outline
               @click="unfollowCollectionDialog = true">
               <v-icon color="red lighten-1">visibility_off</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user !== this.$store.state.user._id && collection.isMember === false">
+            <v-btn fab small outline
+              @click="followCollection()">
+              <v-icon color="red lighten-1">visibility</v-icon>
             </v-btn>
           </v-list-tile-action>
           <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
@@ -453,6 +459,26 @@ export default {
           this.editors.remove(userId);
           this.$socket.emit('youAreNotEditor', data);
         }
+      });
+    },
+    followCollection() {
+      const url = `${config.url}/collections/setMembership`;
+      const data = {
+        memberId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        collectionsToFollow: [this.collection._id], // eslint-disable-line no-underscore-dangle
+        collectionsToUnfollow: [],
+        userCreated: this.collection.user,
+      };
+      console.log('follow:: ', data);
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      })
+      .then(() => {
+        this.collection.isMember = true;
+        this.$socket.emit('followedCollection', data);
+        this.$eventHub.$emit('refreshprivatecollections');
+        this.$eventHub.$emit('refreshpubliccollections');
+        // console.log('mark as followed and notify user');
       });
     },
   },
