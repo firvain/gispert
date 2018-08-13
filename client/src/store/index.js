@@ -378,6 +378,24 @@ export default new Vuex.Store({
       if (objIndexPublic !== -1) {
         state.publicCollections[objIndexPublic].isEditor = true;
       }
+
+      state.timeline.forEach((thread) => {
+        if (thread.posts[0].collectionData[0]._id === collectionId) {
+          thread.posts[0].collectionData[0].isEditor = true;
+        }
+      });
+
+      state.collectionTimeline.forEach((thread) => {
+        if (thread.posts[0].collectionData[0]._id === collectionId) {
+          thread.posts[0].collectionData[0].isEditor = true;
+        }
+      });
+
+      state.userTimeline.forEach((thread) => {
+        if (thread.posts[0].collectionData[0]._id === collectionId) {
+          thread.posts[0].collectionData[0].isEditor = true;
+        }
+      });
     },
     removeEditor (state, data) {
       console.log('removing editor::', data);
@@ -392,6 +410,24 @@ export default new Vuex.Store({
       if (objIndexPublic !== -1) {
         state.publicCollections[objIndexPublic].isEditor = false;
       }
+
+      state.timeline.forEach((thread) => {
+        if (thread.posts[0].collectionData[0]._id === collectionId) {
+          thread.posts[0].collectionData[0].isEditor = false;
+        }
+      });
+
+      state.collectionTimeline.forEach((thread) => {
+        if (thread.posts[0].collectionData[0]._id === collectionId) {
+          thread.posts[0].collectionData[0].isEditor = false;
+        }
+      });
+
+      state.userTimeline.forEach((thread) => {
+        if (thread.posts[0].collectionData[0]._id === collectionId) {
+          thread.posts[0].collectionData[0].isEditor = false;
+        }
+      });
     },
     removeCollectionFromTimeline(state, data) {
       console.log('removing collection from TL::', data, state.timeline);
