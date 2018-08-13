@@ -524,17 +524,17 @@ export default {
     // },
     showAnswerButton() {
       let show;
-      if (this.$store.state.isUserLoggedIn === true
-          && this.postType === 'original'
-          && this.$store.state.openedTimeline
-          && this.$store.state.openedTimeline.isEditor
-          && this.$store.state.activeTab === 'explore') {
-        show = true;
-      }
+      // if (this.$store.state.isUserLoggedIn === true
+      //     && this.postType === 'original'
+      //     && this.$store.state.openedTimeline
+      //     && this.$store.state.openedTimeline.isEditor
+      //     && this.$store.state.activeTab === 'explore') {
+      //   show = true;
+      // }
       if (this.$store.state.isUserLoggedIn === true
           && this.postType === 'original'
           && this.post.collectionData[0].isEditor
-          && this.$store.state.activeTab === 'home') {
+          ) {
         show = true;
       }
       return show;

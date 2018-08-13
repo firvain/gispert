@@ -181,7 +181,7 @@ router.route('/all')
               $cond: {
                 if: {
                   $or: [
-                    { $in: [ObjectId(userId), "$editors"] },
+                    { $in: [[ObjectId(userId)], "$editors"] },
                     // { $eq: [userId, "$post.userId"] },
                     { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                   ]
@@ -626,7 +626,7 @@ router.route('/person')
               $cond: {
                 if: {
                   $or: [
-                    { $in: [ObjectId(userIdCl), "$editors"] },
+                    { $in: [[ObjectId(userIdCl)], "$editors"] },
                     // { $eq: [userIdCl, "$post.userId"] },
                     { $eq: [ObjectId(userIdCl), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                   ]
@@ -757,6 +757,7 @@ router.route('/feature')
         if (post) {
           thread = database.createThreadFromIsReplyTo(post[0].isReplyTo, userId);
         }
+        console.log('thread created is:: ', thread);
         return thread;
       })
       .then((thread) => {
@@ -844,7 +845,7 @@ router.route('/search')
                 $cond: {
                   if: {
                     $or: [
-                      { $in: [ObjectId(userId), "$editors"] },
+                      { $in: [[ObjectId(userId)], "$editors"] },
                       // { $eq: [userId, "$post.userId"] },
                       { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                     ]

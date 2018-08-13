@@ -181,7 +181,7 @@ router.route('/collection')
                     $cond: {
                       if: {
                         $or: [
-                          { $in: [ObjectID(userId), "$editors"] },
+                          { $in: [[ObjectID(userId)], "$editors"] },
                         //   { $eq: [userId, "$post.userId"] },
                           { $eq: [ObjectID(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                         ]

@@ -185,7 +185,7 @@ class Database {
     }
 
     createThreadFromIsReplyTo(postId, userId, start, end) {
-        console.log('creating thread for reply id:: ', postId);
+        console.log('creating thread for reply id:: ', postId, userId);
         return new Promise((resolve, reject) => {
             this.db.collection('posts').aggregate(
                 [
@@ -208,13 +208,21 @@ class Database {
                       "post.isReplyTo": "$isReplyTo",
                       "post.replies": "$replies",
                       "post.featureData": "$featureData",
+                    //   "post.collectionData": "$collectionData",
                       "post.collectionData": {
                         "$filter": {
                             "input": "$collectionData",
                             "as": "child",
-                            "cond": { $or: [ { "$eq": [ "$$child.visibility", "public" ] }, { "$eq": [ "$$child.user", ObjectId(userId) ] } ] }
+                            "cond": {
+                                $or: [
+                                  { "$eq": ["$$child.visibility", "public"] },
+                                  { "$eq": ["$$child.user", ObjectId(userId)] },
+                                  { $in: [ObjectId(userId), "$$child.members"] },
+                                ]
+                              }              
                         }
-                     },
+                      },
+                      "editors": "$collectionData.editors",
                       "post.userName": "$userName",
                       "post.userId": "$userId",
                       "post.timestamp": "$timestamp",
@@ -229,27 +237,93 @@ class Database {
                       }
                     },
                     {
-                      $sort: { 'post.timestamp' : -1 }
-                    },
-                    { $group : {
-                      _id : "$post.isReplyTo",
-                      posts: {$push: "$post"},
-                    }},
-                    { $project: {
-                      posts:1,
-                      count: { $size: "$posts" }
-                    }},
-                    {
-                      $sort: { 'posts.timestamp' : -1 }
-                    },
-                    { $project: {
-                      count:1,
-                      posts: { $slice: [ "$posts", 0, 4 ] }
-                    }},
+                        $project: {
+                          "post._id": 1,
+                          "post.isReplyTo": 1,
+                          "post.replies": 1,
+                          "post.featureData": 1,
+                          "post.collectionData._id": 1,
+                          "post.collectionData.description": 1,
+                          "post.collectionData.title": 1,
+                          "post.collectionData.user": 1,
+                          "post.collectionData.username": 1,
+                          "post.collectionData.visibility": 1,
+                          "post.collectionData.members": 1,
+                          "editors": 1,
+                          "post.collectionData.isEditor": {
+                            $cond: {
+                              if: {
+                                $or: [
+                                  { $in: [[ObjectId(userId)], "$editors"] },
+                                  { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
+                                ]
+                              },
+                              then: true,
+                              else: false
+                            }
+                          },
+                          "post.userName": 1,
+                          "post.userId": 1,
+                          "post.timestamp": 1,
+                          "post.text": 1
+                        }
+                      },
+                      {
+                        $sort: { 'post.timestamp': -1 }
+                      },
+                      {
+                        $group: {
+                          _id: "$post.isReplyTo",
+                          posts: { $push: "$post" },
+                        }
+                      },
+                      {
+                        $project: {
+                          posts: 1,
+                          count: { $size: "$posts" }
+                        }
+                      },
+                      {
+                        $sort: { 'posts.timestamp': -1 }
+                      },
+                      {
+                        $project: {
+                          count: 1,
+                          posts: {
+                            $switch: {
+                              branches: [
+                                {
+                                  case: { $gt: ["$count", 4] }, then: {
+                                    $concatArrays: [{
+                                      $slice: ["$posts", {
+                                        $subtract: ["$count", 1]
+                                      }, "$count"]
+                                    },
+                                    { $slice: ["$posts", 0, 4] }]
+                                  }
+                                },
+                                {
+                                  case: { $and: [{ $lt: ["$count", 4] }, { $gt: ["$count", 1] }] }, then: {
+                                    $concatArrays: [{
+                                      $slice: ["$posts", {
+                                        $subtract: ["$count", 1]
+                                      }, "$count"]
+                                    },
+                                    { $slice: ["$posts", 0, { $subtract: ["$count", 1] }] }
+                                    ]
+                                  }
+                                },
+                              ],
+                              default: { $slice: ["$posts", 0, "$count"] }
+                            }
+                          }
+                        }
+                      },
                   ], (err, docs) => {
                    if(err) {
                        reject(err);
                    } else {
+                       console.log('thread from promise:: ', docs);
                        resolve(docs);
                    }
                 }
