@@ -400,9 +400,59 @@ export default {
         hello(network).api('me').then((json) => {
           const profile = json;
           console.log(profile);
+          const fb = hello('facebook').getAuthResponse();
+          console.log(fb);
           /*
+            if profile does not exist get the info from json
+            if exists login and set this token as valid in the API
             performs operations using the user info from profile
           */
+          return profile;
+        }).then((profile) => {
+          const url = `${config.url}/login/social`;
+          axios.get(url, {
+            params: {
+              name: profile.name,
+              id: profile.id,
+            },
+          }).then((response) => {
+            if (response.data.success === false) {
+              console.log(response.data);
+            } else {
+              this.user = response.data;
+              this.snackbarLoggedIn = true;
+              this.dialogLogin = false;
+              this.$store.dispatch('setToken', response.data.token);
+              this.$store.dispatch('setUser', response.data.user);
+              this.$eventHub.$emit('logged-in');
+            }
+          }).then(() => {
+            const urlUsers = `${config.url}/users/all`;
+            axios.get(urlUsers, {
+              params: {
+                userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+                pageFrom: 0,
+                pageTo: 25,
+              },
+              headers: { 'x-access-token': this.$store.state.token },
+            }).then((response) => {
+              if (response.data.success === false) {
+                console.log(response.data);
+                console.log('not logged in to see others');
+              } else {
+                this.$store.dispatch('setUsers', response.data);
+                // this.users = response.data;
+              }
+            }).then(() => {
+              console.log('connected as ::', this.$store.state.user.name);
+              this.loadPublicCollections();
+              this.loadPrivateCollections();
+              // this.loadLiveUsers();
+            }).then(() => {
+              this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
+              this.loading = false;
+            });
+          });
         });
       });
     },

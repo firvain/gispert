@@ -7,8 +7,8 @@ const appUrl = `${APIhttpType}://${APIhost}:${APIhostPort}/${APIversion}`;
 const socketUrl = `${APIhttpType}://${APIhost}:${APIhostPort}`;
 const shareUrl = `${APIhttpType}://${APIhost}:${hostPost}`;
 
-// const facebook_id = '';
-// const google_id = '';
+const facebookId = '1772053726225880';
+const googleId = '512572050910-i2pgo4490eva3qe1asbfv5o9ujmub8pi.apps.googleusercontent.com';
 
 // const APIhost = 'geobabel.herokuapp.com';
 // const APIversion = 'v1';
@@ -21,4 +21,6 @@ module.exports = {
   url: appUrl,
   surl: socketUrl,
   share: shareUrl,
+  facebookId,
+  googleId,
 };

@@ -17,13 +17,13 @@ const SocialSharing = require('vue-social-sharing');
 const HelloJs = require('hellojs/dist/hello.all.min.js');
 const VueHello = require('vue-hellojs');
 
-const GOOGLE_APP_CLIENT_ID = config.google_id;
-const FACEBOOK_APP_CLIENT_ID = config.facebook_id;
+const GOOGLE_APP_CLIENT_ID = config.googleId;
+const FACEBOOK_APP_CLIENT_ID = config.facebookId;
 HelloJs.init({
   google: GOOGLE_APP_CLIENT_ID,
   facebook: FACEBOOK_APP_CLIENT_ID,
 }, {
-  redirect_uri: 'authcallback/',
+  redirect_uri: '/',
 });
 Vue.use(VueHello, HelloJs);
 

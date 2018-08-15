@@ -8,9 +8,6 @@ const moment = require('moment');
 var MongoClient = require('mongodb').MongoClient;
 const config = require('../../config');
 
-// https://scotch.io/tutorials/easy-node-authentication-facebook
-// https://scotch.io/tutorials/easy-node-authentication-google
-
 function hashPassword(user) {
   console.log('hash password');
   const SALT_FACTOR = 8;
@@ -28,7 +25,7 @@ function hashPassword(user) {
 }
 
 router.route('/')
-  .get(function getusers(req, res) {
+  .get(function login(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
       var name = req.query.name;
       var password = bcrypt.hashSync(req.query.password, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
@@ -63,7 +60,7 @@ router.route('/')
       }
     });
   })
-  .post(function setuser(req, res) {
+  .post(function register(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
       userPasswordHashed = bcrypt.hashSync(req.body.password, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
       const user = {
@@ -111,5 +108,43 @@ router.route('/')
       }
     });
   });
+
+router.route('/social')
+  .get(function login(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      if (err) {
+        res.send({
+          error: 'Login information was incorrect'
+        });
+      } else {
+        var query = { id: req.query.id, name: req.query.name };
+        console.log('logging from fb:: ', query);
+        db.collection('users').find(query).toArray(function (err, result) {
+          if (err) {
+            throw err;
+          } else if (result.length == 0) {
+            // insert the user here
+            const user = {
+              name: req.query.name,
+              id: req.query.id,
+            };
+            db.collection('users').insertOne(
+              user
+            );
+            db.close();
+          } else {
+            const user = result[0];
+            // user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
+            res.send({
+              user: user,
+              token: jwt.sign({ data: user }, config.secret, { expiresIn: 60 * 60 * 2 })
+            });
+            db.close();
+          }
+        });
+      }
+    });
+  });
+
 
 module.exports = router;
