@@ -44,35 +44,26 @@
         </v-flex>
 
       <v-dialog v-model="dialogRegister" max-width="400">
-        <v-tabs icons grow dark>
-          <v-tabs-bar class="orange">
-            <v-tabs-slider color="yellow"></v-tabs-slider>
-            <v-tabs-item href="#tab-1">
+        <!-- <v-tabs icons grow dark> -->
+          <!-- <v-tabs-bar class="orange"> -->
+            <!-- <v-tabs-slider color="yellow"></v-tabs-slider> -->
+            <!-- <v-tabs-item href="#tab-1">
               <v-icon>account_circle</v-icon>
               {{ $t("message.existingAccount") }}
-            </v-tabs-item>
-            <v-tabs-item href="#tab-2">
+            </v-tabs-item> -->
+            <!-- <v-tabs-item href="#tab-2"> -->
               <v-icon>control_point</v-icon>
               {{ $t("message.newAccount") }}
-            </v-tabs-item>
-          </v-tabs-bar>
-          <v-tabs-items>
-            <v-tabs-content
+            <!-- </v-tabs-item> -->
+          <!-- </v-tabs-bar> -->
+          <!-- <v-tabs-items> -->
+            <!-- <v-tabs-content
               id="tab-1"
-            >
-              <v-card flat>
-                  <!-- https://www.npmjs.com/package/vue-hellojs -->
-                  <!-- https://vue-hellojs-demo.surge.sh/#/ -->
-                  <v-btn @click="auth('google')">Google</v-btn>
-                  <v-btn @click="auth('facebook')">Facebook</v-btn>
-                  <v-btn @click="auth('linkedin')">Linkedin</v-btn>
-                  <v-btn @click="auth('twitter')">Twitter</v-btn>
-                  <v-btn @click="auth('github')">Github</v-btn>
-              </v-card>
-            </v-tabs-content>
+            > -->
+            <!-- </v-tabs-content>
             <v-tabs-content
               id="tab-2"
-            >
+            > -->
               <v-card>
                 <v-card-title class="headline">{{ $t("message.registerUserText") }}</v-card-title>
                 <v-card-text>
@@ -120,9 +111,9 @@
                   </v-btn>
                 </v-card-actions>
               </v-card>
-            </v-tabs-content>
+            <!-- </v-tabs-content>
           </v-tabs-items>
-        </v-tabs>
+        </v-tabs> -->
       </v-dialog>
         <v-snackbar
           :timeout=5000
@@ -135,16 +126,12 @@
       <v-dialog v-model="dialogLogin" max-width="400">
         <v-card>
           <v-card-title class="headline">{{ $t("message.accountLogin")}}</v-card-title>
-          <v-card-text>
-          <form
-            name="login-form"
-            autocomplete="off">
+          <v-container>
             <v-text-field
               :label = "$t('message.name')"
               v-model="credentials.email"
               v-on:keyup.enter="login"
             ></v-text-field>
-            <br>
             <v-text-field
               :label="$t('message.password')"
               type="password"
@@ -152,18 +139,33 @@
               autocomplete="new-password"
               v-on:keyup.enter="login(credentials)"
             ></v-text-field>
-          </form>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-          <v-btn
-            dark
-            class="cyan"
-            @click="login(credentials)">
-            {{ $t("message.login")}}
-          </v-btn>
-            <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">{{ $t("message.cancel")}}</v-btn>
-          </v-card-actions>
+              <v-btn
+                dark
+                class="cyan"
+                @click="login(credentials)">
+                {{ $t("message.login")}}
+              </v-btn>
+              <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">{{ $t("message.cancel")}}</v-btn>
+            <!-- <v-spacer></v-spacer> -->
+          </v-container>
+              <v-flex class="text-xs-center"><h5>Sign in with</h5></v-flex>
+              <v-btn block flat @click="auth('google')">
+                <i class="fa fa-fw fa-google"></i>
+                Google
+              </v-btn>
+              <v-btn block flat @click="auth('facebook')">
+                <i class="fa fa-fw fa-facebook"></i>
+                Facebook
+              </v-btn>
+              <v-btn block flat @click="auth('linkedin')">
+                <i class="fa fa-fw fa-linkedin"></i>
+                Linkedin
+              </v-btn>
+              <v-btn block flat @click="auth('twitter')">
+                <i class="fa fa-fw fa-twitter"></i>
+                Twitter
+              </v-btn>
+              <!-- <v-btn @click="auth('github')">Github</v-btn> -->
         </v-card>
         <v-snackbar
           :timeout=5000
@@ -414,6 +416,7 @@ export default {
             params: {
               name: profile.name,
               id: profile.id,
+              email: profile.email,
             },
           }).then((response) => {
             if (response.data.success === false) {

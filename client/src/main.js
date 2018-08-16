@@ -23,6 +23,8 @@ HelloJs.init({
   google: GOOGLE_APP_CLIENT_ID,
   facebook: FACEBOOK_APP_CLIENT_ID,
 }, {
+  scope: ['email'],
+  force: true,
   redirect_uri: '/',
 });
 Vue.use(VueHello, HelloJs);

@@ -117,7 +117,7 @@ router.route('/social')
           error: 'Login information was incorrect'
         });
       } else {
-        var query = { id: req.query.id, name: req.query.name };
+        var query = { email: req.query.email };
         console.log('logging from fb:: ', query);
         db.collection('users').find(query).toArray(function (err, result) {
           if (err) {
@@ -127,6 +127,7 @@ router.route('/social')
             const user = {
               name: req.query.name,
               id: req.query.id,
+              email: req.query.email
             };
             db.collection('users').insertOne(
               user
