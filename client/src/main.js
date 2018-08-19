@@ -19,9 +19,11 @@ const VueHello = require('vue-hellojs');
 
 const GOOGLE_APP_CLIENT_ID = config.googleId;
 const FACEBOOK_APP_CLIENT_ID = config.facebookId;
+const LINKEDIN_APP_CLIENT_ID = config.linkedinId;
 HelloJs.init({
   google: GOOGLE_APP_CLIENT_ID,
   facebook: FACEBOOK_APP_CLIENT_ID,
+  linkedin: LINKEDIN_APP_CLIENT_ID,
 }, {
   scope: ['email'],
   force: true,

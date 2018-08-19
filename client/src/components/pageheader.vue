@@ -699,6 +699,7 @@ export default {
     },
     setLocale(value) {
       // console.log('setting locale to ::', value);
+      app.$i18n.locale = value;
       if (this.$store.state.isUserLoggedIn) {
         const url = `${config.url}/users/setlocale`;
         const updateInfo = {

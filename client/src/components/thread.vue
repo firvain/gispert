@@ -12,7 +12,8 @@
     <v-layout>
       <v-flex xs6 sm6 md6>
         <v-btn block color="primary" v-if="thread.posts.length > 1" @click="showMoreReplies = !showMoreReplies">
-          {{ $t('message.viewReplies')}}
+          <span v-if="!showMoreReplies">{{ $t('message.viewReplies')}}</span>
+          <span v-if="showMoreReplies">{{ $t('message.hideReplies')}}</span>
         </v-btn>
       </v-flex>
       <v-flex xs6 sm6 md6>
@@ -48,6 +49,24 @@ export default {
         this.currentReplyIndex += 1;
       }
     });
+    this.$options.sockets.youAreEditor = (data) => {
+      console.log('listened to editor:: ', data);
+      console.log('comparing:: ', this.thread.posts[0].collectionData[0]._id, data); // eslint-disable-line no-underscore-dangle
+      if (data ===
+        this.thread.posts[0].collectionData[0]._id) { // eslint-disable-line no-underscore-dangle
+        this.thread.posts[0].isEditor = true;
+        this.thread.posts[0].collectionData[0].isEditor = true;
+        console.log(JSON.stringify(this.thread.posts[0]));
+      }
+    };
+    this.$options.sockets.youAreNotEditor = (data) => {
+      if (data ===
+        this.thread.posts[0].collectionData[0]._id) { // eslint-disable-line no-underscore-dangle
+        this.thread.posts[0].isEditor = false;
+        this.thread.posts[0].collectionData[0].isEditor = false;
+        console.log(JSON.stringify(this.thread.posts[0]));
+      }
+    };
   },
   methods: {
     loadMoreReplies() {

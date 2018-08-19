@@ -9,6 +9,7 @@ const shareUrl = `${APIhttpType}://${APIhost}:${hostPost}`;
 
 const facebookId = '1772053726225880';
 const googleId = '512572050910-i2pgo4490eva3qe1asbfv5o9ujmub8pi.apps.googleusercontent.com';
+const linkedinId = '86qsfazxbltu7i';
 
 // const APIhost = 'geobabel.herokuapp.com';
 // const APIversion = 'v1';
@@ -23,4 +24,5 @@ module.exports = {
   share: shareUrl,
   facebookId,
   googleId,
+  linkedinId,
 };

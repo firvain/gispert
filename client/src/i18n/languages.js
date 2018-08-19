@@ -16,6 +16,7 @@ module.exports = {
       reply: 'Reply',
       replyTooltip: 'Post a reply',
       viewReplies: 'View replies',
+      hideReplies: 'Hide replies',
       newPost: 'New Post',
       accountLogin: 'Account Login',
       name: 'Name',
@@ -102,6 +103,7 @@ module.exports = {
       fillColor: 'Fill',
       strokeWidth: 'Width',
       symbologyStyle: 'Style',
+      noUserCollectionsFound: 'None public collection found',
     },
   },
   el_GR: {
@@ -121,6 +123,7 @@ module.exports = {
       reply: 'Απάντησε',
       replyTooltip: 'Απάντησε με μια ανάρτηση',
       viewReplies: 'Δες τις απαντήσεις',
+      hideReplies: 'Απόκρυψη απαντήσεων',
       newPost: 'Νέα ανάρτηση',
       accountLogin: 'Σύνδεση στο λογαριασμό',
       name: 'Όνομα',
@@ -207,6 +210,7 @@ module.exports = {
       fillColor: 'Γέμισμα',
       strokeWidth: 'Πάχος',
       symbologyStyle: 'Στυλ',
+      noUserCollectionsFound: 'Δεν βρέθηκαν δημόσιες συλλογές',
     },
   },
   fr: {

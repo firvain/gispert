@@ -35,6 +35,7 @@
               :value="collection._id"
             >
             </v-checkbox>
+            <p v-show="noUserCollections">{{ $t('message.noUserCollectionsFound') }}</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -67,6 +68,7 @@ export default {
     dialogCollections: false,
     loading: false,
     initialCollections: [],
+    noUserCollections: false,
   }),
   methods: {
     explore() {
@@ -122,7 +124,13 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
-        this.userCollections = response.data;
+        if (response.data.length > 0) {
+          this.userCollections = response.data;
+          this.noUserCollections = false;
+        } else {
+          this.loading = false;
+          this.noUserCollections = true;
+        }
       }).then(() => {
         const idsOfCollections = [];
         this.$store.state.publicCollections.forEach((c) => {
