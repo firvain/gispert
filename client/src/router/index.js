@@ -15,6 +15,7 @@ Vue.use(Vuetify);
 Vue.directive('linkified', linkify);
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/register',

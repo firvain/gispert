@@ -157,14 +157,14 @@
                 <i class="fa fa-fw fa-facebook"></i>
                 Facebook
               </v-btn>
-              <v-btn block flat @click="auth('linkedin')">
+              <!-- <v-btn block flat @click="auth('linkedin')">
                 <i class="fa fa-fw fa-linkedin"></i>
                 Linkedin
               </v-btn>
               <v-btn block flat @click="auth('twitter')">
                 <i class="fa fa-fw fa-twitter"></i>
                 Twitter
-              </v-btn>
+              </v-btn> -->
               <!-- <v-btn @click="auth('github')">Github</v-btn> -->
         </v-card>
         <v-snackbar
@@ -395,15 +395,13 @@ export default {
       const hello = this.hello;
       hello(network).login().then(() => {
         const authRes = hello(network).getAuthResponse();
-        console.log(authRes);
-        /*
-          performs operations using the token from authRes
-        */
+        console.log('auth res:: ', authRes);
         hello(network).api('me').then((json) => {
+          console.log('getting profile');
           const profile = json;
-          console.log(profile);
-          const fb = hello('facebook').getAuthResponse();
-          console.log(fb);
+          console.log('profile:: ', profile);
+          const authresponse = hello(network).getAuthResponse();
+          console.log('response auth:: ', authresponse);
           /*
             if profile does not exist get the info from json
             if exists login and set this token as valid in the API
