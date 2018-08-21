@@ -394,19 +394,15 @@ export default {
     auth(network) {
       const hello = this.hello;
       hello(network).login().then(() => {
-        const authRes = hello(network).getAuthResponse();
-        console.log('auth res:: ', authRes);
+        this.dialogLogin = false;
+        // const authRes = hello(network).getAuthResponse();
+        // console.log('auth res:: ', authRes);
         hello(network).api('me').then((json) => {
-          console.log('getting profile');
+          // console.log('getting profile');
           const profile = json;
-          console.log('profile:: ', profile);
-          const authresponse = hello(network).getAuthResponse();
-          console.log('response auth:: ', authresponse);
-          /*
-            if profile does not exist get the info from json
-            if exists login and set this token as valid in the API
-            performs operations using the user info from profile
-          */
+          // console.log('profile:: ', profile);
+          // const authresponse = hello(network).getAuthResponse();
+          // console.log('response auth:: ', authresponse);
           return profile;
         }).then((profile) => {
           const url = `${config.url}/login/social`;

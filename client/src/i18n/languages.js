@@ -104,6 +104,8 @@ module.exports = {
       strokeWidth: 'Width',
       symbologyStyle: 'Style',
       noUserCollectionsFound: 'None public collection found',
+      notifications: 'Notifications',
+      markAllAsRead: 'Mark all as read',
     },
   },
   el_GR: {
@@ -211,6 +213,8 @@ module.exports = {
       strokeWidth: 'Πάχος',
       symbologyStyle: 'Στυλ',
       noUserCollectionsFound: 'Δεν βρέθηκαν δημόσιες συλλογές',
+      notifications: 'Ειδοποιήσεις',
+      markAllAsRead: 'Τα έχω διαβάσει όλα',
     },
   },
   fr: {

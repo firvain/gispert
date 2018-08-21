@@ -1,14 +1,25 @@
 <template>
   <v-container>
     <!-- {{ socketMessage }} -->
-    <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
-      <notification v-for="(notification, index) in $store.state.notifications" :key='index' :notification='notification'></notification>
-    </v-list>
+    <v-card>
+      <v-tooltip bottom>
+        <v-btn flat icon outline color="indigo"
+          slot="activator">
+          <v-icon>check</v-icon>
+        </v-btn>
+        <span>{{ $t("message.markAllAsRead")}}</span>
+      </v-tooltip>
+      <span class="headline">{{ $t("message.notifications")}}</span>
+      <v-list two-line class="top"  v-if='$store.state.notifications.length > 0'>
+        <notification v-for="(notification, index) in $store.state.notifications" :key='index' :notification='notification'></notification>
+      </v-list>
+    </v-card>
     <v-card v-if="$store.state.notifications.length === 0">
       <v-card-title>
         There are no notifications
       </v-card-title>
     </v-card>
+
     <v-btn
     v-on:click='next_page'
     v-if="$store.state.notifications.length > 0"
