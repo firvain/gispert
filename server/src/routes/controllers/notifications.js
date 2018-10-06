@@ -9,6 +9,8 @@ router.route('/user')
   var userId = new ObjectID(req.query.id);
   const start = parseInt(req.query.start);
   const end = parseInt(req.query.end);
+  const lastLogin = req.query.lastLogin;
+
   // console.log('getting notifications', start, end);
   MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
   .then(function (db) {
@@ -83,7 +85,7 @@ router.route('/user')
                 { type: 'newPostInCollection' },
                 { "collection.members": userId },
                 { byUser: {$ne: userId } },
-                { read: 0 }
+                { timestamp: { $gte: new Date(lastLogin) } }
               ]
             },
             { // select notifications for replies in a collection I am member
@@ -149,6 +151,26 @@ router.route('/user')
       });
   });
 
+router.route('/markAllAsRead')
+  .post(function markAsRead(req, res) {
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
+      const notificationId = req.body.data.id;
+      const id = new ObjectID(notificationId);
+      console.log('marking as read :: ', notificationId, id);
+      if (err) {
+        throw err;
+      } else {
+        db.collection('notifications').update(
+          { _id: id },
+          { $set: { read: 1 } }
+        );
+        res.status(200).send('OK');
+      }
+      db.close();
+    });
+  });
+
+  
   router.route('/inviteMembers')
   .post(function savemembers(req, res) {
       MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {

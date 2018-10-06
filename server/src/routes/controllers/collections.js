@@ -85,6 +85,7 @@ router.route('/')
           newCollection.user = ObjectID(req.body.newCollection.user);
           newCollection.members = [];
           newCollection.editors = [];
+          newCollection.timestamp = new Date();
           // console.log(req.body);
           console.log('a new collection:: ', newCollection);
           if (err) {

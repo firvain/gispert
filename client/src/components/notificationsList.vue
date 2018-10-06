@@ -119,6 +119,7 @@ export default {
           id: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
           start: this.start,
           end: this.end,
+          lastLogin: this.$store.state.user.lastLogin,
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {

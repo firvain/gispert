@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const Promise = require('bluebird');
 const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
 const moment = require('moment');
+var ObjectId = require('mongodb').ObjectID;
 
 var MongoClient = require('mongodb').MongoClient;
 const config = require('../../config');
@@ -49,6 +50,11 @@ router.route('/')
             db.close();
           } else {
             const user = result[0];
+            console.log('logged in:: ', user);
+            db.collection('users').update(
+              { _id: ObjectId(user._id) },
+              { $set: { lastLogin: new Date() }
+            });
             // user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
             res.send({
               user: user,
@@ -119,7 +125,7 @@ router.route('/social')
       } else {
         var query = { email: req.query.email };
         console.log('logging from fb:: ', query);
-        db.collection('users').find(query).toArray(function (err, result) {
+        db.collection('users').find(query, {pass: 0}).toArray(function (err, result) {
           if (err) {
             throw err;
           } else if (result.length == 0) {
@@ -127,7 +133,8 @@ router.route('/social')
             const user = {
               name: req.query.name,
               id: req.query.id,
-              email: req.query.email
+              email: req.query.email,
+              dateRegistered: new Date(),
             };
             db.collection('users').insertOne(
               user
@@ -135,6 +142,11 @@ router.route('/social')
             db.close();
           } else {
             const user = result[0];
+            db.collection('users').update(
+              { _id: ObjectId(user._id) },
+              {
+                $set: { lastLogin: new Date() }
+              });
             // user.pass = bcrypt.hashSync(user.pass, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
             res.send({
               user: user,

@@ -12,7 +12,7 @@
             <a md12 @click="exploreCollection(post.collectionData[0])" v-if="post.collectionData && postType !== 'reply'">
               {{post.collectionData[0].title}},
             </a>&nbsp;
-            <i>{{moment(parseInt(this.post.timestamp, 0)).format('h:mm:ss a, DD-MM-YYYY')}}</i>
+            <i>{{moment(this.post.timestamp).format('h:mm:ss a, DD-MM-YYYY')}}</i>
           </v-flex>
           <v-chip
             v-for="f in post.featureData"

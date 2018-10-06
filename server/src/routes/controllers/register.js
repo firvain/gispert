@@ -36,6 +36,7 @@ router.route('/')
         pass: userPasswordHashed,
         email: req.body.email,
         description: req.body.description,
+        dateRegistered: new Date(),
       };
       if (req.body.name.length > 0 && req.body.password.length > 0) {
         console.log('this user is trying to register:: ', user)
