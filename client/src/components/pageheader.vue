@@ -4,6 +4,15 @@
       <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
       <v-spacer></v-spacer>
         <v-toolbar-items>
+            <v-text-field
+              name="postSearch"
+              :label="$t('message.search')"
+              v-model="postSearch"
+              min="8"
+              append-icon='search'
+              v-on:keyup.enter="searchInPosts"
+            ></v-text-field>
+            <placesResults :results='osmResults'></placesResults>
             <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false">
               {{ $t("message.register") }}
             </v-btn>
@@ -305,6 +314,7 @@
 import axios from 'axios';
 import { mapGetters } from 'vuex';
 import AuthenticationService from '@/services/AuthenticationService';
+import placesResults from '@/components/places_results';
 import olMap from '../js/map';
 import config from '../config';
 import { app } from '../main';
@@ -356,6 +366,8 @@ export default {
         { id: 'nn', name: 'Norsk' },
       ],
       currentBell: null,
+      postSearch: '',
+      osmResults: null,
     };
   },
   computed: {
@@ -382,7 +394,7 @@ export default {
     },
   },
   components: {
-    notificationsList,
+    notificationsList, placesResults,
   },
   watch: {
     bell: (e) => {
@@ -710,6 +722,25 @@ export default {
           }
         });
       }
+    },
+    async searchInPosts() {
+      try {
+        this.loading = true;
+        const url = 'https://nominatim.openstreetmap.org/?addressdetails=1&format=json&limit=1';
+        axios.get(url, {
+          params: {
+            q: 'kozani',
+            format: 'json',
+          },
+        }).then((response) => {
+          this.osmResults = response.data;
+        }).then(() => {
+          this.loading = false;
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      return true;
     },
   },
   mounted() {
