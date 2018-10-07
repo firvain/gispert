@@ -12,7 +12,7 @@
             <a md12 @click="exploreCollection(post.collectionData[0])" v-if="post.collectionData && postType !== 'reply'">
               {{post.collectionData[0].title}},
             </a>&nbsp;
-            <i>{{moment(this.post.timestamp).format('h:mm:ss a, DD-MM-YYYY')}}</i>
+            <i>{{moment.utc(this.post.timestamp).local().format('h:mm:ss a, DD-MM-YYYY')}}</i>
           </v-flex>
           <v-chip
             v-for="f in post.featureData"
@@ -21,7 +21,6 @@
             :key="f.properties.mongoID">
             {{ f.geometry.type }}
           </v-chip>
-
           <!-- feature data:: {{ post.featureData }} -->
         </v-card-title>
         <v-card-actions :class="isSelected">
