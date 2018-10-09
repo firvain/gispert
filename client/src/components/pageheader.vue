@@ -12,7 +12,7 @@
               append-icon='search'
               v-on:keyup.enter="searchInPosts"
             ></v-text-field>
-            <placesResults :results='osmResults'></placesResults>
+            <placesResults :results='osmResults' offset-sm3></placesResults>
             <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false">
               {{ $t("message.register") }}
             </v-btn>
@@ -729,7 +729,7 @@ export default {
         const url = 'https://nominatim.openstreetmap.org/?addressdetails=1&format=json&limit=1';
         axios.get(url, {
           params: {
-            q: 'kozani',
+            q: this.postSearch,
             format: 'json',
           },
         }).then((response) => {
