@@ -654,4 +654,27 @@ router.route('/removeEditor')
       });
   });
 
+router.route('/setPrivacy')
+    .post(function setuser(req, res) {
+        MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+            .then(function (db) {
+                const collectionId = req.body.data.collectionId;
+                const userId = req.body.data.userId;
+                const setting = req.body.data.setting;
+                var collection = db.collection('collections');
+
+                return collection.update(
+                    { _id: ObjectID(collectionId),
+                      user: ObjectID(userId)  
+                    },
+                    { $set: {visibility: setting }});
+                db.close();
+            })
+            .then(() => {
+                res.sendStatus(200);
+            })
+            .catch(function (err) {
+                throw err;
+            });
+    });  
 module.exports = router;

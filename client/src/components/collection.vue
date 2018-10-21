@@ -39,23 +39,50 @@
               <v-icon color="orange lighten-1">edit</v-icon>
             </v-btn>
           </v-list-tile-action>
-          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
-            <v-btn fab small outline @click="shareDialog = true; loadMembersOfThisCollection(collection._id); loadEditorsOfThisCollection(collection._id)">
-              <v-icon color="green lighten-1">share</v-icon>
-            </v-btn>
-          </v-list-tile-action>
-          <v-list-tile-action v-if="collection.visibility === 'public'">
-              <v-tooltip bottom>
-                <v-btn outline fab small
-                  slot="activator"
-                  @click="shareLink = !shareLink; copyToClipboard();"
-                >
-                  <v-icon color="green lighten-1">link</v-icon>
-                </v-btn>
-                <span>{{ $t("message.shareLink") }}!</span>
-              </v-tooltip>
-          </v-list-tile-action>
         </v-list-tile>
+      <v-spacer></v-spacer>
+      <v-menu bottom left>
+        <v-btn icon fab outline small color='green' slot="activator">
+          <v-icon color='green'>more_vert</v-icon>
+        </v-btn>
+        <v-list>
+
+          <v-list-tile class='hover' v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+            <v-list-tile-title>
+                <span
+                  @click="shareDialog = true;
+                    loadMembersOfThisCollection(collection._id);
+                    loadEditorsOfThisCollection(collection._id)"
+                  class='caption'>
+                  <v-icon color="green lighten-1">share</v-icon>
+                  Sharing settings
+                </span>
+            </v-list-tile-title>
+          </v-list-tile>
+
+          <v-list-tile class='hover' v-if="collection.visibility === 'public'">
+            <v-list-tile-title>
+                <span
+                  @click="shareLink = !shareLink; copyToClipboard();"
+                  class='caption'>
+                  <v-icon @click="setCollectionPrivacy(collection._id)">link</v-icon>
+                  {{ $t("message.shareLink") }}!
+                </span>
+            </v-list-tile-title>
+          </v-list-tile>
+
+          <v-list-tile class='hover'>
+            <v-list-tile-title>
+                <span
+                  @click="setCollectionPrivacy(collection._id)"
+                  class='caption'>
+                  <v-icon @click="setCollectionPrivacy(collection._id)">link</v-icon>
+                  Make this collection public
+                </span>
+            </v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
       </v-card-actions>
 
       <v-dialog v-model="shareDialog" persistent max-width="480" height='120'>
@@ -476,6 +503,30 @@ export default {
       .then(() => {
         this.collection.isMember = true;
         this.$socket.emit('followedCollection', data);
+        this.$eventHub.$emit('refreshprivatecollections');
+        this.$eventHub.$emit('refreshpubliccollections');
+        // console.log('mark as followed and notify user');
+      });
+    },
+    setCollectionPrivacy(collectionId) {
+      const url = `${config.url}/collections/setPrivacy`;
+      let setting;
+      if (this.collection.visibility === 'public') {
+        setting = 'private';
+      } else {
+        setting = 'public';
+      }
+      console.log('setting privacy:: ', setting);
+      const data = {
+        userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        userCreated: this.collection.user,
+        collectionId,
+        setting,
+      };
+      axios.post(url, { data }, {
+        headers: { 'x-access-token': this.$store.state.token },
+      })
+      .then(() => {
         this.$eventHub.$emit('refreshprivatecollections');
         this.$eventHub.$emit('refreshpubliccollections');
         // console.log('mark as followed and notify user');
