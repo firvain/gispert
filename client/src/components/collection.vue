@@ -281,7 +281,7 @@ export default {
       }, new Set(this.members.map(obj => obj._id)));
     },
     shareMapUrl() {
-      const url = `${config.share}/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
+      const url = `${config.share}/#/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
       // console.log(this.customMap.id);
       return url;
     },
