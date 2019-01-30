@@ -4,15 +4,15 @@
       <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
       <v-spacer></v-spacer>
         <v-toolbar-items>
-            <v-text-field
+            <!-- <v-text-field
               name="postSearch"
               :label="$t('message.search')"
               v-model="postSearch"
               min="8"
               append-icon='search'
               v-on:keyup.enter="searchInPosts"
-            ></v-text-field>
-            <placesResults :results='osmResults' offset-sm3></placesResults>
+            ></v-text-field> -->
+            <!-- <placesResults :results='osmResults' offset-sm3></placesResults> -->
             <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false">
               {{ $t("message.register") }}
             </v-btn>
@@ -314,7 +314,7 @@
 import axios from 'axios';
 import { mapGetters } from 'vuex';
 import AuthenticationService from '@/services/AuthenticationService';
-import placesResults from '@/components/places_results';
+// import placesResults from '@/components/places_results';
 import olMap from '../js/map';
 import config from '../config';
 import { app } from '../main';
@@ -394,7 +394,7 @@ export default {
     },
   },
   components: {
-    notificationsList, placesResults,
+    notificationsList, /* placesResults, */
   },
   watch: {
     bell: (e) => {

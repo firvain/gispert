@@ -2,12 +2,12 @@
     <v-container fluid>
       <h5 class="text-xs-center">{{ $store.state.openedTimeline.title }}
         <v-btn fab small outline
-          v-if='isMember && $store.state.openedTimeline.userCreated !== $store.state.user._id'
+          v-if='isMember && $store.state.user && $store.state.openedTimeline.userCreated !== $store.state.user._id'
           @click="unfollowCollectionDialog = true">
           <v-icon color="red lighten-1">visibility_off</v-icon>
         </v-btn>
         <v-btn fab small outline
-          v-if='!isMember && $store.state.openedTimeline.userCreated !== $store.state.user._id'
+          v-if='!isMember && $store.state.user && $store.state.openedTimeline.userCreated !== $store.state.user._id'
           @click="followCollection">
           <v-icon color="green lighten-1">visibility</v-icon>
         </v-btn>

@@ -71,7 +71,6 @@
           <v-btn @click="newPrivateCollectionCard = false">{{ $t('message.cancel') }}</v-btn>
         </form>
         <v-list
-          v-if="$store.state.privateCollections"
           v-for="collection in $store.state.privateCollections"
           :key="collection._id"
         >

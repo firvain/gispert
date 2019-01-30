@@ -78,6 +78,13 @@ export default {
     loadCollectionFromPermalink(id) {
       console.log('loading collection from permalink::', id);
       this.$store.commit('setActiveTab', 'explore');
+      const tl = {
+        id,
+        type: 'collection',
+        isEditor: false,
+        visibility: 'public',
+      };
+      this.$store.dispatch('setOpenedCustomTimeline', tl);
       this.$eventHub.$emit('openCollection', id);
     },
   },
