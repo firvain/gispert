@@ -128,47 +128,30 @@ router.route('/updateprofile')
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
       .then(function (db) {
         // console.log(db)
-        const liveMapUsers = db.collection('liveMapUsers');
         const allUsers = db.collection('users');
         // const start = parseInt(req.query.pageFrom);
         // const end = parseInt(req.query.pageTo);
         const userId = req.query.userId;
         const keyword = req.query.keyword;
 
-        liveMapUsers.findOne({
-          "_id" : ObjectID(userId)
-        }).then((res) => {
-            console.log(res);
-            let following = [];
-            res.liveUsers.forEach((u) => {
-              following.push(ObjectID(u))
+        allUsers.aggregate([
+          { "$project": {
+            "_id": 1,
+            "name": 1,
+            "description": 1,
+          }},
+          {
+            $match: {"_id" : { $ne: ObjectID(userId) }}
+          },
+          {
+            $match: {name: {$regex : ".*"+keyword+".*", '$options' : 'i'}}
+          }
+        ], function handleCursor(err, docs) {
+          if (err) { throw err} else {
+            res.send(docs);
+          }
         });
-        return following;
-        }).then((following) => {
-          console.log('following:: ', following);
-          allUsers.aggregate([
-            { "$project": {
-              "_id": 1,
-              "name": 1,
-              "description": 1,
-              "showLive" : { $cond: [{ $in: [ "$_id", following ] }, true , false ]} 
-            }},
-            {
-              $match: {"_id" : { $ne: ObjectID(userId) }}
-            },
-            {
-              $match: {name: {$regex : ".*"+keyword+".*", '$options' : 'i'}}
-            }
-          ], function handleCursor(err, docs) {
-            if (err) { throw err} else {
-              res.send(docs);
-            }
-          });
-          db.close();
-        })
-        .catch(function (err) {
-          throw err;
-        });;
+        db.close();
       })
       .catch(function (err) {
         throw err;

@@ -65,14 +65,18 @@ router.route('/')
               description: 'Συλλογή που όλοι μπορούν να δουν',
               visibility: 'public',
               user: user._id,
-              username: user.name
+              username: user.name,
+              members: [],
+              editors: []
             });
             db.collection('collections').insertOne({
               title: 'Προσωπική Συλλογή',
               description: 'Συλλογή που μπορώ να δω μόνο εγώ',
               visibility: 'private',
               user: user._id,
-              username: user.name
+              username: user.name,
+              members: [],
+              editors: []
             });
             // res.status(200).send('success');
             res.send({ result: 'success' });
