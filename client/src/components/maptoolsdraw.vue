@@ -2,24 +2,68 @@
   <div>
     <v-layout class="text-xs-center">
       <v-tooltip bottom>
-        <v-btn fab small :color="toolColors[0]" slot="activator" @click="setDraw('Point')">
+        <v-btn fab flat outline small :color="toolColors[0]" slot="activator" @click="setDraw('Point')">
           <v-icon dark>location_on</v-icon>
         </v-btn>
         <span>Βάλε στο χάρτη ένα σημείο</span>
       </v-tooltip>
       <v-tooltip bottom>
-      <v-btn fab small :color="toolColors[1]" slot="activator" @click="setDraw('LineString')">
+      <v-btn fab flat outline small :color="toolColors[1]" slot="activator" @click="setDraw('LineString')">
         <v-icon dark>linear_scale</v-icon>
       </v-btn>
         <span>Βάλε στο χάρτη μία γραμμή</span>
       </v-tooltip>
       <v-tooltip bottom>
-      <v-btn fab small :color="toolColors[2]" slot="activator" @click="setDraw('Polygon')">
+      <v-btn fab flat outline small :color="toolColors[2]" slot="activator" @click="setDraw('Polygon')">
         <v-icon dark>rounded_corner</v-icon>
       </v-btn>
         <span>Βάλε στο χάρτη ένα πολύγωνο</span>
       </v-tooltip>
+      <!-- <v-tooltip bottom>
+      <v-btn fab flat outline small :color="toolColors[3]" slot="activator" @click="urlDialog = true">
+        <v-icon dark>video_call</v-icon>
+      </v-btn>
+        <span>Πρόσθεσε ένα video</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+      <v-btn fab flat outline small :color="toolColors[4]" slot="activator" @click="urlDialog = true">
+        <v-icon dark>add_a_photo</v-icon>
+      </v-btn>
+        <span>Πρόσθεσε μια εικόνα</span>
+      </v-tooltip> -->
     </v-layout>
+
+    <v-dialog
+      v-model="urlDialog"
+    >
+      <v-card>
+        <v-card-title
+          class="headline grey lighten-2"
+          primary-title
+        >
+          Προσθήκη video / εικόνας
+        </v-card-title>
+
+        <v-card-text>
+          <v-text-field
+            label="Διεύθυνση video / εικόνας"
+          ></v-text-field>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            flat
+            @click="urlDialog = false"
+          >
+            ΟΚ
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 <script>
@@ -38,7 +82,7 @@ export default {
   data: () => ({
     selectColor: 'green',
     drawColor: 'white',
-    toolColors: ['green', 'white', 'white'],
+    toolColors: ['green', 'grey', 'grey', 'grey', 'grey'],
     selectedFeature: olMap.selectedFeature,
     activeAnalysis: null,
     userSelector: false,
@@ -46,6 +90,7 @@ export default {
     bufferDistance: 500,
     measurement: '',
     dialogMeasurements: false,
+    urlDialog: false,
   }),
   computed: {
     currentlySelectedFeature() {
@@ -89,7 +134,7 @@ export default {
         olMap.getInteractions().forEach((interaction) => {
           if (interaction instanceof ol.interaction.Select) {
             interaction.setActive(true);
-            this.toolColors = ['white', 'white', 'white'];
+            this.toolColors = ['grey', 'grey', 'grey', 'grey', 'grey'];
             this.selectedTool = 'selectFeatures';
           }
           if (interaction instanceof ol.interaction.Draw) {
@@ -104,7 +149,7 @@ export default {
           if (interaction instanceof ol.interaction.Draw && interaction.getProperties().name === 'Point') {
             interaction.setActive(true);
             this.selectedTool = 'drawFeatures';
-            this.toolColors = ['green', 'white', 'white'];
+            this.toolColors = ['green', 'grey', 'grey', 'grey', 'grey'];
           } else if (interaction instanceof ol.interaction.Select) {
             interaction.setActive(false);
           }
@@ -125,13 +170,13 @@ export default {
 
       olMap.getInteractions().forEach((interaction) => {
         if (type === 'Point') {
-          this.toolColors = ['green', 'white', 'white'];
+          this.toolColors = ['green', 'grey', 'grey', 'grey', 'grey'];
         }
         if (type === 'LineString') {
-          this.toolColors = ['white', 'green', 'white'];
+          this.toolColors = ['grey', 'green', 'grey', 'grey', 'grey'];
         }
         if (type === 'Polygon') {
-          this.toolColors = ['white', 'white', 'green'];
+          this.toolColors = ['grey', 'grey', 'green', 'grey', 'grey'];
         }
         if (interaction instanceof ol.interaction.Draw) {
           if (interaction.getProperties().name === type) {

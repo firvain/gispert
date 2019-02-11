@@ -156,16 +156,16 @@
               </v-btn>
               <v-btn color="green darken-1" flat="flat" @click.native="dialogLogin = false">{{ $t("message.cancel")}}</v-btn>
             <!-- <v-spacer></v-spacer> -->
-          </v-container>
-              <v-flex class="text-xs-center"><h5>Sign in with</h5></v-flex>
+          </v-container> <hr>
+              <v-flex class="text-xs-center">Ή είσοδος με τον λογαριασμό σας </v-flex>
               <v-btn block flat @click="auth('google')">
                 <i class="fa fa-fw fa-google"></i>
                 Google
               </v-btn>
-              <v-btn block flat @click="auth('facebook')">
+              <!-- <v-btn block flat @click="auth('facebook')">
                 <i class="fa fa-fw fa-facebook"></i>
                 Facebook
-              </v-btn>
+              </v-btn> -->
               <!-- <v-btn block flat @click="auth('linkedin')">
                 <i class="fa fa-fw fa-linkedin"></i>
                 Linkedin
