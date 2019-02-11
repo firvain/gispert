@@ -61,8 +61,8 @@
               {{ $t("message.existingAccount") }}
             </v-tabs-item> -->
             <!-- <v-tabs-item href="#tab-2"> -->
-              <v-icon>control_point</v-icon>
-              {{ $t("message.newAccount") }}
+              <!-- <v-icon>control_point</v-icon>
+              {{ $t("message.newAccount") }} -->
             <!-- </v-tabs-item> -->
           <!-- </v-tabs-bar> -->
           <!-- <v-tabs-items> -->
@@ -76,7 +76,7 @@
               <v-card>
                 <v-card-title class="headline">{{ $t("message.registerUserText") }}</v-card-title>
                 <v-card-text>
-                  <form
+                  <v-form ref="form" lazy-validation
                   name="register-form"
                   autocomplete="off">
                   <v-text-field
@@ -97,6 +97,7 @@
                   <v-text-field
                     label="Email"
                     v-model="email"
+                    :rules= "emailRules"
                     single-line
                   ></v-text-field>
                   <br>
@@ -105,7 +106,7 @@
                     v-model="description"
                     single-line
                   ></v-text-field>
-                </form>
+                </v-form>
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
@@ -115,7 +116,7 @@
                     @click="register">
                     {{ $t("message.register")}}
                   </v-btn>
-                  <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false">
+                  <v-btn color="green darken-1" flat="flat" @click.native="dialogRegister = false;">
                     {{ $t("message.cancel")}}
                   </v-btn>
                 </v-card-actions>
@@ -219,9 +220,9 @@
               single-line
             ></v-text-field>
           </form>
-          <v-btn block outline @click='exploreTimeline'>
+          <!-- <v-btn block outline @click='exploreTimeline'>
             My map
-          </v-btn>
+          </v-btn> -->
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -313,7 +314,7 @@
 <script>
 import axios from 'axios';
 import { mapGetters } from 'vuex';
-import AuthenticationService from '@/services/AuthenticationService';
+// import AuthenticationService from '@/services/AuthenticationService';
 // import placesResults from '@/components/places_results';
 import olMap from '../js/map';
 import config from '../config';
@@ -348,6 +349,7 @@ export default {
         v => v.length > 7 || this.$t('message.passwordWeak'),
       ],
       emailRules: [
+        v => !!v || this.$t('message.emailMissing'),
         v => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || this.$t('message.emailErrorFormat'), // eslint-disable-line no-useless-escape
       ],
       wrongLoginInfo: this.$t('message.credentialsError'),
@@ -485,23 +487,45 @@ export default {
       this.dialogProfile = true;
     },
     async register() {
-      try {
-        const response = await AuthenticationService.register({
-          name: this.name,
-          password: this.password,
-          email: this.email,
-          description: this.description,
-        });
-        // console.log('response is:: ', response);
-        if (response.data.result === 'success') {
-          this.dialogRegister = false;
-          this.snackbarRegistered = true;
+      if (this.$refs.form.validate()) {
+        console.log('is valid');
+        try {
+          const url = `${config.url}/register`;
+          console.log(url);
+          const data = {
+            name: this.name,
+            password: this.password,
+            email: this.email,
+            description: this.description,
+          };
+          axios.post(url, { data }).then((response) => {
+            if (response.data.result === 'success') {
+              this.dialogRegister = false;
+              this.snackbarRegistered = true;
+
+              console.log('trying to login :: ', this.credentials.email, this.credentials.password);
+              const registeredCredentials = {
+                email: this.name,
+                password: this.password,
+              };
+              this.login(registeredCredentials);
+            }
+            if (response.data.result === 'in use') {
+              this.snackbarRegisterError = true;
+            }
+          });
+          // const response = await AuthenticationService.register({
+          //   name: this.name,
+          //   password: this.password,
+          //   email: this.email,
+          //   description: this.description,
+          // });
+          // console.log('response is:: ', response);
+        } catch (error) {
+          this.error = error.response.data.error;
         }
-        if (response.data.result === 'in use') {
-          this.snackbarRegisterError = true;
-        }
-      } catch (error) {
-        this.error = error.response.data.error;
+      } else {
+        console.log('invalid');
       }
     },
     login(credentials) {

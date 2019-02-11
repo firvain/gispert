@@ -81,6 +81,7 @@
             <v-icon dark>add</v-icon>
           </v-btn>
         </p>
+        <v-progress-linear v-show="loadingPrivate" :indeterminate="true"></v-progress-linear>
       </v-container>
 
       <v-subheader inset v-if="mode === 'normal'">
@@ -121,6 +122,7 @@
             <v-icon dark>add</v-icon>
           </v-btn>
         </p>
+        <v-progress-linear v-show="loadingPublic" :indeterminate="true"></v-progress-linear>
       </v-container>
     </v-container>
 
@@ -257,7 +259,7 @@ export default {
     },
     loadPrivateCollections() {
       // console.log('loading collections');
-      this.loading = true;
+      this.loadingPrivate = true;
       const vuexCollections = this.$store.state.privateCollections;
       if (vuexCollections && vuexCollections.length > 0) {
         this.privateCollections = this.$store.state.privateCollections;
@@ -269,15 +271,16 @@ export default {
         },
         headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
+        this.loadingPrivate = false;
         this.privateCollections = response.data;
       }).then(() => {
-        this.loading = false;
+        this.loadingPrivate = false;
         this.$store.dispatch('setPrivateCollections', this.privateCollections);
       });
     },
     loadPublicCollections() {
       // console.log('loading collections');
-      this.loading = true;
+      this.loadingPublic = true;
       const vuexCollections = this.$store.state.publicCollections;
       if (vuexCollections && vuexCollections.length > 0) {
         this.publicCollections = this.$store.state.publicCollections;
@@ -288,10 +291,11 @@ export default {
           userId: this.getUserId(),
         },
       }).then((response) => {
+        this.loadingPublic = false;
         this.publicCollections = response.data;
-        // console.log('public collections fetched:: ', this.publicCollections);
+        console.log('public collections fetched:: ', this.publicCollections);
       }).then(() => {
-        this.loading = false;
+        this.loadingPublic = false;
         this.$store.dispatch('setPublicCollections', this.publicCollections);
       });
     },

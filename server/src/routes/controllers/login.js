@@ -74,6 +74,8 @@ router.route('/')
         pass: userPasswordHashed,
         email: req.body.email,
         description: req.body.description,
+        dateRegistered: new Date(),
+        locale: "el_GR",
       };
       if (req.body.name.length > 0 && req.body.password.length > 0) {
         console.log('this user is trying to register:: ', user)
@@ -134,7 +136,7 @@ router.route('/social')
               name: req.query.name,
               id: req.query.id,
               email: req.query.email,
-              dateRegistered: new Date(),
+              lastLogin: new Date(),
             };
             db.collection('users').insertOne(
               user

@@ -30,19 +30,20 @@ function hashPassword(user) {
 router.route('/')
   .post(function setuser(req, res) {
     MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName, function handleConnection(err, db) {
-      userPasswordHashed = bcrypt.hashSync(req.body.password, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
+      userPasswordHashed = bcrypt.hashSync(req.body.data.password, '$2a$04$thisisasaltthisisasaleDjUpLNqciaokdZZwyr82a58CUDIz/Se');
       const user = {
-        name: req.body.name,
+        name: req.body.data.name,
         pass: userPasswordHashed,
-        email: req.body.email,
-        description: req.body.description,
+        email: req.body.data.email,
+        description: req.body.data.description,
         dateRegistered: new Date(),
+        locale: "el_GR",
       };
-      if (req.body.name.length > 0 && req.body.password.length > 0) {
+      if (req.body.data.name.length > 0 && req.body.data.password.length > 0) {
         console.log('this user is trying to register:: ', user)
         //  console.log(req.body);
         db.collection('users').aggregate([
-          { $match: { name: req.body.name } },
+          { $match: { name: req.body.data.name } },
           { $group: { _id: null, count: { $sum: 1 } } }
         ]).toArray(function handleCursor(err, docs) {
           // console.log('docs is:: ', docs);
