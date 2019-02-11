@@ -254,7 +254,8 @@ class Database {
                             $cond: {
                               if: {
                                 $or: [
-                                  { $in: [[ObjectId(userId)], "$editors"] },
+                                  // { $in: [[ObjectId(userId)], "$editors"] },
+                                  // { $eq: [userIdCl, "$post.userId"] },
                                   { $eq: [ObjectId(userId), { $arrayElemAt: ["$post.collectionData.user", 0] }] }
                                 ]
                               },
