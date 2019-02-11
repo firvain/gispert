@@ -458,6 +458,7 @@ export default {
               console.log('connected as ::', this.$store.state.user.name);
               this.loadPublicCollections();
               this.loadPrivateCollections();
+              this.loading = false;
               // this.loadLiveUsers();
             }).then(() => {
               this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
@@ -583,6 +584,7 @@ export default {
             console.log('connected as ::', this.$store.state.user.name);
             this.loadPublicCollections();
             this.loadPrivateCollections();
+            this.loading = false;
             // this.loadLiveUsers();
           }).then(() => {
             this.$socket.emit('userConnected', this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
@@ -593,7 +595,7 @@ export default {
     },
     async loadPrivateCollections() {
       try {
-        this.loading = true;
+        // this.loading = true;
         const vuexCollections = this.$store.state.privateCollections;
         if (vuexCollections && vuexCollections.length > 0) {
           this.privateCollections = this.$store.state.privateCollections;
@@ -605,6 +607,7 @@ export default {
           },
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
+          this.loading = false;
           this.privateCollections = response.data;
         }).then(() => {
           this.loading = false;
@@ -619,11 +622,12 @@ export default {
       } catch (error) {
         console.log(error);
       }
+      this.loading = false;
       return true;
     },
     async loadPublicCollections() {
       try {
-        this.loading = true;
+        // this.loading = true;
         const vuexCollections = this.$store.state.publicCollections;
         if (vuexCollections && vuexCollections.length > 0) {
           this.publicCollections = this.$store.state.publicCollections;
@@ -634,6 +638,7 @@ export default {
             userId: this.getUserId(),
           },
         }).then((response) => {
+          this.loading = false;
           this.publicCollections = response.data;
           // console.log('public collections fetched:: ', this.publicCollections);
         }).then(() => {
@@ -649,6 +654,7 @@ export default {
       } catch (error) {
         console.log(error);
       }
+      this.loading = false;
       return true;
     },
     // async loadLiveUsers() {
