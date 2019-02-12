@@ -41,7 +41,9 @@ router.route('/')
     userFeatures: featuresIds,
     isReplyTo: idToReply,
     collection: ObjectId(req.body.userPost.collection),
-    replies: req.body.userPost.replies
+    replies: req.body.userPost.replies,
+    images: req.body.userPost.images,
+    videos: req.body.userPost.videos,
   };
   const Database = require('../Database')
       , dbUrl = 'mongodb://' + config.mongodbHost + config.dbName
@@ -161,7 +163,9 @@ router.route('/all')
           "post.userName": "$userName",
           "post.userId": "$userId",
           "post.timestamp": "$timestamp",
-          "post.text": "$text"
+          "post.text": "$text",
+          "post.images": "$images",
+          "post.videos": "$videos"
         }},
         {
           $project: {
@@ -193,7 +197,9 @@ router.route('/all')
             "post.userName": 1,
             "post.userId": 1,
             "post.timestamp": 1,
-            "post.text": 1
+            "post.text": 1,
+            "post.images": 1,
+            "post.videos": 1
           }
         },
         {

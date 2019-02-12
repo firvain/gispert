@@ -141,6 +141,12 @@ export default new Vuex.Store({
     removeEditor(state,data) {
       state.commit('removeEditor', data);
     },
+    addImageToPost(state,data) {
+      state.commit('addImageToPost', data);
+    },
+    addVideoToPost(state,data) {
+      state.commit('addVideoToPost', data);
+    },
     // setLiveUsers(state, data) {
     //   state.commit('setLiveUsers', data);
     // },
@@ -174,6 +180,9 @@ export default new Vuex.Store({
 
       if (state.storage.length > 0) {
         const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
+        if (!state.storage[objIndex].features) {
+          state.storage[objIndex].features = [];
+        }
         if (objIndex > -1) {
           state.storage[objIndex].features.push(feature);
         } else {
@@ -435,6 +444,38 @@ export default new Vuex.Store({
         return obj.posts[0].collectionData[0]._id !== data;
       });
       console.log('new timeline:: ', state.timeline);
+    },
+    addImageToPost(state,data) {
+      if (state.storage.length > 0) {
+        const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
+        state.storage[objIndex].images = [];
+        // if (!state.storage[objIndex].images) {
+        //   state.storage[objIndex].images = [];
+        // }
+        if (objIndex > -1) {
+          state.storage[objIndex].images.push(data);
+        } else {
+          state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, images: [data] });
+        }
+      } else {
+        state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, images: [data] });
+      }
+    },
+    addVideoToPost(state,data) {
+      if (state.storage.length > 0) {
+        const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
+        state.storage[objIndex].videos = [];
+        // if (!state.storage[objIndex].videos) {
+        //   state.storage[objIndex].videos = [];
+        // }
+        if (objIndex > -1) {
+          state.storage[objIndex].videos.push(data);
+        } else {
+          state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, videos: [data] });
+        }
+      } else {
+        state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, videos: [data] });
+      }
     },
   },
   getters: {

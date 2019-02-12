@@ -28,7 +28,7 @@
         <v-flex v-if="drawnFeatures !== undefined">
           <v-chip close v-for="f in drawnFeatures" :key="f.get('mongoID')"
             @click='zoomToChip(f)' @input="remove(f.get('mongoID'))">
-            {{ f.getGeometry().getType() }}
+            {{ geometryTypeText(f.getGeometry().getType()) }}
           </v-chip>
         </v-flex>
         <v-layout>
@@ -235,6 +235,13 @@ export default {
           });
         }
       });
+    },
+    geometryTypeText(geom) {
+      let text;
+      if (geom === 'Point') { text = 'Σημείο'; }
+      if (geom === 'LineString') { text = 'Γραμμή'; }
+      if (geom === 'Polygon') { text = 'Πολύγωνο'; }
+      return text;
     },
   },
   computed: {

@@ -19,34 +19,35 @@
       </v-btn>
         <span>Βάλε στο χάρτη ένα πολύγωνο</span>
       </v-tooltip>
-      <!-- <v-tooltip bottom>
-      <v-btn fab flat outline small :color="toolColors[3]" slot="activator" @click="urlDialog = true">
+      <v-tooltip bottom>
+      <v-btn fab flat outline small :color="toolColors[3]" slot="activator" @click="videoUrlDialog = true">
         <v-icon dark>video_call</v-icon>
       </v-btn>
         <span>Πρόσθεσε ένα video</span>
       </v-tooltip>
       <v-tooltip bottom>
-      <v-btn fab flat outline small :color="toolColors[4]" slot="activator" @click="urlDialog = true">
+      <v-btn fab flat outline small :color="toolColors[4]" slot="activator" @click="imageUrlDialog = true">
         <v-icon dark>add_a_photo</v-icon>
       </v-btn>
         <span>Πρόσθεσε μια εικόνα</span>
-      </v-tooltip> -->
+      </v-tooltip>
     </v-layout>
 
     <v-dialog
-      v-model="urlDialog"
+      v-model="imageUrlDialog"
     >
       <v-card>
         <v-card-title
           class="headline grey lighten-2"
           primary-title
         >
-          Προσθήκη video / εικόνας
+          Προσθήκη εικόνας
         </v-card-title>
 
         <v-card-text>
           <v-text-field
-            label="Διεύθυνση video / εικόνας"
+            v-model="imageURL"
+            label="Διεύθυνση (url) εικόνας"
           ></v-text-field>
         </v-card-text>
 
@@ -57,7 +58,40 @@
           <v-btn
             color="primary"
             flat
-            @click="urlDialog = false"
+            @click="imageUrlDialog = false; $store.commit('addImageToPost', imageURL)"
+          >
+            ΟΚ
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="videoUrlDialog"
+    >
+      <v-card>
+        <v-card-title
+          class="headline grey lighten-2"
+          primary-title
+        >
+          Προσθήκη Youtube video
+        </v-card-title>
+
+        <v-card-text>
+          <v-text-field
+            v-model="videoURL"
+            label="Διεύθυνση (url) Youtube"
+          ></v-text-field>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            flat
+            @click="videoUrlDialog = false; $store.commit('addVideoToPost', videoURL)"
           >
             ΟΚ
           </v-btn>
@@ -90,7 +124,10 @@ export default {
     bufferDistance: 500,
     measurement: '',
     dialogMeasurements: false,
-    urlDialog: false,
+    imageUrlDialog: false,
+    videoUrlDialog: false,
+    imageURL: undefined,
+    videoURL: undefined,
   }),
   computed: {
     currentlySelectedFeature() {

@@ -18,10 +18,22 @@
             v-for="f in post.featureData"
             @click="zoomToChip(f)"
             :key="f.properties.mongoID">
-            {{ f.geometry.type }}
+            {{ geometryTypeText(f.geometry.type) }}
           </v-chip>
           <!-- feature data:: {{ post.featureData }} -->
         </v-card-title>
+
+        <v-carousel hide-controls lazy v-if="post.images">
+          <v-carousel-item @click="showLargeImage(post.images)"
+            :src="post.images">
+          </v-carousel-item>
+        </v-carousel>
+        <iframe width="560" height="315" v-if="post.videos"
+          src="https://www.youtube.com/embed/ioWv_sePLU0" 
+          frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+
         <v-card-actions :class="isSelected">
             <v-tooltip bottom>
               <v-btn slot="activator"
@@ -128,6 +140,23 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="largeImageBox" persistent max-width="800px" v-if="post.images">
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{ post.text }}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-carousel hide-controls lazy>
+            <v-carousel-item @click="showLargeImage(post.images)"
+              :src=post.images>
+            </v-carousel-item>
+          </v-carousel>
+          <v-btn color="blue darken-1" flat @click.native="largeImageBox = false">{{ $t("message.close") }}</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
   </v-layout>
 </template>
 <script>
@@ -136,6 +165,7 @@ import ol from 'openlayers';
 // import moment from 'moment';
 import axios from 'axios';
 import clipboard from 'clipboard-copy';
+// import { LazyComponent } from 'vue-lazyload';
 import newPost from '@/components/new_post';
 import newReply from '@/components/new_reply';
 import config from '../config';
@@ -165,9 +195,10 @@ export default {
     answerPostText: '',
     myReplies: 0,
     isSelected: 'grey lighten-3',
+    largeImageBox: false,
   }),
   components: {
-    newPost, newReply,
+    newPost, newReply, // LazyComponent,
   },
   mounted() {
     // this.answerPostText = this.$t('message.reply');
@@ -503,6 +534,17 @@ export default {
       console.log('explore:: ', collection.id);
       this.$store.commit('setActiveTab', 'explore');
       // this.$router.push({ path: `/main/search/collection/${collectionId}` });
+    },
+    geometryTypeText(geom) {
+      let text;
+      if (geom === 'Point') { text = 'Σημείο'; }
+      if (geom === 'LineString') { text = 'Γραμμή'; }
+      if (geom === 'Polygon') { text = 'Πολύγωνο'; }
+      return text;
+    },
+    showLargeImage() {
+      this.largeImageBox = true;
+      console.log('image clicked');
     },
   },
   watch: {

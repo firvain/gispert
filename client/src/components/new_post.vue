@@ -31,7 +31,7 @@
             :key="f.get('mongoID')"
             @input="remove(f.get('mongoID'))"
             @click='zoomToChip(f)'>
-            {{ f.getGeometry().getType() }}
+            {{ geometryTypeText(f.getGeometry().getType()) }}
           </v-chip>
         </v-flex>
 
@@ -157,6 +157,8 @@ export default {
         collection: this.selectCollection._id, // eslint-disable-line no-underscore-dangle
         replies: [],
         type: 'new',
+        images: this.userImages,
+        videos: this.userVideos,
       };
       // console.log('this is the post to publish', userPost);
       const url = `${config.url}/posts`;
@@ -275,6 +277,13 @@ export default {
         }
       });
     },
+    geometryTypeText(geom) {
+      let text;
+      if (geom === 'Point') { text = 'Σημείο'; }
+      if (geom === 'LineString') { text = 'Γραμμή'; }
+      if (geom === 'Polygon') { text = 'Πολύγωνο'; }
+      return text;
+    },
   },
   computed: {
     idToMatch: function findid() {
@@ -305,6 +314,42 @@ export default {
       }
       // console.log('allfeatures', allFeatures, 'objindex', objIndex, this.id, selectedFeatures);
       return selectedFeatures;
+    },
+    userImages: function i() {
+      let images = null;
+      let objIndex = null;
+      const allFeatures = this.$store.getters.getDrawnFeatures;
+      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+        objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+      }
+      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+        objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+      }
+      if (this.id !== undefined && allFeatures !== undefined) {
+        objIndex = allFeatures.findIndex((obj => obj.id === this.id));
+      }
+      if (objIndex > -1) {
+        images = allFeatures[objIndex].images;
+      }
+      return images[0];
+    },
+    userVideos: function i() {
+      let videos = null;
+      let objIndex = null;
+      const allFeatures = this.$store.getters.getDrawnFeatures;
+      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+        objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+      }
+      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+        objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+      }
+      if (this.id !== undefined && allFeatures !== undefined) {
+        objIndex = allFeatures.findIndex((obj => obj.id === this.id));
+      }
+      if (objIndex > -1) {
+        videos = allFeatures[objIndex].videos;
+      }
+      return videos[0];
     },
     activeChips: function ch() {
       const chips = [];
