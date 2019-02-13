@@ -34,11 +34,11 @@
               <v-icon color="red lighten-1">delete</v-icon>
             </v-btn>
           </v-list-tile-action>
-          <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
+          <!-- <v-list-tile-action v-if="this.$store.state.isUserLoggedIn && collection.user === this.$store.state.user._id">
             <v-btn fab small outline>
               <v-icon color="orange lighten-1">edit</v-icon>
             </v-btn>
-          </v-list-tile-action>
+          </v-list-tile-action> -->
         </v-list-tile>
       <v-spacer></v-spacer>
       <v-menu bottom left>
@@ -55,7 +55,7 @@
                     loadEditorsOfThisCollection(collection._id)"
                   class='caption'>
                   <v-icon color="green lighten-1">share</v-icon>
-                  Sharing settings
+                  {{ $t("message.sharingSettings") }}
                 </span>
             </v-list-tile-title>
           </v-list-tile>
@@ -71,13 +71,13 @@
             </v-list-tile-title>
           </v-list-tile>
 
-          <v-list-tile class='hover'>
+          <v-list-tile class='hover' v-if="$store.state.user._id === collection.user && collection.visibility === 'private'">
             <v-list-tile-title>
                 <span
                   @click="setCollectionPrivacy(collection._id)"
                   class='caption'>
                   <v-icon @click="setCollectionPrivacy(collection._id)">link</v-icon>
-                  Make this collection public
+                  {{ $t("message.makeCollectionPublic") }}
                 </span>
             </v-list-tile-title>
           </v-list-tile>

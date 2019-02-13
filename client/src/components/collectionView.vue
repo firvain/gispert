@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
       <h5 class="text-xs-center">{{ $store.state.openedTimeline.title }}
-        <v-btn fab small outline
+        <!-- <v-btn fab small outline
           v-if='isMember && $store.state.user && $store.state.openedTimeline.userCreated !== $store.state.user._id'
           @click="unfollowCollectionDialog = true">
           <v-icon color="red lighten-1">visibility_off</v-icon>
@@ -10,10 +10,11 @@
           v-if='!isMember && $store.state.user && $store.state.openedTimeline.userCreated !== $store.state.user._id'
           @click="followCollection">
           <v-icon color="green lighten-1">visibility</v-icon>
-        </v-btn>
+        </v-btn> -->
       </h5>
-      <newPostCollection v-if="$store.state.isUserLoggedIn === true && collection.isEditor === true">
-      </newPostCollection>
+      <newPostCollection v-if="$store.state.isUserLoggedIn === true && collection.isEditor === true || collection.visibility === 'public'"></newPostCollection>
+      <!-- <newPostCollection v-if="$store.state.isUserLoggedIn === true && collection.visibility === 'public'"></newPostCollection> -->
+      
       <v-flex
         md12
         v-for="thread in $store.state.collectionTimeline"

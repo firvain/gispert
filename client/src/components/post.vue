@@ -76,7 +76,7 @@
               <span>{{ $t("message.viewReplies") }}</span>
             </v-tooltip>
 
-              <v-spacer></v-spacer>
+              <!-- <v-spacer></v-spacer>
               <v-menu bottom left v-if="postType === 'original'">
                 <v-btn icon fab outline small color='green' slot="activator">
                   <v-icon color='green'>more_vert</v-icon>
@@ -112,7 +112,7 @@
                     </v-list-tile-title>
                   </v-list-tile>
                 </v-list>
-              </v-menu>
+              </v-menu> -->
 
         </v-card-actions>
         <newReply v-if="answerPost === true"

@@ -107,6 +107,8 @@ module.exports = {
       noUserCollectionsFound: 'None public collection found',
       notifications: 'Notifications',
       markAllAsRead: 'Mark all as read',
+      makeCollectionPublic: 'Make this collection public',
+      sharingSettings: 'Sharing settings',
     },
   },
   el_GR: {
@@ -217,6 +219,8 @@ module.exports = {
       noUserCollectionsFound: 'Δεν βρέθηκαν δημόσιες συλλογές',
       notifications: 'Ειδοποιήσεις',
       markAllAsRead: 'Τα έχω διαβάσει όλα',
+      makeCollectionPublic: 'Δημοσίευση χάρτη',
+      sharingSettings: 'Ρυθμίσεις ιδιωτικότητας',
     },
   },
   fr: {
