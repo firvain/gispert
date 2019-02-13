@@ -29,7 +29,7 @@
           </v-carousel-item>
         </v-carousel>
         <iframe width="560" height="315" v-if="post.videos"
-          src="https://www.youtube.com/embed/ioWv_sePLU0" 
+          :src="`https://www.youtube.com/embed/${post.videos}`"
           frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" 
           allowfullscreen>
         </iframe>

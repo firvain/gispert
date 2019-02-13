@@ -91,7 +91,7 @@
           <v-btn
             color="primary"
             flat
-            @click="videoUrlDialog = false; $store.commit('addVideoToPost', videoURL)"
+            @click="addVideoToPost()"
           >
             ΟΚ
           </v-btn>
@@ -103,6 +103,7 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import getYouTubeID from 'get-youtube-id';
 import config from '../config';
 import userSelector from './selectCloseUsers';
 import olMap from '../js/map';
@@ -280,6 +281,11 @@ export default {
     },
     chatOnThisFeature() {
       this.userSelector = true;
+    },
+    addVideoToPost() {
+      this.videoUrlDialog = false;
+      const id = getYouTubeID(this.videoURL);
+      this.$store.commit('addVideoToPost', id);
     },
   },
 };
