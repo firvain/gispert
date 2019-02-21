@@ -2,14 +2,17 @@
   <v-container fluid class="pa-0">
   <Pageheader></Pageheader>
       <v-layout row wrap>
-        <v-flex xs4 md4>
+        <!-- <v-flex xs4 md4>
           <tabs></tabs>
+        </v-flex> -->
+        <v-flex xs4 md4>
+          <div><qnaire></qnaire></div>
         </v-flex>
         <v-flex xs8 md8>
           <mapDiv></mapDiv>
         </v-flex>
       </v-layout>
-      <v-footer class="pa-3">
+      <v-footer class="pa-0">
         <a flat @click='termsOfUseDialog = true'>Όροι χρήσης</a>
         <v-spacer></v-spacer>
         <div>Terra Cognita Ltd, All rights reserved. © {{ new Date().getFullYear() }}</div>
@@ -66,6 +69,7 @@
 
 <script>
 import Pageheader from '@/components/pageheader';
+import qnaire from '@/components/questionnaireView';
 // import axios from 'axios';
 // import timeline from './timeline';
 import tabs from './tabs';
@@ -76,7 +80,7 @@ import mapDiv from './map';
 export default {
   name: 'mainpage',
   components: {
-    tabs, mapDiv, Pageheader,
+    tabs, mapDiv, Pageheader, qnaire,
   },
   data() {
     return {

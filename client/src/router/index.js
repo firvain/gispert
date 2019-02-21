@@ -48,6 +48,11 @@ export default new Router({
           name: 'collection',
           component: Main,
         },
+        {
+          path: 'questionnaire/:id',
+          name: 'questionnaire',
+          component: questionnaireView,
+        },
       ],
     },
   ],
