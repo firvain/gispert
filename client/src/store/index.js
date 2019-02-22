@@ -31,8 +31,17 @@ export default new Vuex.Store({
     activeMapTool: 'selectFeatures',
     activeTab: 'explore',
     selectedPost: '',
+    questionnaireFeatures: [],
+    questionnaireMode: false,
+    questionnaireFeatureId: null,
   },
   actions: {
+    setQuestionnaireMode(state, data) {
+      state.commit('setQuestionnaireMode', data);
+    },
+    setQuestionnaireFeatureId(state, data) {
+      state.commit('setQuestionnaireFeatureId', data);
+    },
     setSelectedPost(state, data) {
       state.commit('setSelectedPost', data);
     },
@@ -150,8 +159,23 @@ export default new Vuex.Store({
     // setLiveUsers(state, data) {
     //   state.commit('setLiveUsers', data);
     // },
+    addQuestionnaireFeature(state, data) {
+      state.commit('addQuestionnaireFeature', data);
+    },
   },
   mutations: {
+    setQuestionnaireFeatureId(state, data) {
+      state.questionnaireFeatureId = data;
+    },
+    addQuestionnaireFeature(state, feature) {
+      feature.setProperties({
+        buttonId: this.state.questionnaireFeatureId,
+      });
+      state.questionnaireFeatures.push(feature);
+    },
+    setQuestionnaireMode(state, data) {
+      state.questionnaireMode = data;
+    },
     setNotifications(state, data) {
       state.notifications = data;
     },

@@ -65,6 +65,9 @@ export default {
       this.$store.commit('setActiveTab', this.active);
     },
   },
+  mounted() {
+    this.$store.commit('setQuestionnaireMode', false);
+  },
 };
 </script>
 <style>

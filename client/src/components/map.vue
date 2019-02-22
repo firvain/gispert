@@ -635,7 +635,7 @@ export default {
 
   .floating-bottom {
     position: absolute;
-    left: 35%;
+    left: 50%;
     bottom: 2%;
     width: 200px;
     // background-color: white;

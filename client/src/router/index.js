@@ -5,7 +5,7 @@ import linkify from 'vue-linkify';
 import Register from '@/components/register';
 import Main from '@/components/main';
 import Login from '@/components/login';
-import questionnaireView from '@/components/questionnaireView';
+// import questionnaireView from '@/components/questionnaireView';
 // import Home from '@/components/home';
 // import userList from '@/components/userlist';
 // import customMaps from '@/components/custom_map_list';
@@ -28,11 +28,11 @@ export default new Router({
       name: 'login',
       component: Login,
     },
-    {
-      path: '/q',
-      name: 'q',
-      component: questionnaireView,
-    },
+    // {
+    //   path: '/q',
+    //   name: 'q',
+    //   component: questionnaireView,
+    // },
     {
       path: '/',
       name: 'main',
@@ -51,7 +51,7 @@ export default new Router({
         {
           path: 'questionnaire/:id',
           name: 'questionnaire',
-          component: questionnaireView,
+          component: Main,
         },
       ],
     },

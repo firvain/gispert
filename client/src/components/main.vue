@@ -2,13 +2,13 @@
   <v-container fluid class="pa-0">
   <Pageheader></Pageheader>
       <v-layout row wrap>
-        <!-- <v-flex xs4 md4>
-          <tabs></tabs>
-        </v-flex> -->
-        <v-flex xs4 md4>
-          <div><qnaire></qnaire></div>
+        <v-flex xs6 md6 v-if="$route.name === 'questionnaire'">
+          <qnaire fill-height class="qnaire"></qnaire>
         </v-flex>
-        <v-flex xs8 md8>
+        <v-flex xs6 md6 v-else>
+          <tabs></tabs>
+        </v-flex>
+        <v-flex xs6 md6>
           <mapDiv></mapDiv>
         </v-flex>
       </v-layout>
@@ -108,6 +108,10 @@ export default {
       console.log('loading collection from permalink');
       this.loadCollectionFromPermalink(this.$route.params.id);
     }
+    if (this.$route.name === 'questionnaire') {
+      console.log('loading questionnaire');
+      this.loadQuestionnaireView(this.$route.params.id);
+    }
   },
   watch: {
     '$route.params': function handle() {
@@ -119,6 +123,10 @@ export default {
       if (this.$route.name === 'collection') {
         console.log('loading collection from permalink');
         this.loadCollectionFromPermalink(this.$route.params.id);
+      }
+      if (this.$route.name === 'questionnaire') {
+        console.log('loading questionnaire');
+        this.loadQuestionnaireView(this.$route.params.id);
       }
       // this.$eventHub.$emit('routerChanged', 'routerChanged');
     },
@@ -139,6 +147,9 @@ export default {
       };
       this.$store.dispatch('setOpenedCustomTimeline', tl);
       this.$eventHub.$emit('openCollection', id);
+    },
+    loadQuestionnaireView(id) {
+      console.log('q::', id);
     },
   },
 
@@ -161,5 +172,9 @@ html {   overflow-y: hidden; }
 }
 a:hover {
  cursor:pointer;
+}
+.qnaire {
+  overflow-y: auto;
+  max-height: 89vh;
 }
 </style>

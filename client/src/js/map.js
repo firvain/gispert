@@ -429,7 +429,15 @@ drawPoint.on('drawend', (e) => {
     strkClr: 'blue',
     // fllClr: 'orange',
   });
-  store.commit('newPostFeature', e.feature);
+  if (store.state.questionnaireMode === false) {
+    store.commit('newPostFeature', e.feature);
+  } else {
+    store.commit('addQuestionnaireFeature', e.feature);
+    drawPoint.setActive(false);
+    drawLineString.setActive(false);
+    drawPolygon.setActive(false);
+    selectClick.setActive(true);
+  }
 });
 drawLineString.on('drawend', (e) => {
   e.feature.setProperties({
@@ -437,7 +445,15 @@ drawLineString.on('drawend', (e) => {
     strkClr: 'blue',
     // fllClr: 'orange',
   });
-  store.commit('newPostFeature', e.feature);
+  if (store.state.questionnaireMode === false) {
+    store.commit('newPostFeature', e.feature);
+  } else {
+    store.commit('addQuestionnaireFeature', e.feature);
+    drawPoint.setActive(false);
+    drawLineString.setActive(false);
+    drawPolygon.setActive(false);
+    selectClick.setActive(true);
+  }
 });
 drawPolygon.on('drawend', (e) => {
   e.feature.setProperties({
@@ -447,7 +463,15 @@ drawPolygon.on('drawend', (e) => {
       color: 'rgba(0, 0, 255, 0.1)',
     }),
   });
-  store.commit('newPostFeature', e.feature);
+  if (store.state.questionnaireMode === false) {
+    store.commit('newPostFeature', e.feature);
+  } else {
+    store.commit('addQuestionnaireFeature', e.feature);
+    drawPoint.setActive(false);
+    drawLineString.setActive(false);
+    drawPolygon.setActive(false);
+    selectClick.setActive(true);
+  }
 });
 
 export default olMap;
