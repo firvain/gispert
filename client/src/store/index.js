@@ -168,6 +168,10 @@ export default new Vuex.Store({
       state.questionnaireFeatureId = data;
     },
     addQuestionnaireFeature(state, feature) {
+      state.questionnaireFeatures = state.questionnaireFeatures.filter(function( obj ) {
+        return obj.get('buttonId') !== state.questionnaireFeatureId;
+      });
+
       feature.setProperties({
         buttonId: this.state.questionnaireFeatureId,
       });

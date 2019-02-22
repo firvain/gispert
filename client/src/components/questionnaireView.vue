@@ -57,7 +57,7 @@
                 v-for="radio in question.radios"
                 :key="radio.id"
                 :label="`${radio.label}`"
-                :value="radio"
+                :value="radio.label"
               ></v-radio>
             </v-radio-group>
           </v-container>
@@ -80,7 +80,7 @@
                 ></v-text-field>
               </v-flex>
               <v-flex xs2>
-                <v-btn small fab dark class="indigo">
+                <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point')">
                   <v-icon dark>location_on</v-icon>
                 </v-btn>
               </v-flex>
@@ -131,33 +131,33 @@ export default {
           { id: 'question2',
             type: 'combobox',
             page: '2',
-            title: 'text',
-            description: 'label',
+            title: 'Πόσα αυτοκίνητα διαθέτει το νοικοκυριό σας;',
+            description: 'Διαλέξτε από τη λίστα',
             value: null,
-            items: [1, 2, 4, 5, 8],
+            items: [0, 1, 2, 3, 4],
           },
           { id: 'question3',
             type: 'checkboxGroup',
             page: '2',
-            title: 'check1',
-            description: 'check1',
+            title: 'Πότε μετακινήστε προς το κέντρο της πόλης;',
+            description: 'Διαλέξτε ένα ή περισσότερα από τα παρακάτω',
             value: null,
             checkboxes: [
-              { id: 'c1', label: 'testlabels1', value: false },
-              { id: 'c2', label: 'testlabels2', value: false },
-              { id: 'c3', label: 'testlabels3', value: false },
+              { id: 'c1', label: 'Καθημερινές', value: false },
+              { id: 'c2', label: 'Σαββατοκύριακο', value: false },
             ],
           },
           { id: 'question4',
             type: 'radioGroup',
             page: '2',
-            title: 'Lorem ipsum',
-            description: 'radio1',
+            title: 'Ποιον τρόπο μετακίνησης προτιμάτε;',
+            description: 'Διαλέξτε ένα από τα παρακάτω',
             value: null,
             radios: [
-              { id: 'r1', label: 'radio 1', radioValue: false },
-              { id: 'r2', label: 'radio 2', radioValue: false },
-              { id: 'r3', label: 'radio 3', radioValue: false },
+              { id: 'r1', label: 'Αυτοκίνητο', radioValue: false },
+              { id: 'r2', label: 'Λεωφορείο', radioValue: false },
+              { id: 'r3', label: 'Πεζή', radioValue: false },
+              { id: 'r4', label: 'Ποδήλατο', radioValue: false },
             ],
           },
           { id: 'question5',
@@ -180,6 +180,15 @@ export default {
               { id: 'f1', value: null, coords: null },
             ],
           },
+          { id: 'question7',
+            type: 'mapPointerMultiple',
+            page: '2',
+            title: 'Εντοπισμός σημείων ατυχημάτων',
+            description: 'Σημειώστε τον λόγο που γίνονται ατυχήματα και δείξτε στον χάρτη πατώντας το κουμπί και μετά πάνω στο χάρτη',
+            lines: [
+              { id: 'mpm1', value: null, coords: null },
+            ],
+          },
         ],
       },
     };
@@ -187,36 +196,94 @@ export default {
   methods: {
     addRow(question) {
       if (question.lines.length < 21) {
-        question.lines.push({ id: 1, value: null, coords: [] });
+        question.lines.push({ id: `question.id${question.lines.length + 1}`, value: null, coords: [] });
       }
+      console.log(`question.id${question.lines.length + 1}`);
     },
     getValues() {
+      const questionnaireResult = [];
       this.questionnaire.questions.forEach((q) => {
         if (q.type === 'textfield') {
-          console.log(q.title, q.value);
+          questionnaireResult.push({
+            id: q.id,
+            title: q.title,
+            value: q.value,
+          });
         }
         if (q.type === 'combobox') {
-          console.log(q.title, q.value);
+          questionnaireResult.push({
+            id: q.id,
+            title: q.title,
+            value: q.value,
+          });
         }
         if (q.type === 'checkboxGroup') {
+          const boxes = [];
           q.checkboxes.forEach((c) => {
-            console.log(c.label, c.value);
+            boxes.push([c.label, c.value]);
+          });
+          questionnaireResult.push({
+            id: q.id,
+            title: q.title,
+            value: boxes,
           });
         }
         if (q.type === 'radioGroup') {
-          q.radios.forEach((r) => {
-            console.log(r.label, r.radioValue);
+          questionnaireResult.push({
+            id: q.id,
+            title: q.title,
+            value: q.value,
           });
         }
         if (q.type === 'mapPointer') {
-          console.log(q.title, q.value);
+          let coordinates = null;
+          q.buttons.forEach((b) => {
+            const features = this.$store.state.questionnaireFeatures;
+            features.forEach((f) => {
+              if (f.getProperties().buttonId === b.id) {
+                coordinates = f;
+              }
+            });
+          });
+          questionnaireResult.push({
+            id: q.id,
+            title: q.title,
+            value: coordinates,
+          });
         }
         if (q.type === 'mapPointerMultiple') {
-          console.log(q.title, q.value);
+          const coordinates = [];
+          q.lines.forEach((b) => {
+            const features = this.$store.state.questionnaireFeatures;
+            features.forEach((f) => {
+              if (f.getProperties().buttonId === b.id) {
+                coordinates.push(f);
+              }
+            });
+          });
+          questionnaireResult.push({
+            id: q.id,
+            title: q.title,
+            value: coordinates,
+          });
+          console.log(q.id, q.title, q.value);
         }
       });
+      console.log('result:: ', questionnaireResult);
     },
     getFromMap(id, type) {
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().forEachFeature((feature) => {
+            if (feature.get('buttonId') === id) {
+              layer.getSource().removeFeature(feature);
+            }
+          });
+        }
+      });
+
       this.$store.commit('setQuestionnaireFeatureId', id);
       olMap.getInteractions().forEach((interaction) => {
         if (type === 'Point') {
