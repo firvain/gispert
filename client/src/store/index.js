@@ -42,6 +42,9 @@ export default new Vuex.Store({
     setQuestionnaireFeatureId(state, data) {
       state.commit('setQuestionnaireFeatureId', data);
     },
+    resetQuestionnaire(state) {
+      state.commit('resetQuestionnaire');
+    },
     setSelectedPost(state, data) {
       state.commit('setSelectedPost', data);
     },
@@ -164,6 +167,10 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    resetQuestionnaire(state) {
+      state.questionnaireFeatureId = null;
+      state.questionnaireFeatures = [];
+    },
     setQuestionnaireFeatureId(state, data) {
       state.questionnaireFeatureId = data;
     },
