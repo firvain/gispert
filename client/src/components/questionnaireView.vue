@@ -133,7 +133,7 @@ export default {
       questionnaire: {
         properties: {
           mongoid: 'fjdkslajfsdkgjeio111',
-          mapExtent: [2454040, 4982105, 2455240, 4985095],
+          mapExtent: [2454240, 4982105, 2455240, 4985095],
           loginRequired: false,
           pages: 3,
           introduction: {
