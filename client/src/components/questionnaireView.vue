@@ -490,6 +490,7 @@ export default {
               this.getAllValues().then((result) => {
                 console.log('send to server', result, typeof (result));
                 const questionnaireToPost = {
+                  qid: this.questionnaire._id, // eslint-disable-line no-underscore-dangle
                   results: result,
                   properties: this.questionnaire.properties,
                 };
