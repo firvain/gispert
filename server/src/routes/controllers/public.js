@@ -404,5 +404,24 @@ router.route('/collection')
     });
 
 
+router.route('/questionnaires')
+.get(function getposts(req, res) {
+    const questionnaireId = req.query.questionnaireId;
+    console.log('getting questionnaire:: ', questionnaireId);
+    MongoClient.connect('mongodb://' + config.mongodbHost + config.dbName)
+    .then(function (db) {
+      var collection = db.collection('questionnaires');
+          return collection.find({_id : ObjectID('5c7452d439592ae5bebd25a3')});
+      })
+      .then(function (cursor) {
+        return cursor.toArray();
+      })
+      .then(function (content) {
+        res.status(200).json(content);
+      })
+      .catch(function (err) {
+        throw err;
+      });
+    });
 
 module.exports = router;

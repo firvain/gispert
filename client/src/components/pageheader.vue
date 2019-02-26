@@ -13,10 +13,10 @@
               v-on:keyup.enter="searchInPosts"
             ></v-text-field> -->
             <!-- <placesResults :results='osmResults' offset-sm3></placesResults> -->
-            <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false">
+            <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false && $store.state.questionnaireMode === false">
               {{ $t("message.register") }}
             </v-btn>
-            <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false">
+            <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false && $store.state.questionnaireMode === false">
               {{ $t("message.login") }}
             </v-btn>
               <!-- {{notificationsBell.number}}{{notificationsBell.color}},  -->
@@ -38,7 +38,7 @@
               {{ $t("message.logout") }}
             </v-btn>
         </v-toolbar-items>
-        <v-flex md1>
+        <v-flex md1 v-if="$store.state.questionnaireMode === false">
           <v-select
             class="top"
             @change="setLocale"

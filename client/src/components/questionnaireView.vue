@@ -1,6 +1,6 @@
 <template>
-  <v-layout row wrap xs12 sm12 md12>
-    <div v-if="page === 0">
+  <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">
+    <div v-if="page === 0 && questionnaire">
       <v-container fluid row
         v-for="item in questionnaire.properties.introduction.items"
         :key="item.id"
@@ -11,7 +11,7 @@
       </v-container>
     </div>
 
-      <v-container pa-1 ma-1 row v-for="question in questionnaire.questions" :key="question.id">
+      <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
 
         <v-card v-if="question.page === page">
           <v-card-title primary-title>
@@ -100,12 +100,14 @@
           </v-card-text>
         </v-card>
       </v-container>
-
-      <v-btn dark class="indigo" @click="submit('page');" v-if="page < questionnaire.properties.pages">
+      
+      <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+      
+      <v-btn dark block class="indigo" @click="submit('page');" v-if="page < questionnaire.properties.pages">
         Επόμενη Ενότητα >> <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
       </v-btn>
 
-      <v-btn dark class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
+      <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
         ΥΠΟΒΟΛΗ ΕΡΩΤΗΜΑΤΟΛΟΓΙΟΥ<v-icon dark>send</v-icon>
       </v-btn>
 
@@ -118,136 +120,24 @@
       <v-alert color="success" icon="check_circle" :value="submitted">
         Οι απαντήσεις σας καταχωρίστηκαν επιτυχώς.
       </v-alert>
+
   </v-layout>
 </template>
 <script>
 import ol from 'openlayers';
+import axios from 'axios';
 import olMap from '../js/map';
+import config from '../config';
 
 export default {
+  props: ['id'],
   data() {
     return {
       snackbarError: false,
       submitted: false,
       page: 0,
-      questionnaire: {
-        properties: {
-          mongoid: 'fjdkslajfsdkgjeio111',
-          mapExtent: [2453440, 4982405, 2455240, 4985095],
-          loginRequired: false,
-          pages: 3,
-          introduction: {
-            items: [
-              { id: 1, type: 'heading', value: 'Ερωτηματολόγιο για εντοπισμό προβλημάτων' },
-              { id: 2, type: 'text', value: 'Αυτό το ερωτηματολόγιο έχει σκοπό να συλλέξει τα προβλήματα που εμφανίζονται στις μετακινήσεις των πολιτών στην πόλη των Τρικάλων' },
-              { id: 3, type: 'image', value: 'https://cdn.vuetifyjs.com/images/cards/desert.jpg' },
-              { id: 4, type: 'text', value: 'Συμπληρώστε το ερωτηματολόγιο σύμφωνα με τις οδηγίες κάθε ερώτησης. Στις ερωτήσεις που χρειάζεται να δείξετε πάνω στον χάρτη πατήστε το μπλε κουμπί και μετά πάνω στο χάρτη. Αν θέλετε να διορθώσετε τη θέση που δείξατε επαναλάβετε τη διαδικασία' },
-            ],
-          },
-        },
-        questions: [
-          { id: 'question1',
-            type: 'textfield',
-            page: 0,
-            title: 'Ονοματεπώνυμο',
-            description: 'Το όνομα και το επώνυμό σας',
-            value: null,
-            error: false,
-          },
-          { id: 'question2',
-            type: 'textfield',
-            page: 0,
-            title: 'Φορέας',
-            description: 'Ο φορέας που εκπροσωπείτε. Αν όχι σημειώστε παύλα ή κανένας',
-            value: null,
-            error: false,
-          },
-          { id: 'question3',
-            type: 'textfield',
-            page: 0,
-            title: 'email',
-            description: 'Η διεύθυνση ηλεκτρονικού ταχυδρομείου σας',
-            value: null,
-            error: false,
-          },
-          { id: 'question4',
-            type: 'textfield',
-            page: 1,
-            title: 'Γράψε μια διασταύρωση που ειναι επικίνδυνη',
-            description: 'label',
-            image: 'https://cdn.vuetifyjs.com/images/cards/desert.jpg',
-            value: null,
-            error: false,
-          },
-          { id: 'question5',
-            type: 'combobox',
-            page: 1,
-            title: 'Πόσα αυτοκίνητα διαθέτει το νοικοκυριό σας;',
-            description: 'Διαλέξτε από τη λίστα',
-            value: null,
-            items: [0, 1, 2, 3, 4],
-            error: false,
-          },
-          { id: 'question6',
-            type: 'checkboxGroup',
-            page: 1,
-            title: 'Πότε μετακινήστε προς το κέντρο της πόλης;',
-            description: 'Διαλέξτε ένα ή περισσότερα από τα παρακάτω',
-            value: null,
-            checkboxes: [
-              { id: 'c1', label: 'Καθημερινές', value: false },
-              { id: 'c2', label: 'Σαββατοκύριακο', value: false },
-            ],
-            error: false,
-          },
-          { id: 'question7',
-            type: 'radioGroup',
-            page: 2,
-            title: 'Ποιον τρόπο μετακίνησης προτιμάτε;',
-            description: 'Διαλέξτε ένα από τα παρακάτω',
-            value: null,
-            radios: [
-              { id: 'r1', label: 'Αυτοκίνητο', radioValue: true },
-              { id: 'r2', label: 'Λεωφορείο', radioValue: false },
-              { id: 'r3', label: 'Πεζή', radioValue: false },
-              { id: 'r4', label: 'Ποδήλατο', radioValue: false },
-            ],
-            error: false,
-          },
-          { id: 'question8',
-            type: 'mapPointer',
-            page: 2,
-            title: 'Βάλε στο χάρτη την αφετηρία και τον προορισμό για τον χώρο εργασίας σας',
-            description: 'Πατήστε πάνω στο χάρτη με όση ακρίβεια θέλετε. Πατήστε το κουμπί και μετά πάνω στο χάρτη',
-            value: [],
-            buttons: [
-              { id: 'g1', label: 'Αφετηρία', coords: null },
-              { id: 'g2', label: 'Προορισμός', coords: null },
-            ],
-            error: false,
-          },
-          { id: 'question9',
-            type: 'mapPointerMultiple',
-            page: 3,
-            title: 'Εντοπισμός προβλημάτων για πεζή μετακίνηση',
-            description: 'Γράψτε την περιγραφή του προβλήματος και μετά δείξτε που το εντοπίζεται στον χάρτη πατώντας το μπλε κουμπί και μετά πάνω στο χάρτη. Για διόρθωση της θέσης ξαναπατήστε το μπλε κουμπί και μετά στη σωστή θέση. Αν προσθέσατε μια κενή γραμμή που δεν χρειάζεστε αφήστε την κενή.',
-            lines: [
-              { id: 'f1', value: null, coords: null },
-            ],
-            error: false,
-          },
-          { id: 'question10',
-            type: 'mapPointerMultiple',
-            page: 3,
-            title: 'Εντοπισμός σημείων ατυχημάτων',
-            description: 'Σημειώστε τον λόγο που γίνονται ατυχήματα και δείξτε που εντοπίζεται στον χάρτη πατώντας το κουμπί και μετά πάνω στο χάρτη. Για διόρθωση της θέσης ξαναπατήστε το μπλε κουμπί και μετά στη σωστή θέση. Αν προσθέσατε μια κενή γραμμή που δεν χρειάζεστε αφήστε την κενή.',
-            lines: [
-              { id: 'mpm1', value: null, coords: null },
-            ],
-            error: false,
-          },
-        ],
-      },
+      loading: false,
+      questionnaire: null,
     };
   },
   methods: {
@@ -423,6 +313,7 @@ export default {
       return questionnaireResult;
     },
     async getAllValues() {
+      const geojsonFormat = new ol.format.GeoJSON();
       const questionnaireResult = [];
       this.questionnaire.questions.forEach((q) => {
         if (q.type === 'textfield') {
@@ -507,7 +398,7 @@ export default {
             const features = this.$store.state.questionnaireFeatures;
             features.forEach((f) => {
               if (f.getProperties().buttonId === b.id) {
-                coordinates.push(f);
+                coordinates.push(geojsonFormat.writeFeatures([f]));
               }
             });
           });
@@ -537,7 +428,7 @@ export default {
               const features = this.$store.state.questionnaireFeatures;
               features.forEach((f) => {
                 if (f.getProperties().buttonId === b.id) {
-                  coordinates.push(f);
+                  coordinates.push(geojsonFormat.writeFeatures([f]));
                 }
               });
             }
@@ -597,9 +488,15 @@ export default {
             this.page += 1;
             if (type === 'all') {
               this.getAllValues().then((result) => {
-                console.log('send to server', result);
-                this.submitted = true;
-                this.$store.commit('resetQuestionnaire');
+                console.log('send to server', result, typeof (result));
+                const questionnaireToPost = {
+                  results: result,
+                  properties: this.questionnaire.properties,
+                };
+                console.log(questionnaireToPost);
+                return questionnaireToPost;
+              }).then((questionnaireToPost) => {
+                this.sendToServer(questionnaireToPost);
               });
             }
           } else {
@@ -609,14 +506,39 @@ export default {
         });
       });
     },
+    sendToServer(questionnaire) {
+      console.log('send this to server:: ', questionnaire);
+      const url = `${config.url}/public/submitQuestionnaire`;
+      const questionnaireToPost = questionnaire;
+      axios.post(url, { questionnaireToPost }).then((response) => {
+        if (response.status === 200) {
+          this.submitted = true;
+          this.$store.commit('resetQuestionnaire');
+        }
+      }).catch(console.error);
+    },
     zoomToExtent() {
       const g = this.questionnaire.properties.mapExtent;
       olMap.getView().fit(g, olMap.getSize());
     },
+    loadQuestionnaire() {
+      const serverUrl = `${config.url}/public/questionnaires`;
+      axios.get(serverUrl, { params: {
+        questionnaireId: this.id,
+      },
+      }).then((response) => {
+        this.questionnaire = response.data[0];
+        this.$store.commit('setQuestionnaire', response.data[0]);
+      }).then(() => {
+        this.loading = false;
+        this.zoomToExtent();
+      });
+    },
   },
   mounted() {
+    console.log('mounted questionnaire');
     this.$store.commit('setQuestionnaireMode', true);
-    this.zoomToExtent();
+    this.loadQuestionnaire();
   },
 };
 </script>

@@ -34,8 +34,12 @@ export default new Vuex.Store({
     questionnaireFeatures: [],
     questionnaireMode: false,
     questionnaireFeatureId: null,
+    questionnaire: null,
   },
   actions: {
+    setQuestionnaire(state, data) {
+      state.commit('setQuestionnaire', data);
+    },
     setQuestionnaireMode(state, data) {
       state.commit('setQuestionnaireMode', data);
     },
@@ -186,6 +190,9 @@ export default new Vuex.Store({
     },
     setQuestionnaireMode(state, data) {
       state.questionnaireMode = data;
+    },
+    setQuestionnaire(state, data) {
+      state.questionnaire = data;
     },
     setNotifications(state, data) {
       state.notifications = data;
