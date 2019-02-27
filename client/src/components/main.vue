@@ -5,6 +5,9 @@
         <v-flex xs6 md6 v-if="$route.name === 'questionnaire'">
           <qnaire fill-height class="qnaire" :id="$route.params.id"></qnaire>
         </v-flex>
+        <v-flex xs6 md6 v-else-if="$route.name === 'questionnaireResults'">
+          <qnaireRes fill-height class="qnaire" :id="$route.params.id"></qnaireRes>
+        </v-flex>
         <v-flex xs6 md6 v-else>
           <tabs></tabs>
         </v-flex>
@@ -70,6 +73,7 @@
 <script>
 import Pageheader from '@/components/pageheader';
 import qnaire from '@/components/questionnaireView';
+import qnaireRes from '@/components/questionnaireResultsViewer';
 // import axios from 'axios';
 // import timeline from './timeline';
 import tabs from './tabs';
@@ -80,7 +84,7 @@ import mapDiv from './map';
 export default {
   name: 'mainpage',
   components: {
-    tabs, mapDiv, Pageheader, qnaire,
+    tabs, mapDiv, Pageheader, qnaire, qnaireRes,
   },
   data() {
     return {

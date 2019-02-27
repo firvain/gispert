@@ -53,6 +53,11 @@ export default new Router({
           name: 'questionnaire',
           component: Main,
         },
+        {
+          path: 'questionnaireResults/:id',
+          name: 'questionnaireResults',
+          component: Main,
+        },
       ],
     },
   ],
