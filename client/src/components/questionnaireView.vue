@@ -16,7 +16,7 @@
         <v-card v-if="question.page === page">
           <v-card-title primary-title>
             <div>
-              <h3 class="headline mb-0">{{ question.title }}</h3>
+              <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === false">*</span></h3>
               <v-alert color="error" icon="warning" :value="question.error">
                 Δεν έχετε απαντήσει στην ερώτηση
               </v-alert>
@@ -38,7 +38,7 @@
             ></v-text-field>
           </v-flex>
 
-          <v-flex v-if="question.type === 'combobox'">{{ question.text }}
+          <v-flex v-if="question.type === 'combobox'">
             <v-select
               v-bind:items="question.items"
               v-model="question.value"
@@ -172,7 +172,7 @@ export default {
       this.questionnaire.questions.forEach((q) => {
         if (q.page === this.page) {
           if (q.type === 'textfield') {
-            if (q.value && q.value.length > 0) {
+            if ((q.value && q.value.length > 0) || (q.optional === true)) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -189,7 +189,7 @@ export default {
             }
           }
           if (q.type === 'combobox') {
-            if (q.value !== null) {
+            if (q.value !== null || q.optional === true) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -214,7 +214,7 @@ export default {
             q.checkboxes.forEach((c) => {
               boxes.push([c.label, c.value]);
             });
-            if (errors.includes(true)) {
+            if (errors.includes(true) || q.optional === true) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -231,7 +231,7 @@ export default {
             }
           }
           if (q.type === 'radioGroup') {
-            if (q.value) {
+            if (q.value || q.optional === true) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -249,7 +249,9 @@ export default {
           }
           if (q.type === 'mapPointer') {
             const coordinates = [];
+            const values = [];
             q.buttons.forEach((b) => {
+              values.push(b.label);
               const features = this.$store.state.questionnaireFeatures;
               features.forEach((f) => {
                 if (f.getProperties().buttonId === b.id) {
@@ -257,18 +259,20 @@ export default {
                 }
               });
             });
-            if (coordinates.length === 2) {
+            if (coordinates.length === 2 || q.optional === true) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
-                value: coordinates,
+                coordinates,
+                value: values,
                 error: false,
               });
             } else {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
-                value: coordinates,
+                coordinates,
+                value: values,
                 error: true,
               });
             }
@@ -288,7 +292,7 @@ export default {
                 });
               }
             });
-            if (values.length > 0 && coordinates.length > 0) {
+            if ((values.length > 0 && coordinates.length > 0) || q.optional === true) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -323,6 +327,7 @@ export default {
               title: q.title,
               value: q.value,
               error: false,
+              type: q.type,
             });
           } else {
             questionnaireResult.push({
@@ -330,6 +335,7 @@ export default {
               title: q.title,
               value: q.value,
               error: true,
+              type: q.type,
             });
           }
         }
@@ -340,6 +346,7 @@ export default {
               title: q.title,
               value: q.value,
               error: false,
+              type: q.type,
             });
           } else {
             questionnaireResult.push({
@@ -347,6 +354,7 @@ export default {
               title: q.title,
               value: q.value,
               error: true,
+              type: q.type,
             });
           }
         }
@@ -365,6 +373,7 @@ export default {
               title: q.title,
               value: boxes,
               error: false,
+              type: q.type,
             });
           } else {
             questionnaireResult.push({
@@ -372,6 +381,7 @@ export default {
               title: q.title,
               value: boxes,
               error: true,
+              type: q.type,
             });
           }
         }
@@ -382,6 +392,7 @@ export default {
               title: q.title,
               value: q.value,
               error: false,
+              type: q.type,
             });
           } else {
             questionnaireResult.push({
@@ -389,13 +400,16 @@ export default {
               title: q.title,
               value: q.value,
               error: true,
+              type: q.type,
             });
           }
         }
         if (q.type === 'mapPointer') {
           const coordinates = [];
+          const values = [];
           q.buttons.forEach((b) => {
             const features = this.$store.state.questionnaireFeatures;
+            values.push(b.label);
             features.forEach((f) => {
               if (f.getProperties().buttonId === b.id) {
                 coordinates.push(geojsonFormat.writeFeatures([f]));
@@ -406,15 +420,19 @@ export default {
             questionnaireResult.push({
               id: q.id,
               title: q.title,
-              value: coordinates,
+              coordinates,
+              value: values,
               error: false,
+              type: q.type,
             });
           } else {
             questionnaireResult.push({
               id: q.id,
               title: q.title,
-              value: coordinates,
+              coordinates,
+              value: values,
               error: true,
+              type: q.type,
             });
           }
         }
@@ -440,6 +458,7 @@ export default {
               value: values,
               coordinates: coordinates,
               error: false,
+              type: q.type,
             });
           } else {
             questionnaireResult.push({
@@ -448,6 +467,7 @@ export default {
               value: values,
               coordinates: coordinates,
               error: true,
+              type: q.type,
             });
           }
           console.log(q.id, q.title, q.value);
@@ -493,6 +513,7 @@ export default {
                   qid: this.questionnaire._id, // eslint-disable-line no-underscore-dangle
                   results: result,
                   properties: this.questionnaire.properties,
+                  submittedOn: Date.now(),
                 };
                 console.log(questionnaireToPost);
                 return questionnaireToPost;

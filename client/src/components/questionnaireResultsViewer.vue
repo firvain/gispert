@@ -16,19 +16,83 @@
         <v-tabs-content
           id="list"
         >
-          <v-data-table
-            v-bind:headers="headers"
-            :items="items"
-            hide-actions
-            class="elevation-1"
-          >
-            <template slot="items" slot-scope="props">
-              <td>{{ props.item.name }}</td>
-              <td class="text-xs-right">{{ props.item.calories }}</td>
-              <td class="text-xs-right">{{ props.item.fat }}</td>
-              <td class="text-xs-right">{{ props.item.carbs }}</td>
-            </template>
-          </v-data-table>
+          <v-flex>
+            <v-select
+              v-bind:items="comboitems"
+              item-text="text"
+              v-model="activeQuestionnaire"
+              label="Όλες οι απαντήσεις"
+              single-line
+              bottom
+              v-on:input="loadResultsForQuestionnaire"
+            ></v-select>
+          </v-flex>
+
+          <v-flex v-if="activeQuestionnaireResults">
+            <v-container pa-0 ma-0 row v-for="question in activeQuestionnaireResults.results" :key="question.id">
+              <v-card>
+                <v-card-title primary-title>
+                  <div>
+                    <h3 class="headline mb-0">{{ question.title }}</h3>
+                  </div>
+                </v-card-title>
+                <v-card-text>
+
+                <v-flex v-if="question.type === 'textfield'">
+                  {{ question.value }}
+                  <span v-if="question.value === null"> Δεν υπάρχει τιμή </span>
+                </v-flex>
+
+                <v-flex v-if="question.type === 'combobox'">{{ question.text }}
+                  {{ question.value }}
+                </v-flex>
+
+                <v-flex v-if="question.type === 'radioGroup'">
+                  {{ question.value }}
+                </v-flex>
+
+                <v-flex v-if="question.type === 'checkboxGroup'">{{ question.text }}
+                  <v-flex v-for="checkbox in question.value" :key="checkbox[0]">
+                    <v-checkbox
+                      :label="checkbox[0]"
+                      :value="checkbox[1]"
+                      v-model="checkbox[1]"
+                      disabled
+                      >
+                    </v-checkbox>
+                  </v-flex>
+                </v-flex>
+
+                <v-flex v-if="question.type === 'mapPointer'">
+                  <v-list two-line>
+                    <template v-for="(item, index) in question.value">
+                      <v-list-tile :key="index" @click="loadFeature(question.coordinates[index], item)">
+                        <v-list-tile-content>
+                          <v-list-tile-title v-html="item"></v-list-tile-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                    </template>
+                  </v-list>
+                </v-flex>
+
+                <v-flex v-if="question.type === 'mapPointerMultiple'">
+                  <v-list two-line>
+                    <template v-for="(item, index) in question.value">
+                      <v-list-tile :key="index" @click="loadFeature(question.coordinates[index], item)">
+                        <v-list-tile-content>
+                          <v-list-tile-title v-html="item"></v-list-tile-title>
+                          <v-list-tile-sub-title v-html="item"></v-list-tile-sub-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                    </template>
+                  </v-list>
+                </v-flex>
+
+                </v-card-text>
+              </v-card>
+            </v-container>
+          </v-flex>
+
         </v-tabs-content>
         <v-tabs-content
           id="aggregates"
@@ -47,7 +111,8 @@
 
 <script>
 import axios from 'axios';
-// import olMap from '../js/map';
+import ol from 'openlayers';
+import olMap from '../js/map';
 import config from '../config';
 
 export default {
@@ -55,36 +120,12 @@ export default {
   props: ['id'],
   data() {
     return {
-      results: null,
+      questionnaireResults: null,
       activeTab: null,
       loading: false,
-      headers: [
-        {
-          text: 'Dessert (100g serving)',
-          align: 'left',
-          sortable: false,
-          value: 'name',
-        },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-      ],
-      items: [
-        {
-          value: false,
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-        },
-        {
-          value: false,
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-        },
-      ],
+      activeQuestionnaire: 1,
+      comboitems: [],
+      activeQuestionnaireResults: null,
     };
   },
   methods: {
@@ -94,10 +135,70 @@ export default {
         questionnaireId: this.id,
       },
       }).then((response) => {
-        this.results = response.data;
+        this.questionnaireResults = response.data;
+        this.getcomboitems();
       }).then(() => {
         this.loading = false;
       });
+    },
+    getcomboitems() {
+      this.questionnaireResults.forEach((r) => {
+        this.comboitems.push(
+          { id: r._id, text: r.results[0].value }); // eslint-disable-line no-underscore-dangle
+      });
+      console.log(this.comboitems);
+    },
+    loadResultsForQuestionnaire() {
+      console.log('loading::', this.activeQuestionnaire);
+      this.activeQuestionnaireResults = this.questionnaireResults.filter(r =>
+        r._id.indexOf( // eslint-disable-line no-underscore-dangle
+          this.activeQuestionnaire.id) > -1, // eslint-disable-line no-underscore-dangle
+      )[0];
+    },
+    loadFeature(featureToLoad, text) {
+      console.log('load feature::', featureToLoad);
+      const geojsonFormat = new ol.format.GeoJSON();
+      console.log('adding a post feature data:: ', text);
+      const featuresToLoad = geojsonFormat.readFeatures(featureToLoad);
+      if (featuresToLoad.length > 0) {
+        let allLayers = [];
+        allLayers = olMap.getLayers().getArray();
+        allLayers.forEach((layer) => {
+          if (layer.getProperties().name === 'customLayer') {
+            featuresToLoad.forEach((f) => {
+              let alreadyExists = false;
+              layer.getSource().forEachFeature((feature) => {
+                if (feature.get('buttonId') === f.getProperties().buttonId) {
+                  alreadyExists = true;
+                }
+              });
+              if (!alreadyExists) {
+                let message = '';
+                if (text.length > 20) {
+                  message = `${text.substr(0, 20)}...`;
+                } else {
+                  message = text;
+                }
+                f.setProperties({
+                  messages: message,
+                });
+                console.log(featuresToLoad);
+                layer.getSource().addFeature(featuresToLoad[0]);
+              }
+            });
+          }
+          const g = featuresToLoad[0].getGeometry().getExtent();
+          if (g[0] - g[2] < 500) {
+            g[0] -= 200;
+            g[2] += 200;
+          }
+          if (g[1] - g[3] < 500) {
+            g[1] -= 200;
+            g[3] += 200;
+          }
+          olMap.getView().fit(g, olMap.getSize());
+        });
+      }
     },
   },
   mounted() {
