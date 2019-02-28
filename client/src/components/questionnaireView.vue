@@ -11,7 +11,7 @@
       </v-container>
     </div>
 
-      <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
+      <v-container pa-1 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
 
         <v-card v-if="question.page === page">
           <v-card-title primary-title>
