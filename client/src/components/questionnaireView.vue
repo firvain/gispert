@@ -412,6 +412,9 @@ export default {
             values.push(b.label);
             features.forEach((f) => {
               if (f.getProperties().buttonId === b.id) {
+                f.setProperties({
+                  label: b.label,
+                });
                 coordinates.push(geojsonFormat.writeFeatures([f]));
               }
             });
@@ -446,6 +449,9 @@ export default {
               const features = this.$store.state.questionnaireFeatures;
               features.forEach((f) => {
                 if (f.getProperties().buttonId === b.id) {
+                  f.setProperties({
+                    label: b.value,
+                  });
                   coordinates.push(geojsonFormat.writeFeatures([f]));
                 }
               });

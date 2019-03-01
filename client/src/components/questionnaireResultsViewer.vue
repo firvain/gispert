@@ -93,6 +93,9 @@
                 </v-card>
               </v-container>
             </v-flex>
+            <div class="body-1" v-if="activeQuestionnaireResults">
+              Υποβλήθηκε: {{ moment(parseInt(activeQuestionnaireResults.submittedOn)).format('h:mm:ss a, DD-MM-YYYY') }}
+            </div>
           </v-layout>
         </v-container> 
         </v-tabs-content>
@@ -124,38 +127,87 @@
                       </v-flex>
 
                       <v-flex v-if="question.type === 'combobox'">
-                          <barChart 
-                            v-if="loadedAgreggates"
-                            :chartdata="createChartDataForComboboxQuestion(question)"
-                            :options="options">
-                          </barChart>
+                        <barChart 
+                          v-if="loadedAgreggates"
+                          :chartdata="createChartDataForComboboxQuestion(question)"
+                          :options="options">
+                        </barChart>
                       </v-flex>
 
                       <v-flex v-if="question.type === 'radioGroup'">
-                          <barChart 
-                            v-if="loadedAgreggates"
-                            :chartdata="createChartDataForComboboxQuestion(question)"
-                            :options="options">
-                          </barChart>
+                        <barChart 
+                          v-if="loadedAgreggates"
+                          :chartdata="createChartDataForComboboxQuestion(question)"
+                          :options="options">
+                        </barChart>
                       </v-flex>
 
                       <v-flex v-if="question.type === 'checkboxGroup'">
-                          <barChart 
-                            v-if="loadedAgreggates"
-                            :chartdata="createChartDataForcheckboxGroupQuestion(question)"
-                            :options="options">
-                          </barChart>
+                        <barChart 
+                          v-if="loadedAgreggates"
+                          :chartdata="createChartDataForcheckboxGroupQuestion(question)"
+                          :options="options">
+                        </barChart>
                       </v-flex>
 
-                      <v-btn small dark class="indigo">
-                        <v-icon dark>list</v-icon>Εξαγωγή σε πίνακα
-                      </v-btn>
+                      <v-flex v-if="question.type === 'mapPointer'">
+                        <v-btn small dark class="indigo" @click='makeMapFormapPointer(question.id)'>
+                          <v-icon dark>location_on</v-icon>Δημιουργία χάρτη
+                        </v-btn>
+                      </v-flex>
+
+                      <v-flex v-if="question.type === 'mapPointerMultiple'">
+                        <v-btn small dark class="indigo" @click='makeMapFormapPointer(question.id)'>
+                          <v-icon dark>location_on</v-icon>Δημιουργία χάρτη
+                        </v-btn>
+                      </v-flex>
+
                     </v-layout>
                   </v-card-text>
                 </v-card>
               </v-flex>
             </v-flex>
+            <v-btn block dark class="indigo" @click.native="makeResultsTable(); exportDataDialog = true">
+              <v-icon dark>archive</v-icon>Εξαγωγή σε πίνακα
+            </v-btn>
           </v-layout>
+
+          <v-dialog v-model="exportDataDialog" persistent max-width="800px">
+            <v-card>
+              <v-card-title>
+                Εξαγωγή δεδομένων σε πίνακα
+                <v-spacer></v-spacer>
+                <v-text-field
+                  append-icon="search"
+                  label="Αναζήτηση"
+                  single-line
+                  hide-details
+                  v-model="search"
+                ></v-text-field>
+              </v-card-title>
+              <v-data-table
+                  v-bind:headers="dataTable.headers"
+                  v-bind:items="dataTable.items"
+                  v-bind:search="search"
+                >
+                <template slot="items" slot-scope="props">
+                  <td class="text-xs-right" v-for="header in dataTable.headers" :key="header.value">{{ header.value }}</td>
+
+                  <td class="text-xs-right">{{ props.item.question1 }}</td>
+                  <!-- <td class="text-xs-right">{{ props.item.question2 }}</td>
+                  <td class="text-xs-right">{{ props.item.question3 }}</td>
+                  <td class="text-xs-right">{{ props.item.question4 }}</td>
+                  <td class="text-xs-right">{{ props.item.question5 }}</td>
+                  <td class="text-xs-right">{{ props.item.question6 }}</td> -->
+                </template>
+                <template slot="pageText" slot-scope="{ pageStart, pageStop }">
+                  From {{ pageStart }} to {{ pageStop }}
+                </template>
+              </v-data-table>
+              <v-btn color="blue darken-1" flat @click.native="exportDataDialog = false">{{ $t("message.close") }}</v-btn>
+            </v-card>
+          </v-dialog>
+
         </v-container>
         </v-tabs-content>
       </v-tabs-items>
@@ -177,6 +229,8 @@ export default {
   },
   data() {
     return {
+      search: '',
+      exportDataDialog: false,
       options: { responsive: false, maintainAspectRatio: true },
       loadedAgreggates: false,
       questionnaireResults: null,
@@ -186,6 +240,10 @@ export default {
       comboitems: [],
       activeQuestionnaireResults: null,
       questionnaireAggregates: [],
+      dataTable: {
+        headers: [],
+        items: [],
+      },
     };
   },
   methods: {
@@ -250,12 +308,12 @@ export default {
           }
           const g = featuresToLoad[0].getGeometry().getExtent();
           if (g[0] - g[2] < 500) {
-            g[0] -= 200;
-            g[2] += 200;
+            g[0] -= 100;
+            g[2] += 100;
           }
           if (g[1] - g[3] < 500) {
-            g[1] -= 200;
-            g[3] += 200;
+            g[1] -= 100;
+            g[3] += 100;
           }
           olMap.getView().fit(g, olMap.getSize());
         });
@@ -291,7 +349,7 @@ export default {
           });
           this.questionnaireAggregates.push(questionnaireAggregate);
         });
-        // console.log('aggregation :: ', this.questionnaireAggregates);
+        console.log('aggregation :: ', this.questionnaireAggregates);
       });
       this.loadedAgreggates = true;
     },
@@ -347,6 +405,76 @@ export default {
       });
       // console.log('check box chart data :: ', chartdata, uniqueValues);
       return chartdata;
+    },
+    makeMapFormapPointer(questionId) {
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().clear();
+        }
+      });
+
+      const geojsonFormat = new ol.format.GeoJSON();
+      // console.log('making map for this id :: ', questionId);
+      const mapPointerQuestion = this.questionnaireAggregates.filter(obj => obj.id === questionId);
+      // console.log('question 8 coordinates :: ', mapPointerQuestion[0].coordinates);
+      mapPointerQuestion[0].coordinates.forEach((pair) => {
+        pair.forEach((coord) => {
+          const featureToLoad = geojsonFormat.readFeatures(coord);
+          // console.log(featureToLoad[0]);
+          // console.log(featureToLoad[0].getProperties().buttonId);
+          this.loadFeature(coord, featureToLoad[0].getProperties().label);
+        });
+      });
+    },
+    makeResultsTable() {
+      // const tableRow = [];
+      this.questionnaireResults.forEach((r) => {
+        // tableRow.push({ submittedOn: r.submittedOn });
+        r.results.forEach((row) => {
+          if (row.type !== 'mapPointerMultiple') {
+            if (row.type === 'checkboxGroup') {
+              row.value.forEach((v, index) => {
+                this.dataTable.headers.push({ text: v[0], value: `${row.id}_${index}` });
+                // tableRow.push(v[0]);
+              });
+            } else if (row.type === 'mapPointer') {
+              row.value.forEach((v, index) => {
+                this.dataTable.headers.push({ text: v, value: `${row.id}_${index}` });
+                // tableRow.push(v);
+              });
+            } else {
+              // tableRow.push(row.title);
+              this.dataTable.headers.push({ text: row.title, value: row.id });
+            }
+          }
+        });
+      });
+      console.log('headers :: ', this.dataTable.headers.length, JSON.stringify(this.dataTable.headers));
+
+      this.questionnaireResults.forEach((r) => {
+        const newRow = {};
+        r.results.forEach((row) => {
+          if (row.type !== 'mapPointerMultiple') {
+            if (row.type === 'checkboxGroup') {
+              row.value.forEach((v, index) => {
+                if (v[1]) { newRow[`${row.id}_${index}`] = 'ναι'; } else { newRow[`${row.id}_${index}`] = 'όχι'; }
+                // newRow[`${row.id}_${index}`] = v[1].toString();
+              });
+            } else if (row.type === 'mapPointer') {
+              row.value.forEach((v, index) => {
+                newRow[`${row.id}_${index}`] = v;
+              });
+            } else {
+              newRow[`${row.id}`] = row.value;
+            }
+          }
+        });
+        console.log('newrow :: ', newRow);
+        this.dataTable.items.push(newRow);
+      });
+      console.log('items :: ', this.dataTable.items.length, JSON.stringify(this.dataTable.items));
     },
   },
   mounted() {
