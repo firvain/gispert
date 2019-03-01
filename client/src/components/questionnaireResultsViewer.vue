@@ -190,16 +190,18 @@
                   v-bind:items="dataTable.items"
                   v-bind:search="search"
                 >
-                <template slot="items" slot-scope="props">
-                  <td class="text-xs-right" v-for="header in dataTable.headers" :key="header.value">{{ header.value }}</td>
+                <!-- <template slot="items" slot-scope="props"> -->
+                  <td class="text-xs-right" v-for="(item, header) in dataTable.items, dataTable.headers" :key="header.value">
+                    {{ item[header.value] }}
+                  </td>
 
-                  <td class="text-xs-right">{{ props.item.question1 }}</td>
+                  <!-- <td class="text-xs-right">{{ props.item.question1 }}</td> -->
                   <!-- <td class="text-xs-right">{{ props.item.question2 }}</td>
                   <td class="text-xs-right">{{ props.item.question3 }}</td>
                   <td class="text-xs-right">{{ props.item.question4 }}</td>
                   <td class="text-xs-right">{{ props.item.question5 }}</td>
                   <td class="text-xs-right">{{ props.item.question6 }}</td> -->
-                </template>
+                <!-- </template> -->
                 <template slot="pageText" slot-scope="{ pageStart, pageStop }">
                   From {{ pageStart }} to {{ pageStop }}
                 </template>
@@ -451,7 +453,8 @@ export default {
           }
         });
       });
-      console.log('headers :: ', this.dataTable.headers.length, JSON.stringify(this.dataTable.headers));
+      // console.log('headers :: ', this.dataTable.headers.length,
+      // JSON.stringify(this.dataTable.headers));
 
       this.questionnaireResults.forEach((r) => {
         const newRow = {};
@@ -471,10 +474,11 @@ export default {
             }
           }
         });
-        console.log('newrow :: ', newRow);
+        // console.log('newrow :: ', newRow);
         this.dataTable.items.push(newRow);
       });
-      console.log('items :: ', this.dataTable.items.length, JSON.stringify(this.dataTable.items));
+      // console.log('items :: ', this.dataTable
+      // .items.length, JSON.stringify(this.dataTable.items));
     },
   },
   mounted() {
