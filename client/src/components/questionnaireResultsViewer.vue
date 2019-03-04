@@ -167,8 +167,11 @@
                 </v-card>
               </v-flex>
             </v-flex>
-            <v-btn block dark class="indigo" @click.native="makeResultsTable(); exportDataDialog = true">
+            <v-btn block dark class="indigo" @click.native="makeResultsTable(); exportDataDialog = true;">
               <v-icon dark>archive</v-icon>Εξαγωγή σε πίνακα
+            </v-btn>
+            <v-btn block dark class="indigo" @click='exportToWKT(); exportGeoDataDialog = true;'>
+              <v-icon dark>location_on</v-icon>Εξαγωγή χαρτογραφικών δεδομένων
             </v-btn>
           </v-layout>
 
@@ -185,31 +188,45 @@
                   v-model="search"
                 ></v-text-field>
               </v-card-title>
+
               <v-data-table
                   v-bind:headers="dataTable.headers"
                   v-bind:items="dataTable.items"
                   v-bind:search="search"
                 >
-                <!-- <template slot="items" slot-scope="props"> -->
-                  <td class="text-xs-right" v-for="(item, header) in dataTable.items, dataTable.headers" :key="header.value">
-                    {{ item[header.value] }}
-                  </td>
-
-                  <!-- <td class="text-xs-right">{{ props.item.question1 }}</td> -->
-                  <!-- <td class="text-xs-right">{{ props.item.question2 }}</td>
-                  <td class="text-xs-right">{{ props.item.question3 }}</td>
-                  <td class="text-xs-right">{{ props.item.question4 }}</td>
-                  <td class="text-xs-right">{{ props.item.question5 }}</td>
-                  <td class="text-xs-right">{{ props.item.question6 }}</td> -->
-                <!-- </template> -->
+                <template slot="items" slot-scope="props">
+                  <td v-for="header in dataTable.headers" :key="header.value" class="text-xs-right">{{ props.item[header.value] }}</td>
+                </template>
                 <template slot="pageText" slot-scope="{ pageStart, pageStop }">
-                  From {{ pageStart }} to {{ pageStop }}
+                  Από {{ pageStart }} έως {{ pageStop }}
                 </template>
               </v-data-table>
               <v-btn color="blue darken-1" flat @click.native="exportDataDialog = false">{{ $t("message.close") }}</v-btn>
             </v-card>
           </v-dialog>
 
+          <v-dialog v-model="exportGeoDataDialog" persistent max-width="800px">
+            <v-card>
+              <v-card-title>
+                Εξαγωγή χαρτογραφικών δεδομένων για το QGIS
+              </v-card-title>
+              <table>
+                <td>id</td>
+                <td>user</td>
+                <td>question</td>
+                <td>option</td>
+                <td>wkt</td>
+                <tr v-for="row in geodataTable" :key="row.id">
+                  <td>{{ row.id }}</td>
+                  <td>{{ row.user }}</td>
+                  <td>{{ row.question }}</td>
+                  <td>{{ row.option }}</td>
+                  <td>{{ row.wkt }}</td>
+                </tr>
+              </table>
+              <v-btn color="blue darken-1" flat @click.native="exportGeoDataDialog = false">{{ $t("message.close") }}</v-btn>
+            </v-card>
+          </v-dialog>
         </v-container>
         </v-tabs-content>
       </v-tabs-items>
@@ -233,6 +250,7 @@ export default {
     return {
       search: '',
       exportDataDialog: false,
+      exportGeoDataDialog: false,
       options: { responsive: false, maintainAspectRatio: true },
       loadedAgreggates: false,
       questionnaireResults: null,
@@ -246,6 +264,7 @@ export default {
         headers: [],
         items: [],
       },
+      geodataTable: [],
     };
   },
   methods: {
@@ -429,6 +448,30 @@ export default {
           this.loadFeature(coord, featureToLoad[0].getProperties().label);
         });
       });
+    },
+    exportToWKT() {
+      const wktFormat = new ol.format.WKT();
+      const geojsonFormat = new ol.format.GeoJSON();
+      const table = [];
+      this.questionnaireResults.forEach((r) => {
+        let j = 0;
+        r.results.forEach((row) => {
+          if (row.type === 'mapPointer' || row.type === 'mapPointerMultiple') {
+            console.log('row simple :: ', row);
+            for (let i = 0; i < row.value.length; i += 1) {
+              j += 1;
+              table.push({ id: j,
+                user: r.results[0].value,
+                question: row.id,
+                option: row.value[i],
+                wkt: wktFormat.writeFeature(geojsonFormat.readFeatures(row.coordinates[i])[0]),
+              });
+            }
+          }
+        });
+        console.log('new row:: ', table);
+      });
+      this.geodataTable = table;
     },
     makeResultsTable() {
       // const tableRow = [];
