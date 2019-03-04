@@ -419,7 +419,7 @@ export default {
               }
             });
           });
-          if (coordinates.length === 2) {
+          if (coordinates.length === 2 || q.optional === true) {
             questionnaireResult.push({
               id: q.id,
               title: q.title,
@@ -457,7 +457,7 @@ export default {
               });
             }
           });
-          if (values.length > 0 && coordinates.length > 0) {
+          if ((values.length > 0 && coordinates.length > 0)  || q.optional === true) {
             questionnaireResult.push({
               id: q.id,
               title: q.title,
