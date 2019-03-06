@@ -142,8 +142,8 @@
                         </barChart>
                       </v-flex>
 
-                      <v-flex v-if="question.type === 'checkboxGroup'">
-                        <barChart 
+                      <v-flex v-if="question.type === 'checkboxGroup'" width='400px'>
+                        <barChart
                           v-if="loadedAgreggates"
                           :chartdata="createChartDataForcheckboxGroupQuestion(question)"
                           :options="options">
@@ -251,7 +251,32 @@ export default {
       search: '',
       exportDataDialog: false,
       exportGeoDataDialog: false,
-      options: { responsive: false, maintainAspectRatio: true },
+      options: {
+        responsive: false,
+        maintainAspectRatio: false,
+        title: { display: false },
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            fontColor: 'black',
+          },
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              stepSize: 1,
+            },
+          }],
+          xAxes: [{
+            display: false,
+            type: 'category',
+          }],
+        },
+        animation: {
+          animateScale: true,
+        },
+      },
       loadedAgreggates: false,
       questionnaireResults: null,
       activeTab: null,
@@ -377,37 +402,25 @@ export default {
     createChartDataForComboboxQuestion(question) {
       const chartdata = {
         labels: [],
-        datasets: [{
-          label: question.title,
-          data: [],
-        }],
+        datasets: [],
       };
-      Object.keys(this.countUniqueValues(question.values)).forEach((key) => {
-        chartdata.labels.push(key);
-        chartdata.datasets[0].data.push(this.countUniqueValues(question.values)[key]);
+      chartdata.labels.push(question.title);
+      Object.keys(this.countUniqueValues(question.values)).forEach((key, index) => {
+        const dataset = {
+          label: this.shortenText(key),
+          // eslint-disable-next-line
+          backgroundColor: this.pickRandomColor(index),
+          data: [this.countUniqueValues(question.values)[key]],
+        };
+        chartdata.datasets.push(dataset);
       });
-
-      // console.log('chartdata is :: ', chartdata);
-      // console.log('data is :: ', chartdata.datasets[0].data);
-      // console.log('proper format is ::', '{ labels: [1,3,2],
-      // datasets: [{ label: question.title, data: [10, 20, 30]}] }');
       return chartdata;
-    },
-    countUniqueValues(arr) {
-      const counts = {};
-      for (let i = 0; i < arr.length; i += 1) {
-        counts[arr[i]] = 1 + (counts[arr[i]] || 0);
-      }
-      // console.log('counts is :: ', counts);
-      return counts;
     },
     createChartDataForcheckboxGroupQuestion(question) {
       const chartdata = {
-        labels: [],
-        datasets: [{
-          label: question.title,
-          data: [],
-        }],
+        labels: [question.title],
+        // labels: [],
+        datasets: [],
       };
       const uniqueValues = {};
       question.values[0].forEach((v) => {
@@ -420,19 +433,93 @@ export default {
           }
         });
       });
-      Object.keys(uniqueValues).forEach((key) => {
-        chartdata.labels.push(key);
-        chartdata.datasets[0].data.push(uniqueValues[key]);
+      Object.keys(uniqueValues).forEach((key, index) => {
+        const dataset = {
+          label: [this.shortenText(key)],
+          // eslint-disable-next-line
+          backgroundColor: this.pickRandomColor(index),
+          data: [uniqueValues[key]],
+        };
+        chartdata.datasets.push(dataset);
       });
-      // console.log('check box chart data :: ', chartdata, uniqueValues);
       return chartdata;
+    },
+    pickRandomColor(index) {
+      const colors = ['#ee4035',
+        '#f37736',
+        '#fdf498',
+        '#7bc043',
+        '#0392cf',
+        '#ffff66',
+        '#04284a',
+        '#ff6b68',
+        '#c1a180',
+        '#ee8166',
+        '#8ff2af'];
+      const result = colors[index];
+      console.log('result:: ', result);
+      return result;
+    },
+    shortenText(text) {
+      let message = '';
+      if (text.length > 32) {
+        message = `${text.substr(0, 32)}...`;
+      } else {
+        message = text;
+      }
+      return message;
+    },
+    formatLabel(str, maxwidth) {
+      const sections = [];
+      const words = str.split(' ');
+      let temp = '';
+
+      words.forEach((item, index) => {
+        if (temp.length > 0) {
+          const concat = `${temp} ${item}`;
+          if (concat.length > maxwidth) {
+            sections.push(temp);
+            temp = '';
+          } else {
+            // eslint-disable-next-line
+            if (index === (words.length - 1)) {
+              sections.push(concat);
+              return;
+            // eslint-disable-next-line
+            } else {
+              temp = concat;
+              return;
+            }
+          }
+        }
+        if (index === (words.length - 1)) {
+          sections.push(item);
+          return;
+        }
+        if (item.length < maxwidth) {
+          temp = item;
+        } else {
+          sections.push(item);
+        }
+      });
+      return sections;
+    },
+    countUniqueValues(arr) {
+      const counts = {};
+      for (let i = 0; i < arr.length; i += 1) {
+        counts[arr[i]] = 1 + (counts[arr[i]] || 0);
+      }
+      // console.log('counts is :: ', counts);
+      return counts;
     },
     makeMapFormapPointer(questionId) {
       let allLayers = [];
+      let customLayerObj;
       allLayers = olMap.getLayers().getArray();
       allLayers.forEach((layer) => {
         if (layer.getProperties().name === 'customLayer') {
           layer.getSource().clear();
+          customLayerObj = layer;
         }
       });
 
@@ -443,9 +530,25 @@ export default {
       mapPointerQuestion[0].coordinates.forEach((pair) => {
         pair.forEach((coord) => {
           const featureToLoad = geojsonFormat.readFeatures(coord);
-          // console.log(featureToLoad[0]);
+          console.log(featureToLoad[0]);
+          allLayers.forEach((layer) => {
+            if (layer.getProperties().name === 'customLayer') {
+              let message = '';
+              if (featureToLoad[0].getProperties().label.length > 20) {
+                message = `${featureToLoad[0].getProperties().label.substr(0, 20)}...`;
+              } else {
+                message = featureToLoad[0].getProperties().label;
+              }
+              featureToLoad[0].setProperties({
+                messages: message,
+              });
+              console.log(featureToLoad);
+              layer.getSource().addFeature(featureToLoad[0]);
+            }
+          });
+          olMap.getView().fit(customLayerObj.getSource().getExtent(), olMap.getSize());
           // console.log(featureToLoad[0].getProperties().buttonId);
-          this.loadFeature(coord, featureToLoad[0].getProperties().label);
+          // this.loadFeature(coord, featureToLoad[0].getProperties().label);
         });
       });
     },
@@ -474,6 +577,10 @@ export default {
       this.geodataTable = table;
     },
     makeResultsTable() {
+      this.dataTable = {
+        headers: [],
+        items: [],
+      };
       // const tableRow = [];
       this.questionnaireResults.forEach((r) => {
         // tableRow.push({ submittedOn: r.submittedOn });

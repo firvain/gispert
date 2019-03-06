@@ -457,7 +457,7 @@ export default {
               });
             }
           });
-          if ((values.length > 0 && coordinates.length > 0)  || q.optional === true) {
+          if ((values.length > 0 && coordinates.length > 0) || q.optional === true) {
             questionnaireResult.push({
               id: q.id,
               title: q.title,
