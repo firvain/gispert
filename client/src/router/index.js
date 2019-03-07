@@ -5,8 +5,8 @@ import linkify from 'vue-linkify';
 import Register from '@/components/register';
 import Main from '@/components/main';
 import Login from '@/components/login';
+import Home from '@/components/home';
 // import questionnaireView from '@/components/questionnaireView';
-// import Home from '@/components/home';
 // import userList from '@/components/userlist';
 // import customMaps from '@/components/custom_map_list';
 // import Search from '@/components/search';
@@ -27,6 +27,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login,
+    },
+    {
+      path: '/home',
+      name: 'home',
+      component: Home,
     },
     // {
     //   path: '/q',
