@@ -1,6 +1,9 @@
 <template>
   <div>
-    <Pageheader></Pageheader>
+    <v-toolbar class="orange lighten-2 no-padding" dark>
+      <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
+      <v-spacer></v-spacer>
+    </v-toolbar>
     <v-layout row wrap>
       <v-flex>
       <v-parallax xs12 md12 src="../static/images/abstract-adult-background-1079033.jpg" height="400">
