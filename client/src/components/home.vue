@@ -1,8 +1,22 @@
 <template>
-  <div>
+  <div id="main">
     <v-toolbar class="orange lighten-2 no-padding" dark>
       <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
       <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat @click="scrollTo('useCases')">
+          Use cases
+        </v-btn>
+        <v-btn flat target="">
+          Features
+        </v-btn>
+        <v-btn flat target="">
+          Pricing
+        </v-btn>
+        <v-btn flat target="">
+          Contact us
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-layout row wrap>
       <v-flex>
@@ -140,7 +154,7 @@
             </v-card>
           </v-flex>
         </v-layout>
-        <v-layout ma-4 pa-4 column align-center justify-center>
+        <v-layout ma-4 pa-4 column align-center justify-center id='useCases'>
           <h2 class="">Use cases</h2>
           <h4>
           Geobabel is suitable for all different kinds of citizen participation in planning processes:
@@ -257,8 +271,6 @@
   </div>
 </template>
 <script>
-import Pageheader from '@/components/pageheader';
-
 export default {
   name: 'home',
   data: () => ({
@@ -279,7 +291,17 @@ export default {
     ],
   }),
   components: {
-    Pageheader,
+  },
+  methods: {
+    scrollTo(id) {
+      const goToOptions = {
+        duration: 500,
+        offset: -55,
+        easing: 'easeInOutCubic',
+      };
+      console.log(this.$vuetify);
+      this.$vuetify.goTo(`#${id}`, goToOptions);
+    },
   },
   mounted() {
   },
@@ -288,5 +310,8 @@ export default {
 <style>
 h1, h2 {
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+#main {
+  max-height: 100vh;
 }
 </style>
