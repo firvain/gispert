@@ -42,7 +42,7 @@
                 color="green"
                 @click="zoom(post)">
                 <!-- {{ $t("message.showOnMap") }} -->
-                <v-icon large color='green'>location_on</v-icon>
+                <v-icon color='green'>location_on</v-icon>
               </v-btn>
               <span>{{ $t("message.showOnMapTooltip") }}</span>
             </v-tooltip>
@@ -53,7 +53,7 @@
                 v-bind:color="answerPostColor"
                 @click="toggle_answer"
                 v-if="showAnswerButton">
-                <v-icon large :color="answerPostTextColor">chat</v-icon>
+                <v-icon :color="answerPostTextColor">chat</v-icon>
               </v-btn>
               <span>{{ $t("message.replyTooltip") }}!</span>
             </v-tooltip>
@@ -61,7 +61,7 @@
               <v-btn color="green" slot="activator" outline small fab
                 v-if="post.repliesData == undefined && post.replies.length > 0 && $store.state.isUserLoggedIn === true"
                 @click="showMoreReplies">
-                <v-icon large color="green">reply</v-icon>
+                <v-icon color="green">reply</v-icon>
                 {{ post.replies.length }}
               </v-btn>
               <span>{{ $t("message.viewReplies") }}</span>
@@ -266,7 +266,7 @@ export default {
           type: 'FeatureCollection',
           features: post.featureData,
         };
-        console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
+        // console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
         const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
         if (featuresToLoad.length > 0) {
           let allLayers = [];

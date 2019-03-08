@@ -10,7 +10,7 @@
     <v-flex xs12 sm12 v-show="showNewPost">
       <v-card>
         <v-flex>
-          <v-text-field
+          <v-textarea
             @focus="showMapTools()"
             autofocus
             name="input-1"
@@ -19,9 +19,9 @@
             id="postText"
             counter
             max="200"
-            textarea box
+            outline box
             rows=2
-          ></v-text-field>
+          ></v-textarea>
             <!-- :hint="$t('message.youMayWriteAndSketch')" -->
         </v-flex>
         <mapTools idtomatch='collection'></mapTools>
@@ -137,6 +137,8 @@ export default {
         collection: this.$store.state.openedTimeline.id, // eslint-disable-line no-underscore-dangle
         replies: [],
         type: 'new',
+        images: this.userImages,
+        videos: this.userVideos,
       };
       // console.log('this is the post to publish', userPost);
       const url = `${config.url}/posts`;
@@ -259,20 +261,62 @@ export default {
       let selectedFeatures = null;
       let objIndex = null;
       const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
-        objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
-      }
-      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
-        objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
-      }
-      if (this.id !== undefined && allFeatures !== undefined) {
-        objIndex = allFeatures.findIndex((obj => obj.id === this.id));
-      }
-      if (objIndex > -1) {
-        selectedFeatures = allFeatures[objIndex].features;
+      if (allFeatures.length > 0) {
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+        }
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+        }
+        if (this.id !== undefined && allFeatures !== undefined) {
+          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
+        }
+        if (objIndex > -1 && allFeatures !== undefined) {
+          selectedFeatures = allFeatures[objIndex].features;
+        }
       }
       // console.log('allfeatures', allFeatures, 'objindex', objIndex, this.id, selectedFeatures);
       return selectedFeatures;
+    },
+    userImages: function i() {
+      let images = null;
+      let objIndex = null;
+      const allFeatures = this.$store.getters.getDrawnFeatures;
+      if (allFeatures.length > 0) {
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+        }
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+        }
+        if (this.id !== undefined && allFeatures !== undefined) {
+          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
+        }
+        if (objIndex > -1 && allFeatures !== undefined) {
+          images = allFeatures[objIndex].images;
+        }
+      }
+      return images[0];
+    },
+    userVideos: function i() {
+      let videos = null;
+      let objIndex = null;
+      const allFeatures = this.$store.getters.getDrawnFeatures;
+      if (allFeatures.length > 0) {
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+        }
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+        }
+        if (this.id !== undefined && allFeatures !== undefined) {
+          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
+        }
+        if (objIndex > -1) {
+          videos = allFeatures[objIndex].videos;
+        }
+      }
+      return videos[0];
     },
     activeChips: function ch() {
       const chips = [];

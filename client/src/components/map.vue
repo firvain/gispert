@@ -67,7 +67,6 @@
         <v-btn
           v-if="$store.state.isUserLoggedIn && endOfMessages === false"
           v-on:click='messagesStart += 25; messagesEnd += 25; loadConversation()'
-          class="blue-grey white--text"
           block
         >
           {{ $t("message.loadMore")}}

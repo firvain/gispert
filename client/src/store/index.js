@@ -29,7 +29,7 @@ export default new Vuex.Store({
     previousOpenedTimeline: null,
     liveUsersList: null,
     activeMapTool: 'selectFeatures',
-    activeTab: 'explore',
+    activeTab: 1,
     selectedPost: '',
     questionnaireFeatures: [],
     questionnaireMode: false,

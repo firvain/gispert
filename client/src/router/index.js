@@ -63,6 +63,11 @@ export default new Router({
           name: 'questionnaireResults',
           component: Main,
         },
+        {
+          path: 'questionnaireEditor/:id',
+          name: 'questionnaireEditor',
+          component: Main,
+        },
       ],
     },
   ],

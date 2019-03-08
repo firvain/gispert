@@ -11,115 +11,115 @@
       </v-container>
     </div>
 
-      <v-container pa-1 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
+    <v-container pa-1 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
 
-        <v-card v-if="question.page === page">
-          <v-card-title primary-title>
-            <div>
-              <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === false">*</span></h3>
-              <v-alert color="error" icon="warning" :value="question.error">
-                Δεν έχετε απαντήσει στην ερώτηση
-              </v-alert>
-              <div> {{ question.description }} </div>
-            </div>
-          </v-card-title>
-          <img
-            v-if="question.image"
-            :src="question.image"
-            aspect-ratio="2.75"
-          />
-          <v-card-text>
+      <v-card v-if="question.page === page">
+        <v-card-title primary-title>
+          <div>
+            <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === false">*</span></h3>
+            <v-alert color="error" icon="warning" :value="question.error">
+              Δεν έχετε απαντήσει στην ερώτηση
+            </v-alert>
+            <div> {{ question.description }} </div>
+          </div>
+        </v-card-title>
+        <img
+          v-if="question.image"
+          :src="question.image"
+          aspect-ratio="2.75"
+        />
+        <v-card-text>
 
-          <v-flex v-if="question.type === 'textfield'">
-            <v-text-field
-              name="input-1"
-              v-model="question.value"
-              label="Η απάντησή σας"
-            ></v-text-field>
+        <v-flex v-if="question.type === 'textfield'">
+          <v-text-field
+            name="input-1"
+            v-model="question.value"
+            label="Η απάντησή σας"
+          ></v-text-field>
+        </v-flex>
+
+        <v-flex v-if="question.type === 'combobox'">
+          <v-select
+            v-bind:items="question.items"
+            v-model="question.value"
+            label="Η απάντησή σας"
+            single-line
+            menu-props="bottom"
+          ></v-select>
+        </v-flex>
+
+        <v-container row wrap v-if="question.type === 'checkboxGroup'">
+            <v-flex v-for="checkbox in question.checkboxes" :key="checkbox.id">
+              <v-checkbox
+                :label="checkbox.label"
+                v-model="checkbox.value"
+                :value="checkbox.value">
+              </v-checkbox>
+            </v-flex>
+        </v-container>
+
+        <v-container row wrap v-if="question.type === 'radioGroup'">
+          <v-radio-group v-model="question.value" mandatory>
+            <v-radio
+              v-for="radio in question.radios"
+              :key="radio.id"
+              :label="`${radio.label}`"
+              :value="radio.label"
+            ></v-radio>
+          </v-radio-group>
+        </v-container>
+
+        <v-container row wrap v-if="question.type === 'mapPointer'">
+          <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
+            <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'Point')">
+              <v-icon dark>location_on</v-icon>
+            </v-btn>
           </v-flex>
+        </v-container>
 
-          <v-flex v-if="question.type === 'combobox'">
-            <v-select
-              v-bind:items="question.items"
-              v-model="question.value"
-              label="Η απάντησή σας"
-              single-line
-              bottom
-            ></v-select>
-          </v-flex>
-
-          <v-container row wrap v-if="question.type === 'checkboxGroup'">
-              <v-flex v-for="checkbox in question.checkboxes" :key="checkbox.id">
-                <v-checkbox
-                  :label="checkbox.label"
-                  v-model="checkbox.value"
-                  :value="checkbox.value">
-                </v-checkbox>
-              </v-flex>
-          </v-container>
-
-          <v-container row wrap v-if="question.type === 'radioGroup'">
-            <v-radio-group v-model="question.value" mandatory>
-              <v-radio
-                v-for="radio in question.radios"
-                :key="radio.id"
-                :label="`${radio.label}`"
-                :value="radio.label"
-              ></v-radio>
-            </v-radio-group>
-          </v-container>
-
-          <v-container row wrap v-if="question.type === 'mapPointer'">
-            <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-              <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'Point')">
+        <v-container v-if="question.type === 'mapPointerMultiple'">
+          <v-layout row wrap v-for="line in question.lines" :key="line.id">
+            <v-flex xs10>
+              <v-text-field
+                name="input-1"
+                v-model="line.value"
+                label="Η απάντησή σας"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs2>
+              <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point')">
                 <v-icon dark>location_on</v-icon>
               </v-btn>
             </v-flex>
-          </v-container>
+          </v-layout>
+          <v-btn dark class="indigo" @click="addRow(question)">
+            Προσθήκη γραμμής
+          </v-btn>
+        </v-container>
 
-          <v-container v-if="question.type === 'mapPointerMultiple'">
-            <v-layout row wrap v-for="line in question.lines" :key="line.id">
-              <v-flex xs10>
-                <v-text-field
-                  name="input-1"
-                  v-model="line.value"
-                  label="Η απάντησή σας"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs2>
-                <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point')">
-                  <v-icon dark>location_on</v-icon>
-                </v-btn>
-              </v-flex>
-            </v-layout>
-            <v-btn dark class="indigo" @click="addRow(question)">
-              Προσθήκη γραμμής
-            </v-btn>
-          </v-container>
+        </v-card-text>
+      </v-card>
+    </v-container>
+    
+    <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+    
+    <v-btn dark block class="indigo" @click="submit('page');" v-if="page < questionnaire.properties.pages">
+      Επόμενη Ενότητα >> <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
+    </v-btn>
 
-          </v-card-text>
-        </v-card>
-      </v-container>
-      
-      <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
-      
-      <v-btn dark block class="indigo" @click="submit('page');" v-if="page < questionnaire.properties.pages">
-        Επόμενη Ενότητα >> <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
-      </v-btn>
+    <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
+      ΥΠΟΒΟΛΗ ΕΡΩΤΗΜΑΤΟΛΟΓΙΟΥ<v-icon dark>send</v-icon>
+    </v-btn>
 
-      <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
-        ΥΠΟΒΟΛΗ ΕΡΩΤΗΜΑΤΟΛΟΓΙΟΥ<v-icon dark>send</v-icon>
-      </v-btn>
+    <v-snackbar
+      :timeout=5000
+      v-model="snackbarError"
+      color= "red"
+    >Υπάρχουν σφάλματα. Δείτε τις ερωτήσεις που έχουν σημανθεί με κόκκινο</v-snackbar>
 
-      <v-snackbar
-        :timeout=5000
-        v-model="snackbarError"
-        color= "red"
-      >Υπάρχουν σφάλματα. Δείτε τις ερωτήσεις που έχουν σημανθεί με κόκκινο</v-snackbar>
-
-      <v-alert color="success" icon="check_circle" :value="submitted">
-        Οι απαντήσεις σας καταχωρίστηκαν επιτυχώς.
-      </v-alert>
+    <v-alert color="success" icon="check_circle" :value="submitted">
+      Οι απαντήσεις σας καταχωρίστηκαν επιτυχώς.
+    </v-alert>
 
   </v-layout>
 </template>

@@ -10,7 +10,7 @@
     <v-flex xs12 sm12 v-show="showNewPost">
       <v-card>
         <v-flex>
-          <v-text-field
+          <v-textarea
             @focus="showMapTools()"
             autofocus
             name="input-1"
@@ -19,9 +19,10 @@
             id="postText"
             counter
             max="200"
-            textarea box
+            box
             rows=2
-          ></v-text-field>
+            outline
+          ></v-textarea>
             <!-- :hint="$t('message.youMayWriteAndSketch')" -->
         </v-flex>
         <mapTools idtomatch='home'></mapTools>
@@ -300,17 +301,19 @@ export default {
       let selectedFeatures = null;
       let objIndex = null;
       const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
-        objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
-      }
-      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
-        objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
-      }
-      if (this.id !== undefined && allFeatures !== undefined) {
-        objIndex = allFeatures.findIndex((obj => obj.id === this.id));
-      }
-      if (objIndex > -1) {
-        selectedFeatures = allFeatures[objIndex].features;
+      if (allFeatures.length > 0) {
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+        }
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+        }
+        if (this.id !== undefined && allFeatures !== undefined) {
+          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
+        }
+        if (objIndex > -1 && allFeatures !== undefined) {
+          selectedFeatures = allFeatures[objIndex].features;
+        }
       }
       // console.log('allfeatures', allFeatures, 'objindex', objIndex, this.id, selectedFeatures);
       return selectedFeatures;
@@ -319,17 +322,19 @@ export default {
       let images = null;
       let objIndex = null;
       const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
-        objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
-      }
-      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
-        objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
-      }
-      if (this.id !== undefined && allFeatures !== undefined) {
-        objIndex = allFeatures.findIndex((obj => obj.id === this.id));
-      }
-      if (objIndex > -1) {
-        images = allFeatures[objIndex].images;
+      if (allFeatures.length > 0) {
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+        }
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+        }
+        if (this.id !== undefined && allFeatures !== undefined) {
+          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
+        }
+        if (objIndex > -1 && allFeatures !== undefined) {
+          images = allFeatures[objIndex].images;
+        }
       }
       return images[0];
     },
@@ -337,17 +342,19 @@ export default {
       let videos = null;
       let objIndex = null;
       const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
-        objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
-      }
-      if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
-        objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
-      }
-      if (this.id !== undefined && allFeatures !== undefined) {
-        objIndex = allFeatures.findIndex((obj => obj.id === this.id));
-      }
-      if (objIndex > -1) {
-        videos = allFeatures[objIndex].videos;
+      if (allFeatures.length > 0) {
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
+          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
+        }
+        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
+          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
+        }
+        if (this.id !== undefined && allFeatures !== undefined) {
+          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
+        }
+        if (objIndex > -1) {
+          videos = allFeatures[objIndex].videos;
+        }
       }
       return videos[0];
     },

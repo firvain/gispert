@@ -48,7 +48,7 @@
             v-model="language"
             label="Select"
             single-line
-            bottom
+            menu-props='bottom'
           ></v-select>
         </v-flex>
 
@@ -280,7 +280,7 @@
               v-model="language"
               label="Select"
               single-line
-              bottom
+              menu-props='bottom'
             ></v-select>
 
           </v-card-title>
@@ -648,7 +648,7 @@ export default {
           this.publicCollections.forEach((c) => {
             collectionIds.push(c._id); // eslint-disable-line no-underscore-dangle
           });
-          console.log('joining collections', JSON.stringify(this.publicCollections));
+          // console.log('joining collections', JSON.stringify(this.publicCollections));
           this.$socket.emit('joinCollections', collectionIds);
         });
       } catch (error) {

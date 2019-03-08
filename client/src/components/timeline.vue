@@ -12,7 +12,6 @@
       <v-btn
         v-on:click='next_page'
         v-if="!endOfPosts"
-        class="blue-grey white--text"
         block
       >
         {{ $t('message.loadMore')}}

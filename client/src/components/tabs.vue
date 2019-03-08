@@ -1,36 +1,34 @@
 <template>
-  <v-tabs dark grow icons centered v-model="$store.state.activeTab">
-    <v-tabs-bar class="blue-grey">
+  <v-tabs grow icons centered v-model="$store.state.activeTab">
       <v-tabs-slider color="red"></v-tabs-slider>
-      <v-tabs-item href="#home" active-class="blue-grey lighten" class="blue-grey lighten-3" ripple>
+      <v-tab href="#home" ripple>
         <v-icon>timeline</v-icon>
         <b>{{ $t("message.timeline") }}</b>
-      </v-tabs-item>
-      <v-tabs-item href="#explore" active-class="blue-grey lighten" class="blue-grey lighten-3" ripple>
+      </v-tab>
+      <v-tab href="#explore" ripple>
         <v-icon>search</v-icon>
         <b>{{ $t("message.explore") }}</b>
-      </v-tabs-item>
-      <v-tabs-item href="#users" active-class="blue-grey lighten" class="blue-grey lighten-3" ripple>
+      </v-tab>
+      <v-tab href="#users" ripple>
         <v-icon>fa-user-o</v-icon>
         <b>{{ $t("message.users") }}</b>
-      </v-tabs-item>
-    </v-tabs-bar>
+      </v-tab>
     <v-tabs-items>
-      <v-tabs-content
-        id="home"
+      <v-tab-item
+        value="home"
       >
         <timeline></timeline>
-      </v-tabs-content>
-      <v-tabs-content
-        id="explore"
+      </v-tab-item>
+      <v-tab-item
+        value="explore"
       >
         <explore></explore>
-      </v-tabs-content>
-      <v-tabs-content
-        id="users"
+      </v-tab-item>
+      <v-tab-item
+        value="users"
       >
         <userList></userList>
-      </v-tabs-content>
+      </v-tab-item>
     </v-tabs-items>
   </v-tabs>
 </template>

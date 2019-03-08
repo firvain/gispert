@@ -1,36 +1,39 @@
 <template>
   <div id='userList'>
-    <v-container class="pa-1">
+    <v-container>
       <v-layout row wrap v-if="$store.state.users.length > 0">
-        <v-text-field
-          name="search-input"
-          :label="$t('message.search')"
-          :hint="$t('message.searchHint')"
-          v-model="searchUsers"
-          min="4"
-          append-icon="search"
-          v-on:keyup.enter="searchInUsers"
-        ></v-text-field>
-        <!-- <v-btn fab small outline v-on:click='searchInUsers'>
-          <v-icon color="green lighten-1">search</v-icon>
-        </v-btn> -->
-        <v-btn fab small outline v-on:click="mode = 'normal'">
-          <v-icon color="green lighten-1">clear</v-icon>
-        </v-btn>
+        <v-flex>
+          <v-text-field
+            name="search-input"
+            :label="$t('message.search')"
+            :hint="$t('message.searchHint')"
+            v-model="searchUsers"
+            min="4"
+            append-icon="search"
+            v-on:keyup.enter="searchInUsers"
+          ></v-text-field>
+          <!-- <v-btn fab small outline v-on:click='searchInUsers'>
+            <v-icon color="green lighten-1">search</v-icon>
+          </v-btn> -->
+          </v-flex>
+          <v-flex>
+          <v-btn fab small outline v-on:click="mode = 'normal'">
+            <v-icon color="green lighten-1">clear</v-icon>
+          </v-btn>
+        </v-flex>
       </v-layout>
     </v-container>
     <v-container fluid 
       v-bind="{ [`grid-list-${size}`]: true }" 
       v-if="mode === 'normal'"
-      class="pa-1">
-      <v-container row wrap>
+      pa-1>
+      <v-container row wrap v-if="mode = 'normal'">
         <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
 
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
 
         <v-flex
           md12
-          v-if="mode = 'normal'"
           v-for="user in this.$store.state.users"
           :key="user._id"
         >
@@ -41,7 +44,6 @@
       <v-btn
         v-if="$store.state.isUserLoggedIn && endOfUsers === false"
         v-on:click='nextPageLoadUsers'
-        class="blue-grey white--text"
         block
       >
         {{ $t("message.loadMore")}}
@@ -56,7 +58,6 @@
     <v-container v-if="mode === 'search'">
       <v-flex
         md12
-        v-if="mode = 'search'"
         v-for="user in searchResultUsers"
         :key="user._id"
       >

@@ -22,8 +22,8 @@
       <v-flex>
       <v-parallax xs12 md12 src="../static/images/abstract-adult-background-1079033.jpg" height="400">
         <v-layout column align-center justify-center>
-          <h1 class="orange--text">Geobabel</h1>
-          <h2 class="orange--text">Innovation in citizen engagement!</h2>
+          <h1 class="orange--text inImage">Geobabel</h1>
+          <h2 class="orange--text inImage">Innovation in citizen engagement!</h2>
         </v-layout>
       </v-parallax>
       </v-flex>
@@ -64,7 +64,7 @@
             </v-card>
           </v-flex>
           <v-flex d-flex xs4>
-            <v-card color="blue-grey" class="white--text">
+            <v-card>
               <v-container fluid grid-list-md box>
                 <v-layout row>
                   <v-flex xs7>
@@ -308,7 +308,7 @@ export default {
 };
 </script>
 <style>
-h1, h2 {
+.inImage {
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 #main {

@@ -1,31 +1,25 @@
 <template>
-    <v-tabs dark grow icons centered v-model="activeTab">
-      <v-tabs-bar class="blue-grey">
-        <v-tabs-slider color="red"></v-tabs-slider>
-        <v-tabs-item href="#list" active-class="blue-grey lighten" class="blue-grey lighten-3" ripple>
-          <v-icon>list</v-icon>
-          <b>Λίστα απαντήσεων</b>
-        </v-tabs-item>
-        <v-tabs-item href="#aggregates" active-class="blue-grey lighten" class="blue-grey lighten-3" ripple>
-          <v-icon>bar_chart</v-icon>
-          <b>Συγκεντρωτικά</b>
-        </v-tabs-item>
-      </v-tabs-bar>
-      <v-tabs-items>
-        <v-tabs-content
-          id="list"
-        >
+    <v-tabs grow icons centered v-model="activeTab">
+      <v-tab ripple>
+        <v-icon>list</v-icon>
+        <b>Λίστα απαντήσεων</b>
+      </v-tab>
+      <v-tab ripple>
+        <v-icon>bar_chart</v-icon>
+        <b>Συγκεντρωτικά</b>
+      </v-tab>
+      <v-tab-item>
         <v-container>
           <v-layout row wrap>
             <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
             <v-flex xs12 sm12 md12>
               <v-select
                 v-bind:items="comboitems"
-                item-text="text"
+                item-value="id"
                 v-model="activeQuestionnaire"
                 label="Όλες οι απαντήσεις"
                 single-line
-                bottom
+                menu-props='bottom'
                 v-on:input="loadResultsForQuestionnaire"
               ></v-select>
             </v-flex>
@@ -97,11 +91,9 @@
               Υποβλήθηκε: {{ moment(parseInt(activeQuestionnaireResults.submittedOn)).format('h:mm:ss a, DD-MM-YYYY') }}
             </div>
           </v-layout>
-        </v-container> 
-        </v-tabs-content>
-        <v-tabs-content
-          id="aggregates"
-        >
+        </v-container>
+        </v-tab-item>
+        <v-tab-item>
         <v-container>
           <v-layout row wrap>
             <v-flex v-if="questionnaireResults">
@@ -228,8 +220,7 @@
             </v-card>
           </v-dialog>
         </v-container>
-        </v-tabs-content>
-      </v-tabs-items>
+      </v-tab-item>
     </v-tabs>
 </template>
 
@@ -265,12 +256,12 @@ export default {
         scales: {
           yAxes: [{
             ticks: {
+              min: 0,
               stepSize: 1,
             },
           }],
           xAxes: [{
             display: false,
-            type: 'category',
           }],
         },
         animation: {
@@ -281,7 +272,7 @@ export default {
       questionnaireResults: null,
       activeTab: null,
       loading: false,
-      activeQuestionnaire: 1,
+      activeQuestionnaire: {},
       comboitems: [],
       activeQuestionnaireResults: null,
       questionnaireAggregates: [],
@@ -311,14 +302,16 @@ export default {
         this.comboitems.push(
           { id: r._id, text: r.results[0].value }); // eslint-disable-line no-underscore-dangle
       });
-      // console.log(this.comboitems);
+      console.log('combo items :: ', this.comboitems);
     },
     loadResultsForQuestionnaire() {
-      // console.log('loading::', this.activeQuestionnaire);
+      console.log('loading::', this.activeQuestionnaire);
+      console.log('questionnaire results:: ', this.questionnaireResults);
       this.activeQuestionnaireResults = this.questionnaireResults.filter(r =>
         r._id.indexOf( // eslint-disable-line no-underscore-dangle
-          this.activeQuestionnaire.id) > -1, // eslint-disable-line no-underscore-dangle
+          this.activeQuestionnaire) > -1, // eslint-disable-line no-underscore-dangle
       )[0];
+      console.log('active questionnaire results:: ', this.activeQuestionnaireResults);
     },
     loadFeature(featureToLoad, text) {
       console.log('load feature::', featureToLoad);
@@ -457,7 +450,7 @@ export default {
         '#ee8166',
         '#8ff2af'];
       const result = colors[index];
-      console.log('result:: ', result);
+      // console.log('result:: ', result);
       return result;
     },
     shortenText(text) {

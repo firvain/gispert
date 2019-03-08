@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-      <h5 class="text-xs-center">{{ $store.state.openedTimeline.title }}
+      <h3 class="text-xs-center">{{ $store.state.openedTimeline.title }}
         <!-- <v-btn fab small outline
           v-if='isMember && $store.state.user && $store.state.openedTimeline.userCreated !== $store.state.user._id'
           @click="unfollowCollectionDialog = true">
@@ -11,7 +11,7 @@
           @click="followCollection">
           <v-icon color="green lighten-1">visibility</v-icon>
         </v-btn> -->
-      </h5>
+      </h3>
       <newPostCollection v-if="$store.state.isUserLoggedIn === true && collection.isEditor === true || collection.visibility === 'public'"></newPostCollection>
       <!-- <newPostCollection v-if="$store.state.isUserLoggedIn === true && collection.visibility === 'public'"></newPostCollection> -->
       
@@ -26,7 +26,6 @@
       <v-btn
         v-on:click='next_page'
         v-if="!endOfPosts && !loading"
-        class="blue-grey white--text"
         block
       >
         {{ $t('message.loadMore')}}

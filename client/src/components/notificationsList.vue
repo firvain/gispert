@@ -23,7 +23,6 @@
     <v-btn
     v-on:click='next_page'
     v-if="$store.state.notifications.length > 0"
-    class="blue-grey white--text"
     block
     >
       {{ $t('message.loadMore')}}

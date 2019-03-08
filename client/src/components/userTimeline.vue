@@ -1,10 +1,9 @@
 <template>
     <v-container fluid>
-      <v-layout row wrap>
+      <v-layout row wrap v-if="$store.state.userTimeline.length > 0">
 
         <v-flex
           md12
-          v-if="$store.state.userTimeline.length > 0"
           v-for="thread in $store.state.userTimeline"
           :key="thread._id"
         >
@@ -14,7 +13,6 @@
         <v-btn
           v-on:click='next_page'
           v-if="!endOfPosts && $store.state.userTimeline.length !== 0"
-          class="blue-grey white--text"
           block
         >
           {{ $t('message.loadMore')}}
@@ -33,7 +31,6 @@
       <v-btn
         v-if="$store.state.userTimeline.length > 0 && endOfPosts === false"
         v-on:click='next_page'
-        class="blue-grey white--text"
         block
       >
         {{ $t('message.loadMore')}}
@@ -78,7 +75,6 @@ export default {
   },
   methods: {
     // refresh_page() {
-    //   //  TODO: do the correct API call
     //   // console.log('refreshing page');
     //   this.loading = true;
     //   const userID = this.id; // eslint-disable-line no-underscore-dangle

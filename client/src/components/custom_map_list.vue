@@ -21,12 +21,11 @@
       </v-flex>
     </v-layout>
     <v-container v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 'normal'">
-      <v-layout row wrap>
+      <v-layout row wrap v-if="mode === 'normal'">
         <!-- <i v-show="loading" class="fa fa-spinner fa-spin fa-3x"></i> -->
         <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         <v-flex
           md12 sm12
-          v-if="mode === 'normal'"
           v-for="customMap in this.$store.state.customMaps"
           :key="customMap.id"
         >
@@ -36,7 +35,6 @@
         <v-btn
           v-if="$store.state.isUserLoggedIn && mode === 'normal'"
           v-on:click='nextPageLoadMaps'
-          class="blue-grey white--text"
           block
         >
           {{ $t('message.loadMore')}}
@@ -50,7 +48,6 @@
       </v-subheader>
       <v-flex
         md12 sm12
-        v-if="mode === 'search'"
         v-for="customMap in searchResultcustomMaps"
         :key="customMap.id"
       >
