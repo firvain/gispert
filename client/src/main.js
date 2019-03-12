@@ -94,4 +94,8 @@ Array.prototype.difference = function difference (array1, array2) {
   return temp;
 }
 
+Array.prototype.move = function(from, to) {
+  this.splice(to, 0, this.splice(from, 1)[0]);
+};
+
 export default i18n;

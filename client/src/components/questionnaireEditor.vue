@@ -1,41 +1,32 @@
 <template>
-  <v-container>
-    <v-layout row wrap xs12 sm12 md12>
-      <v-flex>
-        <v-card>
-          <v-card-title primary-title>
-              <h3 class="headline mb-0">Προσθήκη ερώτησης</h3>
-              <!-- <v-alert color="error" icon="warning" :value="question.error">
-                Δεν έχετε απαντήσει στην ερώτηση
-              </v-alert> -->
-              <v-flex xs12 sm12 md12>
-                <v-select
-                  v-bind:items="questionTypes"
-                  item-value="type"
-                  item-text="name"
-                  v-model="newQuestion"
-                  label="Τύπος ερώτησης"
-                  single-line
-                  menu-props='bottom'
-                  v-on:input="loadQuestionType"
-                ></v-select>
-              </v-flex>
-          </v-card-title>
-        </v-card>
-      </v-flex>
-    </v-layout>
+  <v-container><h1>Δημιουργία ερωτηματολογίου</h1>
     <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">
       <v-flex>
-        <div v-if="questionnaire">
-          <v-container fluid row
+        <v-flex v-if="questionnaire.properties.introduction.items.length > 0">
+          <v-flex fluid row
             v-for="item in questionnaire.properties.introduction.items"
             :key="item.id"
           >
-            <h3 v-if="item.type === 'heading'" class="headline mb-0">{{ item.value }}</h3>
-            <div v-if="item.type === 'text'" > {{ item.value }} </div>
+            <v-text-field
+              v-if="item.type === 'heading'"
+              name="input-1"
+              v-model="item.value"
+              label="Δώστε ένα τίτλο για το ερωτηματολόγιο"
+            ></v-text-field>
+            <v-text-field
+              v-if="item.type === 'text'"
+              name="input-1"
+              v-model="item.value"
+              label="Δώστε περισσότερες πληροφορίες για το ερωτηματολόγιο"
+            ></v-text-field>
             <img v-if="item.type === 'image'" :src="item.value" aspect-ratio="2.75"/>
-          </v-container>
-        </div>
+            <!-- <v-checkbox
+              v-if="item.type === 'loginRequired'"
+              label="Να απαιτείται η εγγραφή του χρήστη"
+              v-model="questionnaire.properties.loginRequired">
+            </v-checkbox> -->
+          </v-flex>
+        </v-flex>
 
         <v-container pa-1 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
           <v-card>
@@ -58,6 +49,8 @@
                     aspect-ratio="2.75"
                   />
                   <v-card-text>
+
+
                     <v-flex v-if="question.type === 'textfield'">
                       <v-text-field
                         name="input-1"
@@ -66,8 +59,67 @@
                         disabled
                       ></v-text-field>
                     </v-flex>
-                    <v-btn @click="question.editing = !question.editing" v-if="!question.editing">
+                    <v-flex v-if="question.type === 'combobox'">
+                      <v-select
+                        v-bind:items="question.items"
+                        item-value="id"
+                        item-text="value"
+                        label="Η απάντησή σας"
+                        single-line
+                        menu-props="bottom"
+                      ></v-select>
+                    </v-flex>
+                    <v-container row wrap v-if="question.type === 'checkboxGroup'">
+                        <v-flex v-for="checkbox in question.checkboxes" :key="checkbox.id">
+                          <v-checkbox
+                            :label="checkbox.label">
+                          </v-checkbox>
+                        </v-flex>
+                    </v-container>
+                    <v-container row wrap v-if="question.type === 'radioGroup'">
+                      <v-radio-group v-model="question.value" mandatory>
+                        <v-radio
+                          v-for="radio in question.radios"
+                          :key="radio.id"
+                          :label="`${radio.label}`"
+                        ></v-radio>
+                      </v-radio-group>
+                    </v-container>
+                    <v-container row wrap v-if="question.type === 'mapPointer'">
+                      <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
+                        <v-btn small fab dark class="indigo">
+                          <v-icon dark>location_on</v-icon>
+                        </v-btn>
+                      </v-flex>
+                    </v-container>
+                    <v-container v-if="question.type === 'mapPointerMultiple'">
+                      <v-layout row wrap v-for="line in question.lines" :key="line.id">
+                        <v-flex xs10>
+                          <v-text-field
+                            name="input-1"
+                            v-model="line.value"
+                            label="Η απάντησή σας"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs2>
+                          <v-btn small fab dark class="indigo">
+                            <v-icon dark>location_on</v-icon>
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
+                      <v-btn dark class="indigo">
+                        Προσθήκη γραμμής
+                      </v-btn>
+                    </v-container>
+
+                    <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="!question.editing">
                       <v-icon>edit</v-icon>
+                    </v-btn>
+                    <v-btn flat outline fab small @click="reorderQuestions(question, 'up');">
+                      <v-icon>keyboard_arrow_up</v-icon>
+                    </v-btn>
+                    <v-btn flat outline fab small @click="reorderQuestions(question, 'down');">
+                      <v-icon>keyboard_arrow_down</v-icon>
                     </v-btn>
                   </v-card-text>
                 </v-card>
@@ -80,6 +132,8 @@
                     </div>
                   </v-card-title>
                   <v-container>
+
+
                     <v-flex v-if="question.type === 'textfield'">
                       <v-text-field
                         name="input-1"
@@ -95,14 +149,215 @@
                         label="Προαιρετικό"
                         v-model="question.optional">
                       </v-checkbox>
-                      <v-btn @click="question.editing = !question.editing" v-if="question.editing">
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>save</v-icon>
                       </v-btn>
-                      <v-btn flat @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>keyboard_arrow_up</v-icon>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
                       </v-btn>
-                      <v-btn flat @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>keyboard_arrow_down</v-icon>
+                    </v-flex>
+
+
+                    <v-flex v-if="question.type === 'combobox'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        label="Ερώτηση"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        label="Περιγραφή"
+                      ></v-text-field>
+                      <v-list>
+                        <v-btn flat outline fab small @click="nextItemId += 1; question.items.push({id: nextItemId, value: ''});" v-if="question.editing">
+                          <v-icon>add</v-icon>
+                        </v-btn>
+                        <template v-for="item in question.items">
+                          <v-list-tile
+                              :key="item.id"
+                          >
+                            <v-list-tile-content>
+                              <v-text-field
+                                name="input-1"
+                                v-model="item.value"
+                                append-icon="delete"
+                                @click:append="question.items.remove(item)"
+                              ></v-text-field>
+                              <v-icon>delete</v-icon>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </template>
+                      </v-list>
+                      <v-checkbox
+                        label="Προαιρετικό"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>save</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
+
+                    <v-flex v-if="question.type === 'checkboxGroup'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        label="Ερώτηση"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        label="Περιγραφή"
+                      ></v-text-field>
+                      <v-list>
+                        <v-btn flat outline fab small @click="nextItemId += 1; question.checkboxes.push({id: nextItemId, label: '', value: false});"
+                          v-if="question.editing">
+                          <v-icon>add</v-icon>
+                        </v-btn>
+                        <template v-for="item in question.checkboxes">
+                          <v-list-tile
+                              :key="item.id"
+                          >
+                            <v-list-tile-content>
+                              <v-text-field
+                                name="input-1"
+                                v-model="item.label"
+                                append-icon="delete"
+                                @click:append="question.checkboxes.remove(item)"
+                              ></v-text-field>
+                              <v-icon>delete</v-icon>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </template>
+                      </v-list>
+                      <v-checkbox
+                        label="Προαιρετικό"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>save</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
+
+                    <v-flex v-if="question.type === 'radioGroup'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        label="Ερώτηση"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        label="Περιγραφή"
+                      ></v-text-field>
+                      <v-list>
+                        <v-btn flat outline fab small @click="nextItemId += 1; question.radios.push({id: nextItemId, label: '', value: false});"
+                          v-if="question.editing">
+                          <v-icon>add</v-icon>
+                        </v-btn>
+                        <template v-for="item in question.radios">
+                          <v-list-tile
+                              :key="item.id"
+                          >
+                            <v-list-tile-content>
+                              <v-text-field
+                                name="input-1"
+                                v-model="item.label"
+                                append-icon="delete"
+                                @click:append="question.radios.remove(item)"
+                              ></v-text-field>
+                              <v-icon>delete</v-icon>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </template>
+                      </v-list>
+                      <v-checkbox
+                        label="Προαιρετικό"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>save</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
+
+
+                    <v-flex v-if="question.type === 'mapPointer'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        label="Ερώτηση"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        label="Περιγραφή"
+                      ></v-text-field>
+                      <v-list>
+                        <v-btn flat outline fab small @click="nextItemId += 1; question.buttons.push({id: nextItemId, label: '', coords: null});"
+                          v-if="question.editing">
+                          <v-icon>add</v-icon>
+                        </v-btn>
+                        <template v-for="item in question.buttons">
+                          <v-list-tile
+                              :key="item.id"
+                          >
+                            <v-list-tile-content>
+                              <v-text-field
+                                name="input-1"
+                                v-model="item.label"
+                                append-icon="delete"
+                                @click:append="question.buttons.remove(item)"
+                              ></v-text-field>
+                              <v-icon>delete</v-icon>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </template>
+                      </v-list>
+                      <v-checkbox
+                        label="Προαιρετικό"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>save</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
+
+                    <v-flex v-if="question.type === 'mapPointerMultiple'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        label="Ερώτηση"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        label="Περιγραφή"
+                      ></v-text-field>
+                      <v-checkbox
+                        label="Προαιρετικό"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>save</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
                       </v-btn>
                     </v-flex>
                   </v-container>
@@ -112,66 +367,32 @@
           </v-card>
         </v-container>
 
-            <!-- <v-flex v-if="question.type === 'combobox'">
-              <v-select
-                v-bind:items="question.items"
-                v-model="question.value"
-                label="Η απάντησή σας"
-                single-line
-                menu-props="bottom"
-              ></v-select>
-            </v-flex>
-
-            <v-container row wrap v-if="question.type === 'checkboxGroup'">
-                <v-flex v-for="checkbox in question.checkboxes" :key="checkbox.id">
-                  <v-checkbox
-                    :label="checkbox.label"
-                    v-model="checkbox.value"
-                    :value="checkbox.value">
-                  </v-checkbox>
-                </v-flex>
-            </v-container>
-
-            <v-container row wrap v-if="question.type === 'radioGroup'">
-              <v-radio-group v-model="question.value" mandatory>
-                <v-radio
-                  v-for="radio in question.radios"
-                  :key="radio.id"
-                  :label="`${radio.label}`"
-                  :value="radio.label"
-                ></v-radio>
-              </v-radio-group>
-            </v-container>
-
-            <v-container row wrap v-if="question.type === 'mapPointer'">
-              <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-                <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'Point')">
-                  <v-icon dark>location_on</v-icon>
-                </v-btn>
-              </v-flex>
-            </v-container>
-
-            <v-container v-if="question.type === 'mapPointerMultiple'">
-              <v-layout row wrap v-for="line in question.lines" :key="line.id">
-                <v-flex xs10>
-                  <v-text-field
-                    name="input-1"
-                    v-model="line.value"
-                    label="Η απάντησή σας"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs2>
-                  <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point')">
-                    <v-icon dark>location_on</v-icon>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-btn dark class="indigo" @click="addRow(question)">
-                Προσθήκη γραμμής
-              </v-btn>
-            </v-container> -->
+        <v-layout row wrap xs12 sm12 md12>
+          <v-flex>
+            <v-card>
+              <v-card-title primary-title>
+                  <h3 class="headline mb-0">Προσθήκη ερώτησης</h3>
+                  <!-- <v-alert color="error" icon="warning" :value="question.error">
+                    Δεν έχετε απαντήσει στην ερώτηση
+                  </v-alert> -->
+                  <v-flex xs12 sm12 md12>
+                    <v-select
+                      v-bind:items="questionTypes"
+                      item-value="type"
+                      item-text="name"
+                      v-model="newQuestion"
+                      label="Τύπος ερώτησης"
+                      single-line
+                      menu-props='bottom'
+                      v-on:input="loadQuestionType"
+                    ></v-select>
+                  </v-flex>
+              </v-card-title>
+            </v-card>
+          </v-flex>
+        </v-layout>
         
-        <v-btn dark block class="indigo" @click="submit('all')">
+        <v-btn dark block class="indigo" @click="saveQuestionnaire()">
           ΑΠΟΘΗΚΕΥΣΗ ΕΡΩΤΗΜΑΤΟΛΟΓΙΟΥ<v-icon dark>save</v-icon>
         </v-btn>
       </v-flex>
@@ -184,9 +405,14 @@ export default {
     return {
       newQuestion: null,
       nextId: 0,
+      nextItemId: 0,
       questionTypes: [
         { type: 'textfield', name: 'Κείμενο' },
-        { type: 'combobox', name: 'Πολλαπλής επιλογής' },
+        { type: 'combobox', name: 'Αναπτυσσόμενο μενού' },
+        { type: 'checkboxGroup', name: 'Πλαίσια ελέγχου' },
+        { type: 'radioGroup', name: 'Πολλαπλής επιλογής' },
+        { type: 'mapPointer', name: 'Υπόδειξη στο χάρτη' },
+        { type: 'mapPointerMultiple', name: 'Πολλαπλές υποδείξεις στο χάρτη' },
       ],
       questionnaire: {
         questions: [],
@@ -207,9 +433,9 @@ export default {
                 value: null,
               },
               {
-                id: 4,
-                type: 'text',
-                value: null,
+                id: 3,
+                type: 'loginRequired',
+                value: false,
               },
             ],
           },
@@ -218,6 +444,20 @@ export default {
     };
   },
   methods: {
+    saveQuestionnaire() {
+      console.log('questionnaire json is :: ', JSON.stringify(this.questionnaire));
+    },
+    removeQuestion(question) {
+      this.questionnaire.questions.remove(question);
+    },
+    reorderQuestions(question, direction) {
+      const index = this.questionnaire.questions.findIndex(item => item.id === question.id);
+      if (direction === 'up') {
+        this.questionnaire.questions.move(index, index - 1);
+      } else if (direction === 'down') {
+        this.questionnaire.questions.move(index, index + 1);
+      }
+    },
     loadQuestionType() {
       console.log(this.newQuestion);
       if (this.newQuestion === 'textfield') {
@@ -235,30 +475,96 @@ export default {
         this.questionnaire.questions.push(textfield);
       }
       if (this.newQuestion === 'combobox') {
-        const textfield = {
+        const combobox = {
           id: this.nextId,
           type: 'combobox',
           page: 0,
           title: null,
           description: null,
           value: null,
-          items: [],
+          items: [{ id: `i${this.nextItemId}`, value: '' }],
           error: false,
           optional: false,
           editing: true,
         };
-        this.questionnaire.questions.push(textfield);
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(combobox);
+      }
+      if (this.newQuestion === 'checkboxGroup') {
+        const checkboxGroup = {
+          id: this.nextId,
+          type: 'checkboxGroup',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          checkboxes: [{ id: `i${this.nextItemId}`, label: '', value: false }],
+          error: false,
+          optional: false,
+          editing: true,
+        };
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(checkboxGroup);
+      }
+      if (this.newQuestion === 'radioGroup') {
+        const radioGroup = {
+          id: this.nextId,
+          type: 'radioGroup',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          radios: [{ id: `i${this.nextItemId}`, label: '', radioValue: false }],
+          error: false,
+          optional: false,
+          editing: true,
+        };
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(radioGroup);
+      }
+      if (this.newQuestion === 'mapPointer') {
+        const mapPointer = {
+          id: this.nextId,
+          type: 'mapPointer',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          buttons: [{ id: `i${this.nextItemId}`, label: '', coords: null }],
+          error: false,
+          optional: false,
+          editing: true,
+        };
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(mapPointer);
+      }
+      if (this.newQuestion === 'mapPointerMultiple') {
+        const mapPointerMultiple = {
+          id: this.nextId,
+          type: 'mapPointerMultiple',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          lines: [{ id: `i${this.nextItemId}`, value: '', coords: null }],
+          error: false,
+          optional: false,
+          editing: true,
+        };
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(mapPointerMultiple);
       }
       this.nextId += 1;
+      this.$nextTick(() => {
+        this.newQuestion = null;
+      });
     },
   },
 };
-// TODO move up down and sort questions
-// delete question
+// TODO
 // insert page breaks
-// input title images etc
-// rest of question types
 // save send to database
+// mapextent put button to draw
 // show questionnaires in users account
 // question validation rules
 // localization
