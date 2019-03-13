@@ -111,6 +111,11 @@
                         Προσθήκη γραμμής
                       </v-btn>
                     </v-container>
+                    <v-flex v-if="question.type === 'titleDescription'">
+                      <h3 class="headline mb-0">{{ question.title }}</h3>
+                      <div> {{ question.description }} </div>
+                    </v-flex>
+
 
                     <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="!question.editing">
                       <v-icon>edit</v-icon>
@@ -121,6 +126,7 @@
                     <v-btn flat outline fab small @click="reorderQuestions(question, 'down');">
                       <v-icon>keyboard_arrow_down</v-icon>
                     </v-btn>
+                    Ενότητα: {{ question.page + 1 }}
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -360,6 +366,27 @@
                         <v-icon>delete</v-icon>
                       </v-btn>
                     </v-flex>
+
+
+                    <v-flex v-if="question.type === 'titleDescription'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        label="Τίτλος"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        label="Περιγραφή"
+                      ></v-text-field>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>save</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
                   </v-container>
                 </v-card>
               </v-flex>
@@ -413,6 +440,7 @@ export default {
         { type: 'radioGroup', name: 'Πολλαπλής επιλογής' },
         { type: 'mapPointer', name: 'Υπόδειξη στο χάρτη' },
         { type: 'mapPointerMultiple', name: 'Πολλαπλές υποδείξεις στο χάρτη' },
+        { type: 'titleDescription', name: 'Τίτλος και περιγραφή' },
       ],
       questionnaire: {
         questions: [],
@@ -553,6 +581,20 @@ export default {
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointerMultiple);
+      }
+      if (this.newQuestion === 'titleDescription') {
+        const titleDescription = {
+          id: this.nextId,
+          type: 'titleDescription',
+          page: 0,
+          title: null,
+          description: null,
+          error: false,
+          optional: false,
+          editing: true,
+        };
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(titleDescription);
       }
       this.nextId += 1;
       this.$nextTick(() => {
