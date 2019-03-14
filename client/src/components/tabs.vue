@@ -13,6 +13,10 @@
         <v-icon>fa-user-o</v-icon>
         <b>{{ $t("message.users") }}</b>
       </v-tab>
+      <v-tab href="#questionnaires" ripple>
+        <v-icon>live_help</v-icon>
+        <b>Ερωτηματολόγια</b>
+      </v-tab>
     <v-tabs-items>
       <v-tab-item
         value="home"
@@ -29,6 +33,11 @@
       >
         <userList></userList>
       </v-tab-item>
+      <v-tab-item
+        value="questionnaires"
+      >
+        <questionnaires></questionnaires>
+      </v-tab-item>
     </v-tabs-items>
   </v-tabs>
 </template>
@@ -38,11 +47,12 @@
 import timeline from '@/components/timeline';
 import explore from '@/components/search';
 import userList from '@/components/userlist';
+import questionnaires from '@/components/questionnaires';
 
 export default {
   name: 'tabs',
   components: {
-    timeline, explore, userList,
+    timeline, explore, userList, questionnaires,
   },
   data: () => ({
   }),
@@ -64,9 +74,13 @@ export default {
     },
   },
   mounted() {
-    this.$store.commit('setQuestionnaireMode', false);
+    this.$store.commit('setQuestionnaireMode', null);
   },
 };
 </script>
 <style>
+.tabs__content
+  {
+    min-height: 100vh;
+  }
 </style>

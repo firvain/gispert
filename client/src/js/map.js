@@ -401,18 +401,29 @@ const drawPolygon = new ol.interaction.Draw({
   name: 'polygon',
 });
 
+// eslint-disable-next-line
+const drawBox = new ol.interaction.Draw({
+  source: customLayer.getSource(),
+  type: ('Circle'),
+  name: 'box',
+  geometryFunction: ol.interaction.Draw.createBox(),
+});
+
 olMap.addInteraction(selectClick);
 olMap.addInteraction(drawPoint);
 olMap.addInteraction(drawLineString);
 olMap.addInteraction(drawPolygon);
+olMap.addInteraction(drawBox);
 
 drawPoint.setProperties({ name: 'Point' });
 drawLineString.setProperties({ name: 'LineString' });
 drawPolygon.setProperties({ name: 'Polygon' });
+drawBox.setProperties({ name: 'Box' });
 
 drawPoint.setActive(false);
 drawLineString.setActive(false);
 drawPolygon.setActive(false);
+drawBox.setActive(false);
 selectClick.setActive(true);
 
 selectClick.on('select', () => {
@@ -436,6 +447,7 @@ drawPoint.on('drawend', (e) => {
     drawPoint.setActive(false);
     drawLineString.setActive(false);
     drawPolygon.setActive(false);
+    drawBox.setActive(false);
     selectClick.setActive(true);
   }
 });
@@ -452,6 +464,7 @@ drawLineString.on('drawend', (e) => {
     drawPoint.setActive(false);
     drawLineString.setActive(false);
     drawPolygon.setActive(false);
+    drawBox.setActive(false);
     selectClick.setActive(true);
   }
 });
@@ -470,8 +483,27 @@ drawPolygon.on('drawend', (e) => {
     drawPoint.setActive(false);
     drawLineString.setActive(false);
     drawPolygon.setActive(false);
+    drawBox.setActive(false);
     selectClick.setActive(true);
   }
 });
-
+drawBox.on('drawend', (e) => {
+  e.feature.setProperties({
+    strkWdth: 1,
+    strkClr: 'blue',
+    fill: new ol.style.Fill({
+      color: 'rgba(0, 0, 255, 0.1)',
+    }),
+  });
+  if (store.state.questionnaireMode === false) {
+    store.commit('newPostFeature', e.feature);
+  } else {
+    store.commit('addQuestionnaireFeature', e.feature);
+    drawPoint.setActive(false);
+    drawLineString.setActive(false);
+    drawPolygon.setActive(false);
+    drawBox.setActive(false);
+    selectClick.setActive(true);
+  }
+});
 export default olMap;

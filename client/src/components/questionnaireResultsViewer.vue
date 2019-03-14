@@ -285,10 +285,12 @@ export default {
   },
   methods: {
     loadQuestionnaireResults() {
-      const serverUrl = `${config.url}/public/questionnaireResults`;
-      axios.get(serverUrl, { params: {
-        questionnaireId: this.id,
-      },
+      const serverUrl = `${config.url}/questionnaires/questionnaireResults`;
+      axios.get(serverUrl, {
+        params: {
+          questionnaireId: this.id,
+        },
+        headers: { 'x-access-token': this.$store.state.token },
       }).then((response) => {
         this.questionnaireResults = response.data;
         this.getcomboitems();

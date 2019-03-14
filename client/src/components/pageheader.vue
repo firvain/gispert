@@ -13,10 +13,10 @@
               v-on:keyup.enter="searchInPosts"
             ></v-text-field> -->
             <!-- <placesResults :results='osmResults' offset-sm3></placesResults> -->
-            <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false && $store.state.questionnaireMode === false">
+            <v-btn flat @click='showRegisterDialogue' v-if="$store.state.isUserLoggedIn === false && $store.state.questionnaireMode !== 'answering'">
               {{ $t("message.register") }}
             </v-btn>
-            <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false && $store.state.questionnaireMode === false">
+            <v-btn flat @click='showLoginDialogue' v-if="$store.state.isUserLoggedIn === false && $store.state.questionnaireMode !== 'answering'">
               {{ $t("message.login") }}
             </v-btn>
               <!-- {{notificationsBell.number}}{{notificationsBell.color}},  -->

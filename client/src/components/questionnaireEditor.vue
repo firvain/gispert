@@ -1,6 +1,6 @@
 <template>
-  <v-container><h1>Δημιουργία ερωτηματολογίου</h1>
     <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">
+      <h1>Δημιουργία ερωτηματολογίου</h1>
       <v-flex>
         <v-flex v-if="questionnaire.properties.introduction.items.length > 0">
           <v-flex fluid row
@@ -20,6 +20,7 @@
               label="Δώστε περισσότερες πληροφορίες για το ερωτηματολόγιο"
             ></v-text-field>
             <img v-if="item.type === 'image'" :src="item.value" aspect-ratio="2.75"/>
+
             <!-- <v-checkbox
               v-if="item.type === 'loginRequired'"
               label="Να απαιτείται η εγγραφή του χρήστη"
@@ -27,6 +28,10 @@
             </v-checkbox> -->
           </v-flex>
         </v-flex>
+        Βάλτε περιοχή αναφοράς του ερωτηματολογίου
+        <v-btn small fab dark class="indigo" @click="getFromMap('qExtent', 'Box')">
+          <v-icon dark>location_on</v-icon>
+        </v-btn>
 
         <v-container pa-1 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
           <v-card>
@@ -116,17 +121,30 @@
                       <div> {{ question.description }} </div>
                     </v-flex>
 
+                    <v-layout row wrap align-center>
+                      <v-flex xs4>
+                        <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="!question.editing">
+                          <v-icon>edit</v-icon>
+                        </v-btn>
+                        <v-btn flat outline fab small @click="reorderQuestions(question, 'up');">
+                          <v-icon>keyboard_arrow_up</v-icon>
+                        </v-btn>
+                        <v-btn flat outline fab small @click="reorderQuestions(question, 'down');">
+                          <v-icon>keyboard_arrow_down</v-icon>
+                        </v-btn>
+                      </v-flex>
+                      <v-flex xs4>
+                        <v-checkbox
+                          v-model="question.pageBreak"
+                          @change="pageBreakChangeControl"
+                          label="Αλλαγή ενότητας">
+                        </v-checkbox>
+                      </v-flex>
+                      <v-flex>
+                        <h5>Ενότητα: {{ question.page + 1 }}</h5>
+                      </v-flex>
+                  </v-layout>
 
-                    <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="!question.editing">
-                      <v-icon>edit</v-icon>
-                    </v-btn>
-                    <v-btn flat outline fab small @click="reorderQuestions(question, 'up');">
-                      <v-icon>keyboard_arrow_up</v-icon>
-                    </v-btn>
-                    <v-btn flat outline fab small @click="reorderQuestions(question, 'down');">
-                      <v-icon>keyboard_arrow_down</v-icon>
-                    </v-btn>
-                    Ενότητα: {{ question.page + 1 }}
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -399,9 +417,6 @@
             <v-card>
               <v-card-title primary-title>
                   <h3 class="headline mb-0">Προσθήκη ερώτησης</h3>
-                  <!-- <v-alert color="error" icon="warning" :value="question.error">
-                    Δεν έχετε απαντήσει στην ερώτηση
-                  </v-alert> -->
                   <v-flex xs12 sm12 md12>
                     <v-select
                       v-bind:items="questionTypes"
@@ -418,18 +433,28 @@
             </v-card>
           </v-flex>
         </v-layout>
-        
-        <v-btn dark block class="indigo" @click="saveQuestionnaire()">
-          ΑΠΟΘΗΚΕΥΣΗ ΕΡΩΤΗΜΑΤΟΛΟΓΙΟΥ<v-icon dark>save</v-icon>
-        </v-btn>
+        <div>
+          <v-btn @click="saveQuestionnaire().then(() => { this.loading = false });">
+            ΑΠΟΘΗΚΕΥΣΗ ΕΡΩΤΗΜΑΤΟΛΟΓΙΟΥ<v-icon dark>save</v-icon>
+          </v-btn>
+          <v-btn @click="$store.commit('setQuestionnaireMode', 'normal')">
+            ΑΚΥΡΟ<v-icon dark>cancel</v-icon>
+          </v-btn>
+          <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+        </div>
       </v-flex>
     </v-layout>
-  </v-container>
 </template>
 <script>
+import ol from 'openlayers';
+import axios from 'axios';
+import olMap from '../js/map';
+import config from '../config';
+
 export default {
   data() {
     return {
+      loading: false,
       newQuestion: null,
       nextId: 0,
       nextItemId: 0,
@@ -445,6 +470,7 @@ export default {
       questionnaire: {
         questions: [],
         properties: {
+          owner: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
           mapExtent: [],
           loginRequired: false,
           pages: 0,
@@ -471,8 +497,47 @@ export default {
       },
     };
   },
+  watch: {
+    '$store.state.questionnaireFeatures': function set() {
+      const feature = this.$store.state.questionnaireFeatures[0];
+      this.questionnaire.properties.mapExtent = feature.getGeometry().getExtent();
+    },
+  },
   methods: {
-    saveQuestionnaire() {
+    pageBreakChangeControl() {
+      let page = 0;
+      this.questionnaire.questions.forEach((q) => {
+        // console.log(q.pageBreak);
+        if (q.pageBreak) {
+          page += 1;
+          // eslint-disable-next-line
+          q.page = page;
+        } else {
+          // eslint-disable-next-line
+          q.page = page;
+        }
+      });
+      this.questionnaire.properties.pages = page;
+    },
+    async saveQuestionnaire() {
+      this.$store.commit('setQuestionnaireMode', 'normal');
+      try {
+        const url = `${config.url}/questionnaires/save`;
+        console.log(url);
+        const data = this.questionnaire;
+        axios.post(url, { data }, {
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          console.log('response to save :: ', response);
+          if (response.data.type === 'new') {
+            console.log('questionnaire new');
+          } else if (response.data.type === 'replaced') {
+            console.log('questionnaire replaced');
+          }
+        });
+      } catch (error) {
+        this.error = error.response.data.error;
+      }
       console.log('questionnaire json is :: ', JSON.stringify(this.questionnaire));
     },
     removeQuestion(question) {
@@ -485,6 +550,7 @@ export default {
       } else if (direction === 'down') {
         this.questionnaire.questions.move(index, index + 1);
       }
+      this.pageBreakChangeControl();
     },
     loadQuestionType() {
       console.log(this.newQuestion);
@@ -499,6 +565,7 @@ export default {
           error: false,
           optional: false,
           editing: true,
+          pageBreak: false,
         };
         this.questionnaire.questions.push(textfield);
       }
@@ -514,6 +581,7 @@ export default {
           error: false,
           optional: false,
           editing: true,
+          pageBreak: false,
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(combobox);
@@ -530,6 +598,7 @@ export default {
           error: false,
           optional: false,
           editing: true,
+          pageBreak: false,
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(checkboxGroup);
@@ -546,6 +615,7 @@ export default {
           error: false,
           optional: false,
           editing: true,
+          pageBreak: false,
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(radioGroup);
@@ -562,6 +632,7 @@ export default {
           error: false,
           optional: false,
           editing: true,
+          pageBreak: false,
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointer);
@@ -578,6 +649,7 @@ export default {
           error: false,
           optional: false,
           editing: true,
+          pageBreak: false,
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointerMultiple);
@@ -592,6 +664,7 @@ export default {
           error: false,
           optional: false,
           editing: true,
+          pageBreak: false,
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(titleDescription);
@@ -599,14 +672,40 @@ export default {
       this.nextId += 1;
       this.$nextTick(() => {
         this.newQuestion = null;
+        this.pageBreakChangeControl();
+      });
+    },
+    getFromMap(id, type) {
+      let allLayers = [];
+      allLayers = olMap.getLayers().getArray();
+      allLayers.forEach((layer) => {
+        if (layer.getProperties().name === 'customLayer') {
+          layer.getSource().forEachFeature((feature) => {
+            if (feature.get('buttonId') === id) {
+              layer.getSource().removeFeature(feature);
+            }
+          });
+        }
+      });
+
+      this.$store.commit('setQuestionnaireFeatureId', id);
+      olMap.getInteractions().forEach((interaction) => {
+        if (interaction instanceof ol.interaction.Draw) {
+          if (interaction.getProperties().name === type) {
+            interaction.setActive(true);
+          } else {
+            interaction.setActive(false);
+          }
+        }
       });
     },
   },
+  mounted() {
+    this.$store.commit('setQuestionnaireMode', 'editor');
+  },
 };
 // TODO
-// insert page breaks
 // save send to database
-// mapextent put button to draw
 // show questionnaires in users account
 // question validation rules
 // localization

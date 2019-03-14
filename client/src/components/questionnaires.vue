@@ -1,0 +1,166 @@
+<template>
+<v-container id="questionnaires">
+  <v-layout row wrap>
+    <v-btn block dark outline small color="green"
+      @click="changeQuestionnaireMode('normal')"
+      v-if="$store.state.questionnaireMode !== 'normal'">
+      <v-icon dark>undo</v-icon>
+      {{ $t('message.back')}}
+    </v-btn>
+
+    <v-flex v-if="$store.state.questionnaireMode === 'normal'" xs12>
+      <h2>Ερωτηματολόγια που έχω φτιάξει</h2>
+      <v-btn block @click="changeQuestionnaireMode('editor')">Νέο ερωτηματολόγιο</v-btn>
+      <v-list three-line>
+        <template v-for="item in myQuestionnaires[0]">
+          <v-list-tile
+              :key="item._id"
+              @click='openViewerForQuestionnaire(item)'
+          >
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <v-flex>
+                  {{ item.properties.introduction.items[0].value }}
+                </v-flex>
+              </v-list-tile-title>
+              <v-list-tile-sub-title>{{ item.properties.introduction.items[1].value }}</v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn icon ripple @click='openViewerForQuestionnaire(item)'>
+                <v-icon color="grey lighten-1">edit</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+            <v-list-tile-action>
+              <v-btn icon ripple @click='openViewerForQuestionnaireResults(item)'>
+                <v-icon color="grey lighten-1">bar_chart</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+        </template>
+      </v-list>
+    </v-flex>
+
+    <v-flex v-if="$store.state.questionnaireMode === 'normal'" xs12>
+      <h2>Ερωτηματολόγια που έχω απαντήσει</h2>
+      <v-list three-line>
+        <template v-for="item in questionnairesIHaveAnswered[0]">
+          <v-list-tile
+              :key="item._id"
+              @click='openViewerForQuestionnaireResult(item)'
+          >
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <v-flex>
+                  {{ item.properties.introduction.items[0].value }}
+                </v-flex>
+              </v-list-tile-title>
+              <v-list-tile-sub-title>{{ item.properties.introduction.items[1].value }}</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </template>
+      </v-list>
+    </v-flex>
+    <v-flex xs12 sm12 md12>
+      <questionnaireEditor v-if="$store.state.questionnaireMode === 'editor'"></questionnaireEditor>
+    </v-flex>
+    <v-flex xs12 sm12 md12>
+      <questionnaireView v-if="$store.state.questionnaireMode === 'viewer'" :id="questionnaireForView"></questionnaireView>
+    </v-flex>
+    <v-flex xs12 sm12 md12>
+      <questionnaireResultsViewer v-if="$store.state.questionnaireMode === 'resultsViewer'" :id="questionnaireForView"></questionnaireResultsViewer>
+    </v-flex>
+  </v-layout>
+  <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+</v-container>
+</template>
+<script>
+import axios from 'axios';
+import questionnaireEditor from '@/components/questionnaireEditor';
+import questionnaireView from '@/components/questionnaireView';
+import questionnaireResultsViewer from '@/components/questionnaireResultsViewer';
+import config from '../config';
+
+export default {
+  data() {
+    return {
+      myQuestionnaires: [],
+      questionnairesIHaveAnswered: [],
+      loading: false,
+      questionnaireForView: null,
+    };
+  },
+  components: {
+    questionnaireEditor, questionnaireView, questionnaireResultsViewer,
+  },
+  mounted() {
+    this.$eventHub.$on('logged-in', () => {
+      this.changeQuestionnaireMode('normal');
+      this.loadMyQuestionnaires().then(() => {
+        this.loading = false;
+      });
+      this.loadQuestionnairesIHaveAnswered().then(() => {
+        this.loading = false;
+      });
+    });
+  },
+  methods: {
+    openViewerForQuestionnaireResults(questionnaire) {
+      console.log(questionnaire);
+      this.changeQuestionnaireMode('resultsViewer');
+      this.questionnaireForView = questionnaire._id; // eslint-disable-line no-underscore-dangle
+    },
+    openViewerForQuestionnaireResult(questionnaire) {
+      console.log(questionnaire);
+      this.changeQuestionnaireMode('viewer');
+      this.questionnaireForView = questionnaire._id; // eslint-disable-line no-underscore-dangle
+    },
+    openViewerForQuestionnaire(questionnaire) {
+      console.log(questionnaire);
+      this.changeQuestionnaireMode('viewer');
+      this.questionnaireForView = questionnaire._id; // eslint-disable-line no-underscore-dangle
+    },
+    changeQuestionnaireMode(mode) {
+      this.$store.commit('setQuestionnaireMode', mode);
+    },
+    async loadMyQuestionnaires() {
+      try {
+        const url = `${config.url}/questionnaires/owner`;
+        console.log(url);
+        axios.get(url, {
+          params: {
+            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          this.myQuestionnaires.push(response.data);
+        });
+      } catch (error) {
+        this.error = error.response.data.error;
+      }
+    },
+    async loadQuestionnairesIHaveAnswered() {
+      try {
+        const url = `${config.url}/questionnaires/answered`;
+        console.log(url);
+        axios.get(url, {
+          params: {
+            userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+          },
+          headers: { 'x-access-token': this.$store.state.token },
+        }).then((response) => {
+          this.questionnairesIHaveAnswered.push(response.data);
+        });
+      } catch (error) {
+        this.error = error.response.data.error;
+      }
+    },
+  },
+};
+</script>
+<style>
+#questionnaires {
+  color: black;
+  max-height: 82vh;
+  overflow-y: scroll;
+}
+</style>

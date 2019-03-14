@@ -520,6 +520,7 @@ export default {
                   results: result,
                   properties: this.questionnaire.properties,
                   submittedOn: Date.now(),
+                  submittedBy: this.getUserId(),
                 };
                 console.log(questionnaireToPost);
                 return questionnaireToPost;
@@ -533,6 +534,15 @@ export default {
           }
         });
       });
+    },
+    getUserId() {
+      let id;
+      if (this.$store.state.user) { // eslint-disable-line no-underscore-dangle
+        id = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
+      } else {
+        id = null;
+      }
+      return id;
     },
     sendToServer(questionnaire) {
       console.log('send this to server:: ', questionnaire);
@@ -565,7 +575,7 @@ export default {
   },
   mounted() {
     console.log('mounted questionnaire');
-    this.$store.commit('setQuestionnaireMode', true);
+    this.$store.commit('setQuestionnaireMode', 'viewer');
     this.loadQuestionnaire();
   },
 };

@@ -32,7 +32,7 @@ export default new Vuex.Store({
     activeTab: 1,
     selectedPost: '',
     questionnaireFeatures: [],
-    questionnaireMode: false,
+    questionnaireMode: null,
     questionnaireFeatureId: null,
     questionnaire: null,
   },
