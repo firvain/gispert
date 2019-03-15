@@ -589,7 +589,11 @@ export default {
   },
   mounted() {
     console.log('mounted questionnaire');
-    this.$store.commit('setQuestionnaireMode', 'viewer');
+    if (this.$route.name === 'questionnaire') {
+      this.$store.commit('setQuestionnaireMode', 'answering');
+    } else {
+      this.$store.commit('setQuestionnaireMode', 'viewer');
+    }
     this.loadQuestionnaire();
   },
 };
