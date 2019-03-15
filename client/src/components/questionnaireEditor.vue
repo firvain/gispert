@@ -124,13 +124,13 @@
                     <v-layout row wrap align-center>
                       <v-flex xs4>
                         <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="!question.editing">
-                          <v-icon>edit</v-icon>
+                          <v-icon>folder</v-icon>
                         </v-btn>
                         <v-btn flat outline fab small @click="reorderQuestions(question, 'up');">
-                          <v-icon>keyboard_arrow_up</v-icon>
+                          <v-icon>arrow_upward</v-icon>
                         </v-btn>
                         <v-btn flat outline fab small @click="reorderQuestions(question, 'down');">
-                          <v-icon>keyboard_arrow_down</v-icon>
+                          <v-icon>arrow_downward</v-icon>
                         </v-btn>
                       </v-flex>
                       <v-flex xs4>
@@ -174,7 +174,7 @@
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>save</v-icon>
+                        <v-icon>folder_open</v-icon>
                       </v-btn>
                       <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
@@ -218,7 +218,7 @@
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>save</v-icon>
+                        <v-icon>folder_open</v-icon>
                       </v-btn>
                       <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
@@ -263,7 +263,7 @@
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>save</v-icon>
+                        <v-icon>folder_open</v-icon>
                       </v-btn>
                       <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
@@ -308,7 +308,7 @@
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>save</v-icon>
+                        <v-icon>folder_open</v-icon>
                       </v-btn>
                       <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
@@ -354,7 +354,7 @@
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>save</v-icon>
+                        <v-icon>folder_open</v-icon>
                       </v-btn>
                       <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
@@ -378,7 +378,7 @@
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>save</v-icon>
+                        <v-icon>folder_open</v-icon>
                       </v-btn>
                       <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
@@ -398,7 +398,7 @@
                         label="Περιγραφή"
                       ></v-text-field>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>save</v-icon>
+                        <v-icon>folder_open</v-icon>
                       </v-btn>
                       <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
@@ -521,7 +521,11 @@ export default {
       this.questionnaire.properties.pages = page;
     },
     async saveQuestionnaire() {
-      this.$store.commit('setQuestionnaireMode', 'normal');
+      // this.$store.commit('setQuestionnaireMode', 'normal');
+      this.questionnaire.questions.forEach((q) => {
+        // eslint-disable-next-line
+        q.editing = false;
+      });
       try {
         const url = `${config.url}/questionnaires/save`;
         console.log(url);
@@ -529,7 +533,7 @@ export default {
         axios.post(url, { data }, {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
-          this.$store.commit('setQuestionnaireMode', 'normal');
+          // this.$store.commit('setQuestionnaireMode', 'normal');
           this.$eventHub.$emit('refreshQuestionnaires');
           console.log('response to save :: ', response);
           if (response.data.type === 'new') {

@@ -66,13 +66,24 @@
       </v-list>
     </v-flex>
     <v-flex xs12 sm12 md12>
-      <questionnaireEditor :qnnaire="questionnaireForEdit" v-if="$store.state.questionnaireMode === 'editor'"></questionnaireEditor>
+      <questionnaireEditor :qnnaire="questionnaireForEdit"
+        v-if="$store.state.questionnaireMode === 'editor'">
+      </questionnaireEditor>
     </v-flex>
     <v-flex xs12 sm12 md12>
-      <questionnaireView v-if="$store.state.questionnaireMode === 'viewer'" :id="questionnaireForView"></questionnaireView>
+      <questionnaireView v-if="$store.state.questionnaireMode === 'viewer'"
+        :id="questionnaireForView">
+      </questionnaireView>
     </v-flex>
     <v-flex xs12 sm12 md12>
-      <questionnaireResultsViewer v-if="$store.state.questionnaireMode === 'resultsViewer'" :id="questionnaireForView"></questionnaireResultsViewer>
+      <questionnaireResultsViewer v-if="$store.state.questionnaireMode === 'resultsViewer'"
+        :id="questionnaireForView">
+      </questionnaireResultsViewer>
+    </v-flex>
+    <v-flex xs12 sm12 md12>
+      <questionnaireOneResultViewer v-if="$store.state.questionnaireMode === 'oneResultViewer'"
+        :id="questionnaireForResult">
+      </questionnaireOneResultViewer>
     </v-flex>
   </v-layout>
   <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
@@ -83,6 +94,7 @@ import axios from 'axios';
 import questionnaireEditor from '@/components/questionnaireEditor';
 import questionnaireView from '@/components/questionnaireView';
 import questionnaireResultsViewer from '@/components/questionnaireResultsViewer';
+import questionnaireOneResultViewer from '@/components/questionnaireOneResultViewer';
 import config from '../config';
 
 export default {
@@ -93,10 +105,14 @@ export default {
       loading: false,
       questionnaireForView: null,
       questionnaireForEdit: null,
+      questionnaireForResult: null,
     };
   },
   components: {
-    questionnaireEditor, questionnaireView, questionnaireResultsViewer,
+    questionnaireEditor,
+    questionnaireView,
+    questionnaireResultsViewer,
+    questionnaireOneResultViewer,
   },
   mounted() {
     this.$eventHub.$on('logged-in', () => {
@@ -135,8 +151,8 @@ export default {
     },
     openViewerForQuestionnaireResult(questionnaire) {
       console.log(questionnaire);
-      this.changeQuestionnaireMode('viewer');
-      this.questionnaireForView = questionnaire._id; // eslint-disable-line no-underscore-dangle
+      this.changeQuestionnaireMode('oneResultViewer');
+      this.questionnaireForResult = questionnaire._id; // eslint-disable-line no-underscore-dangle
     },
     openViewerForQuestionnaire(questionnaire) {
       console.log(questionnaire);
