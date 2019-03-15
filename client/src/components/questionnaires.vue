@@ -10,9 +10,9 @@
 
     <v-flex v-if="$store.state.questionnaireMode === 'normal'" xs12>
       <h2>Ερωτηματολόγια που έχω φτιάξει</h2>
-      <v-btn block @click="changeQuestionnaireMode('editor')">Νέο ερωτηματολόγιο</v-btn>
+      <v-btn block @click="createNewQuestionnaire()">Νέο ερωτηματολόγιο</v-btn>
       <v-list three-line>
-        <template v-for="item in myQuestionnaires[0]">
+        <template v-for="item in $store.state.myQuestionnaires">
           <v-list-tile
               :key="item._id"
               @click='openViewerForQuestionnaire(item)'
@@ -26,8 +26,13 @@
               <v-list-tile-sub-title>{{ item.properties.introduction.items[1].value }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn icon ripple @click='openViewerForQuestionnaire(item)'>
+              <v-btn icon ripple @click='openEditorForQuestionnaire(item)'>
                 <v-icon color="grey lighten-1">edit</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+            <v-list-tile-action>
+              <v-btn icon ripple @click='openViewerForQuestionnaire(item)'>
+                <v-icon color="grey lighten-1">view_module</v-icon>
               </v-btn>
             </v-list-tile-action>
             <v-list-tile-action>
@@ -43,7 +48,7 @@
     <v-flex v-if="$store.state.questionnaireMode === 'normal'" xs12>
       <h2>Ερωτηματολόγια που έχω απαντήσει</h2>
       <v-list three-line>
-        <template v-for="item in questionnairesIHaveAnswered[0]">
+        <template v-for="item in $store.state.questionnairesIHaveAnswered">
           <v-list-tile
               :key="item._id"
               @click='openViewerForQuestionnaireResult(item)'
@@ -61,7 +66,7 @@
       </v-list>
     </v-flex>
     <v-flex xs12 sm12 md12>
-      <questionnaireEditor v-if="$store.state.questionnaireMode === 'editor'"></questionnaireEditor>
+      <questionnaireEditor :qnnaire="questionnaireForEdit" v-if="$store.state.questionnaireMode === 'editor'"></questionnaireEditor>
     </v-flex>
     <v-flex xs12 sm12 md12>
       <questionnaireView v-if="$store.state.questionnaireMode === 'viewer'" :id="questionnaireForView"></questionnaireView>
@@ -83,10 +88,11 @@ import config from '../config';
 export default {
   data() {
     return {
-      myQuestionnaires: [],
-      questionnairesIHaveAnswered: [],
+      // myQuestionnaires: [],
+      // questionnairesIHaveAnswered: [],
       loading: false,
       questionnaireForView: null,
+      questionnaireForEdit: null,
     };
   },
   components: {
@@ -102,8 +108,26 @@ export default {
         this.loading = false;
       });
     });
+    this.$eventHub.$on('refreshQuestionnaires', () => {
+      console.log('questionnaires refreshed');
+      this.loadMyQuestionnaires().then(() => {
+        this.loading = false;
+      });
+      this.loadQuestionnairesIHaveAnswered().then(() => {
+        this.loading = false;
+      });
+    });
   },
   methods: {
+    createNewQuestionnaire() {
+      this.changeQuestionnaireMode('editor');
+      this.questionnaireForEdit = null;
+    },
+    openEditorForQuestionnaire(questionnaire) {
+      this.changeQuestionnaireMode('editor');
+      this.questionnaireForEdit = questionnaire; // eslint-disable-line no-underscore-dangle
+      console.log('opening questionnaire for edit :: ', questionnaire);
+    },
     openViewerForQuestionnaireResults(questionnaire) {
       console.log(questionnaire);
       this.changeQuestionnaireMode('resultsViewer');
@@ -132,7 +156,8 @@ export default {
           },
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
-          this.myQuestionnaires.push(response.data);
+          // this.myQuestionnaires.push(response.data);
+          this.$store.commit('setMyQuestionnaires', response.data);
         });
       } catch (error) {
         this.error = error.response.data.error;
@@ -148,7 +173,8 @@ export default {
           },
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
-          this.questionnairesIHaveAnswered.push(response.data);
+          // this.questionnairesIHaveAnswered.push(response.data);
+          this.$store.commit('setQuestionnairesIHaveAnswered', response.data);
         });
       } catch (error) {
         this.error = error.response.data.error;

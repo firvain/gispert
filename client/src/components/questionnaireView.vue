@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">
+  <v-layout id="layout1" row wrap xs12 sm12 md12 v-if="questionnaire">
     <div v-if="page === 0 && questionnaire">
       <v-container fluid row
         v-for="item in questionnaire.properties.introduction.items"
@@ -42,6 +42,8 @@
           <v-select
             v-bind:items="question.items"
             v-model="question.value"
+            item-value="id"
+            item-text="value"
             label="Η απάντησή σας"
             single-line
             menu-props="bottom"
@@ -102,8 +104,8 @@
     </v-container>
     
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
-    
-    <v-btn dark block class="indigo" @click="submit('page');" v-if="page < questionnaire.properties.pages">
+    <v-btn dark block class="indigo" @click="submit('page');"
+      v-if="page < questionnaire.properties.pages">
       Επόμενη Ενότητα >> <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
     </v-btn>
 
@@ -138,9 +140,20 @@ export default {
       page: 0,
       loading: false,
       questionnaire: null,
+      target: '#layout1',
+      options() {
+        return {
+          duration: 300,
+          offset: 0,
+        };
+      },
     };
   },
   methods: {
+    scrollTop() {
+      const container = document.getElementById('layout1');
+      container.scrollTop = 0;
+    },
     async validate(questionnaire) {
       let error = false;
       questionnaire.forEach((q) => {
@@ -512,6 +525,7 @@ export default {
           if (v) {
             console.log('next page', v);
             this.page += 1;
+            this.scrollTop();
             if (type === 'all') {
               this.getAllValues().then((result) => {
                 console.log('send to server', result, typeof (result));

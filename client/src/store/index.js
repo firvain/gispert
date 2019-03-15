@@ -35,8 +35,16 @@ export default new Vuex.Store({
     questionnaireMode: null,
     questionnaireFeatureId: null,
     questionnaire: null,
+    questionnairesIHaveAnswered: null,
+    myQuestionnaires: null,
   },
   actions: {
+    setMyQuestionnaires(state, data) {
+      state.commit('setMyQuestionnaires', data);
+    },
+    setQuestionnairesIHaveAnswered(state, data) {
+      state.commit('setQuestionnairesIHaveAnswered', data);
+    },
     setQuestionnaire(state, data) {
       state.commit('setQuestionnaire', data);
     },
@@ -171,6 +179,12 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    setMyQuestionnaires(state, data) {
+      state.myQuestionnaires = data;
+    },
+    setQuestionnairesIHaveAnswered(state, data) {
+      state.questionnairesIHaveAnswered = data;
+    },
     resetQuestionnaire(state) {
       state.questionnaireFeatureId = null;
       state.questionnaireFeatures = [];

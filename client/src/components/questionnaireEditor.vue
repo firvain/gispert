@@ -452,6 +452,7 @@ import olMap from '../js/map';
 import config from '../config';
 
 export default {
+  props: ['qnnaire'],
   data() {
     return {
       loading: false,
@@ -528,6 +529,8 @@ export default {
         axios.post(url, { data }, {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
+          this.$store.commit('setQuestionnaireMode', 'normal');
+          this.$eventHub.$emit('refreshQuestionnaires');
           console.log('response to save :: ', response);
           if (response.data.type === 'new') {
             console.log('questionnaire new');
@@ -702,11 +705,14 @@ export default {
   },
   mounted() {
     this.$store.commit('setQuestionnaireMode', 'editor');
+    console.log('trying to edit :: ', this.qnnaire);
+    if (this.qnnaire) {
+      console.log('loading questionnaire for edit');
+      this.questionnaire = this.qnnaire;
+    }
   },
 };
 // TODO
-// save send to database
-// show questionnaires in users account
 // question validation rules
 // localization
 </script>
