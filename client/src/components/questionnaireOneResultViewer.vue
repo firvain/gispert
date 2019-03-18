@@ -14,7 +14,7 @@
 
             <v-flex v-if="question.type === 'textfield'">
               {{ question.value }}
-              <span v-if="question.value === null"> Δεν υπάρχει τιμή </span>
+              <span v-if="question.value === null"> {{ $t('message.noValue')}} </span>
             </v-flex>
 
             <v-flex v-if="question.type === 'combobox'">{{ question.text }}
@@ -66,7 +66,7 @@
         </v-container>
       </v-flex>
       <div class="body-1" v-if="questionnaireResults">
-        Υποβλήθηκε: {{ moment(parseInt(questionnaireResults.submittedOn)).format('h:mm:ss a, DD-MM-YYYY') }}
+        {{ $t('message.submitted')}}: {{ moment(parseInt(questionnaireResults.submittedOn)).format('h:mm:ss a, DD-MM-YYYY') }}
       </div>
     </v-layout>
   </v-container>

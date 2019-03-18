@@ -9,8 +9,8 @@
     </v-btn>
 
     <v-flex v-if="$store.state.questionnaireMode === 'normal'" xs12>
-      <h2>Ερωτηματολόγια που έχω φτιάξει</h2>
-      <v-btn block @click="createNewQuestionnaire()">Νέο ερωτηματολόγιο</v-btn>
+      <h2>{{ $t('message.questionnairesIcreated') }}</h2>
+      <v-btn block @click="createNewQuestionnaire()">{{ $t('message.createQuestionnaire') }}</v-btn>
       <v-list three-line>
         <template v-for="item in $store.state.myQuestionnaires">
           <v-list-tile
@@ -50,7 +50,7 @@
     </v-flex>
 
     <v-flex v-if="$store.state.questionnaireMode === 'normal'" xs12>
-      <h2>Ερωτηματολόγια που έχω απαντήσει</h2>
+      <h2>{{ $t('message.questionnairesIanswered') }}</h2>
       <v-list three-line>
         <template v-for="item in $store.state.questionnairesIHaveAnswered">
           <v-list-tile
@@ -96,7 +96,7 @@
             <v-dialog v-model="sendLinkViaEmailDialog" persistent max-width="800px">
             <v-card>
               <v-card-title>
-                Μπορείτε να κοινοποιήσετε (πχ με email) αυτό το σύνδεσμο σε αυτούς που θέλετε να σας απαντήσουν
+                {{ $t('message.shareQuestionnaireMessage') }}
               </v-card-title>
               <v-card-text>
                 <v-container>

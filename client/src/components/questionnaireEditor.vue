@@ -1,7 +1,7 @@
 <template>
     <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">
       <v-flex>
-      <h1>Δημιουργία ερωτηματολογίου</h1>
+      <h1>{{ $t('message.createQuestionnaire')}}</h1>
         <v-flex v-if="questionnaire.properties.introduction.items.length > 0">
           <v-flex fluid row
             v-for="item in questionnaire.properties.introduction.items"
@@ -11,13 +11,13 @@
               v-if="item.type === 'heading'"
               name="input-1"
               v-model="item.value"
-              label="Δώστε ένα τίτλο για το ερωτηματολόγιο"
+              :label="$t('message.questionnaireTitle')"
             ></v-text-field>
             <v-text-field
               v-if="item.type === 'text'"
               name="input-1"
               v-model="item.value"
-              label="Δώστε περισσότερες πληροφορίες για το ερωτηματολόγιο"
+              :label="$t('message.questionnaireDescription')"
             ></v-text-field>
             <img v-if="item.type === 'image'" :src="item.value" aspect-ratio="2.75"/>
 
@@ -28,7 +28,7 @@
             </v-checkbox> -->
           </v-flex>
         </v-flex>
-        Βάλτε περιοχή αναφοράς του ερωτηματολογίου
+        {{ $t('message.questionnaireMapExtent')}}
         <v-btn small fab dark class="indigo" @click="getFromMap('qExtent', 'Box')">
           <v-icon dark>location_on</v-icon>
         </v-btn>
@@ -40,7 +40,7 @@
                 <v-card>
                   <v-card-title primary-title>
                     <div>
-                      <div><h4>Προεπισκόπηση ερώτησης</h4></div>
+                      <div><h4>{{ $t('message.previewQuestionnaire')}}</h4></div>
                       <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === false">*</span></h3>
                       <v-alert color="error" icon="warning" :value="question.error">
                         Δεν έχετε απαντήσει στην ερώτηση
@@ -60,7 +60,7 @@
                       <v-text-field
                         name="input-1"
                         v-model="question.value"
-                        label="Η απάντησή σας"
+                        :label="$t('message.yourAnswer')"
                         disabled
                       ></v-text-field>
                     </v-flex>
@@ -69,7 +69,7 @@
                         v-bind:items="question.items"
                         item-value="id"
                         item-text="value"
-                        label="Η απάντησή σας"
+                        :label="$t('message.yourAnswer')"
                         single-line
                         menu-props="bottom"
                       ></v-select>
@@ -103,7 +103,7 @@
                           <v-text-field
                             name="input-1"
                             v-model="line.value"
-                            label="Η απάντησή σας"
+                            :label="$t('message.yourAnswer')"
                           ></v-text-field>
                         </v-flex>
                         <v-flex xs2>
@@ -113,7 +113,7 @@
                         </v-flex>
                       </v-layout>
                       <v-btn dark class="indigo">
-                        Προσθήκη γραμμής
+                        {{ $t('message.addLine')}}
                       </v-btn>
                     </v-container>
                     <v-flex v-if="question.type === 'titleDescription'">
@@ -137,11 +137,11 @@
                         <v-checkbox
                           v-model="question.pageBreak"
                           @change="pageBreakChangeControl"
-                          label="Αλλαγή ενότητας">
+                          :label="$t('message.changeSection')">
                         </v-checkbox>
                       </v-flex>
                       <v-flex>
-                        <h5>Ενότητα: {{ question.page + 1 }}</h5>
+                        <h5>{{ $t('message.section')}}: {{ question.page + 1 }}</h5>
                       </v-flex>
                   </v-layout>
 
@@ -152,7 +152,7 @@
                 <v-card>
                   <v-card-title primary-title>
                     <div>
-                      <div><h4>Επιλογές ερώτησης</h4></div>
+                      <div><h4>{{ $t('message.questionOptions')}}</h4></div>
                     </div>
                   </v-card-title>
                   <v-container>
@@ -162,15 +162,15 @@
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
-                        label="Ερώτηση"
+                        :label="$t('message.question')"
                       ></v-text-field>
                       <v-text-field
                         name="input-1"
                         v-model="question.description"
-                        label="Περιγραφή"
+                        :label="$t('message.description')"
                       ></v-text-field>
                       <v-checkbox
-                        label="Προαιρετικό"
+                        :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
@@ -186,12 +186,12 @@
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
-                        label="Ερώτηση"
+                        :label="$t('message.question')"
                       ></v-text-field>
                       <v-text-field
                         name="input-1"
                         v-model="question.description"
-                        label="Περιγραφή"
+                        :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
                         <v-btn flat outline fab small @click="nextItemId += 1; question.items.push({id: nextItemId, value: ''});" v-if="question.editing">
@@ -214,7 +214,7 @@
                         </template>
                       </v-list>
                       <v-checkbox
-                        label="Προαιρετικό"
+                        :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
@@ -230,12 +230,12 @@
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
-                        label="Ερώτηση"
+                        :label="$t('message.question')"
                       ></v-text-field>
                       <v-text-field
                         name="input-1"
                         v-model="question.description"
-                        label="Περιγραφή"
+                        :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
                         <v-btn flat outline fab small @click="nextItemId += 1; question.checkboxes.push({id: nextItemId, label: '', value: false});"
@@ -259,7 +259,7 @@
                         </template>
                       </v-list>
                       <v-checkbox
-                        label="Προαιρετικό"
+                        :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
@@ -275,12 +275,12 @@
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
-                        label="Ερώτηση"
+                        :label="$t('message.question')"
                       ></v-text-field>
                       <v-text-field
                         name="input-1"
                         v-model="question.description"
-                        label="Περιγραφή"
+                        :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
                         <v-btn flat outline fab small @click="nextItemId += 1; question.radios.push({id: nextItemId, label: '', value: false});"
@@ -304,7 +304,7 @@
                         </template>
                       </v-list>
                       <v-checkbox
-                        label="Προαιρετικό"
+                        :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
@@ -321,12 +321,12 @@
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
-                        label="Ερώτηση"
+                        :label="$t('message.question')"
                       ></v-text-field>
                       <v-text-field
                         name="input-1"
                         v-model="question.description"
-                        label="Περιγραφή"
+                        :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
                         <v-btn flat outline fab small @click="nextItemId += 1; question.buttons.push({id: nextItemId, label: '', coords: null});"
@@ -350,7 +350,7 @@
                         </template>
                       </v-list>
                       <v-checkbox
-                        label="Προαιρετικό"
+                        :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
@@ -366,15 +366,15 @@
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
-                        label="Ερώτηση"
+                        :label="$t('message.question')"
                       ></v-text-field>
                       <v-text-field
                         name="input-1"
                         v-model="question.description"
-                        label="Περιγραφή"
+                        :label="$t('message.description')"
                       ></v-text-field>
                       <v-checkbox
-                        label="Προαιρετικό"
+                        :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
@@ -395,7 +395,7 @@
                       <v-text-field
                         name="input-1"
                         v-model="question.description"
-                        label="Περιγραφή"
+                        :label="$t('message.description')"
                       ></v-text-field>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
@@ -416,14 +416,14 @@
           <v-flex>
             <v-card>
               <v-card-title primary-title>
-                  <h3 class="headline mb-0">Προσθήκη ερώτησης</h3>
+                  <h3 class="headline mb-0">{{ $t('message.addQuestion') }}</h3>
                   <v-flex xs12 sm12 md12>
                     <v-select
                       v-bind:items="questionTypes"
                       item-value="type"
                       item-text="name"
                       v-model="newQuestion"
-                      label="Τύπος ερώτησης"
+                      :label="$t('message.questionType')"
                       single-line
                       menu-props='bottom'
                       v-on:input="loadQuestionType"
@@ -435,10 +435,10 @@
         </v-layout>
         <div>
           <v-btn @click="saveQuestionnaire().then(() => { this.loading = false });">
-            ΑΠΟΘΗΚΕΥΣΗ ΕΡΩΤΗΜΑΤΟΛΟΓΙΟΥ<v-icon dark>save</v-icon>
+            {{ $t('message.saveQuestionnaire') }}<v-icon dark>save</v-icon>
           </v-btn>
           <v-btn @click="$store.commit('setQuestionnaireMode', 'normal')">
-            ΑΚΥΡΟ<v-icon dark>cancel</v-icon>
+            {{ $t('message.cancel') }}<v-icon dark>cancel</v-icon>
           </v-btn>
           <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
         </div>

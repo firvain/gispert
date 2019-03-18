@@ -2,11 +2,11 @@
     <v-tabs grow icons centered v-model="activeTab">
       <v-tab ripple>
         <v-icon>list</v-icon>
-        <b>Λίστα απαντήσεων</b>
+        <b>{{ $t('message.listOfAnswers')}}</b>
       </v-tab>
       <v-tab ripple>
         <v-icon>bar_chart</v-icon>
-        <b>Συγκεντρωτικά</b>
+        <b>{{ $t('message.aggregates')}}</b>
       </v-tab>
       <v-tab-item>
         <v-container>
@@ -17,7 +17,7 @@
                 v-bind:items="comboitems"
                 item-value="id"
                 v-model="activeQuestionnaire"
-                label="Όλες οι απαντήσεις"
+                :label="$t('message.allAnswers')"
                 single-line
                 menu-props='bottom'
                 v-on:input="loadResultsForQuestionnaire"
@@ -36,7 +36,7 @@
 
                   <v-flex v-if="question.type === 'textfield'">
                     {{ question.value }}
-                    <span v-if="question.value === null"> Δεν υπάρχει τιμή </span>
+                    <span v-if="question.value === null"> {{ $t('message.noValue')}} </span>
                   </v-flex>
 
                   <v-flex v-if="question.type === 'combobox'">{{ question.text }}
@@ -88,7 +88,7 @@
               </v-container>
             </v-flex>
             <div class="body-1" v-if="activeQuestionnaireResults">
-              Υποβλήθηκε: {{ moment(parseInt(activeQuestionnaireResults.submittedOn)).format('h:mm:ss a, DD-MM-YYYY') }}
+              {{ $t('message.submitted')}}: {{ moment(parseInt(activeQuestionnaireResults.submittedOn)).format('h:mm:ss a, DD-MM-YYYY') }}
             </div>
           </v-layout>
         </v-container>
@@ -144,13 +144,13 @@
 
                       <v-flex v-if="question.type === 'mapPointer'">
                         <v-btn small dark class="indigo" @click='makeMapFormapPointer(question.id)'>
-                          <v-icon dark>location_on</v-icon>Δημιουργία χάρτη
+                          <v-icon dark>location_on</v-icon>{{ $t('message.createMap')}}
                         </v-btn>
                       </v-flex>
 
                       <v-flex v-if="question.type === 'mapPointerMultiple'">
                         <v-btn small dark class="indigo" @click='makeMapFormapPointer(question.id)'>
-                          <v-icon dark>location_on</v-icon>Δημιουργία χάρτη
+                          <v-icon dark>location_on</v-icon>{{ $t('message.createMap')}}
                         </v-btn>
                       </v-flex>
 
@@ -164,11 +164,11 @@
           <v-dialog v-model="exportDataDialog" persistent max-width="800px">
             <v-card>
               <v-card-title>
-                Εξαγωγή δεδομένων σε πίνακα
+                {{ $t('message.exportToTable')}}
                 <v-spacer></v-spacer>
                 <v-text-field
                   append-icon="search"
-                  label="Αναζήτηση"
+                  :label="$t('message.search')"
                   single-line
                   hide-details
                   v-model="search"
@@ -184,7 +184,7 @@
                   <td v-for="header in dataTable.headers" :key="header.value" class="text-xs-right">{{ props.item[header.value] }}</td>
                 </template>
                 <template slot="pageText" slot-scope="{ pageStart, pageStop }">
-                  Από {{ pageStart }} έως {{ pageStop }}
+                  {{ $t('message.from')}} {{ pageStart }} {{ $t('message.to')}} {{ pageStop }}
                 </template>
               </v-data-table>
               <v-btn color="blue darken-1" flat @click.native="exportDataDialog = false">{{ $t("message.close") }}</v-btn>
@@ -194,7 +194,7 @@
           <v-dialog v-model="exportGeoDataDialog" persistent max-width="800px">
             <v-card>
               <v-card-title>
-                Εξαγωγή χαρτογραφικών δεδομένων για το QGIS
+                {{ $t('message.exportMapData')}}
               </v-card-title>
               <table>
                 <td>id</td>
@@ -214,10 +214,10 @@
             </v-card>
           </v-dialog>
           <v-btn block dark class="indigo" @click.native="makeResultsTable(); exportDataDialog = true;">
-            <v-icon dark>archive</v-icon>Εξαγωγή σε πίνακα
+            <v-icon dark>archive</v-icon>{{ $t('message.exportToTable')}}
           </v-btn>
           <v-btn block dark class="indigo" @click='exportToWKT(); exportGeoDataDialog = true;'>
-            <v-icon dark>location_on</v-icon>Εξαγωγή χαρτογραφικών δεδομένων
+            <v-icon dark>location_on</v-icon>{{ $t('message.exportMapData')}}
           </v-btn>
         </v-container>
       </v-tab-item>
@@ -558,12 +558,21 @@ export default {
             console.log('row simple :: ', row);
             for (let i = 0; i < row.value.length; i += 1) {
               j += 1;
-              table.push({ id: j,
-                user: r.results[0].value,
-                question: row.id,
-                option: row.value[i],
-                wkt: wktFormat.writeFeature(geojsonFormat.readFeatures(row.coordinates[i])[0]),
-              });
+              if (row.coordinates.length > 0) {
+                table.push({ id: j,
+                  user: r.results[0].value,
+                  question: row.id,
+                  option: row.value[i],
+                  wkt: wktFormat.writeFeature(geojsonFormat.readFeatures(row.coordinates[i])[0]),
+                });
+              } else {
+                table.push({ id: j,
+                  user: r.results[0].value,
+                  question: row.id,
+                  option: row.value[i],
+                  wkt: '',
+                });
+              }
             }
           }
         });
@@ -607,7 +616,7 @@ export default {
           if (row.type !== 'mapPointerMultiple') {
             if (row.type === 'checkboxGroup') {
               row.value.forEach((v, index) => {
-                if (v[1]) { newRow[`${row.id}_${index}`] = 'ναι'; } else { newRow[`${row.id}_${index}`] = 'όχι'; }
+                if (v[1]) { newRow[`${row.id}_${index}`] = this.$t('message.yes'); } else { newRow[`${row.id}_${index}`] = this.$t('message.no'); }
                 // newRow[`${row.id}_${index}`] = v[1].toString();
               });
             } else if (row.type === 'mapPointer') {

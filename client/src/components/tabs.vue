@@ -15,7 +15,7 @@
       </v-tab>
       <v-tab href="#questionnaires" ripple>
         <v-icon>live_help</v-icon>
-        <b>Ερωτηματολόγια</b>
+        <b>{{ $t('message.questionnaires')}}</b>
       </v-tab>
     <v-tabs-items>
       <v-tab-item
