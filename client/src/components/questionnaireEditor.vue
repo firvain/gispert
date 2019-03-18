@@ -1,7 +1,7 @@
 <template>
     <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">
-      <h1>Δημιουργία ερωτηματολογίου</h1>
       <v-flex>
+      <h1>Δημιουργία ερωτηματολογίου</h1>
         <v-flex v-if="questionnaire.properties.introduction.items.length > 0">
           <v-flex fluid row
             v-for="item in questionnaire.properties.introduction.items"

@@ -1,5 +1,5 @@
 <template>
-<v-container id="questionnaires">
+<v-container id="questionnaires" v-if="$store.state.isUserLoggedIn">
   <v-layout row wrap>
     <v-btn block dark outline small color="green"
       @click="changeQuestionnaireMode('normal')"
@@ -15,7 +15,6 @@
         <template v-for="item in $store.state.myQuestionnaires">
           <v-list-tile
               :key="item._id"
-              @click='openViewerForQuestionnaire(item)'
           >
             <v-list-tile-content>
               <v-list-tile-title>
@@ -38,6 +37,11 @@
             <v-list-tile-action>
               <v-btn icon ripple @click='openViewerForQuestionnaireResults(item)'>
                 <v-icon color="grey lighten-1">bar_chart</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+            <v-list-tile-action>
+              <v-btn icon ripple @click='shareLink(item._id); sendLinkViaEmailDialog = true;'>
+                <v-icon color="grey lighten-1">link</v-icon>
               </v-btn>
             </v-list-tile-action>
           </v-list-tile>
@@ -87,6 +91,22 @@
     </v-flex>
   </v-layout>
   <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+
+
+            <v-dialog v-model="sendLinkViaEmailDialog" persistent max-width="800px">
+            <v-card>
+              <v-card-title>
+                Μπορείτε να κοινοποιήσετε (πχ με email) αυτό το σύνδεσμο σε αυτούς που θέλετε να σας απαντήσουν
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  {{ questionnaireShareLink }}
+                </v-container>
+              </v-card-text>
+              <v-btn color="blue darken-1" flat @click.native="sendLinkViaEmailDialog = false">{{ $t("message.close") }}</v-btn>
+            </v-card>
+          </v-dialog>
+
 </v-container>
 </template>
 <script>
@@ -106,6 +126,8 @@ export default {
       questionnaireForView: null,
       questionnaireForEdit: null,
       questionnaireForResult: null,
+      questionnaireShareLink: null,
+      sendLinkViaEmailDialog: false,
     };
   },
   components: {
@@ -135,6 +157,9 @@ export default {
     });
   },
   methods: {
+    shareLink(id) {
+      this.questionnaireShareLink = `${config.share}/#/questionnaire/${id}`;
+    },
     createNewQuestionnaire() {
       this.changeQuestionnaireMode('editor');
       this.questionnaireForEdit = null;

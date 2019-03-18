@@ -159,12 +159,6 @@
                 </v-card>
               </v-flex>
             </v-flex>
-            <v-btn block dark class="indigo" @click.native="makeResultsTable(); exportDataDialog = true;">
-              <v-icon dark>archive</v-icon>Εξαγωγή σε πίνακα
-            </v-btn>
-            <v-btn block dark class="indigo" @click='exportToWKT(); exportGeoDataDialog = true;'>
-              <v-icon dark>location_on</v-icon>Εξαγωγή χαρτογραφικών δεδομένων
-            </v-btn>
           </v-layout>
 
           <v-dialog v-model="exportDataDialog" persistent max-width="800px">
@@ -219,6 +213,12 @@
               <v-btn color="blue darken-1" flat @click.native="exportGeoDataDialog = false">{{ $t("message.close") }}</v-btn>
             </v-card>
           </v-dialog>
+          <v-btn block dark class="indigo" @click.native="makeResultsTable(); exportDataDialog = true;">
+            <v-icon dark>archive</v-icon>Εξαγωγή σε πίνακα
+          </v-btn>
+          <v-btn block dark class="indigo" @click='exportToWKT(); exportGeoDataDialog = true;'>
+            <v-icon dark>location_on</v-icon>Εξαγωγή χαρτογραφικών δεδομένων
+          </v-btn>
         </v-container>
       </v-tab-item>
     </v-tabs>

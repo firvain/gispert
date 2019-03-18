@@ -38,7 +38,7 @@
               {{ $t("message.logout") }}
             </v-btn>
         </v-toolbar-items>
-        <v-flex md1 v-if="$store.state.questionnaireMode === false">
+        <v-flex md1 v-if="$store.state.questionnaireMode !== 'answering'">
           <v-select
             class="top"
             @change="setLocale"
@@ -140,7 +140,7 @@
             <v-text-field
               :label = "$t('message.name')"
               v-model="credentials.email"
-              v-on:keyup.enter="login"
+              v-on:keyup.enter="login(credentials)"
             ></v-text-field>
             <v-text-field
               :label="$t('message.password')"
@@ -719,6 +719,8 @@ export default {
       this.$store.dispatch('setOpenedCustomTimeline', null);
       this.$store.dispatch('setUserTimeline', null);
       this.$store.dispatch('setCollectionTimeline', null);
+      this.$store.commit('setMyQuestionnaires', null);
+      this.$store.commit('setQuestionnairesIHaveAnswered', null);
       // this.$store.dispatch('setLiveUsers', null);
       let allLayers = [];
       allLayers = olMap.getLayers().getArray();

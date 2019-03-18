@@ -11,7 +11,7 @@
       <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <v-btn
         v-on:click='next_page'
-        v-if="!endOfPosts"
+        v-if="!endOfPosts && $store.state.isUserLoggedIn"
         block
       >
         {{ $t('message.loadMore')}}
