@@ -18,7 +18,6 @@
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <v-container
     <v-layout row wrap>
       <v-flex>
       <v-parallax xs12 md12 src="../static/images/abstract-adult-background-1079033.jpg" height="400">
