@@ -149,5 +149,9 @@ module.exports = {
     exportToTable: 'Export to a table',
     exportMapData: 'Export cartographic data',
     createMap: 'Create map',
+    questionnaireStart: 'Access allowed starting on',
+    questionnaireEnd: 'Access allowed since',
+    enablePublicAccess: 'Enable public access',
+    selectLanguage: 'Select language',
   },
 };

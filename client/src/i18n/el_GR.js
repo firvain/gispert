@@ -149,5 +149,9 @@ module.exports = {
     exportToTable: 'Εξαγωγή σε πίνακα',
     exportMapData: 'Εξαγωγή χαρτογραφικών δεδομένων',
     createMap: 'Δημιουργία χάρτη',
+    questionnaireStart: 'Η πρόσβαση θα επιτρέπεται από την',
+    questionnaireEnd: 'Η πρόσβαση θα διακοπεί την',
+    enablePublicAccess: 'Ενεργοποίηση πρόσβασης για το κοινό',
+    selectLanguage: 'Επιλογή γλώσσας',
   },
 };

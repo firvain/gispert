@@ -18,7 +18,7 @@
           <div>
             <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === false">*</span></h3>
             <v-alert color="error" icon="warning" :value="question.error">
-              Δεν έχετε απαντήσει στην ερώτηση
+              {{ $t('message.questionNotAnswered') }}
             </v-alert>
             <div> {{ question.description }} </div>
           </div>
@@ -34,7 +34,7 @@
           <v-text-field
             name="input-1"
             v-model="question.value"
-            label="Η απάντησή σας"
+            :label="$t('message.yourAnswer')"
           ></v-text-field>
         </v-flex>
 
@@ -44,7 +44,7 @@
             v-model="question.value"
             item-value="id"
             item-text="value"
-            label="Η απάντησή σας"
+            :label="$t('message.yourAnswer')"
             single-line
             menu-props="bottom"
           ></v-select>
@@ -85,7 +85,7 @@
               <v-text-field
                 name="input-1"
                 v-model="line.value"
-                label="Η απάντησή σας"
+                :label="$t('message.yourAnswer')"
               ></v-text-field>
             </v-flex>
             <v-flex xs2>
@@ -95,7 +95,7 @@
             </v-flex>
           </v-layout>
           <v-btn dark class="indigo" @click="addRow(question)">
-            Προσθήκη γραμμής
+            {{ $t('message.addLine')}}
           </v-btn>
         </v-container>
 
@@ -106,21 +106,21 @@
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-btn dark block class="indigo" @click="submit('page');"
       v-if="page < questionnaire.properties.pages">
-      Επόμενη Ενότητα >> <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
+      {{ $t('message.nextSection')}} >> <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
     </v-btn>
 
     <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
-      ΥΠΟΒΟΛΗ ΕΡΩΤΗΜΑΤΟΛΟΓΙΟΥ<v-icon dark>send</v-icon>
+      {{ $t('message.submitQuestionnaire')}}<v-icon dark>send</v-icon>
     </v-btn>
 
     <v-snackbar
       :timeout=5000
       v-model="snackbarError"
       color= "red"
-    >Υπάρχουν σφάλματα. Δείτε τις ερωτήσεις που έχουν σημανθεί με κόκκινο</v-snackbar>
+    >{{ $t('message.thereAreErrorsInQuestionnaire')}}</v-snackbar>
 
     <v-alert color="success" icon="check_circle" :value="submitted">
-      Οι απαντήσεις σας καταχωρίστηκαν επιτυχώς.
+      {{ $t('message.questionnaireSubmitted')}}
     </v-alert>
 
   </v-layout>
@@ -128,6 +128,7 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import { app } from '../main';
 import olMap from '../js/map';
 import config from '../config';
 
@@ -584,7 +585,11 @@ export default {
       }).then(() => {
         this.loading = false;
         this.zoomToExtent();
+        this.setLocale(this.questionnaire.properties.locale);
       });
+    },
+    setLocale(value) {
+      app.$i18n.locale = value;
     },
   },
   mounted() {

@@ -28,10 +28,78 @@
             </v-checkbox> -->
           </v-flex>
         </v-flex>
+
+        <v-switch
+          v-model="questionnaire.properties.publicAccess"
+          :label="$t('message.enablePublicAccess')"
+        ></v-switch>
+
         {{ $t('message.questionnaireMapExtent')}}
         <v-btn small fab dark class="indigo" @click="getFromMap('qExtent', 'Box')">
           <v-icon dark>location_on</v-icon>
         </v-btn>
+
+        <v-select
+          class="top"
+          v-bind:items="languages"
+          item-text="name"
+          item-value="id"
+          v-model="questionnaire.properties.locale"
+          :label="$t('message.selectLanguage')"
+          single-line
+          menu-props='bottom'
+        ></v-select>
+
+        <v-dialog
+          ref="dialogStart"
+          v-model="datePickerStart"
+          :return-value.sync="dateStart"
+          persistent
+          lazy
+          full-width
+          width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              :value="computedDateFormattedMomentjsStart"
+              :label="$t('message.questionnaireStart')"
+              prepend-icon="event"
+              readonly
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker v-model="dateStart" scrollable>
+            <v-spacer></v-spacer>
+            <v-btn flat color="primary" @click="datePickerStart = false">{{ $t('message.cancel') }}</v-btn>
+            <v-btn flat color="primary" @click="$refs.dialogStart.save(dateStart)">OK</v-btn>
+          </v-date-picker>
+        </v-dialog>
+
+        <v-dialog
+          ref="dialogEnd"
+          v-model="datePickerEnd"
+          :return-value.sync="dateEnd"
+          persistent
+          lazy
+          full-width
+          width="290px"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
+              :value="computedDateFormattedMomentjsEnd"
+              :label="$t('message.questionnaireEnd')"
+              prepend-icon="event"
+              readonly
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker v-model="dateEnd" scrollable>
+            <v-spacer></v-spacer>
+            <v-btn flat color="primary" @click="datePickerEnd = false">Cancel</v-btn>
+            <v-btn flat color="primary" @click="$refs.dialogEnd.save(dateEnd)">OK</v-btn>
+          </v-date-picker>
+        </v-dialog>
+
 
         <v-container pa-1 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
           <v-card>
@@ -448,6 +516,7 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import moment from 'moment';
 import olMap from '../js/map';
 import config from '../config';
 
@@ -455,24 +524,40 @@ export default {
   props: ['qnnaire'],
   data() {
     return {
+      dateStart: null,
+      dateEnd: null,
+      languages: [
+        { id: 'en', name: 'English' },
+        { id: 'fr', name: 'Français' },
+        { id: 'el_GR', name: 'Ελληνικά' },
+        { id: 'de', name: 'Deutsche' },
+        { id: 'it', name: 'Italiano' },
+        { id: 'es', name: 'Español' },
+        { id: 'nn', name: 'Norsk' },
+      ],
+      datePickerStart: null,
+      datePickerEnd: null,
       loading: false,
       newQuestion: null,
       nextId: 0,
       nextItemId: 0,
       questionTypes: [
-        { type: 'textfield', name: 'Κείμενο' },
-        { type: 'combobox', name: 'Αναπτυσσόμενο μενού' },
-        { type: 'checkboxGroup', name: 'Πλαίσια ελέγχου' },
-        { type: 'radioGroup', name: 'Πολλαπλής επιλογής' },
-        { type: 'mapPointer', name: 'Υπόδειξη στο χάρτη' },
-        { type: 'mapPointerMultiple', name: 'Πολλαπλές υποδείξεις στο χάρτη' },
-        { type: 'titleDescription', name: 'Τίτλος και περιγραφή' },
+        { type: 'textfield', name: this.$t('message.text') },
+        { type: 'combobox', name: this.$t('message.expandableMenu') },
+        { type: 'checkboxGroup', name: this.$t('message.checkboxes') },
+        { type: 'radioGroup', name: this.$t('message.multipleChoice') },
+        { type: 'mapPointer', name: this.$t('message.mapPointer') },
+        { type: 'mapPointerMultiple', name: this.$t('message.mapPointerMultiple') },
+        { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
       ],
       questionnaire: {
         questions: [],
         properties: {
           owner: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
           mapExtent: [],
+          publicAccess: false,
+          dateStart: null,
+          dateEnd: null,
           loginRequired: false,
           pages: 0,
           introduction: {
@@ -504,7 +589,22 @@ export default {
       this.questionnaire.properties.mapExtent = feature.getGeometry().getExtent();
     },
   },
+  computed: {
+    computedDateFormattedMomentjsStart() {
+      moment.locale(this.$store.state.user.locale);
+      this.questionnaire.properties.dateStart = moment(this.dateStart).format('x');
+      return this.dateStart ? moment(this.dateStart).format('dddd, MMMM Do YYYY') : '';
+    },
+    computedDateFormattedMomentjsEnd() {
+      moment.locale(this.$store.state.user.locale);
+      this.questionnaire.properties.dateEnd = moment(this.dateEnd).format('x');
+      return this.dateEnd ? moment(this.dateEnd).format('dddd, MMMM Do YYYY') : '';
+    },
+  },
   methods: {
+    convertToTimestamp(date) {
+      console.log('date to convert :: ', date);
+    },
     pageBreakChangeControl() {
       let page = 0;
       this.questionnaire.questions.forEach((q) => {

@@ -149,5 +149,9 @@ module.exports = {
     exportToTable: 'Eksporter til bord',
     exportMapData: 'Eksporter kartografiske data',
     createMap: 'Opprett kart',
+    questionnaireStart: 'Adgang tillatt med start på',
+    questionnaireEnd: 'Adgang tillatt siden',
+    enablePublicAccess: 'Aktiver offentlig tilgang',
+    selectLanguage: 'Velg språk',
   },
 };
