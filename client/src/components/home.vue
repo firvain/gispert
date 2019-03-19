@@ -1,5 +1,5 @@
 <template>
-  <div id="main">
+  <div id="maincontainer">
     <v-toolbar class="orange lighten-2 no-padding" dark>
       <i class="fa fa-map fa-2x"></i><h4>Geobabel</h4><p>Terra Cognita</p>
       <v-spacer></v-spacer>
@@ -7,17 +7,18 @@
         <v-btn flat @click="scrollTo('useCases')">
           Use cases
         </v-btn>
-        <v-btn flat target="">
+        <v-btn flat @click="scrollTo('features')">
           Features
         </v-btn>
         <v-btn flat target="">
           Pricing
         </v-btn>
-        <v-btn flat target="">
+        <v-btn flat @click="scrollTo('contactus')">
           Contact us
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
+    <v-container
     <v-layout row wrap>
       <v-flex>
       <v-parallax xs12 md12 src="../static/images/abstract-adult-background-1079033.jpg" height="400">
@@ -112,8 +113,8 @@
             </v-card>
           </v-flex>
         </v-layout>
-
-        <v-layout ma-4 pa-4 column align-center justify-center>
+        
+        <v-layout ma-4 pa-4 column align-center justify-center id='features'>
           <h2 class="">How Geobabel works?</h2>
         </v-layout>
         <v-layout row wrap pa-2 ma-2>
@@ -154,6 +155,29 @@
             </v-card>
           </v-flex>
         </v-layout>
+
+        <v-layout ma-4 pa-4 column align-center justify-center>
+          <v-expansion-panel>
+            <v-expansion-panel-content
+              v-for="(item,i) in demoItems"
+              :key="i"
+            >
+              <template v-slot:header>
+                <h3>{{ item.header }}</h3>
+              </template>
+              <v-card>
+                <v-card-text>
+                  <v-card-media
+                    :src="item.source"
+                    :height="item.height"
+                    contain
+                  ></v-card-media>
+                </v-card-text>
+              </v-card>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-layout>
+
         <v-layout ma-4 pa-4 column align-center justify-center id='useCases'>
           <h2 class="">Use cases</h2>
           <h4>
@@ -217,6 +241,24 @@
         <v-carousel-item v-for="(item,i) in items" v-bind:src="item.src" :key="i"></v-carousel-item>
       </v-carousel>
     </v-layout>
+
+    <v-layout align-center justify-center row pa-4 ma-4 id='contactus'>
+      <v-flex xs3>
+        <v-card>
+          <v-card-text>
+            <h1>Contact us</h1>
+            <h3>Terra Cognita</h3>
+            <h4>Lechovou 3</h4>
+            <h4>GR-501 31 Kozani</h4>
+            <h4>Greece</h4>
+            <p>info@terracognita.eu</p>
+            <a class="caption" target="_blank" rel="noopener noreferrer" href="http://terracognita.eu/what-we-do/contact-us/">Terra Cognita</a>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+
+
     <v-footer class="pa-0">
       <a flat @click='termsOfUseDialog = true'>Όροι χρήσης</a>
       <v-spacer></v-spacer>
@@ -289,6 +331,21 @@ export default {
         src: '../static/images/adventure-city-country-240834.jpg',
       },
     ],
+    demoItems: [
+      { header: '1. Create questionnaires with location, locale and access options', source: '../static/images/createquestionnaireoptions.png', height: 488 },
+      { header: '2. Select the type of question you want to add. You can see the preview as you create the question.', source: '../static/images/questiontypes.png', height: 290 },
+      { header: '3. Add a text question', source: '../static/images/textfieldquestion.png', height: 627 },
+      { header: '4. Add an expandable menu question', source: '../static/images/comboboxquestion.png', height: 777 },
+      { header: '5. Add a question with checkboxes', source: '../static/images/checkboxesquestion.png', height: 725 },
+      { header: '6. Add a multiple choice question', source: '../static/images/radioquestion.png', height: 700 },
+      { header: '7. Add a question that requires the user to point predefined types of places on the map', source: '../static/images/mappointerquestion.png', height: 714 },
+      { header: '8. Add a question that requires the user to point multiple places on the map and describe them', source: '../static/images/multiplemappointerquestion.png', height: 597 },
+      { header: '9. Your questionnaire will look like...', source: '../static/images/questionnaireexampleresult.png', height: 857 },
+      { header: '10. Share the questionnaire with your target group', source: '../static/images/sharedialog.png', height: 194 },
+      { header: '11. Analyze the results using charts', source: '../static/images/chart.png', height: 468 },
+      { header: '12. Map the results of the location questions', source: '../static/images/createmapresult.png', height: 615 },
+      // { header: '', source: '../static/images/.png', height:  },
+    ],
   }),
   components: {
   },
@@ -311,7 +368,8 @@ export default {
 .inImage {
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
-#main {
+#maincontainer {
   max-height: 100vh;
+  /* overflow: scroll; */
 }
 </style>

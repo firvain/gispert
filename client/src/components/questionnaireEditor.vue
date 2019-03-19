@@ -812,7 +812,10 @@ export default {
     console.log('trying to edit :: ', this.qnnaire);
     if (this.qnnaire) {
       console.log('loading questionnaire for edit');
+      console.log(this.questionnaire, this.qnnaire.properties.dateStart);
       this.questionnaire = this.qnnaire;
+      this.dateStart = moment.unix(this.qnnaire.properties.dateStart / 1000).format('YYYY-MM-DD');
+      this.dateEnd = moment.unix(this.qnnaire.properties.dateEnd / 1000).format('YYYY-MM-DD');
     }
   },
 };

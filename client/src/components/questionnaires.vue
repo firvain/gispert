@@ -29,11 +29,11 @@
                 <v-icon color="grey lighten-1">edit</v-icon>
               </v-btn>
             </v-list-tile-action>
-            <v-list-tile-action>
+            <!-- <v-list-tile-action>
               <v-btn icon ripple @click='openViewerForQuestionnaire(item)'>
                 <v-icon color="grey lighten-1">view_module</v-icon>
               </v-btn>
-            </v-list-tile-action>
+            </v-list-tile-action> -->
             <v-list-tile-action>
               <v-btn icon ripple @click='openViewerForQuestionnaireResults(item)'>
                 <v-icon color="grey lighten-1">bar_chart</v-icon>
