@@ -544,7 +544,8 @@ export default {
     },
   },
   mounted() {
-    olMap.setTarget('mapDiv');
+    olMap.setTarget(document.getElementById('mapDiv'));
+    console.log(olMap);
     const container = document.getElementById('popup');
     // const closer = document.getElementById('popup-closer');
 

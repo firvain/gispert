@@ -153,5 +153,6 @@ module.exports = {
     questionnaireEnd: 'Accès autorisé depuis',
     enablePublicAccess: "Activer l'accès public",
     selectLanguage: 'Sélectionnez la langue',
+    selectValidationType: 'Type de validation',
   },
 };

@@ -132,6 +132,14 @@
                         disabled
                       ></v-text-field>
                     </v-flex>
+                    <v-flex v-if="question.type === 'textfield' && question.validation">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.value"
+                        :label="$t('message.yourAnswer')"
+                        disabled
+                      ></v-text-field>
+                    </v-flex>
                     <v-flex v-if="question.type === 'combobox'">
                       <v-select
                         v-bind:items="question.items"
@@ -248,6 +256,39 @@
                         <v-icon>delete</v-icon>
                       </v-btn>
                     </v-flex>
+
+
+                    <v-flex v-if="question.type === 'textfieldvalidation'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        :label="$t('message.question')"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        :label="$t('message.description')"
+                      ></v-text-field>
+                      <v-select
+                        v-bind:items="['email']"
+                        v-model="question.validation"
+                        :label="$t('message.selectValidationType')"
+                        single-line
+                        return-object
+                        menu-props="bottom"
+                      ></v-select>
+                      <v-checkbox
+                        :label="$t('message.optional')"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>folder_open</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
 
 
                     <v-flex v-if="question.type === 'combobox'">
@@ -543,6 +584,7 @@ export default {
       nextItemId: 0,
       questionTypes: [
         { type: 'textfield', name: this.$t('message.text') },
+        { type: 'textfieldvalidation', name: 'Text field with validation' },
         { type: 'combobox', name: this.$t('message.expandableMenu') },
         { type: 'checkboxGroup', name: this.$t('message.checkboxes') },
         { type: 'radioGroup', name: this.$t('message.multipleChoice') },
@@ -675,6 +717,22 @@ export default {
           pageBreak: false,
         };
         this.questionnaire.questions.push(textfield);
+      }
+      if (this.newQuestion === 'textfieldvalidation') {
+        const textfieldvalidation = {
+          id: this.nextId,
+          type: 'textfieldvalidation',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          error: false,
+          optional: false,
+          editing: true,
+          pageBreak: false,
+          validation: null,
+        };
+        this.questionnaire.questions.push(textfieldvalidation);
       }
       if (this.newQuestion === 'combobox') {
         const combobox = {
@@ -816,6 +874,7 @@ export default {
       this.questionnaire = this.qnnaire;
       this.dateStart = moment.unix(this.qnnaire.properties.dateStart / 1000).format('YYYY-MM-DD');
       this.dateEnd = moment.unix(this.qnnaire.properties.dateEnd / 1000).format('YYYY-MM-DD');
+      this.nextId = this.questionnaire.questions.length + 1;
     }
   },
 };

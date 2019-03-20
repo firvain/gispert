@@ -49,7 +49,7 @@
                       <div>usual questions and questions requiring map data.</div>
                     </div>
                     <v-card-actions>
-                      <v-btn flat color="white">Try editor</v-btn>
+                      <v-btn flat color="white" to="/questionnaire/5c8b88fde170e70022342fed">Example questionnaire</v-btn>
                     </v-card-actions>
                   </v-flex>
                   <v-flex xs5>

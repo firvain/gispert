@@ -38,6 +38,15 @@
           ></v-text-field>
         </v-flex>
 
+        <v-flex v-if="question.type === 'textfieldvalidation' && question.validation === 'email'">
+          <v-text-field
+            name="input-1"
+            v-model="question.value"
+            :label="$t('message.yourAnswer')"
+            :rules="emailRules"
+          ></v-text-field>
+        </v-flex>
+
         <v-flex v-if="question.type === 'combobox'">
           <v-select
             v-bind:items="question.items"
@@ -136,6 +145,10 @@ export default {
   props: ['id'],
   data() {
     return {
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /[^@]+@[^.]+\..*/.test(v) || 'E-mail must be valid',
+      ],
       snackbarError: false,
       submitted: false,
       page: 0,
@@ -185,7 +198,7 @@ export default {
       const questionnaireResult = [];
       this.questionnaire.questions.forEach((q) => {
         if (q.page === this.page) {
-          if (q.type === 'textfield') {
+          if (q.type === 'textfield' || q.type === 'textfieldvalidation') {
             if ((q.value && q.value.length > 0) || (q.optional === true)) {
               questionnaireResult.push({
                 id: q.id,
@@ -334,7 +347,7 @@ export default {
       const geojsonFormat = new ol.format.GeoJSON();
       const questionnaireResult = [];
       this.questionnaire.questions.forEach((q) => {
-        if (q.type === 'textfield') {
+        if (q.type === 'textfield' || q.type === 'textfieldvalidation') {
           if (q.value && q.value.length > 0) {
             questionnaireResult.push({
               id: q.id,

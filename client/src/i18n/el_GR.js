@@ -153,5 +153,6 @@ module.exports = {
     questionnaireEnd: 'Η πρόσβαση θα διακοπεί την',
     enablePublicAccess: 'Ενεργοποίηση πρόσβασης για το κοινό',
     selectLanguage: 'Επιλογή γλώσσας',
+    selectValidationType: 'Επικύρωση απάντησης',
   },
 };

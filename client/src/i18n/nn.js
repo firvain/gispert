@@ -153,5 +153,6 @@ module.exports = {
     questionnaireEnd: 'Adgang tillatt siden',
     enablePublicAccess: 'Aktiver offentlig tilgang',
     selectLanguage: 'Velg språk',
+    selectValidationType: 'Valideringstype',
   },
 };
