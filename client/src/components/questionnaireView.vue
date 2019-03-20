@@ -40,7 +40,7 @@
 
         <v-flex v-if="question.type === 'textfieldvalidation' && question.validation === 'email'">
           <v-text-field
-            name="input-1"
+            name="input-2"
             v-model="question.value"
             :label="$t('message.yourAnswer')"
             :rules="emailRules"
@@ -53,6 +53,7 @@
             v-model="question.value"
             item-value="id"
             item-text="value"
+            value="value"
             :label="$t('message.yourAnswer')"
             single-line
             menu-props="bottom"
