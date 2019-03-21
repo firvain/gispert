@@ -315,6 +315,7 @@
                                 name="input-1"
                                 v-model="item.value"
                                 append-icon="delete"
+                                :label="item.value"
                                 @click:append="question.items.remove(item)"
                               ></v-text-field>
                               <v-icon>delete</v-icon>
@@ -546,7 +547,7 @@
           <v-btn @click="saveQuestionnaire().then(() => { this.loading = false });">
             {{ $t('message.saveQuestionnaire') }}<v-icon dark>save</v-icon>
           </v-btn>
-          <v-btn @click="$store.commit('setQuestionnaireMode', 'normal')">
+          <v-btn @click="$store.commit('setQuestionnaireMode', 'normal'); $eventHub.$emit('refreshQuestionnaires');">
             {{ $t('message.cancel') }}<v-icon dark>cancel</v-icon>
           </v-btn>
           <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
@@ -864,6 +865,17 @@ export default {
         }
       });
     },
+    findNextItemId() {
+      let count = 0;
+      this.questionnaire.questions.forEach((e) => {
+        if (e.items) { count += e.items.length; }
+        if (e.lines) { count += e.lines.length; }
+        if (e.buttons) { count += e.buttons.length; }
+        if (e.checkboxes) { count += e.checkboxes.length; }
+        if (e.radios) { count += e.radios.length; }
+      });
+      this.nextItemId = count + 1;
+    },
   },
   mounted() {
     this.$store.commit('setQuestionnaireMode', 'editor');
@@ -875,6 +887,7 @@ export default {
       this.dateStart = moment.unix(this.qnnaire.properties.dateStart / 1000).format('YYYY-MM-DD');
       this.dateEnd = moment.unix(this.qnnaire.properties.dateEnd / 1000).format('YYYY-MM-DD');
       this.nextId = this.questionnaire.questions.length + 1;
+      this.findNextItemId();
     }
   },
 };
