@@ -11,6 +11,13 @@
       <v-tab-item>
         <v-container>
           <v-layout row wrap>
+            <v-btn block dark outline small color="green"
+              @click="changeQuestionnaireMode('normal');"
+              v-if="$store.state.questionnaireMode !== 'normal'">
+              <v-icon dark>undo</v-icon>
+              {{ $t('message.back')}}
+            </v-btn>
+
             <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
             <v-flex xs12 sm12 md12>
               <v-select
@@ -96,6 +103,13 @@
         <v-tab-item>
         <v-container>
           <v-layout row wrap>
+            <v-btn block dark outline small color="green"
+              @click="changeQuestionnaireMode('normal');"
+              v-if="$store.state.questionnaireMode !== 'normal'">
+              <v-icon dark>undo</v-icon>
+              {{ $t('message.back')}}
+            </v-btn>
+
             <v-flex v-if="questionnaireResults">
               <v-flex row pa-1 ma-0 v-for="question in questionnaireAggregates" :key="question.id">
                 <v-card>
@@ -284,6 +298,9 @@ export default {
     };
   },
   methods: {
+    changeQuestionnaireMode(mode) {
+      this.$store.commit('setQuestionnaireMode', mode);
+    },
     loadQuestionnaireResults() {
       const serverUrl = `${config.url}/questionnaires/questionnaireResults`;
       axios.get(serverUrl, {

@@ -1,6 +1,31 @@
 <template>
     <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">
       <v-flex>
+        <p>Editor @{{ userEditingNow }}</p>
+        <p>Viewers
+          <v-badge color="blue">
+            <template v-slot:badge>
+              <span  v-if="usersViewingQuestionnaire">{{ usersViewingQuestionnaire.length }}</span>
+            </template>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-icon color="primary" dark v-on="on">person</v-icon>
+              </template>
+              <ul id="example-1" v-if="usersViewingQuestionnaireNames">
+                <li v-for="item in usersViewingQuestionnaireNames" :key="item">
+                  {{ item }}
+                </li>
+              </ul>
+              <!-- <span>{{ usersViewingQuestionnaireNames }}</span> -->
+            </v-tooltip>
+          </v-badge>
+        </p>
+      <v-btn block dark outline small color="green"
+        @click="closeQuestionnaire(); changeQuestionnaireMode('normal');"
+        v-if="$store.state.questionnaireMode !== 'normal'">
+        <v-icon dark>undo</v-icon>
+        {{ $t('message.back')}}
+      </v-btn>
       <h1>{{ $t('message.createQuestionnaire')}}</h1>
         <v-flex v-if="questionnaire.properties.introduction.items.length > 0">
           <v-flex fluid row
@@ -543,11 +568,11 @@
             </v-card>
           </v-flex>
         </v-layout>
-        <div>
+        <div v-if="userIsEditor">
           <v-btn @click="saveQuestionnaire().then(() => { this.loading = false });">
             {{ $t('message.saveQuestionnaire') }}<v-icon dark>save</v-icon>
           </v-btn>
-          <v-btn @click="$store.commit('setQuestionnaireMode', 'normal'); $eventHub.$emit('refreshQuestionnaires');">
+          <v-btn @click="closeQuestionnaire()">
             {{ $t('message.cancel') }}<v-icon dark>cancel</v-icon>
           </v-btn>
           <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
@@ -566,6 +591,9 @@ export default {
   props: ['qnnaire'],
   data() {
     return {
+      usersViewingQuestionnaire: null,
+      userEditingNow: null,
+      userIsEditor: false,
       dateStart: null,
       dateEnd: null,
       languages: [
@@ -643,8 +671,20 @@ export default {
       this.questionnaire.properties.dateEnd = moment(this.dateEnd).format('x');
       return this.dateEnd ? moment(this.dateEnd).format('dddd, MMMM Do YYYY') : '';
     },
+    usersViewingQuestionnaireNames() {
+      const names = [];
+      if (this.usersViewingQuestionnaire) {
+        this.usersViewingQuestionnaire.forEach((u) => {
+          names.push(u.username);
+        });
+      }
+      return names;
+    },
   },
   methods: {
+    changeQuestionnaireMode(mode) {
+      this.$store.commit('setQuestionnaireMode', mode);
+    },
     convertToTimestamp(date) {
       console.log('date to convert :: ', date);
     },
@@ -876,8 +916,35 @@ export default {
       });
       this.nextItemId = count + 1;
     },
+    closeQuestionnaire() {
+      this.$store.commit('setQuestionnaireMode', 'normal');
+      this.$eventHub.$emit('refreshQuestionnaires');
+      this.$socket.emit('exitQuestionnaireRoom', {
+        user: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+        questionnaire: this.questionnaire._id, // eslint-disable-line no-underscore-dangle
+      });
+    },
   },
   mounted() {
+    this.$options.sockets.userEditingThisQuestionnaire = (data) => {
+      console.log('this user is editing :: ', data);
+      this.userEditingNow = data.username;
+      if (this.$store.state.user._id === data.user) { // eslint-disable-line no-underscore-dangle
+        this.userIsEditor = true;
+      } else {
+        this.userIsEditor = false;
+      }
+    };
+    this.$options.sockets.liveUsersInThisQuestionnaire = (data) => {
+      console.log('these users are in :: ', data);
+      this.usersViewingQuestionnaire = data;
+    };
+    this.$socket.emit('joinQuestionnaireRoom', {
+      user: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+      questionnaire: this.qnnaire._id, // eslint-disable-line no-underscore-dangle
+      username: this.$store.state.user.name,
+      timestamp: Date.now(),
+    });
     this.$store.commit('setQuestionnaireMode', 'editor');
     console.log('trying to edit :: ', this.qnnaire);
     if (this.qnnaire) {
@@ -891,7 +958,4 @@ export default {
     }
   },
 };
-// TODO
-// question validation rules
-// localization
 </script>

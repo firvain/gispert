@@ -1,13 +1,6 @@
 <template>
 <v-container id="questionnaires" v-if="$store.state.isUserLoggedIn">
   <v-layout row wrap>
-    <v-btn block dark outline small color="green"
-      @click="changeQuestionnaireMode('normal')"
-      v-if="$store.state.questionnaireMode !== 'normal'">
-      <v-icon dark>undo</v-icon>
-      {{ $t('message.back')}}
-    </v-btn>
-
     <v-flex v-if="$store.state.questionnaireMode === 'normal'" xs12>
       <h2>{{ $t('message.questionnairesIcreated') }}</h2>
       <v-btn block @click="createNewQuestionnaire()">{{ $t('message.createQuestionnaire') }}</v-btn>
