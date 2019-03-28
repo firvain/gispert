@@ -440,8 +440,9 @@ drawPoint.on('drawend', (e) => {
     strkClr: 'blue',
     // fllClr: 'orange',
   });
-  if (store.state.questionnaireMode === false) {
+  if (store.state.questionnaireMode === 'normal') {
     store.commit('newPostFeature', e.feature);
+    store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
   } else {
     store.commit('addQuestionnaireFeature', e.feature);
     drawPoint.setActive(false);
@@ -457,8 +458,9 @@ drawLineString.on('drawend', (e) => {
     strkClr: 'blue',
     // fllClr: 'orange',
   });
-  if (store.state.questionnaireMode === false) {
+  if (store.state.questionnaireMode === 'normal') {
     store.commit('newPostFeature', e.feature);
+    store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
   } else {
     store.commit('addQuestionnaireFeature', e.feature);
     drawPoint.setActive(false);
@@ -476,8 +478,9 @@ drawPolygon.on('drawend', (e) => {
       color: 'rgba(0, 0, 255, 0.1)',
     }),
   });
-  if (store.state.questionnaireMode === false) {
+  if (store.state.questionnaireMode === 'normal') {
     store.commit('newPostFeature', e.feature);
+    store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
   } else {
     store.commit('addQuestionnaireFeature', e.feature);
     drawPoint.setActive(false);
@@ -495,8 +498,9 @@ drawBox.on('drawend', (e) => {
       color: 'rgba(0, 0, 255, 0.1)',
     }),
   });
-  if (store.state.questionnaireMode === false) {
+  if (store.state.questionnaireMode === 'normal') {
     store.commit('newPostFeature', e.feature);
+    store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
   } else {
     store.commit('addQuestionnaireFeature', e.feature);
     drawPoint.setActive(false);

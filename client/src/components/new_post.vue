@@ -12,6 +12,7 @@
         <v-flex>
           <v-textarea
             @focus="showMapTools()"
+            @input="$store.commit('setUserPostProperties', [{ property: 'text', value: postText }]);"
             autofocus
             name="input-1"
             :label="$t('message.youMayWriteAndSketch')"
@@ -41,6 +42,7 @@
             <v-select
               v-bind:items="computedCollections"
               v-model="selectCollection"
+              @change="$store.commit('setUserPostProperties', [{ property: 'collection', value: selectCollection._id }]);"
               :label="$t('message.collections')"
               single-line
               item-text="title"
@@ -333,10 +335,10 @@ export default {
           objIndex = allFeatures.findIndex((obj => obj.id === this.id));
         }
         if (objIndex > -1 && allFeatures !== undefined) {
-          images = allFeatures[objIndex].images;
+          images = allFeatures[objIndex].images[0];
         }
       }
-      return images[0];
+      return images;
     },
     userVideos: function i() {
       let videos = null;
@@ -353,10 +355,10 @@ export default {
           objIndex = allFeatures.findIndex((obj => obj.id === this.id));
         }
         if (objIndex > -1) {
-          videos = allFeatures[objIndex].videos;
+          videos = allFeatures[objIndex].videos[0];
         }
       }
-      return videos[0];
+      return videos;
     },
     activeChips: function ch() {
       const chips = [];

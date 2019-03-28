@@ -287,10 +287,10 @@ export default {
           objIndex = allFeatures.findIndex((obj => obj.id === this.id));
         }
         if (objIndex > -1 && allFeatures !== undefined) {
-          images = allFeatures[objIndex].images;
+          images = allFeatures[objIndex].images[0];
         }
       }
-      return images[0];
+      return images;
     },
     userVideos: function i() {
       let videos = null;
@@ -307,10 +307,10 @@ export default {
           objIndex = allFeatures.findIndex((obj => obj.id === this.id));
         }
         if (objIndex > -1) {
-          videos = allFeatures[objIndex].videos;
+          videos = allFeatures[objIndex].videos[0];
         }
       }
-      return videos[0];
+      return videos;
     },
     activeChips: function ch() {
       const chips = [];

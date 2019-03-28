@@ -37,8 +37,23 @@ export default new Vuex.Store({
     questionnaire: null,
     questionnairesIHaveAnswered: null,
     myQuestionnaires: null,
+    userPost : {
+      userId: null,
+      userName: null,
+      text: null,
+      timestamp: null,
+      userFeatures: [],
+      collection: null,
+      replies: [],
+      type: null,
+      images: null,
+      videos: null,
+    },
   },
   actions: {
+    setUserPostProperties(state, data) {
+      state.commit('setUserPostProperties', data);
+    },
     setMyQuestionnaires(state, data) {
       state.commit('setMyQuestionnaires', data);
     },
@@ -179,6 +194,15 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    setUserPostProperties(state, data) {
+      data.forEach((p) => {
+        if (p.property === 'userFeatures') {
+          state.userPost['userFeatures'].push(p.value);
+        } else {
+          state.userPost[p.property] = p.value;
+        }
+      });
+    },
     setMyQuestionnaires(state, data) {
       state.myQuestionnaires = data;
     },
