@@ -445,11 +445,7 @@ drawPoint.on('drawend', (e) => {
     store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
   } else {
     store.commit('addQuestionnaireFeature', e.feature);
-    drawPoint.setActive(false);
-    drawLineString.setActive(false);
-    drawPolygon.setActive(false);
-    drawBox.setActive(false);
-    selectClick.setActive(true);
+    olMap.setActiveInteraction('select');
   }
 });
 drawLineString.on('drawend', (e) => {
@@ -463,11 +459,7 @@ drawLineString.on('drawend', (e) => {
     store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
   } else {
     store.commit('addQuestionnaireFeature', e.feature);
-    drawPoint.setActive(false);
-    drawLineString.setActive(false);
-    drawPolygon.setActive(false);
-    drawBox.setActive(false);
-    selectClick.setActive(true);
+    olMap.setActiveInteraction('select');
   }
 });
 drawPolygon.on('drawend', (e) => {
@@ -483,11 +475,7 @@ drawPolygon.on('drawend', (e) => {
     store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
   } else {
     store.commit('addQuestionnaireFeature', e.feature);
-    drawPoint.setActive(false);
-    drawLineString.setActive(false);
-    drawPolygon.setActive(false);
-    drawBox.setActive(false);
-    selectClick.setActive(true);
+    olMap.setActiveInteraction('select');
   }
 });
 drawBox.on('drawend', (e) => {
@@ -503,11 +491,55 @@ drawBox.on('drawend', (e) => {
     store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
   } else {
     store.commit('addQuestionnaireFeature', e.feature);
-    drawPoint.setActive(false);
-    drawLineString.setActive(false);
-    drawPolygon.setActive(false);
-    drawBox.setActive(false);
-    selectClick.setActive(true);
+    olMap.setActiveInteraction('select');
   }
 });
+
+olMap.removeFeaturesFromLayer = (layername, property, ids) => {
+  let allLayers = [];
+  allLayers = olMap.getLayers().getArray();
+  allLayers.forEach((layer) => {
+    if (layer.getProperties().name === layername) {
+      layer.getSource().forEachFeature((feature) => {
+        if (ids.includes(feature.get(property))) {
+          layer.getSource().removeFeature(feature);
+        }
+      });
+    }
+  });
+  olMap.getInteractions().forEach((interaction) => {
+    if (interaction instanceof ol.interaction.Select) {
+      interaction.getFeatures().clear();
+    }
+  });
+};
+
+olMap.setActiveInteraction = (interactionName) => {
+  // console.log('setting interaction to :: ', interactionName);
+  if (interactionName === 'select') {
+    // console.log('setting interaction to select');
+    olMap.getInteractions().forEach((interaction) => {
+      if (interaction instanceof ol.interaction.Select) {
+        interaction.setActive(true);
+      } else if (interaction instanceof ol.interaction.Draw) {
+        interaction.setActive(false);
+      }
+    });
+  } else {
+    // console.log('setting interaction to draw');
+    olMap.getInteractions().forEach((interaction) => {
+      if (interaction instanceof ol.interaction.Select) {
+        interaction.setActive(false);
+      } else if (interaction instanceof ol.interaction.Draw) {
+        // console.log('draw interaction candidate :: ', interaction.getProperties().name);
+        if (interaction.getProperties().name === interactionName) {
+          interaction.setActive(true);
+        } else {
+          interaction.setActive(false);
+        }
+      }
+    });
+  }
+};
+
 export default olMap;

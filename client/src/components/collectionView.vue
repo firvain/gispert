@@ -151,19 +151,6 @@ export default {
         this.loading = false;
       });
     },
-    // toggle_new_post() {
-    //   console.log('toggling collection new post');
-    //   this.newPost = !this.newPost;
-    //   if (this.newPost === false) {
-    //     this.newPostText = this.$t('message.newPost');
-    //     this.newPostColor = 'blue-grey';
-    //     this.$store.commit('setActiveMapTool', 'selectFeatures');
-    //   } else {
-    //     this.$store.commit('setActiveMapTool', 'drawFeatures');
-    //     this.newPostText = this.$t('message.cancel');
-    //     this.newPostColor = 'red';
-    //   }
-    // },
     async loadTimeline(timelineId) {
       this.loading = true;
       let url;
@@ -292,7 +279,6 @@ export default {
     this.$eventHub.$on('newPost', () => {
       if (this.$store.state.openedTimeline.id
         === this.collection.id) { // eslint-disable-line no-underscore-dangle
-        // this.toggle_new_post();
       }
     });
     this.$options.sockets.youAreEditor = (data) => {

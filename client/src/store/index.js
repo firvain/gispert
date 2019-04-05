@@ -28,7 +28,6 @@ export default new Vuex.Store({
     openedTimeline: null,
     previousOpenedTimeline: null,
     liveUsersList: null,
-    activeMapTool: 'selectFeatures',
     activeTab: 1,
     selectedPost: '',
     questionnaireFeatures: [],
@@ -51,6 +50,9 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    resetUserPost(state) {
+      state.commit('resetUserPost');
+    },
     setUserPostProperties(state, data) {
       state.commit('setUserPostProperties', data);
     },
@@ -77,9 +79,6 @@ export default new Vuex.Store({
     },
     setActiveTab(state, data) {
       state.commit('setActiveTab', data);
-    },
-    setActiveMapTool(state, data) {
-      state.commit('setActiveMapTool', data);
     },
     setFeature(state, data) {
       state.commit('setSelected', data);
@@ -194,6 +193,20 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    resetUserPost(state) {
+      state.userPost = {
+        userId: null,
+        userName: null,
+        text: null,
+        timestamp: null,
+        userFeatures: [],
+        collection: null,
+        replies: [],
+        type: null,
+        images: null,
+        videos: null,
+      };
+    },
     setUserPostProperties(state, data) {
       console.log(data);
       data.forEach((p) => {
@@ -439,9 +452,6 @@ export default new Vuex.Store({
     // setLiveUsers (state, data) {
     //   state.liveUsersList = data;
     // },
-    setActiveMapTool (state, data) {
-      state.activeMapTool = data;
-    },
     setActiveTab (state, data) {
       state.activeTab = data;
     },

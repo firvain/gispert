@@ -164,51 +164,13 @@ export default {
       if (tool === 'selectFeatures') {
         this.selectColor = 'green';
         this.drawColor = 'white';
-        olMap.getInteractions().forEach((interaction) => {
-          if (interaction instanceof ol.interaction.Select) {
-            interaction.setActive(true);
-            this.toolColors = ['white', 'white', 'white'];
-            this.selectedTool = 'selectFeatures';
-          }
-          if (interaction instanceof ol.interaction.Draw) {
-            interaction.setActive(false);
-          }
-        });
+        olMap.setActiveInteraction('select');
       }
       if (tool === 'drawFeatures') {
         this.selectColor = 'white';
         this.drawColor = 'green';
-        olMap.getInteractions().forEach((interaction) => {
-          if (interaction instanceof ol.interaction.Draw && interaction.getProperties().name === 'Point') {
-            interaction.setActive(true);
-            this.selectedTool = 'drawFeatures';
-            this.toolColors = ['green', 'white', 'white'];
-          } else if (interaction instanceof ol.interaction.Select) {
-            interaction.setActive(false);
-          }
-        });
+        olMap.setActiveInteraction('Point');
       }
-    },
-    setDraw(type) {
-      olMap.getInteractions().forEach((interaction) => {
-        if (type === 'Point') {
-          this.toolColors = ['green', 'white', 'white'];
-        }
-        if (type === 'LineString') {
-          this.toolColors = ['white', 'green', 'white'];
-        }
-        if (type === 'Polygon') {
-          this.toolColors = ['white', 'white', 'green'];
-        }
-        if (interaction instanceof ol.interaction.Draw) {
-          if (interaction.getProperties().name === type) {
-            interaction.setActive(true);
-            this.selectedTool = 'drawFeatures';
-          } else {
-            interaction.setActive(false);
-          }
-        }
-      });
     },
     // postUsingFeature() {},
     // addToPost() {
@@ -217,58 +179,7 @@ export default {
     // },
     deleteFeature() {
       this.$store.commit('setSelected', undefined);
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          layer.getSource().forEachFeature((feature) => {
-            if (feature.get('mongoID') === this.$store.state.featureId) {
-              layer.getSource().removeFeature(feature);
-              olMap.getInteractions().forEach((interaction) => {
-                if (interaction instanceof ol.interaction.Select) {
-                  interaction.getFeatures().clear();
-                }
-              });
-            }
-          });
-        }
-      });
-      // try {
-      //   const url = `${config.url}/features/delete`;
-      //   const data = {
-      //     userId: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-      //     featureId: this.$store.state.feature.get('mongoID'),
-      //   };
-      //   axios.post(url, { data }, { headers: { 'x-access-token': this.$store.state.token },
-      //   }).then((response) => {
-      //     console.log('response status:: ', response.status);
-      //     if (response.status === 200) {
-      //       this.$store.commit('setSelected', undefined);
-      //       console.log('deleted');
-      //     } else {
-      //       console.log('error');
-      //     }
-      //   }).then(() => {
-      //     let allLayers = [];
-      //     allLayers = olMap.getLayers().getArray();
-      //     allLayers.forEach((layer) => {
-      //       if (layer.getProperties().name === 'customLayer') {
-      //         layer.getSource().forEachFeature((feature) => {
-      //           if (feature.get('mongoID') === this.$store.state.featureId) {
-      //             layer.getSource().removeFeature(feature);
-      //             olMap.getInteractions().forEach((interaction) => {
-      //               if (interaction instanceof ol.interaction.Select) {
-      //                 interaction.getFeatures().clear();
-      //               }
-      //             });
-      //           }
-      //         });
-      //       }
-      //     });
-      //   });
-      // } catch (error) {
-      //   console.log(error);
-      // }
+      olMap.removeFeaturesFromLayer('customLayer', 'mongoID', this.$store.state.featureId);
     },
     exploreFeaturePosts() {
       this.$store.state.activeTab = 'explore';

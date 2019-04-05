@@ -4,11 +4,12 @@
       @click="
         showNewPost = true;
         showMapTools();
+        $store.commit('resetUserPost');
         $store.commit('setUserPostProperties', [{ property: 'userName', value: `${$store.state.user.name}` }]);
         $store.commit('setUserPostProperties', [{ property: 'userId', value: `${$store.state.user._id}` }]);
         $store.commit('setUserPostProperties', [{ property: 'type', value: 'new' }]);
       "
-      v-if="$store.state.isUserLoggedIn === true && !showNewPost"
+      v-if="$store.state.isUserLoggedIn === true && !showNewPost && $store.state.userPost.type !== 'new'"
     >
       {{ $t('message.newPost')}}
       <v-icon right dark>insert_comment</v-icon>
@@ -110,40 +111,42 @@ export default {
   },
   methods: {
     cancelPost() {
-      let newPostFeatures;
+      this.$store.commit('resetUserPost');
+
+      // let newPostFeatures;
       this.postText = '';
       this.selectCollection = '';
       this.showNewPost = false;
-      let newPostStorage;
-      if (this.$store.state.storage.filter(obj => obj.type === 'home')) {
-        newPostStorage = this.$store.state.storage.filter(obj => obj.type === 'home');
-      }
-      if (newPostStorage[0]) {
-        newPostFeatures = newPostStorage[0].features;
-        const newPostFeaturesIds = [];
-        newPostFeatures.forEach((f) => {
-          newPostFeaturesIds.push(f.get('mongoID'));
-        });
-        let allLayers = [];
-        allLayers = olMap.getLayers().getArray();
-        allLayers.forEach((layer) => {
-          if (layer.getProperties().name === 'customLayer') {
-            layer.getSource().forEachFeature((feature) => {
-              if (newPostFeaturesIds.includes(feature.get('mongoID'))) {
-                layer.getSource().removeFeature(feature);
-              }
-            });
-          }
-        });
-        olMap.getInteractions().forEach((interaction) => {
-          if (interaction instanceof ol.interaction.Select) {
-            interaction.getFeatures().clear();
-          }
-        });
-      }
+      // let newPostStorage;
+      // if (this.$store.state.storage.filter(obj => obj.type === 'home')) {
+      //   newPostStorage = this.$store.state.storage.filter(obj => obj.type === 'home');
+      // }
+      // if (newPostStorage[0]) {
+      //   newPostFeatures = newPostStorage[0].features;
+      //   const newPostFeaturesIds = [];
+      //   newPostFeatures.forEach((f) => {
+      //     newPostFeaturesIds.push(f.get('mongoID'));
+      //   });
+      //   let allLayers = [];
+      //   allLayers = olMap.getLayers().getArray();
+      //   allLayers.forEach((layer) => {
+      //     if (layer.getProperties().name === 'customLayer') {
+      //       layer.getSource().forEachFeature((feature) => {
+      //         if (newPostFeaturesIds.includes(feature.get('mongoID'))) {
+      //           layer.getSource().removeFeature(feature);
+      //         }
+      //       });
+      //     }
+      //   });
+      //   olMap.getInteractions().forEach((interaction) => {
+      //     if (interaction instanceof ol.interaction.Select) {
+      //       interaction.getFeatures().clear();
+      //     }
+      //   });
+      // }
       this.$store.commit('clearNewPostFeatures', 'home');
       this.$store.commit('setSelected', null);
-      this.$store.commit('setActiveMapTool', 'selectFeatures');
+      olMap.setActiveInteraction('select');
     },
     publishPost() {
       console.log('PUBLISH');
@@ -239,7 +242,6 @@ export default {
     },
     showMapTools() {
       this.showingMapTool = true;
-      // this.$store.commit('setActiveMapTool', 'drawFeatures');
       // console.log('post id:: ', this.id);
       if (this.idToMatch === 'reply') {
         this.$store.commit('addingToPost', { type: 'reply', id: this.id });
@@ -267,24 +269,8 @@ export default {
       olMap.getView().fit(g, olMap.getSize());
     },
     remove(id) {
+      olMap.removeFeaturesFromLayer('customLayer', 'mongoID', id);
       this.$store.commit('deleteFeatureFromPost', id);
-      console.log('deleting :: ', id);
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          layer.getSource().forEachFeature((feature) => {
-            if (feature.get('mongoID') === id) {
-              layer.getSource().removeFeature(feature);
-              olMap.getInteractions().forEach((interaction) => {
-                if (interaction instanceof ol.interaction.Select) {
-                  interaction.getFeatures().clear();
-                }
-              });
-            }
-          });
-        }
-      });
     },
     geometryTypeText(geom) {
       let text;

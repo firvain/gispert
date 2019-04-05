@@ -581,7 +581,7 @@
     </v-layout>
 </template>
 <script>
-import ol from 'openlayers';
+// import ol from 'openlayers';
 import axios from 'axios';
 import moment from 'moment';
 import olMap from '../js/map';
@@ -882,28 +882,9 @@ export default {
       });
     },
     getFromMap(id, type) {
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          layer.getSource().forEachFeature((feature) => {
-            if (feature.get('buttonId') === id) {
-              layer.getSource().removeFeature(feature);
-            }
-          });
-        }
-      });
-
+      olMap.removeFeaturesFromLayer('customLayer', 'buttonId', id);
       this.$store.commit('setQuestionnaireFeatureId', id);
-      olMap.getInteractions().forEach((interaction) => {
-        if (interaction instanceof ol.interaction.Draw) {
-          if (interaction.getProperties().name === type) {
-            interaction.setActive(true);
-          } else {
-            interaction.setActive(false);
-          }
-        }
-      });
+      olMap.setActiveInteraction(type);
     },
     findNextItemId() {
       let count = 0;

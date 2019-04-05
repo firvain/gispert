@@ -110,7 +110,7 @@ export default {
       }
       this.$store.commit('clearNewPostFeatures', this.id);
       this.$store.commit('setSelected', null);
-      this.$store.commit('setActiveMapTool', 'selectFeatures');
+      olMap.setActiveInteraction('select');
     },
     publishPost() {
       console.log('PUBLISH');
@@ -186,7 +186,6 @@ export default {
     },
     showMapTools() {
       this.showingMapTool = true;
-      // this.$store.commit('setActiveMapTool', 'drawFeatures');
       // console.log('post id:: ', this.id);
       if (this.idToMatch === 'reply') {
         this.$store.commit('addingToPost', { type: 'reply', id: this.id });

@@ -491,10 +491,10 @@ export default {
       if (this.answerPost === false) {
         // this.answerPostText = this.$t('message.reply');
         this.answerPostColor = 'blue';
-        this.$store.commit('setActiveMapTool', 'selectFeatures');
+        olMap.setActiveInteraction('select');
       } else {
         // this.answerPostText = this.$t('message.cancel');
-        this.$store.commit('setActiveMapTool', 'drawFeatures');
+        olMap.setActiveInteraction('Point');
         this.answerPostColor = 'red';
       }
     },

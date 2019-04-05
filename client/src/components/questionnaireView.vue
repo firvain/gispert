@@ -511,28 +511,9 @@ export default {
       return questionnaireResult;
     },
     getFromMap(id, type) {
-      let allLayers = [];
-      allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
-          layer.getSource().forEachFeature((feature) => {
-            if (feature.get('buttonId') === id) {
-              layer.getSource().removeFeature(feature);
-            }
-          });
-        }
-      });
-
+      olMap.removeFeaturesFromLayer('customLayer', 'buttonId', id);
       this.$store.commit('setQuestionnaireFeatureId', id);
-      olMap.getInteractions().forEach((interaction) => {
-        if (interaction instanceof ol.interaction.Draw) {
-          if (interaction.getProperties().name === type) {
-            interaction.setActive(true);
-          } else {
-            interaction.setActive(false);
-          }
-        }
-      });
+      olMap.setActiveInteraction(type);
     },
     submit(type) {
       this.getValues().then((res) => {
