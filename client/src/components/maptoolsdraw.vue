@@ -58,7 +58,11 @@
           <v-btn
             color="primary"
             flat
-            @click="imageUrlDialog = false; $store.commit('addImageToPost', imageURL)"
+            @click="
+              imageUrlDialog = false;
+              $store.commit('addImageToPost', imageURL);
+              $store.commit('setUserPostProperties', [{ property: 'images', value: imageURL }]);
+            "
           >
             ΟΚ
           </v-btn>
@@ -286,6 +290,7 @@ export default {
       this.videoUrlDialog = false;
       const id = getYouTubeID(this.videoURL);
       this.$store.commit('addVideoToPost', id);
+      this.$store.commit('setUserPostProperties', [{ property: 'videos', value: id }]);
     },
   },
 };

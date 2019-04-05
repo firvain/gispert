@@ -1,7 +1,13 @@
 <template>
   <v-layout>
     <v-btn block slot="activator" color="primary" dark large
-      @click="showNewPost = true; showMapTools();"
+      @click="
+        showNewPost = true;
+        showMapTools();
+        $store.commit('setUserPostProperties', [{ property: 'userName', value: `${$store.state.user.name}` }]);
+        $store.commit('setUserPostProperties', [{ property: 'userId', value: `${$store.state.user._id}` }]);
+        $store.commit('setUserPostProperties', [{ property: 'type', value: 'new' }]);
+      "
       v-if="$store.state.isUserLoggedIn === true && !showNewPost"
     >
       {{ $t('message.newPost')}}

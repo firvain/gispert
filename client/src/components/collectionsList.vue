@@ -430,7 +430,7 @@ export default {
     },
     closeCollectionView() {
       this.$store.dispatch('setOpenedCustomTimeline', null);
-      this.$router.push('/');
+      this.$router.push('/app');
       this.mode = 'normal';
       this.postContent = null;
       this.privateCollectionsContainer = true;

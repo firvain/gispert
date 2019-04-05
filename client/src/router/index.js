@@ -2,9 +2,9 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import Router from 'vue-router';
 import linkify from 'vue-linkify';
-import Register from '@/components/register';
+// import Register from '@/components/register';
 import Main from '@/components/main';
-import Login from '@/components/login';
+// import Login from '@/components/login';
 import Home from '@/components/home';
 // import questionnaireView from '@/components/questionnaireView';
 // import userList from '@/components/userlist';
@@ -18,18 +18,18 @@ Vue.directive('linkified', linkify);
 export default new Router({
   // mode: 'history',
   routes: [
+    // {
+    //   path: '/register',
+    //   name: 'register',
+    //   component: Register,
+    // },
+    // {
+    //   path: '/login',
+    //   name: 'login',
+    //   component: Login,
+    // },
     {
-      path: '/register',
-      name: 'register',
-      component: Register,
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: Login,
-    },
-    {
-      path: '/home',
+      path: '/',
       name: 'home',
       component: Home,
     },
@@ -39,7 +39,7 @@ export default new Router({
     //   component: questionnaireView,
     // },
     {
-      path: '/',
+      path: '/app',
       name: 'main',
       component: Main,
       children: [

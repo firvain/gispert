@@ -195,9 +195,12 @@ export default new Vuex.Store({
   },
   mutations: {
     setUserPostProperties(state, data) {
+      console.log(data);
       data.forEach((p) => {
         if (p.property === 'userFeatures') {
           state.userPost['userFeatures'].push(p.value);
+        } else if (p.property === 'videos') {
+          state.userPost['videos'] = p.value;
         } else {
           state.userPost[p.property] = p.value;
         }
