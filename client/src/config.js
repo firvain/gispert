@@ -16,7 +16,7 @@ const APIversion = 'v1';
 const APIhttpType = 'https';
 const appUrl = `${APIhttpType}://${APIhost}/${APIversion}`;
 const socketUrl = `${APIhttpType}://${APIhost}`;
-const shareUrl = `${APIhttpType}://${APIhost}`;
+const shareUrl = `${APIhttpType}://${APIhost}/#/app`;
 
 module.exports = {
   url: appUrl,

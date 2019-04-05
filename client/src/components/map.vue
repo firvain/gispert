@@ -602,7 +602,7 @@ export default {
   .mapStyle {
     width: auto;
     height: 100%;
-    height: 90vh;
+    height: 89vh;
   }
   .ol-zoom {
     left: unset;

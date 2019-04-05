@@ -151,7 +151,7 @@ export default {
   },
   methods: {
     shareLink(id) {
-      this.questionnaireShareLink = `${config.share}/#/app/questionnaire/${id}`;
+      this.questionnaireShareLink = `${config.share}/questionnaire/${id}`;
     },
     createNewQuestionnaire() {
       this.changeQuestionnaireMode('editor');

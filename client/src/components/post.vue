@@ -583,7 +583,7 @@ export default {
       return this.postType === 'reply' ? 'text-xs-right' : 'text-xs-left';
     },
     sharePostUrl() {
-      const url = `${config.share}/#/post/${this.post._id}`; // eslint-disable-line
+      const url = `${config.share}/post/${this.post._id}`; // eslint-disable-line
       return url;
     },
   },

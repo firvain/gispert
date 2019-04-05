@@ -181,8 +181,4 @@ html {   overflow-y: hidden; }
 a:hover {
  cursor:pointer;
 }
-.qnaire {
-  overflow-y: auto;
-  max-height: 89vh;
-}
 </style>
