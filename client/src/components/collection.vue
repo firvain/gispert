@@ -65,7 +65,7 @@
                 <span
                   @click="shareLink = !shareLink; copyToClipboard();"
                   class='caption'>
-                  <v-icon @click="setCollectionPrivacy(collection._id)">link</v-icon>
+                  <v-icon>link</v-icon>
                   {{ $t("message.shareLink") }}!
                 </span>
             </v-list-tile-title>
@@ -281,7 +281,7 @@ export default {
       }, new Set(this.members.map(obj => obj._id)));
     },
     shareMapUrl() {
-      const url = `${config.share}/#/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
+      const url = `${config.share}/#/app/collection/${this.collection._id}`; // eslint-disable-line no-underscore-dangle
       // console.log(this.customMap.id);
       return url;
     },
