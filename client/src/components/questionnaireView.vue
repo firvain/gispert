@@ -598,3 +598,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+  #layout1 {
+    width: auto;
+    height: 89vh;
+  }
+</style>

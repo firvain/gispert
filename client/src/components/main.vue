@@ -3,7 +3,7 @@
   <Pageheader></Pageheader>
       <v-layout row wrap>
         <v-flex xs6 md6 v-if="$route.name === 'questionnaire'">
-          <qnaire fill-height class="qnaire" :id="$route.params.id"></qnaire>
+          <qnaire class="qnaire" :id="$route.params.id"></qnaire>
         </v-flex>
         <v-flex xs6 md6 v-else-if="$route.name === 'questionnaireResults'">
           <questionnaireViewer fill-height class="qnaire" :id="$route.params.id"></questionnaireViewer>
@@ -180,5 +180,8 @@ html {   overflow-y: hidden; }
 }
 a:hover {
  cursor:pointer;
+}
+.qnaire {
+  overflow-y: scroll;
 }
 </style>
