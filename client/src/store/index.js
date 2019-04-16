@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+// import ol from 'openlayers';
 
 /* eslint-disable */
 Vue.use(Vuex);
@@ -12,7 +13,6 @@ export default new Vuex.Store({
     feature: undefined,
     newpostfeature: undefined,
     addingToPost: undefined,
-    storage: [],
     featureCount: 0,
     token: null,
     user: null,
@@ -44,6 +44,7 @@ export default new Vuex.Store({
       userFeatures: [],
       collection: null,
       replies: [],
+      isReplyTo: null,
       type: null,
       images: null,
       videos: null,
@@ -262,32 +263,32 @@ export default new Vuex.Store({
         state.feature = undefined;
       }
     },
-    newPostFeature(state, data) {
-      console.log('type :: ', data);
-      state.newpostfeature = data;
-      const feature = state.newpostfeature;
-      state.featureCount += 1;
-      feature.drawId = state.featureCount;
-      feature.setProperties({
-        'mongoID': state.user._id + '' + Date.now(),
-        'name': '@' + state.user.name,
-        'userId': state.user._id,
-      });
+    // newPostFeature(state, data) {
+    //   console.log('type :: ', data);
+    //   state.newpostfeature = data;
+    //   const feature = state.newpostfeature;
+    //   state.featureCount += 1;
+    //   feature.drawId = state.featureCount;
+    //   feature.setProperties({
+    //     'mongoID': state.user._id + '' + Date.now(),
+    //     'name': '@' + state.user.name,
+    //     'userId': state.user._id,
+    //   });
 
-      if (state.storage.length > 0) {
-        const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
-        if (!state.storage[objIndex].features) {
-          state.storage[objIndex].features = [];
-        }
-        if (objIndex > -1) {
-          state.storage[objIndex].features.push(feature);
-        } else {
-          state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, features: [feature] });
-        }
-      } else {
-        state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, features: [feature] });
-      }
-    },
+    //   if (state.storage.length > 0) {
+    //     const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
+    //     if (!state.storage[objIndex].features) {
+    //       state.storage[objIndex].features = [];
+    //     }
+    //     if (objIndex > -1) {
+    //       state.storage[objIndex].features.push(feature);
+    //     } else {
+    //       state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, features: [feature] });
+    //     }
+    //   } else {
+    //     state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, features: [feature] });
+    //   }
+    // },
     clearNewPostFeatures(state, data) {
       let allResponses = state.storage;
       const toDelete = new Set([data]);
@@ -300,11 +301,14 @@ export default new Vuex.Store({
       state.addingToPost = data;
     },
     deleteFeatureFromPost(state, data) {
-      const allFeatures = state.storage;
+      const restFeatures = [];
+      const allFeatures = state.userPost.userFeatures;
       allFeatures.forEach((p) => {
-        const toDelete = new Set([data]);
-        p.features = p.features.filter(obj => !toDelete.has(obj.get('mongoID')));
+        if (p.search(data) === -1) {
+          restFeatures.push(p);
+        }
       });
+      state.userPost.userFeatures = restFeatures;
     },
     setuser(state, data) {
       state.user = data;
@@ -353,11 +357,11 @@ export default new Vuex.Store({
         state.users = [];
       }
     },
-    resetfeaturecount(state, data) {
-      state.featureCount = 0;
-      state.newpostfeature = undefined;
-      state.storage = [];
-    },
+    // resetfeaturecount(state, data) {
+    //   state.featureCount = 0;
+    //   state.newpostfeature = undefined;
+    //   state.storage = [];
+    // },
     setcustommaps(state, data) {
       if (data !== 'empty') {
         data.forEach((m) => {
@@ -538,40 +542,53 @@ export default new Vuex.Store({
       });
       console.log('new timeline:: ', state.timeline);
     },
-    addImageToPost(state,data) {
-      if (state.storage.length > 0) {
-        const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
-        state.storage[objIndex].images = [];
-        // if (!state.storage[objIndex].images) {
-        //   state.storage[objIndex].images = [];
-        // }
-        if (objIndex > -1) {
-          state.storage[objIndex].images.push(data);
-        } else {
-          state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, images: [data] });
-        }
-      } else {
-        state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, images: [data] });
-      }
-    },
-    addVideoToPost(state,data) {
-      if (state.storage.length > 0) {
-        const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
-        state.storage[objIndex].videos = [];
-        // if (!state.storage[objIndex].videos) {
-        //   state.storage[objIndex].videos = [];
-        // }
-        if (objIndex > -1) {
-          state.storage[objIndex].videos.push(data);
-        } else {
-          state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, videos: [data] });
-        }
-      } else {
-        state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, videos: [data] });
-      }
-    },
+    // addImageToPost(state,data) {
+    //   if (state.storage.length > 0) {
+    //     const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
+    //     state.storage[objIndex].images = [];
+    //     // if (!state.storage[objIndex].images) {
+    //     //   state.storage[objIndex].images = [];
+    //     // }
+    //     if (objIndex > -1) {
+    //       state.storage[objIndex].images.push(data);
+    //     } else {
+    //       state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, images: [data] });
+    //     }
+    //   } else {
+    //     state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, images: [data] });
+    //   }
+    // },
+    // addVideoToPost(state,data) {
+    //   if (state.storage.length > 0) {
+    //     const objIndex = state.storage.findIndex((obj => obj.id == state.addingToPost.id));
+    //     state.storage[objIndex].videos = [];
+    //     // if (!state.storage[objIndex].videos) {
+    //     //   state.storage[objIndex].videos = [];
+    //     // }
+    //     if (objIndex > -1) {
+    //       state.storage[objIndex].videos.push(data);
+    //     } else {
+    //       state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, videos: [data] });
+    //     }
+    //   } else {
+    //     state.storage.push({ id: state.addingToPost.id, type: state.addingToPost.type, videos: [data] });
+    //   }
+    // },
   },
   getters: {
+    getUserPostMongoIDs(state) {
+      const ids = [];
+      const features = state.userPost.userFeatures;
+      features.forEach((f) => {
+        const featureObject = JSON.parse(f);
+        console.log(featureObject);
+        ids.push(featureObject.features[0].properties.mongoID);
+      });
+      return ids;
+    },
+    getUserPost(state) {
+      return state.userPost;
+    },
     getDrawnFeatures(state) {
       return state.storage;
     },

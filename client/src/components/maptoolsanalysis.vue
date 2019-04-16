@@ -1,15 +1,7 @@
 <template>
   <div>
     <v-card flat height="0px">
-      <!-- <v-toolbar class="white" absolute dense offset-xs2> -->
         <v-flex class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
-          <!-- <br><br> -->
-          <!-- <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[2]" slot="activator" @click="addToPost()">
-              <v-icon dark>loupe</v-icon>
-            </v-btn>
-            <span>Πρόσθεσέ το στην ανάρτηση</span>
-          </v-tooltip> -->
           <v-flex pa-0 ma-0>
           <v-tooltip bottom>
             <v-btn class='verysmall' icon :color="toolColors[2]" slot="activator" @click="exploreFeaturePosts()">
@@ -18,12 +10,6 @@
             <span>Δες σχετικές αναρτήσεις</span>
           </v-tooltip>
           </v-flex>
-          <!-- <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[2]" slot="activator" @click="postUsingFeature()">
-              <v-icon class='verysmallicon' dark>explore</v-icon>
-            </v-btn>
-            <span>Απάντησε</span>
-          </v-tooltip> -->
           <v-tooltip bottom>
             <v-btn class='verysmall' icon :color="toolColors[2]"
               v-if="$store.state.feature.getGeometry().getType() === 'Polygon' || $store.state.feature.getGeometry().getType() === 'LineString'"
@@ -46,35 +32,11 @@
             </v-btn>
             <span>Βρες τη ζώνη επιρροής</span>
           </v-tooltip>
-          <!-- <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[1]"
-              v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
-              slot="activator" @click="setDraw('Union')">
-              <v-icon dark>flip_to_back</v-icon>
-            </v-btn>
-            <span>Ένωσέ το με ένα άλλο</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[2]"
-              v-if="$store.state.feature.getGeometry().getType() === 'Polygon'"
-              slot="activator" @click="setDraw('Clip')">
-              <v-icon dark>layers</v-icon>
-            </v-btn>
-            <span>Βρες κοινή περιοχή με ένα άλλο</span>
-          </v-tooltip> -->
-          <!-- <v-tooltip bottom>
-            <v-btn fab small :color="toolColors[2]" slot="activator" @click="chatOnThisFeature()">
-              <v-icon dark>send</v-icon>
-            </v-btn>
-            <span>Στείλτο σε άλλους χρήστες</span>
-          </v-tooltip> -->
         </v-flex>
-      <!-- </v-toolbar> -->
-
     </v-card>
-    <v-dialog v-model="userSelector" scrollable max-width="300px"> 
+    <!-- <v-dialog v-model="userSelector" scrollable max-width="300px"> 
       <userSelector v-show="userSelector" :active = 'userSelector'></userSelector>
-    </v-dialog>
+    </v-dialog> -->
     <v-dialog v-model="createBufferDialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -105,13 +67,13 @@ import ol from 'openlayers';
 // import axios from 'axios';
 import turf from 'turf';
 // import config from '../config';
-import userSelector from './selectCloseUsers';
+// import userSelector from './selectCloseUsers';
 import olMap from '../js/map';
 
 export default {
   name: 'mapTools',
   components: {
-    userSelector,
+    // userSelector,
   },
   data: () => ({
     selectColor: 'green',
@@ -119,7 +81,7 @@ export default {
     toolColors: ['white', 'white', 'white'],
     selectedFeature: olMap.selectedFeature,
     activeAnalysis: null,
-    userSelector: false,
+    // userSelector: false,
     createBufferDialog: false,
     bufferDistance: 500,
     measurement: '',
@@ -143,9 +105,6 @@ export default {
       this.toggle_map_tools(this.selectedTool);
     },
     '$store.state.activeTab': function () {
-      this.toggle_map_tools('selectFeatures');
-    },
-    '$store.state.newpostfeature': function () {
       this.toggle_map_tools('selectFeatures');
     },
   },

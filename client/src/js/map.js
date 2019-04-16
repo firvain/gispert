@@ -426,93 +426,6 @@ drawPolygon.setActive(false);
 drawBox.setActive(false);
 selectClick.setActive(true);
 
-selectClick.on('select', () => {
-  const selectedFeature = selectClick.getFeatures().item(0);
-  olMap.selectedFeature = selectedFeature;
-  // console.log(selectedFeature);
-  store.commit('setSelected', selectedFeature);
-  // console.log(store.state.count);
-});
-
-drawPoint.on('drawend', (e) => {
-  e.feature.setProperties({
-    strkWdth: 1,
-    strkClr: 'blue',
-    // fllClr: 'orange',
-  });
-  if (store.state.questionnaireMode === 'normal') {
-    store.commit('newPostFeature', e.feature);
-    store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
-  } else {
-    store.commit('addQuestionnaireFeature', e.feature);
-    olMap.setActiveInteraction('select');
-  }
-});
-drawLineString.on('drawend', (e) => {
-  e.feature.setProperties({
-    strkWdth: 1,
-    strkClr: 'blue',
-    // fllClr: 'orange',
-  });
-  if (store.state.questionnaireMode === 'normal') {
-    store.commit('newPostFeature', e.feature);
-    store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
-  } else {
-    store.commit('addQuestionnaireFeature', e.feature);
-    olMap.setActiveInteraction('select');
-  }
-});
-drawPolygon.on('drawend', (e) => {
-  e.feature.setProperties({
-    strkWdth: 1,
-    strkClr: 'blue',
-    fill: new ol.style.Fill({
-      color: 'rgba(0, 0, 255, 0.1)',
-    }),
-  });
-  if (store.state.questionnaireMode === 'normal') {
-    store.commit('newPostFeature', e.feature);
-    store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
-  } else {
-    store.commit('addQuestionnaireFeature', e.feature);
-    olMap.setActiveInteraction('select');
-  }
-});
-drawBox.on('drawend', (e) => {
-  e.feature.setProperties({
-    strkWdth: 1,
-    strkClr: 'blue',
-    fill: new ol.style.Fill({
-      color: 'rgba(0, 0, 255, 0.1)',
-    }),
-  });
-  if (store.state.questionnaireMode === 'normal') {
-    store.commit('newPostFeature', e.feature);
-    store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
-  } else {
-    store.commit('addQuestionnaireFeature', e.feature);
-    olMap.setActiveInteraction('select');
-  }
-});
-
-olMap.removeFeaturesFromLayer = (layername, property, ids) => {
-  let allLayers = [];
-  allLayers = olMap.getLayers().getArray();
-  allLayers.forEach((layer) => {
-    if (layer.getProperties().name === layername) {
-      layer.getSource().forEachFeature((feature) => {
-        if (ids.includes(feature.get(property))) {
-          layer.getSource().removeFeature(feature);
-        }
-      });
-    }
-  });
-  olMap.getInteractions().forEach((interaction) => {
-    if (interaction instanceof ol.interaction.Select) {
-      interaction.getFeatures().clear();
-    }
-  });
-};
 
 olMap.setActiveInteraction = (interactionName) => {
   // console.log('setting interaction to :: ', interactionName);
@@ -540,6 +453,144 @@ olMap.setActiveInteraction = (interactionName) => {
       }
     });
   }
+};
+
+
+selectClick.on('select', () => {
+  const selectedFeature = selectClick.getFeatures().item(0);
+  olMap.selectedFeature = selectedFeature;
+  // console.log(selectedFeature);
+  store.commit('setSelected', selectedFeature);
+  // console.log(store.state.count);
+});
+
+drawPoint.on('drawend', (e) => {
+  const startDrawend = new Promise((resolve) => {
+    e.feature.setProperties({
+      strkWdth: 1,
+      strkClr: 'blue',
+      // fllClr: 'orange',
+      mongoID: `${store.state.user._id}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      name: `@ ${store.state.user.name}`,
+      userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
+    });
+    resolve(true);
+  });
+  startDrawend.then(() => {
+    if (store.state.questionnaireMode === 'normal') {
+      store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
+    } else {
+      store.commit('addQuestionnaireFeature', e.feature);
+    }
+  }).then(() => {
+    drawPoint.setActive(false);
+    drawLineString.setActive(false);
+    drawPolygon.setActive(false);
+    drawBox.setActive(false);
+    selectClick.setActive(true);
+  });
+});
+drawLineString.on('drawend', (e) => {
+  const startDrawend = new Promise((resolve) => {
+    e.feature.setProperties({
+      strkWdth: 1,
+      strkClr: 'blue',
+      // fllClr: 'orange',
+      mongoID: `${store.state.user._id}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      name: `@ ${store.state.user.name}`,
+      userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
+    });
+    resolve(true);
+  });
+  startDrawend.then(() => {
+    if (store.state.questionnaireMode === 'normal') {
+      store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
+    } else {
+      store.commit('addQuestionnaireFeature', e.feature);
+    }
+  }).then(() => {
+    drawPoint.setActive(false);
+    drawLineString.setActive(false);
+    drawPolygon.setActive(false);
+    drawBox.setActive(false);
+    selectClick.setActive(true);
+  });
+});
+drawPolygon.on('drawend', (e) => {
+  const startDrawend = new Promise((resolve) => {
+    e.feature.setProperties({
+      strkWdth: 1,
+      strkClr: 'blue',
+      fill: new ol.style.Fill({
+        color: 'rgba(0, 0, 255, 0.1)',
+      }),
+      mongoID: `${store.state.user._id}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      name: `@ ${store.state.user.name}`,
+      userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
+    });
+    resolve(true);
+  });
+  startDrawend.then(() => {
+    if (store.state.questionnaireMode === 'normal') {
+      store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
+    } else {
+      store.commit('addQuestionnaireFeature', e.feature);
+    }
+  }).then(() => {
+    drawPoint.setActive(false);
+    drawLineString.setActive(false);
+    drawPolygon.setActive(false);
+    drawBox.setActive(false);
+    selectClick.setActive(true);
+  });
+});
+drawBox.on('drawend', (e) => {
+  const startDrawend = new Promise((resolve) => {
+    e.feature.setProperties({
+      strkWdth: 1,
+      strkClr: 'blue',
+      fill: new ol.style.Fill({
+        color: 'rgba(0, 0, 255, 0.1)',
+      }),
+      mongoID: `${store.state.user._id}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      name: `@ ${store.state.user.name}`,
+      userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
+    });
+    resolve(true);
+  });
+  startDrawend.then(() => {
+    if (store.state.questionnaireMode === 'normal') {
+      store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
+    } else {
+      store.commit('addQuestionnaireFeature', e.feature);
+    }
+  }).then(() => {
+    drawPoint.setActive(false);
+    drawLineString.setActive(false);
+    drawPolygon.setActive(false);
+    drawBox.setActive(false);
+    selectClick.setActive(true);
+  });
+});
+
+olMap.removeFeaturesFromLayer = (layername, property, ids) => {
+  console.log('removing :: ', ids);
+  let allLayers = [];
+  allLayers = olMap.getLayers().getArray();
+  allLayers.forEach((layer) => {
+    if (layer.getProperties().name === layername) {
+      layer.getSource().forEachFeature((feature) => {
+        if (ids.includes(feature.get(property))) {
+          layer.getSource().removeFeature(feature);
+        }
+      });
+    }
+  });
+  olMap.getInteractions().forEach((interaction) => {
+    if (interaction instanceof ol.interaction.Select) {
+      interaction.getFeatures().clear();
+    }
+  });
 };
 
 export default olMap;

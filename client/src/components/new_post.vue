@@ -8,6 +8,7 @@
         $store.commit('setUserPostProperties', [{ property: 'userName', value: `${$store.state.user.name}` }]);
         $store.commit('setUserPostProperties', [{ property: 'userId', value: `${$store.state.user._id}` }]);
         $store.commit('setUserPostProperties', [{ property: 'type', value: 'new' }]);
+        $store.commit('setUserPostProperties', [{ property: 'collection', value: selectCollection._id }]);
       "
       v-if="$store.state.isUserLoggedIn === true && !showNewPost && $store.state.userPost.type !== 'new'"
     >
@@ -34,13 +35,13 @@
             <!-- :hint="$t('message.youMayWriteAndSketch')" -->
         </v-flex>
         <mapTools idtomatch='home'></mapTools>
-        <v-flex v-if="drawnFeatures !== undefined">
+        <v-flex>
           <v-chip close
             v-for="f in drawnFeatures"
-            :key="f.get('mongoID')"
-            @input="remove(f.get('mongoID'))"
-            @click='zoomToChip(f)'>
-            {{ geometryTypeText(f.getGeometry().getType()) }}
+            :key="f.features[0].properties.mongoID"
+            @input="remove(f.features[0].properties.mongoID)"
+            @click='zoomToChip(f.features[0])'>
+            {{ geometryTypeText(f.features[0].geometry.type) }}
           </v-chip>
         </v-flex>
 
@@ -111,70 +112,43 @@ export default {
   },
   methods: {
     cancelPost() {
-      this.$store.commit('resetUserPost');
+      const getIds = new Promise((resolve) => {
+        const ids = this.$store.getters.getUserPostMongoIDs;
+        resolve(ids);
+      });
+      console.log('getter :: ', this.$store.getters.getUserPostMongoIDs);
 
-      // let newPostFeatures;
-      this.postText = '';
-      this.selectCollection = '';
-      this.showNewPost = false;
-      // let newPostStorage;
-      // if (this.$store.state.storage.filter(obj => obj.type === 'home')) {
-      //   newPostStorage = this.$store.state.storage.filter(obj => obj.type === 'home');
-      // }
-      // if (newPostStorage[0]) {
-      //   newPostFeatures = newPostStorage[0].features;
-      //   const newPostFeaturesIds = [];
-      //   newPostFeatures.forEach((f) => {
-      //     newPostFeaturesIds.push(f.get('mongoID'));
-      //   });
-      //   let allLayers = [];
-      //   allLayers = olMap.getLayers().getArray();
-      //   allLayers.forEach((layer) => {
-      //     if (layer.getProperties().name === 'customLayer') {
-      //       layer.getSource().forEachFeature((feature) => {
-      //         if (newPostFeaturesIds.includes(feature.get('mongoID'))) {
-      //           layer.getSource().removeFeature(feature);
-      //         }
-      //       });
-      //     }
-      //   });
-      //   olMap.getInteractions().forEach((interaction) => {
-      //     if (interaction instanceof ol.interaction.Select) {
-      //       interaction.getFeatures().clear();
-      //     }
-      //   });
-      // }
-      this.$store.commit('clearNewPostFeatures', 'home');
-      this.$store.commit('setSelected', null);
-      olMap.setActiveInteraction('select');
+      getIds.then((ids) => {
+        olMap.removeFeaturesFromLayer('customLayer', 'mongoID', ids);
+      }).then(() => {
+        this.$store.commit('resetUserPost');
+        this.postText = '';
+        this.selectCollection = '';
+        this.showNewPost = false;
+        this.$store.commit('setSelected', null);
+        olMap.setActiveInteraction('select');
+      });
     },
     publishPost() {
       console.log('PUBLISH');
-      const textToPost = this.postText;
-      const featuresToPost = this.drawnFeatures;
-      let userFeats;
-      if (featuresToPost) {
-        const geojsonFormat = new ol.format.GeoJSON();
-        userFeats = geojsonFormat.writeFeatures(featuresToPost);
-      } else {
-        userFeats = null;
-      }
+      const vuexPost = this.$store.getters.getUserPost;
       const userPost = {
         // eslint-disable-next-line
-        userId: this.$store.state.user._id,
-        userName: this.$store.state.user.name,
-        text: textToPost,
+        userId: vuexPost.userId,
+        userName: vuexPost.userName,
+        text: vuexPost.text,
         timestamp: Date.now(),
-        userFeatures: userFeats,
-        collection: this.selectCollection._id, // eslint-disable-line no-underscore-dangle
+        userFeatures: vuexPost.userFeatures,
+        collection: vuexPost.collection,
         replies: [],
-        type: 'new',
-        images: this.userImages,
-        videos: this.userVideos,
+        isReplyTo: '',
+        type: vuexPost.type,
+        images: vuexPost.images,
+        videos: vuexPost.videos,
       };
-      // console.log('this is the post to publish', userPost);
       const url = `${config.url}/posts`;
-      if (textToPost !== '') {
+      console.log('this is the post to publish', userPost);
+      if (this.$store.state.userPost.text && this.$store.state.userPost.collection) {
         axios.post(url, { userPost }, {
           headers: { 'x-access-token': this.$store.state.token },
         }).then((response) => {
@@ -182,21 +156,23 @@ export default {
           // console.log('trying to reset component');
           console.log('response from API is:: ', response.data);
           // TODO must handle response
+          this.$store.commit('resetUserPost');
           this.postText = '';
           this.newPostInfo = this.$t('message.published');
           this.snackbarColor = 'green';
           this.snackbarNewPost = true;
 
-          this.$store.commit('clearNewPostFeatures', 'home');
           console.log('response from API -is reply to- is:: ', response.data.isReplyTo);
           console.log('totally new post');
           // console.log('this is the userpost newpost:: ', userPost);
           // console.log('emitting to::', members);
           console.log('user post is:: ', JSON.stringify(userPost));
+
           userPost._id = response.data.id; // eslint-disable-line no-underscore-dangle
           userPost.isReplyTo = response.data.id;
-          if (userFeats !== null) {
-            userPost.featureData = JSON.parse(userFeats).features;
+          userPost.isEditor = true;
+          if (userPost.userFeatures.length > 0) {
+            userPost.featureData = JSON.parse(userPost.userFeatures).features;
           } else {
             userPost.featureData = [];
           }
@@ -216,10 +192,10 @@ export default {
           this.$socket.emit('newPost', newThread);
           this.$eventHub.$emit('newPost', newThread);
 
-          console.log(JSON.parse(userFeats));
-          console.log('new post userPost for socket:: ', JSON.stringify(userPost), 'res::', response.data.id);
-          // this.$socket.emit('newPost', userPost);
-          console.log('check if feature data present::', JSON.stringify(userPost));
+          // console.log(JSON.parse(userFeats));
+          console.log('new post userPost for socket:: ',
+          JSON.stringify(userPost), 'res::', response.data.id);
+          // console.log('check if feature data present::', JSON.stringify(userPost));
           if (this.$store.state.openedTimeline &&
             this.$store.state.openedTimeline.type === 'collection'
             && this.$store.state.openedTimeline.id ===
@@ -256,8 +232,13 @@ export default {
         }
       }
     },
-    zoomToChip(f) {
-      const g = f.getGeometry().getExtent();
+    zoomToChip(geometry) {
+      console.log(geometry);
+      const geojsonFormat = new ol.format.GeoJSON();
+      const feature = geojsonFormat.readFeatures(geometry);
+      console.log(feature);
+      const g = feature[0].getGeometry().getExtent();
+      console.log(g);
       if (g[0] - g[2] < 500) {
         g[0] -= 200;
         g[2] += 200;
@@ -269,6 +250,7 @@ export default {
       olMap.getView().fit(g, olMap.getSize());
     },
     remove(id) {
+      console.log('clicked to remove chip :: ', id);
       olMap.removeFeaturesFromLayer('customLayer', 'mongoID', id);
       this.$store.commit('deleteFeatureFromPost', id);
     },
@@ -281,6 +263,13 @@ export default {
     },
   },
   computed: {
+    drawnFeatures: function d() {
+      const features = [];
+      this.$store.getters.getUserPost.userFeatures.forEach((f) => {
+        features.push(JSON.parse(f));
+      });
+      return features;
+    },
     idToMatch: function findid() {
       let setid;
       if (this.$store.state.activeTab === 'home') {
@@ -290,81 +279,6 @@ export default {
         setid = 'collection';
       }
       return setid;
-    },
-    drawnFeatures: function d() {
-      let selectedFeatures = null;
-      let objIndex = null;
-      const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (allFeatures.length > 0) {
-        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
-          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
-        }
-        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
-          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
-        }
-        if (this.id !== undefined && allFeatures !== undefined) {
-          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
-        }
-        if (objIndex > -1 && allFeatures !== undefined) {
-          selectedFeatures = allFeatures[objIndex].features;
-        }
-      }
-      // console.log('allfeatures', allFeatures, 'objindex', objIndex, this.id, selectedFeatures);
-      return selectedFeatures;
-    },
-    userImages: function i() {
-      let images = null;
-      let objIndex = null;
-      const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (allFeatures.length > 0) {
-        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
-          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
-        }
-        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
-          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
-        }
-        if (this.id !== undefined && allFeatures !== undefined) {
-          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
-        }
-        if (objIndex > -1 && allFeatures !== undefined) {
-          images = allFeatures[objIndex].images[0];
-        }
-      }
-      return images;
-    },
-    userVideos: function i() {
-      let videos = null;
-      let objIndex = null;
-      const allFeatures = this.$store.getters.getDrawnFeatures;
-      if (allFeatures.length > 0) {
-        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'home') {
-          objIndex = allFeatures.findIndex((obj => obj.id === 'home'));
-        }
-        if (this.id === undefined && allFeatures !== undefined && this.$store.state.activeTab === 'explore') {
-          objIndex = allFeatures.findIndex((obj => obj.type === 'collection'));
-        }
-        if (this.id !== undefined && allFeatures !== undefined) {
-          objIndex = allFeatures.findIndex((obj => obj.id === this.id));
-        }
-        if (objIndex > -1) {
-          videos = allFeatures[objIndex].videos[0];
-        }
-      }
-      return videos;
-    },
-    activeChips: function ch() {
-      const chips = [];
-      const allFeatures = this.$store.getters.getDrawnFeatures;
-      // console.log(allFeatures);
-      if (allFeatures !== undefined) {
-        allFeatures.forEach((c) => {
-          const feats = c.features;
-          feats.forEach((f) => {
-            chips.push(f.drawId);
-          });
-        });
-      }
-      return chips;
     },
     computedCollections: function c() {
       let vuexCollections = [];
@@ -396,37 +310,13 @@ export default {
         // eslint-disable-next-line
         collection.title = label;
       });
-
-      // console.log(memberof[0].title, memberof[0].username);
-      // console.log(memberof[1].title, memberof[1].username);
-      // console.log(memberof[2].title, memberof[2].username);
       // eslint-disable-next-line
       vuexCollections = vuexCollections.filter(c => c.user === this.$store.state.user._id);
-      // console.log('postable:: ', this.postableCollections);
       memberof.forEach((e) => {
         vuexCollections.push(e);
       });
       return vuexCollections;
     },
-    // collectionMembersToEmit: () => {
-      // const members = [];
-      // console.log('members:: ', this.collectionMembersInitial.members);
-      // if (this.collectionMembersInitial.members.length > 0) {
-      //   members = this.collectionMembersInitial.members;
-      // } else {
-      //   members = ['test'];
-      // }
-      // if (this.id === undefined) {
-      //   members = 'this.collectionMembers';
-      // }
-      // console.log(members);
-      // return ['test', members];
-    // },
-  },
-  watch: {
-    // selectCollections: function handle() {
-    //   this.findMembersOfThisCollection();
-    // },
   },
 };
 </script>

@@ -729,11 +729,6 @@ export default {
           layer.getSource().clear();
         }
       });
-      // this.$store.dispatch('setFeature', null);
-      // this.$store.dispatch('addNewPostFeature', null);
-      // this.$store.dispatch('removeNewPostFeature', null);
-      // this.$store.dispatch('setPostIdToAddFeatures', null);
-      // console.log(this.$store.state.isUserLoggedIn);
     },
     setLocale(value) {
       // console.log('setting locale to ::', value);

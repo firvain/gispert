@@ -106,14 +106,14 @@
 </template>
 <script>
 import getYouTubeID from 'get-youtube-id';
-import userSelector from './selectCloseUsers';
+// import userSelector from './selectCloseUsers';
 import olMap from '../js/map';
 
 export default {
   name: 'mapTools',
   props: ['idtomatch', 'replyid'],
   components: {
-    userSelector,
+    // userSelector,
   },
   data: () => ({
     selectColor: 'green',
@@ -121,7 +121,7 @@ export default {
     toolColors: ['green', 'grey', 'grey', 'grey', 'grey'],
     selectedFeature: olMap.selectedFeature,
     activeAnalysis: null,
-    userSelector: false,
+    // userSelector: false,
     createBufferDialog: false,
     bufferDistance: 500,
     measurement: '',
@@ -146,17 +146,6 @@ export default {
   },
   methods: {
     setDraw(type) {
-      if (this.idtomatch === 'reply') {
-        this.$store.commit('addingToPost', { type: 'reply', id: this.replyid });
-      }
-      if (this.idtomatch === 'home') {
-        this.$store.commit('addingToPost', { type: 'home', id: 'home' });
-      }
-      if (this.idtomatch === 'collection') {
-        // console.log({ type: 'collection', id: this.$store.state.openedTimeline.id });
-        this.$store.commit('addingToPost', { type: 'collection', id: this.$store.state.openedTimeline.id });
-      }
-
       if (type === 'Point') {
         this.toolColors = ['green', 'grey', 'grey', 'grey', 'grey'];
         olMap.setActiveInteraction('Point');
@@ -169,13 +158,6 @@ export default {
         this.toolColors = ['grey', 'grey', 'green', 'grey', 'grey'];
         olMap.setActiveInteraction('Polygon');
       }
-    },
-    addToPost() {
-      console.log(this.$store.state.feature);
-      this.$store.commit('newPostFeature', this.$store.state.feature);
-    },
-    chatOnThisFeature() {
-      this.userSelector = true;
     },
     addVideoToPost() {
       this.videoUrlDialog = false;

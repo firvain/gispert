@@ -115,7 +115,7 @@
               </v-menu> -->
 
         </v-card-actions>
-        <newReply v-if="answerPost === true"
+        <newReply v-if="$store.state.userPost.type === 'reply' && $store.state.userPost.isReplyTo === post.isReplyTo"
           :id="post.isReplyTo"
           :collectionId="post.collectionData[0]._id"
           :collectionTitle="post.collectionData[0].title"
@@ -266,7 +266,7 @@ export default {
           type: 'FeatureCollection',
           features: post.featureData,
         };
-        // console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
+        console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
         const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
         if (featuresToLoad.length > 0) {
           let allLayers = [];
@@ -433,18 +433,18 @@ export default {
         }
       });
       features.forEach((f) => {
-        let message = '';
-        if (f.get('messages').length > 20) {
-          message = `${f.get('messages').substr(0, 20)}...`;
-        } else {
-          message = f.get('messages');
-        }
+        // let message = '';
+        // if (f.get('messages').length > 20) {
+        //   message = `${f.get('messages').substr(0, 20)}...`;
+        // } else {
+        //   message = f.get('messages');
+        // }
         if (data.properties.mongoID === f.getProperties().mongoID) {
-          console.log(message);
+          // console.log(message);
           const labelSelected = new ol.style.Style({
             text: new ol.style.Text({
               font: 'bold 14px Verdana',
-              text: message,
+              // text: message,
               fill: new ol.style.Fill({
                 color: 'orange',
               }),
@@ -461,7 +461,7 @@ export default {
             styles.selectedPolygon,
             labelSelected,
           ]);
-        } else {
+        }/* else {
           const labelNormal = new ol.style.Style({
             text: new ol.style.Text({
               font: 'bold 10px Verdana',
@@ -477,7 +477,7 @@ export default {
             }),
           });
           f.setStyle([styles.Point, styles.LineString, styles.Polygon, labelNormal]);
-        }
+        } */
       });
 
       // setTimeout(() => {
@@ -486,17 +486,24 @@ export default {
       // }, 500);
     },
     toggle_answer() {
+      this.$store.commit('resetUserPost');
+      this.$store.commit('setUserPostProperties', [{ property: 'userName', value: `${this.$store.state.user.name}` }]);
+      this.$store.commit('setUserPostProperties', [{ property: 'userId', value: `${this.$store.state.user._id}` }]); // eslint-disable-line no-underscore-dangle
+      this.$store.commit('setUserPostProperties', [{ property: 'type', value: 'reply' }]);
+      this.$store.commit('setUserPostProperties', [{ property: 'isReplyTo', value: this.post.isReplyTo }]);
+      this.$store.commit('setUserPostProperties', [{ property: 'collection', value: this.post.collectionData[0]._id }]); // eslint-disable-line no-underscore-dangle
+      olMap.setActiveInteraction('select');
       console.log('toggling answer box');
-      this.answerPost = !this.answerPost;
-      if (this.answerPost === false) {
-        // this.answerPostText = this.$t('message.reply');
-        this.answerPostColor = 'blue';
-        olMap.setActiveInteraction('select');
-      } else {
-        // this.answerPostText = this.$t('message.cancel');
-        olMap.setActiveInteraction('Point');
-        this.answerPostColor = 'red';
-      }
+      // this.answerPost = !this.answerPost;
+      // if (this.answerPost === false) {
+      //   // this.answerPostText = this.$t('message.reply');
+      //   this.answerPostColor = 'blue';
+      //   olMap.setActiveInteraction('select');
+      // } else {
+      //   // this.answerPostText = this.$t('message.cancel');
+      //   olMap.setActiveInteraction('Point');
+      //   this.answerPostColor = 'red';
+      // }
     },
     // new_post_sent(reply) {
     //   // console.log('event caught::');
