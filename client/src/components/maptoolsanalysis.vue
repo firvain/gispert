@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card flat height="0px">
-        <v-flex class="text-xs-center" v-if="selectedTool === 'selectFeatures' && currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
+        <v-flex class="text-xs-center" v-if="currentlySelectedFeature != undefined && this.$store.state.isUserLoggedIn">
           <v-flex pa-0 ma-0>
           <v-tooltip bottom>
             <v-btn class='verysmall' icon :color="toolColors[2]" slot="activator" @click="exploreFeaturePosts()">
@@ -91,22 +91,22 @@ export default {
     currentlySelectedFeature() {
       return this.$store.state.feature;
     },
-    selectedTool: {
-      get: function handle() {
-        return this.$store.state.activeMapTool;
-      },
-      set: function handle() {
-        return 'selectFeatures';
-      },
-    },
+    // selectedTool: {
+    //   get: function handle() {
+    //     return this.$store.state.activeMapTool;
+    //   },
+    //   set: function handle() {
+    //     return 'selectFeatures';
+    //   },
+    // },
   },
   watch: {
-    '$store.state.activeMapTool': function () {
-      this.toggle_map_tools(this.selectedTool);
-    },
-    '$store.state.activeTab': function () {
-      this.toggle_map_tools('selectFeatures');
-    },
+    // '$store.state.activeMapTool': function () {
+    //   this.toggle_map_tools(this.selectedTool);
+    // },
+    // '$store.state.activeTab': function () {
+    //   this.toggle_map_tools('selectFeatures');
+    // },
   },
   created() {
     // this.$root.$on('showTools', () => {
@@ -119,18 +119,18 @@ export default {
     // });
   },
   methods: {
-    toggle_map_tools(tool) {
-      if (tool === 'selectFeatures') {
-        this.selectColor = 'green';
-        this.drawColor = 'white';
-        olMap.setActiveInteraction('select');
-      }
-      if (tool === 'drawFeatures') {
-        this.selectColor = 'white';
-        this.drawColor = 'green';
-        olMap.setActiveInteraction('Point');
-      }
-    },
+    // toggle_map_tools(tool) {
+    //   if (tool === 'selectFeatures') {
+    //     this.selectColor = 'green';
+    //     this.drawColor = 'white';
+    //     olMap.setActiveInteraction('select');
+    //   }
+    //   if (tool === 'drawFeatures') {
+    //     this.selectColor = 'white';
+    //     this.drawColor = 'green';
+    //     olMap.setActiveInteraction('Point');
+    //   }
+    // },
     // postUsingFeature() {},
     // addToPost() {
     //   console.log(this.$store.state.feature);

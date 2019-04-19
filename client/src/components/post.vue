@@ -315,6 +315,7 @@ export default {
       }
     },
     zoom(post) {
+      this.explore(post);
       this.$store.commit('setSelectedPost', this.post._id); // eslint-disable-line
       const geojsonFormat = new ol.format.GeoJSON();
       const featureCollection = {

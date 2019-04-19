@@ -136,6 +136,7 @@ module.exports = {
     titleAndDescription: 'Tittel og beskrivelse',
     questionNotAnswered: 'Du har ikke besvart spørsmålet',
     nextSection: 'Neste seksjon',
+    previousSection: 'Forrige seksjon',
     submitQuestionnaire: 'Send spørreskjema',
     thereAreErrorsInQuestionnaire: 'Det er feil. Se spørsmålene merket med rødt.',
     questionnaireSubmitted: 'Dine svar ble sendt inn.',

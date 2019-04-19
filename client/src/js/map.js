@@ -466,13 +466,22 @@ selectClick.on('select', () => {
 
 drawPoint.on('drawend', (e) => {
   const startDrawend = new Promise((resolve) => {
+    let username = null;
+    let userserial = null;
+    if (store.state.questionnaireMode === 'answering') {
+      userserial = '_';
+      username = store.state.drawnFeatureStyle.messages;
+    } else {
+      userserial = store.state.user._id; // eslint-disable-line no-underscore-dangle
+      username = store.state.user.name;
+    }
     e.feature.setProperties({
-      strkWdth: 1,
-      strkClr: 'blue',
+      strkWdth: store.state.drawnFeatureStyle.strkWdth,
+      strkClr: store.state.drawnFeatureStyle.strkClr,
       // fllClr: 'orange',
-      mongoID: `${store.state.user._id}${Date.now()}`, // eslint-disable-line no-underscore-dangle
-      name: `@ ${store.state.user.name}`,
-      userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
+      mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      name: `@ ${username}`,
+      userId: userserial, // eslint-disable-line no-underscore-dangle
     });
     resolve(true);
   });
@@ -492,11 +501,17 @@ drawPoint.on('drawend', (e) => {
 });
 drawLineString.on('drawend', (e) => {
   const startDrawend = new Promise((resolve) => {
+    let user;
+    if (store.state.questionnaireMode === 'answering') {
+      user = '_';
+    } else {
+      user = store.state.user._id; // eslint-disable-line no-underscore-dangle
+    }
     e.feature.setProperties({
       strkWdth: 1,
       strkClr: 'blue',
       // fllClr: 'orange',
-      mongoID: `${store.state.user._id}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      mongoID: `${user}${Date.now()}`, // eslint-disable-line no-underscore-dangle
       name: `@ ${store.state.user.name}`,
       userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
     });
@@ -518,13 +533,19 @@ drawLineString.on('drawend', (e) => {
 });
 drawPolygon.on('drawend', (e) => {
   const startDrawend = new Promise((resolve) => {
+    let user;
+    if (store.state.questionnaireMode === 'answering') {
+      user = '_';
+    } else {
+      user = store.state.user._id; // eslint-disable-line no-underscore-dangle
+    }
     e.feature.setProperties({
       strkWdth: 1,
       strkClr: 'blue',
       fill: new ol.style.Fill({
         color: 'rgba(0, 0, 255, 0.1)',
       }),
-      mongoID: `${store.state.user._id}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      mongoID: `${user}${Date.now()}`, // eslint-disable-line no-underscore-dangle
       name: `@ ${store.state.user.name}`,
       userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
     });
@@ -546,13 +567,19 @@ drawPolygon.on('drawend', (e) => {
 });
 drawBox.on('drawend', (e) => {
   const startDrawend = new Promise((resolve) => {
+    let user;
+    if (store.state.questionnaireMode === 'answering') {
+      user = '_';
+    } else {
+      user = store.state.user._id; // eslint-disable-line no-underscore-dangle
+    }
     e.feature.setProperties({
       strkWdth: 1,
       strkClr: 'blue',
       fill: new ol.style.Fill({
         color: 'rgba(0, 0, 255, 0.1)',
       }),
-      mongoID: `${store.state.user._id}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      mongoID: `${user}${Date.now()}`, // eslint-disable-line no-underscore-dangle
       name: `@ ${store.state.user.name}`,
       userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
     });

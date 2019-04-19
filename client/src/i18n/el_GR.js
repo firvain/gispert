@@ -136,6 +136,7 @@ module.exports = {
     titleAndDescription: 'Τίτλος και περιγραφή',
     questionNotAnswered: 'Δεν έχετε απαντήσει στην ερώτηση',
     nextSection: 'Επόμενη Ενότητα',
+    previousSection: 'Προηγούμενη Ενότητα',
     submitQuestionnaire: 'Υποβολή ερωτηματολογίου',
     thereAreErrorsInQuestionnaire: 'Υπάρχουν σφάλματα. Δείτε τις ερωτήσεις που έχουν σημανθεί με κόκκινο.',
     questionnaireSubmitted: 'Οι απαντήσεις σας καταχωρίστηκαν επιτυχώς.',

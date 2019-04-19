@@ -83,7 +83,7 @@
 
         <v-container row wrap v-if="question.type === 'mapPointer'">
           <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-            <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'Point')">
+            <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'Point', button.label)">
               <v-icon dark>location_on</v-icon>
             </v-btn>
           </v-flex>
@@ -99,7 +99,7 @@
               ></v-text-field>
             </v-flex>
             <v-flex xs2>
-              <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point')">
+              <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point', line.value)">
                 <v-icon dark>location_on</v-icon>
               </v-btn>
             </v-flex>
@@ -116,7 +116,11 @@
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
     <v-btn dark block class="indigo" @click="submit('page');"
       v-if="page < questionnaire.properties.pages">
-      {{ $t('message.nextSection')}} >> <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
+      {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
+    </v-btn>
+    <v-btn dark block class="grey" @click="page -= 1"
+      v-if="page > 0">
+      {{ $t('message.previousSection')}}
     </v-btn>
 
     <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
@@ -510,9 +514,16 @@ export default {
       console.log('result:: ', questionnaireResult);
       return questionnaireResult;
     },
-    getFromMap(id, type) {
-      olMap.removeFeaturesFromLayer('customLayer', 'buttonId', id);
+    getFromMap(id, type, title) {
+      olMap.removeFeaturesFromLayer('customLayer', 'buttonId', [id]);
       this.$store.commit('setQuestionnaireFeatureId', id);
+      const style = {
+        strkWdth: 1,
+        strkClr: 'blue',
+        fllClr: 'orange',
+        messages: title,
+      };
+      this.$store.commit('setDrawnFeatureStyle', style);
       olMap.setActiveInteraction(type);
     },
     submit(type) {

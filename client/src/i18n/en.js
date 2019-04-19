@@ -136,6 +136,7 @@ module.exports = {
     titleAndDescription: 'Title and description',
     questionNotAnswered: 'You have not answered the question',
     nextSection: 'Next section',
+    previousSection: 'Previous section',
     submitQuestionnaire: 'Submit questionnaire',
     thereAreErrorsInQuestionnaire: 'There are errors. See the questions marked in red.',
     questionnaireSubmitted: 'Your replies were successfully submitted.',

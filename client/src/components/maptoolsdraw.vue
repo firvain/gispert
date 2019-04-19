@@ -60,7 +60,6 @@
             flat
             @click="
               imageUrlDialog = false;
-              $store.commit('addImageToPost', imageURL);
               $store.commit('setUserPostProperties', [{ property: 'images', value: imageURL }]);
             "
           >
@@ -162,7 +161,6 @@ export default {
     addVideoToPost() {
       this.videoUrlDialog = false;
       const id = getYouTubeID(this.videoURL);
-      this.$store.commit('addVideoToPost', id);
       this.$store.commit('setUserPostProperties', [{ property: 'videos', value: id }]);
     },
   },
