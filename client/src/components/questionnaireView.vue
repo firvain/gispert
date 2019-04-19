@@ -51,9 +51,9 @@
           <v-select
             v-bind:items="question.items"
             v-model="question.value"
-            item-value="id"
+            item-value="value"
             item-text="value"
-            value="value"
+            
             :label="$t('message.yourAnswer')"
             single-line
             menu-props="bottom"
@@ -119,7 +119,7 @@
       {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
     </v-btn>
     <v-btn dark block class="grey" @click="page -= 1"
-      v-if="page > 0">
+      v-if="page > 0 && page < questionnaire.properties.pages">
       {{ $t('message.previousSection')}}
     </v-btn>
 
@@ -221,6 +221,7 @@ export default {
             }
           }
           if (q.type === 'combobox') {
+            console.log(q);
             if (q.value !== null || q.optional === true) {
               questionnaireResult.push({
                 id: q.id,
