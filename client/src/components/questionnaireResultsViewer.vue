@@ -129,13 +129,13 @@
 
         <v-tab-item>
         <v-container>
-          <v-layout row wrap>
             <v-btn block dark outline small color="green"
               @click="changeQuestionnaireMode('normal');"
               v-if="$store.state.questionnaireMode !== 'normal'">
               <v-icon dark>undo</v-icon>
               {{ $t('message.back')}}
             </v-btn>
+          <v-layout row wrap>
 
             <v-flex v-if="questionnaireResults">
               <v-flex row pa-1 ma-0 v-for="question in questionnaireAggregates" :key="question.id">
@@ -638,7 +638,7 @@ export default {
       this.questionnaireResults.forEach((r) => {
         let j = 0;
         r.results.forEach((row) => {
-          if (row.type === 'mapPointer' || row.type === 'mapPointerMultiple') {
+          if (row.type === 'mapPointer' || row.type === 'mapPointerMultiple' || row.type === 'mapLineString') {
             console.log('row simple :: ', row);
             for (let i = 0; i < row.value.length; i += 1) {
               j += 1;
