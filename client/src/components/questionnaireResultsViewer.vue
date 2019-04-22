@@ -453,15 +453,20 @@ export default {
       this.loadedAgreggates = true;
     },
     createChartDataForPreferenceHierarchy(question) {
-      console.log('question values', question.values);
+      // console.log('question values', question.values);
       const data = {};
+      let optionsLength = 0;
+      question.values[0].forEach((o, index) => {
+        optionsLength += index + 1;
+      });
       question.values.forEach((val) => {
         val.forEach((v, index) => {
-          console.log('label:: ', v.label, Math.abs(index - val.length));
-          data[v.label] = Math.abs(index - val.length) + (data[v.label] || 0);
+          console.log('label:: ', v.label, Math.abs(index - val.length), optionsLength);
+          data[v.label] = (Math.abs(index - val.length) /
+            (question.values.length * optionsLength)) + (data[v.label] || 0);
         });
       });
-      console.log('data :: ', data);
+      // console.log('data :: ', data);
       const chartdata = {
         labels: [],
         datasets: [],
