@@ -85,20 +85,19 @@
   </v-layout>
   <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
 
-
-            <v-dialog v-model="sendLinkViaEmailDialog" persistent max-width="800px">
-            <v-card>
-              <v-card-title>
-                {{ $t('message.shareQuestionnaireMessage') }}
-              </v-card-title>
-              <v-card-text>
-                <v-container>
-                  {{ questionnaireShareLink }}
-                </v-container>
-              </v-card-text>
-              <v-btn color="blue darken-1" flat @click.native="sendLinkViaEmailDialog = false">{{ $t("message.close") }}</v-btn>
-            </v-card>
-          </v-dialog>
+  <v-dialog v-model="sendLinkViaEmailDialog" persistent max-width="800px">
+    <v-card>
+      <v-card-title>
+        {{ $t('message.shareQuestionnaireMessage') }}
+      </v-card-title>
+      <v-card-text>
+        <v-container>
+          {{ questionnaireShareLink }}
+        </v-container>
+      </v-card-text>
+      <v-btn color="blue darken-1" flat @click.native="sendLinkViaEmailDialog = false">{{ $t("message.close") }}</v-btn>
+    </v-card>
+  </v-dialog>
 
 </v-container>
 </template>

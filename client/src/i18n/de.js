@@ -133,6 +133,8 @@ module.exports = {
     multipleChoice: 'Mehrfachauswahl',
     mapPointer: 'Zeigen Sie auf der Karte',
     mapPointerMultiple: 'Mehrere Punkte auf der Karte',
+    mapLineStringPointer: 'Linie auf der Karte zeichnen',
+    sortingOptions: 'Präferenzhierarchie',
     titleAndDescription: 'Titel und Beschreibung',
     questionNotAnswered: 'Sie haben die Frage nicht beantwortet',
     nextSection: 'Nächster Abschnitt',

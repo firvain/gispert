@@ -501,19 +501,22 @@ drawPoint.on('drawend', (e) => {
 });
 drawLineString.on('drawend', (e) => {
   const startDrawend = new Promise((resolve) => {
-    let user;
+    let username = null;
+    let userserial = null;
     if (store.state.questionnaireMode === 'answering') {
-      user = '_';
+      userserial = '_';
+      username = store.state.drawnFeatureStyle.messages;
     } else {
-      user = store.state.user._id; // eslint-disable-line no-underscore-dangle
+      userserial = store.state.user._id; // eslint-disable-line no-underscore-dangle
+      username = store.state.user.name;
     }
     e.feature.setProperties({
-      strkWdth: 1,
-      strkClr: 'blue',
+      strkWdth: store.state.drawnFeatureStyle.strkWdth,
+      strkClr: store.state.drawnFeatureStyle.strkClr,
       // fllClr: 'orange',
-      mongoID: `${user}${Date.now()}`, // eslint-disable-line no-underscore-dangle
-      name: `@ ${store.state.user.name}`,
-      userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
+      mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      name: `@ ${username}`,
+      userId: userserial, // eslint-disable-line no-underscore-dangle
     });
     resolve(true);
   });
@@ -533,11 +536,14 @@ drawLineString.on('drawend', (e) => {
 });
 drawPolygon.on('drawend', (e) => {
   const startDrawend = new Promise((resolve) => {
-    let user;
+    let username = null;
+    let userserial = null;
     if (store.state.questionnaireMode === 'answering') {
-      user = '_';
+      userserial = '_';
+      username = store.state.drawnFeatureStyle.messages;
     } else {
-      user = store.state.user._id; // eslint-disable-line no-underscore-dangle
+      userserial = store.state.user._id; // eslint-disable-line no-underscore-dangle
+      username = store.state.user.name;
     }
     e.feature.setProperties({
       strkWdth: 1,
@@ -545,9 +551,9 @@ drawPolygon.on('drawend', (e) => {
       fill: new ol.style.Fill({
         color: 'rgba(0, 0, 255, 0.1)',
       }),
-      mongoID: `${user}${Date.now()}`, // eslint-disable-line no-underscore-dangle
-      name: `@ ${store.state.user.name}`,
-      userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
+      mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      name: `@ ${username}`,
+      userId: userserial, // eslint-disable-line no-underscore-dangle
     });
     resolve(true);
   });
@@ -567,11 +573,14 @@ drawPolygon.on('drawend', (e) => {
 });
 drawBox.on('drawend', (e) => {
   const startDrawend = new Promise((resolve) => {
-    let user;
+    let username = null;
+    let userserial = null;
     if (store.state.questionnaireMode === 'answering') {
-      user = '_';
+      userserial = '_';
+      username = store.state.drawnFeatureStyle.messages;
     } else {
-      user = store.state.user._id; // eslint-disable-line no-underscore-dangle
+      userserial = store.state.user._id; // eslint-disable-line no-underscore-dangle
+      username = store.state.user.name;
     }
     e.feature.setProperties({
       strkWdth: 1,
@@ -579,9 +588,9 @@ drawBox.on('drawend', (e) => {
       fill: new ol.style.Fill({
         color: 'rgba(0, 0, 255, 0.1)',
       }),
-      mongoID: `${user}${Date.now()}`, // eslint-disable-line no-underscore-dangle
-      name: `@ ${store.state.user.name}`,
-      userId: store.state.user._id, // eslint-disable-line no-underscore-dangle
+      mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
+      name: `@ ${username}`,
+      userId: userserial, // eslint-disable-line no-underscore-dangle
     });
     resolve(true);
   });

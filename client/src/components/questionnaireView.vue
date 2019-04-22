@@ -81,10 +81,35 @@
           </v-radio-group>
         </v-container>
 
+        <v-container row wrap v-if="question.type === 'preferenceHierarchy'">
+          <v-list one-line>
+            <draggable v-model="question.optionsToSort" @start="drag=true" @end="drag=false">
+              <template v-for='element in question.optionsToSort'>
+                <v-list-tile :key="element.id" avatar class='force-hover'>
+                  <v-list-tile-avatar>
+                    <v-icon>drag_indicator</v-icon>
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title v-html="element.label"></v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </template>
+            </draggable>
+          </v-list>
+        </v-container>
+
         <v-container row wrap v-if="question.type === 'mapPointer'">
           <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
             <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'Point', button.label)">
               <v-icon dark>location_on</v-icon>
+            </v-btn>
+          </v-flex>
+        </v-container>
+
+        <v-container row wrap v-if="question.type === 'mapLineString'">
+          <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
+            <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'LineString', button.label)">
+              <v-icon dark>timeline</v-icon>
             </v-btn>
           </v-flex>
         </v-container>
@@ -142,12 +167,16 @@
 <script>
 import ol from 'openlayers';
 import axios from 'axios';
+import draggable from 'vuedraggable';
 import { app } from '../main';
 import olMap from '../js/map';
 import config from '../config';
 
 export default {
   props: ['id'],
+  components: {
+    draggable,
+  },
   data() {
     return {
       emailRules: [
@@ -280,6 +309,14 @@ export default {
               });
             }
           }
+          if (q.type === 'preferenceHierarchy') {
+            questionnaireResult.push({
+              id: q.id,
+              title: q.title,
+              value: q.optionsToSort,
+              error: false,
+            });
+          }
           if (q.type === 'mapPointer') {
             const coordinates = [];
             const values = [];
@@ -292,7 +329,37 @@ export default {
                 }
               });
             });
-            if (coordinates.length === 2 || q.optional === true) {
+            if (coordinates.length === q.buttons.length || q.optional === true) {
+              questionnaireResult.push({
+                id: q.id,
+                title: q.title,
+                coordinates,
+                value: values,
+                error: false,
+              });
+            } else {
+              questionnaireResult.push({
+                id: q.id,
+                title: q.title,
+                coordinates,
+                value: values,
+                error: true,
+              });
+            }
+          }
+          if (q.type === 'mapLineString') {
+            const coordinates = [];
+            const values = [];
+            q.buttons.forEach((b) => {
+              values.push(b.label);
+              const features = this.$store.state.questionnaireFeatures;
+              features.forEach((f) => {
+                if (f.getProperties().buttonId === b.id) {
+                  coordinates.push(f);
+                }
+              });
+            });
+            if (coordinates.length === q.buttons.length || q.optional === true) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -437,6 +504,15 @@ export default {
             });
           }
         }
+        if (q.type === 'preferenceHierarchy') {
+          questionnaireResult.push({
+            id: q.id,
+            title: q.title,
+            value: q.optionsToSort,
+            error: false,
+            type: q.type,
+          });
+        }
         if (q.type === 'mapPointer') {
           const coordinates = [];
           const values = [];
@@ -452,7 +528,42 @@ export default {
               }
             });
           });
-          if (coordinates.length === 2 || q.optional === true) {
+          if (coordinates.length === q.buttons.length || q.optional === true) {
+            questionnaireResult.push({
+              id: q.id,
+              title: q.title,
+              coordinates,
+              value: values,
+              error: false,
+              type: q.type,
+            });
+          } else {
+            questionnaireResult.push({
+              id: q.id,
+              title: q.title,
+              coordinates,
+              value: values,
+              error: true,
+              type: q.type,
+            });
+          }
+        }
+        if (q.type === 'mapLineString') {
+          const coordinates = [];
+          const values = [];
+          q.buttons.forEach((b) => {
+            values.push(b.label);
+            const features = this.$store.state.questionnaireFeatures;
+            features.forEach((f) => {
+              if (f.getProperties().buttonId === b.id) {
+                f.setProperties({
+                  label: b.label,
+                });
+                coordinates.push(geojsonFormat.writeFeatures([f]));
+              }
+            });
+          });
+          if (coordinates.length === q.buttons.length || q.optional === true) {
             questionnaireResult.push({
               id: q.id,
               title: q.title,
@@ -614,5 +725,9 @@ export default {
   #layout1 {
     width: auto;
     height: 89vh;
+  }
+  .force-hover:hover {
+    background-color: bisque;
+    cursor: pointer;
   }
 </style>

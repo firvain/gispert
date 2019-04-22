@@ -41,7 +41,7 @@
                   </v-card-title>
                   <v-card-text>
 
-                  <v-flex v-if="question.type === 'textfield'">
+                  <v-flex v-if="question.type === 'textfield' || question.type === 'textfieldvalidation'">
                     {{ question.value }}
                     <span v-if="question.value === null"> {{ $t('message.noValue')}} </span>
                   </v-flex>
@@ -52,6 +52,18 @@
 
                   <v-flex v-if="question.type === 'radioGroup'">
                     {{ question.value }}
+                  </v-flex>
+
+                  <v-flex row wrap v-if="question.type === 'preferenceHierarchy'">
+                    <v-list one-line>
+                        <template v-for='element in question.value'>
+                          <v-list-tile :key="element.id" avatar class='force-hover'>
+                            <v-list-tile-content>
+                              <v-list-tile-title v-html="element.label"></v-list-tile-title>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </template>
+                    </v-list>
                   </v-flex>
 
                   <v-flex v-if="question.type === 'checkboxGroup'">{{ question.text }}
@@ -67,6 +79,18 @@
                   </v-flex>
 
                   <v-flex v-if="question.type === 'mapPointer'">
+                    <v-list two-line>
+                      <template v-for="(item, index) in question.value">
+                        <v-list-tile :key="index" @click="loadFeature(question.coordinates[index], item)">
+                          <v-list-tile-content>
+                            <v-list-tile-title v-html="item"></v-list-tile-title>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </template>
+                    </v-list>
+                  </v-flex>
+
+                  <v-flex v-if="question.type === 'mapLineString'">
                     <v-list two-line>
                       <template v-for="(item, index) in question.value">
                         <v-list-tile :key="index" @click="loadFeature(question.coordinates[index], item)">
@@ -100,6 +124,9 @@
           </v-layout>
         </v-container>
         </v-tab-item>
+
+
+
         <v-tab-item>
         <v-container>
           <v-layout row wrap>
@@ -156,7 +183,21 @@
                         </barChart>
                       </v-flex>
 
+                      <v-flex v-if="question.type === 'preferenceHierarchy'" width='400px'>
+                        <barChart
+                          v-if="loadedAgreggates"
+                          :chartdata="createChartDataForPreferenceHierarchy(question)"
+                          :options="options">
+                        </barChart>
+                      </v-flex>
+
                       <v-flex v-if="question.type === 'mapPointer'">
+                        <v-btn small dark class="indigo" @click='makeMapFormapPointer(question.id)'>
+                          <v-icon dark>location_on</v-icon>{{ $t('message.createMap')}}
+                        </v-btn>
+                      </v-flex>
+
+                      <v-flex v-if="question.type === 'mapLineString'">
                         <v-btn small dark class="indigo" @click='makeMapFormapPointer(question.id)'>
                           <v-icon dark>location_on</v-icon>{{ $t('message.createMap')}}
                         </v-btn>
@@ -410,6 +451,32 @@ export default {
         console.log('aggregation :: ', this.questionnaireAggregates);
       });
       this.loadedAgreggates = true;
+    },
+    createChartDataForPreferenceHierarchy(question) {
+      console.log('question values', question.values);
+      const data = {};
+      question.values.forEach((val) => {
+        val.forEach((v, index) => {
+          console.log('label:: ', v.label, Math.abs(index - val.length));
+          data[v.label] = Math.abs(index - val.length) + (data[v.label] || 0);
+        });
+      });
+      console.log('data :: ', data);
+      const chartdata = {
+        labels: [],
+        datasets: [],
+      };
+      chartdata.labels.push(question.title);
+      Object.keys(data).forEach((key, index) => {
+        const dataset = {
+          label: this.shortenText(key),
+          // eslint-disable-next-line
+          backgroundColor: this.pickRandomColor(index),
+          data: [data[key]],
+        };
+        chartdata.datasets.push(dataset);
+      });
+      return chartdata;
     },
     createChartDataForComboboxQuestion(question) {
       const chartdata = {

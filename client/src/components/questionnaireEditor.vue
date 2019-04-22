@@ -191,10 +191,33 @@
                         ></v-radio>
                       </v-radio-group>
                     </v-container>
+                    <v-container row wrap v-if="question.type === 'preferenceHierarchy'">
+                      <v-list one-line>
+                        <draggable v-model="question.optionsToSort" @start="drag=true" @end="drag=false">
+                          <template v-for='element in question.optionsToSort'>
+                            <v-list-tile :key="element.id" avatar class='force-hover'>
+                              <v-list-tile-avatar>
+                                <v-icon>drag_indicator</v-icon>
+                              </v-list-tile-avatar>
+                              <v-list-tile-content>
+                                <v-list-tile-title v-html="element.label"></v-list-tile-title>
+                              </v-list-tile-content>
+                            </v-list-tile>
+                          </template>
+                        </draggable>
+                      </v-list>
+                    </v-container>
                     <v-container row wrap v-if="question.type === 'mapPointer'">
                       <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
                         <v-btn small fab dark class="indigo">
                           <v-icon dark>location_on</v-icon>
+                        </v-btn>
+                      </v-flex>
+                    </v-container>
+                    <v-container row wrap v-if="question.type === 'mapLineString'">
+                      <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
+                        <v-btn small fab dark class="indigo">
+                          <v-icon dark>timeline</v-icon>
                         </v-btn>
                       </v-flex>
                     </v-container>
@@ -451,8 +474,97 @@
                     </v-flex>
 
 
+                    <v-flex v-if="question.type === 'preferenceHierarchy'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        :label="$t('message.question')"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        :label="$t('message.description')"
+                      ></v-text-field>
+                      <v-list>
+                        <v-btn flat outline fab small @click="nextItemId += 1; question.optionsToSort.push({id: nextItemId, label: '', value: false});"
+                          v-if="question.editing">
+                          <v-icon>add</v-icon>
+                        </v-btn>
+                        <template v-for="item in question.optionsToSort">
+                          <v-list-tile
+                              :key="item.id"
+                          >
+                            <v-list-tile-content>
+                              <v-text-field
+                                name="input-1"
+                                v-model="item.label"
+                                append-icon="delete"
+                                @click:append="question.optionsToSort.remove(item)"
+                              ></v-text-field>
+                              <v-icon>delete</v-icon>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </template>
+                      </v-list>
+                      <v-checkbox
+                        :label="$t('message.optional')"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>folder_open</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
 
                     <v-flex v-if="question.type === 'mapPointer'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        :label="$t('message.question')"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        :label="$t('message.description')"
+                      ></v-text-field>
+                      <v-list>
+                        <v-btn flat outline fab small @click="nextItemId += 1; question.buttons.push({id: nextItemId, label: '', coords: null});"
+                          v-if="question.editing">
+                          <v-icon>add</v-icon>
+                        </v-btn>
+                        <template v-for="item in question.buttons">
+                          <v-list-tile
+                              :key="item.id"
+                          >
+                            <v-list-tile-content>
+                              <v-text-field
+                                name="input-1"
+                                v-model="item.label"
+                                append-icon="delete"
+                                @click:append="question.buttons.remove(item)"
+                              ></v-text-field>
+                              <v-icon>delete</v-icon>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </template>
+                      </v-list>
+                      <v-checkbox
+                        :label="$t('message.optional')"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>folder_open</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
+
+                    <v-flex v-if="question.type === 'mapLineString'">
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
@@ -584,11 +696,15 @@
 // import ol from 'openlayers';
 import axios from 'axios';
 import moment from 'moment';
+import draggable from 'vuedraggable';
 import olMap from '../js/map';
 import config from '../config';
 
 export default {
   props: ['qnnaire'],
+  components: {
+    draggable,
+  },
   data() {
     return {
       usersViewingQuestionnaire: null,
@@ -617,7 +733,9 @@ export default {
         { type: 'combobox', name: this.$t('message.expandableMenu') },
         { type: 'checkboxGroup', name: this.$t('message.checkboxes') },
         { type: 'radioGroup', name: this.$t('message.multipleChoice') },
+        { type: 'preferenceHierarchy', name: this.$t('message.sortingOptions') },
         { type: 'mapPointer', name: this.$t('message.mapPointer') },
+        { type: 'mapLineString', name: this.$t('message.mapLineStringPointer') },
         { type: 'mapPointerMultiple', name: this.$t('message.mapPointerMultiple') },
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
       ],
@@ -843,6 +961,40 @@ export default {
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointer);
       }
+      if (this.newQuestion === 'mapLineString') {
+        const mapLineString = {
+          id: this.nextId,
+          type: 'mapLineString',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          buttons: [{ id: `i${this.nextItemId}`, label: '', coords: null }],
+          error: false,
+          optional: false,
+          editing: true,
+          pageBreak: false,
+        };
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(mapLineString);
+      }
+      if (this.newQuestion === 'preferenceHierarchy') {
+        const preferenceHierarchy = {
+          id: this.nextId,
+          type: 'preferenceHierarchy',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          optionsToSort: [],
+          error: false,
+          optional: false,
+          editing: true,
+          pageBreak: false,
+        };
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(preferenceHierarchy);
+      }
       if (this.newQuestion === 'mapPointerMultiple') {
         const mapPointerMultiple = {
           id: this.nextId,
@@ -940,3 +1092,9 @@ export default {
   },
 };
 </script>
+<style scoped>
+  .force-hover:hover {
+    background-color: bisque;
+    cursor: pointer;
+  }
+</style>

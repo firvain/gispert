@@ -133,6 +133,8 @@ module.exports = {
     multipleChoice: 'Πολλαπλής επιλογής',
     mapPointer: 'Υπόδειξη στο χάρτη',
     mapPointerMultiple: 'Πολλαπλές υποδείξεις στο χάρτη',
+    mapLineStringPointer: 'Υπόδειξη γραμμής στο χάρτη',
+    sortingOptions: 'Ιεράρχηση προτιμήσεων',
     titleAndDescription: 'Τίτλος και περιγραφή',
     questionNotAnswered: 'Δεν έχετε απαντήσει στην ερώτηση',
     nextSection: 'Επόμενη Ενότητα',
