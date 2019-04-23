@@ -100,7 +100,7 @@
 
         <v-container row wrap v-if="question.type === 'mapPointer'">
           <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-            <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'Point', button.label)">
+            <v-btn small fab dark :color="button.style.strkClr" @click="getFromMap(button.id, 'Point', button.label, button.style)">
               <v-icon dark>location_on</v-icon>
             </v-btn>
           </v-flex>
@@ -108,7 +108,9 @@
 
         <v-container row wrap v-if="question.type === 'mapLineString'">
           <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-            <v-btn small fab dark class="indigo" @click="getFromMap(button.id, 'LineString', button.label)">
+            <v-btn small fab dark :color="button.style.strkClr"
+              @click="getFromMap(button.id, 'LineString', button.label, button.style);
+              $store.commit('setDrawMessage', '<code>Διπλό κλικ για ολοκλήρωση σχεδίασης,<br>Delete για διαγραφή τελευταίου σημείου</code>');">
               <v-icon dark>timeline</v-icon>
             </v-btn>
           </v-flex>
@@ -626,16 +628,17 @@ export default {
       console.log('result:: ', questionnaireResult);
       return questionnaireResult;
     },
-    getFromMap(id, type, title) {
+    getFromMap(id, type, title, style) {
       olMap.removeFeaturesFromLayer('customLayer', 'buttonId', [id]);
       this.$store.commit('setQuestionnaireFeatureId', id);
-      const style = {
-        strkWdth: 1,
-        strkClr: 'blue',
-        fllClr: 'orange',
+      const featureStyle = {
+        strkWdth: style.strkWdth,
+        strkClr: style.strkClr,
+        fllClr: style.fllClr,
+        radius: style.radius,
         messages: title,
       };
-      this.$store.commit('setDrawnFeatureStyle', style);
+      this.$store.commit('setDrawnFeatureStyle', featureStyle);
       olMap.setActiveInteraction(type);
     },
     submit(type) {

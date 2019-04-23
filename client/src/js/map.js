@@ -52,10 +52,12 @@ function normalStyle(feature) {
     const strokeWidth = feature.get('strkWdth');
     const strokeColor = feature.get('strkClr');
     const fillColor = feature.get('fllClr');
+    const radius = feature.get('radius');
 
     let setStrokeWidth;
     let setStrokeColor;
     let setFillColor;
+    let setradius;
 
     if (strokeWidth !== undefined) {
       setStrokeWidth = strokeWidth;
@@ -72,6 +74,11 @@ function normalStyle(feature) {
     } else {
       setFillColor = 'rgba(255, 255, 255, 0.4)';
     }
+    if (radius !== undefined) {
+      setradius = radius;
+    } else {
+      setradius = 5;
+    }
 
     style = new ol.style.Style({
       fill: new ol.style.Fill({
@@ -82,7 +89,7 @@ function normalStyle(feature) {
         width: setStrokeWidth,
       }),
       image: new ol.style.Circle({
-        radius: 5,
+        radius: setradius,
         fill: new ol.style.Fill({
           color: setFillColor,
         }),
@@ -95,7 +102,7 @@ function normalStyle(feature) {
         font: 'bold 12px Verdana',
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: 'blue',
+          color: setStrokeColor,
         }),
         stroke: new ol.style.Stroke({
           color: 'white',
@@ -138,7 +145,7 @@ function normalStyle(feature) {
         font: 'bold 12px Verdana',
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: 'blue',
+          color: setStrokeColor,
         }),
         stroke: new ol.style.Stroke({
           color: 'white',
@@ -195,7 +202,7 @@ function normalStyle(feature) {
         font: 'bold 12px Verdana',
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: 'blue',
+          color: setStrokeColor,
         }),
         stroke: new ol.style.Stroke({
           color: 'white',
@@ -465,6 +472,7 @@ selectClick.on('select', () => {
 });
 
 drawPoint.on('drawend', (e) => {
+  store.commit('setDrawMessage', '');
   const startDrawend = new Promise((resolve) => {
     let username = null;
     let userserial = null;
@@ -478,6 +486,7 @@ drawPoint.on('drawend', (e) => {
     e.feature.setProperties({
       strkWdth: store.state.drawnFeatureStyle.strkWdth,
       strkClr: store.state.drawnFeatureStyle.strkClr,
+      radius: store.state.drawnFeatureStyle.radius,
       // fllClr: 'orange',
       mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
       name: `@ ${username}`,
@@ -500,6 +509,7 @@ drawPoint.on('drawend', (e) => {
   });
 });
 drawLineString.on('drawend', (e) => {
+  store.commit('setDrawMessage', '');
   const startDrawend = new Promise((resolve) => {
     let username = null;
     let userserial = null;
@@ -535,6 +545,7 @@ drawLineString.on('drawend', (e) => {
   });
 });
 drawPolygon.on('drawend', (e) => {
+  store.commit('setDrawMessage', '');
   const startDrawend = new Promise((resolve) => {
     let username = null;
     let userserial = null;
@@ -572,6 +583,7 @@ drawPolygon.on('drawend', (e) => {
   });
 });
 drawBox.on('drawend', (e) => {
+  store.commit('setDrawMessage', '');
   const startDrawend = new Promise((resolve) => {
     let username = null;
     let userserial = null;
@@ -610,7 +622,7 @@ drawBox.on('drawend', (e) => {
 });
 
 olMap.removeFeaturesFromLayer = (layername, property, ids) => {
-  console.log('removing :: ', ids);
+  // console.log('removing :: ', ids);
   let allLayers = [];
   allLayers = olMap.getLayers().getArray();
   allLayers.forEach((layer) => {

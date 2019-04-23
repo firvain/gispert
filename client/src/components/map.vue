@@ -6,6 +6,10 @@
         <mapTools></mapTools>
       </div>
     </div>
+    <div id="messagesPopup" class="ol-popup-drawMessage">
+      <div id="message-popup-content">
+      </div>
+    </div>
     <v-container xs3 md3 class="floating-bottom">
       <v-btn @click="setBasemap('bing')">Aerial</v-btn>
       <v-btn @click="setBasemap('esri')">Road</v-btn>
@@ -46,6 +50,9 @@ export default {
     mapTools, olMap,
   },
   computed: {
+    messageDraw() {
+      return this.$store.state.drawMessage;
+    },
     currentlySelectedFeature() {
       let feature = {};
       if (typeof this.$store.state.feature !== 'undefined') {
@@ -146,12 +153,26 @@ export default {
     const container = document.getElementById('popup');
     // const closer = document.getElementById('popup-closer');
 
+    document.addEventListener('keydown', (e) => {
+      if (e.which === 46) {
+        console.log('delete pressed');
+        olMap.getInteractions().forEach((interaction) => {
+          console.log(interaction.getProperties());
+          if (interaction instanceof ol.interaction.Draw && interaction.getProperties().name === 'LineString') {
+            console.log('found line');
+            interaction.removeLastPoint();
+          }
+        });
+      }
+    });
+
     const overlay = new ol.Overlay({
+      id: 'popupOverlay',
       element: container,
-      autoPan: true,
-      autoPanAnimation: {
-        duration: 250,
-      },
+      // autoPan: true,
+      // autoPanAnimation: {
+      //   duration: 250,
+      // },
     });
     olMap.addOverlay(overlay);
     olMap.on('singleclick', (evt) => {
@@ -160,6 +181,43 @@ export default {
         overlay.setPosition([coordinate[0] + 5, coordinate[1] - 10]);
       } else {
         overlay.setPosition(undefined);
+      }
+    });
+
+    const messagesOverlay = new ol.Overlay({
+      id: 'messagesOverlay',
+      element: document.getElementById('messagesPopup'),
+    });
+    olMap.addOverlay(messagesOverlay);
+    olMap.on('pointermove', (e) => {
+      document.getElementById('message-popup-content').innerHTML = `${this.messageDraw}`;
+      const zoomLevel = olMap.getView().getZoom();
+      if (zoomLevel >= 18) {
+        messagesOverlay.setPosition([e.coordinate[0] + 10, e.coordinate[1] + 20]);
+      }
+      if (zoomLevel >= 16 && zoomLevel < 18) {
+        messagesOverlay.setPosition([e.coordinate[0] + 20, e.coordinate[1] + 30]);
+      }
+      if (zoomLevel >= 15 && zoomLevel < 16) {
+        messagesOverlay.setPosition([e.coordinate[0] + 40, e.coordinate[1] + 60]);
+      }
+      if (zoomLevel >= 13 && zoomLevel < 15) {
+        messagesOverlay.setPosition([e.coordinate[0] + 80, e.coordinate[1] + 120]);
+      }
+      if (zoomLevel >= 11 && zoomLevel < 13) {
+        messagesOverlay.setPosition([e.coordinate[0] + 320, e.coordinate[1] + 480]);
+      }
+      if (zoomLevel >= 9 && zoomLevel < 11) {
+        messagesOverlay.setPosition([e.coordinate[0] + 1500, e.coordinate[1] + 3000]);
+      }
+      if (zoomLevel >= 7 && zoomLevel < 9) {
+        messagesOverlay.setPosition([e.coordinate[0] + 5000, e.coordinate[1] + 8000]);
+      }
+      if (zoomLevel >= 5 && zoomLevel < 7) {
+        messagesOverlay.setPosition([e.coordinate[0] + 25000, e.coordinate[1] + 40000]);
+      }
+      if (zoomLevel >= 0 && zoomLevel < 5) {
+        messagesOverlay.setPosition([e.coordinate[0] + 80000, e.coordinate[1] + 180000]);
       }
     });
   },
@@ -218,7 +276,7 @@ export default {
   }
   .ol-popup {
     position: absolute;
-    // background-color: white;
+    background-color: white;
     // -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
     // filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
     // padding: 15px;
@@ -257,5 +315,8 @@ export default {
   }
   .ol-popup-closer:after {
     content: "✖";
+  }
+  .ol-popup-drawMessage {
+    border-width: 11px;
   }
 </style>

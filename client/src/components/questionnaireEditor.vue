@@ -209,14 +209,14 @@
                     </v-container>
                     <v-container row wrap v-if="question.type === 'mapPointer'">
                       <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-                        <v-btn small fab dark class="indigo">
+                        <v-btn small fab dark :color="button.style.strkClr">
                           <v-icon dark>location_on</v-icon>
                         </v-btn>
                       </v-flex>
                     </v-container>
                     <v-container row wrap v-if="question.type === 'mapLineString'">
                       <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-                        <v-btn small fab dark class="indigo">
+                        <v-btn small fab dark :color="button.style.strkClr">
                           <v-icon dark>timeline</v-icon>
                         </v-btn>
                       </v-flex>
@@ -535,6 +535,7 @@
                           v-if="question.editing">
                           <v-icon>add</v-icon>
                         </v-btn>
+
                         <template v-for="item in question.buttons">
                           <v-list-tile
                               :key="item.id"
@@ -548,6 +549,14 @@
                               ></v-text-field>
                               <v-icon>delete</v-icon>
                             </v-list-tile-content>
+                            <Swatches v-model="item.style.strkClr" popover-to="left" swatch-size='24' inline/>
+                            <v-flex xs12 sm3 md1>
+                              <v-text-field
+                                v-model="item.style.radius"
+                                label="size"
+                                box
+                              ></v-text-field>
+                            </v-flex>
                           </v-list-tile>
                         </template>
                       </v-list>
@@ -593,6 +602,14 @@
                               ></v-text-field>
                               <v-icon>delete</v-icon>
                             </v-list-tile-content>
+                            <Swatches v-model="item.style.strkClr" popover-to="left" swatch-size='24' inline/>
+                            <v-flex xs12 sm3 md1>
+                              <v-text-field
+                                v-model="item.style.strkWdth"
+                                label="size"
+                                box
+                              ></v-text-field>
+                            </v-flex>
                           </v-list-tile>
                         </template>
                       </v-list>
@@ -697,13 +714,15 @@
 import axios from 'axios';
 import moment from 'moment';
 import draggable from 'vuedraggable';
+import Swatches from 'vue-swatches';
+import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
 
 export default {
   props: ['qnnaire'],
   components: {
-    draggable,
+    draggable, Swatches,
   },
   data() {
     return {
@@ -952,7 +971,19 @@ export default {
           title: null,
           description: null,
           value: null,
-          buttons: [{ id: `i${this.nextItemId}`, label: '', coords: null }],
+          buttons: [
+            {
+              id: `i${this.nextItemId}`,
+              label: '',
+              coords: null,
+              style: {
+                radius: 5,
+                strkWdth: 1,
+                strkClr: 'blue',
+                fllClr: 'orange',
+              },
+            },
+          ],
           error: false,
           optional: false,
           editing: true,
@@ -969,7 +1000,17 @@ export default {
           title: null,
           description: null,
           value: null,
-          buttons: [{ id: `i${this.nextItemId}`, label: '', coords: null }],
+          buttons: [
+            { id: `i${this.nextItemId}`,
+              label: '',
+              coords: null,
+              style: {
+                strkWdth: 1,
+                strkClr: 'blue',
+                fllClr: 'orange',
+              },
+            },
+          ],
           error: false,
           optional: false,
           editing: true,

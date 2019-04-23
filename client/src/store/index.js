@@ -37,6 +37,7 @@ export default new Vuex.Store({
       strkWdth: 1,
       strkClr: 'blue',
       fllClr: 'orange',
+      radius: 5,
       messages: undefined,
     },
     questionnaire: null,
@@ -55,10 +56,14 @@ export default new Vuex.Store({
       images: null,
       videos: null,
     },
+    drawMessage: '',
   },
   actions: {
+    setDrawMessage(state, data) {
+      state.commit('setDrawMessage', data);
+    },
     setDrawnFeatureStyle(state, data) {
-      state.commit(setDrawnFeatureStyle, data);
+      state.commit('setDrawnFeatureStyle', data);
     },
     resetUserPost(state) {
       state.commit('resetUserPost');
@@ -203,10 +208,14 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    setDrawMessage(state, data) {
+      state.drawMessage = data;
+    },
     setDrawnFeatureStyle(state, data) {
       state.drawnFeatureStyle.strkWdth = data.strkWdth;
       state.drawnFeatureStyle.strkClr = data.strkClr;
       state.drawnFeatureStyle.fllClr = data.fllClr;
+      state.drawnFeatureStyle.radius = data.radius;
       state.drawnFeatureStyle.messages = data.messages;
     },
     resetUserPost(state) {
