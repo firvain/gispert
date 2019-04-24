@@ -11,7 +11,7 @@
       </v-container>
     </div>
 
-    <v-container pa-1 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
+    <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
 
       <v-card v-if="question.page === page">
         <v-card-title primary-title>
@@ -126,7 +126,7 @@
               ></v-text-field>
             </v-flex>
             <v-flex xs2>
-              <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point', line.value)">
+              <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point', line.value, line.style)">
                 <v-icon dark>location_on</v-icon>
               </v-btn>
             </v-flex>
@@ -146,7 +146,7 @@
       {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
     </v-btn>
     <v-btn dark block class="grey" @click="page -= 1"
-      v-if="page > 0 && page < questionnaire.properties.pages">
+      v-if="page > 0 && page <= questionnaire.properties.pages">
       {{ $t('message.previousSection')}}
     </v-btn>
 
@@ -226,7 +226,16 @@ export default {
     },
     addRow(question) {
       if (question.lines.length < 21) {
-        question.lines.push({ id: `${question.id}${question.lines.length + 1}`, value: null, coords: [] });
+        question.lines.push({
+          id: `${question.id}${question.lines.length + 1}`,
+          value: null,
+          coords: [],
+          style: {
+            strkWdth: 1,
+            strkClr: 'blue',
+            fllClr: 'orange',
+          },
+        });
       }
       console.log(`added this id:: ${question.id}${question.lines.length + 1}`);
     },

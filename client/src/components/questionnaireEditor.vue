@@ -1044,7 +1044,16 @@ export default {
           title: null,
           description: null,
           value: null,
-          lines: [{ id: `i${this.nextItemId}`, value: '', coords: null }],
+          lines: [{
+            id: `i${this.nextItemId}`,
+            value: '',
+            coords: null,
+            style: {
+              strkWdth: 1,
+              strkClr: 'blue',
+              fllClr: 'orange',
+            },
+          }],
           error: false,
           optional: false,
           editing: true,
