@@ -107,6 +107,7 @@ module.exports = {
     notifications: 'Ειδοποιήσεις',
     markAllAsRead: 'Τα έχω διαβάσει όλα',
     makeCollectionPublic: 'Δημοσίευση χάρτη',
+    makeCollectionPrivate: 'Παύση κοινοποίησης χάρτη',
     sharingSettings: 'Ρυθμίσεις ιδιωτικότητας',
     questionnaires: 'Ερωτηματολόγια',
     questionnairesIcreated: 'Ερωτηματολόγια που έχω φτιάξει',

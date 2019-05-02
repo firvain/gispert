@@ -231,7 +231,7 @@ export default {
           value: null,
           coords: [],
           style: {
-            strkWdth: 1,
+            strkWdth: 2,
             strkClr: 'blue',
             fllClr: 'orange',
           },

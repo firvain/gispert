@@ -5,6 +5,7 @@
         <v-flex>
           <v-textarea
             @focus="showMapTools()"
+            @input="$store.commit('setUserPostProperties', [{ property: 'text', value: postText }]);"
             autofocus
             name="input-1"
             :label="$t('message.youMayWriteAndSketch')"
@@ -75,6 +76,7 @@ export default {
     mapTools,
   },
   mounted() {
+    this.$store.commit('setUserPostProperties', [{ property: 'isReplyTo', value: this.id }]);
     console.log('new reply mounted');
   },
   methods: {
@@ -108,7 +110,7 @@ export default {
         userFeatures: vuexPost.userFeatures,
         collection: vuexPost.collection,
         replies: [],
-        isReplyTo: '',
+        isReplyTo: vuexPost.isReplyTo,
         type: vuexPost.type,
         images: vuexPost.images,
         videos: vuexPost.videos,

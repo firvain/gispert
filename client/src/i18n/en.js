@@ -107,6 +107,7 @@ module.exports = {
     notifications: 'Notifications',
     markAllAsRead: 'Mark all as read',
     makeCollectionPublic: 'Make this collection public',
+    makeCollectionPrivate: 'Stop sharing',
     sharingSettings: 'Sharing settings',
     questionnaires: 'Questionnaires',
     questionnairesIcreated: 'Questionnaires I have created',

@@ -107,6 +107,7 @@ module.exports = {
     notifications: 'Benachrichtigungen',
     markAllAsRead: 'Alles als gelesen markieren',
     makeCollectionPublic: 'Machen Sie diese Sammlung öffentlich',
+    makeCollectionPrivate: 'Hör auf zu teilen',
     sharingSettings: 'Einstellungen teilen',
     questionnaires: 'Fragebögen',
     questionnairesIcreated: 'Fragebögen, die ich erstellt habe',

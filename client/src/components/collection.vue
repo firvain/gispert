@@ -81,6 +81,16 @@
                 </span>
             </v-list-tile-title>
           </v-list-tile>
+          <v-list-tile class='hover' v-if="$store.state.user._id === collection.user && collection.visibility === 'public'">
+            <v-list-tile-title>
+                <span
+                  @click="setCollectionPrivacy(collection._id)"
+                  class='caption'>
+                  <v-icon @click="setCollectionPrivacy(collection._id)">link</v-icon>
+                  {{ $t("message.makeCollectionPrivate") }}
+                </span>
+            </v-list-tile-title>
+          </v-list-tile>
         </v-list>
       </v-menu>
       </v-card-actions>

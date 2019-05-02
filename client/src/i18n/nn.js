@@ -107,6 +107,7 @@ module.exports = {
     notifications: 'Varsler',
     markAllAsRead: 'Marker alle som lest',
     makeCollectionPublic: 'Gjør denne samlingen offentlig',
+    makeCollectionPrivate: 'Stopp deling',
     sharingSettings: 'Deling innstillinger',
     questionnaires: 'Spørreskjemaer',
     questionnairesIcreated: 'Spørreskjemaer jeg har opprettet',
