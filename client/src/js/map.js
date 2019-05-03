@@ -325,6 +325,7 @@ const geolocation = new ol.Geolocation({
   trackingOptions: {
     enableHighAccuracy: true,
   },
+  projection: 'EPSG:3857',
 });
 geolocation.setTracking(true);
 const accuracyFeature = new ol.Feature();
@@ -351,7 +352,7 @@ geolocation.on('change:position', () => {
 });
 geolocationLayer.getSource().addFeature(positionFeature);
 geolocation.on('change', () => {
-  console.log('geolocation :: ', geolocation.getAccuracy());
+  console.log('geolocation :: ', geolocation.getAccuracyGeometry());
   // el('altitude').innerText = geolocation.getAltitude() + ' [m]';
   // el('altitudeAccuracy').innerText = geolocation.getAltitudeAccuracy() + ' [m]';
   // el('heading').innerText = geolocation.getHeading() + ' [rad]';
