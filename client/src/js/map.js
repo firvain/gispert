@@ -351,13 +351,13 @@ geolocation.on('change:position', () => {
     new ol.geom.Point(coordinates) : null);
 });
 geolocationLayer.getSource().addFeature(positionFeature);
-geolocation.on('change', () => {
-  console.log('geolocation :: ', geolocation.getAccuracyGeometry());
+// geolocation.on('change', () => {
+  // console.log('geolocation :: ', geolocation.getAccuracyGeometry());
   // el('altitude').innerText = geolocation.getAltitude() + ' [m]';
   // el('altitudeAccuracy').innerText = geolocation.getAltitudeAccuracy() + ' [m]';
   // el('heading').innerText = geolocation.getHeading() + ' [rad]';
   // el('speed').innerText = geolocation.getSpeed() + ' [m/s]';
-});
+// });
 
 
 const dragAndDropInteraction = new ol.interaction.DragAndDrop({
