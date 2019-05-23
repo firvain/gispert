@@ -63,6 +63,11 @@
       </v-list>
     </v-flex>
     <v-flex xs12 sm12 md12>
+      <questionnaireEditor
+        v-if="$store.state.questionnaireMode === 'creator'">
+      </questionnaireEditor>
+    </v-flex>
+    <v-flex xs12 sm12 md12>
       <questionnaireEditor :qnnaire="questionnaireForEdit"
         v-if="$store.state.questionnaireMode === 'editor'">
       </questionnaireEditor>
@@ -153,7 +158,7 @@ export default {
       this.questionnaireShareLink = `${config.share}/questionnaire/${id}`;
     },
     createNewQuestionnaire() {
-      this.changeQuestionnaireMode('editor');
+      this.changeQuestionnaireMode('creator');
       this.questionnaireForEdit = null;
     },
     openEditorForQuestionnaire(questionnaire) {

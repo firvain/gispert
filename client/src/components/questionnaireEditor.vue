@@ -697,7 +697,7 @@
             </v-card>
           </v-flex>
         </v-layout>
-        <div v-if="userIsEditor">
+        <div v-if="userIsEditor || $store.state.questionnaireMode === 'creator'">
           <v-btn @click="saveQuestionnaire().then(() => { this.loading = false });">
             {{ $t('message.saveQuestionnaire') }}<v-icon dark>save</v-icon>
           </v-btn>

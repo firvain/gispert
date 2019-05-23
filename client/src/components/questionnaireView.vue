@@ -736,7 +736,7 @@ export default {
 <style scoped>
   #layout1 {
     width: auto;
-    height: 89vh;
+    height: 87vh;
   }
   .force-hover:hover {
     background-color: bisque;

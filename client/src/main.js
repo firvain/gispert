@@ -43,7 +43,7 @@ Vue.use(VueI18n);
 Vue.use(VueSocketio, `${config.surl}`);
 
 const i18n = new VueI18n({
-  locale: 'el_GR', // set locale
+  locale: 'en', // set locale
   // fallbackLocale: 'en',
   messages // set locale messages
 })
