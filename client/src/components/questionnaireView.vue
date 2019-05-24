@@ -1,6 +1,6 @@
 <template>
-  <v-layout id="layout1" row wrap xs12 sm12 md12 v-if="questionnaire">
-    <div v-if="page === 0 && questionnaire">
+  <v-layout id="layout1" row wrap xs12 sm12 md12>
+    <v-container v-if="page === 0 && !submitted">
       <v-container fluid row
         v-for="item in questionnaire.properties.introduction.items"
         :key="item.id"
@@ -9,8 +9,9 @@
         <div v-if="item.type === 'text'" > {{ item.value }} </div>
         <img v-if="item.type === 'image'" :src="item.value" aspect-ratio="2.75"/>
       </v-container>
-    </div>
+    </v-container>
 
+    <v-layout v-if="!submitted" row wrap xs12 sm12 md12>
     <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
 
       <v-card v-if="question.page === page">
@@ -139,31 +140,38 @@
         </v-card-text>
       </v-card>
     </v-container>
-    
+    </v-layout>
+    <v-layout row wrap v-if="!submitted">
+      <v-btn dark block class="indigo" @click="submit('page');"
+        v-if="page < questionnaire.properties.pages">
+        {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
+      </v-btn>
+      <v-btn dark block class="grey" @click="page -= 1"
+        v-if="page > 0 && page <= questionnaire.properties.pages">
+        {{ $t('message.previousSection')}}
+      </v-btn>
+
+      <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
+        {{ $t('message.submitQuestionnaire')}}<v-icon dark>send</v-icon>
+      </v-btn>
+    </v-layout>
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
-    <v-btn dark block class="indigo" @click="submit('page');"
-      v-if="page < questionnaire.properties.pages">
-      {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
-    </v-btn>
-    <v-btn dark block class="grey" @click="page -= 1"
-      v-if="page > 0 && page <= questionnaire.properties.pages">
-      {{ $t('message.previousSection')}}
-    </v-btn>
 
-    <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
-      {{ $t('message.submitQuestionnaire')}}<v-icon dark>send</v-icon>
-    </v-btn>
+    <v-layout row wrap>
+      <v-container>
+        <v-alert color="success" icon="check_circle" :value="submitted">
+          {{ $t('message.questionnaireSubmitted')}}
+        </v-alert>
+      </v-container>
+    </v-layout>
 
-    <v-snackbar
-      :timeout=5000
-      v-model="snackbarError"
-      color= "red"
-    >{{ $t('message.thereAreErrorsInQuestionnaire')}}</v-snackbar>
-
-    <v-alert color="success" icon="check_circle" :value="submitted">
-      {{ $t('message.questionnaireSubmitted')}}
-    </v-alert>
-
+      <v-snackbar
+        :timeout=5000
+        v-model="snackbarError"
+        color= "red"
+      >
+        {{ $t('message.thereAreErrorsInQuestionnaire')}}
+      </v-snackbar>
   </v-layout>
 </template>
 <script>
@@ -667,7 +675,7 @@ export default {
                   submittedOn: Date.now(),
                   submittedBy: this.getUserId(),
                 };
-                console.log(questionnaireToPost);
+                console.log('this is the questionnaire to post:: ', questionnaireToPost);
                 return questionnaireToPost;
               }).then((questionnaireToPost) => {
                 this.sendToServer(questionnaireToPost);
@@ -694,11 +702,16 @@ export default {
       const url = `${config.url}/public/submitQuestionnaire`;
       const questionnaireToPost = questionnaire;
       axios.post(url, { questionnaireToPost }).then((response) => {
+        console.log('this is the response of sending questionnaire to server:: ', response, response.status);
         if (response.status === 200) {
+          console.log('response status is 200');
           this.submitted = true;
           this.$store.commit('resetQuestionnaire');
+          this.questionnaire = null;
+          console.log('questionnaire reset?', this.questionnaire);
         }
-      }).catch(console.error);
+      });
+      // .catch(console.error)
     },
     zoomToExtent() {
       const g = this.questionnaire.properties.mapExtent;

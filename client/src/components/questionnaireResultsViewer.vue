@@ -147,7 +147,7 @@
                   </v-card-title>
                   <v-card-text>
                     <v-layout>
-                      <v-flex v-if="question.type === 'textfield'">
+                      <v-flex v-if="question.type === 'textfield' || question.type === 'textfieldvalidation'">
                         <v-list one-line>
                           <template v-for="(item, index) in question.values">
                             <v-list-tile :key="index" v-if="item">

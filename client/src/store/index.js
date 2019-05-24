@@ -251,8 +251,10 @@ export default new Vuex.Store({
       state.questionnairesIHaveAnswered = data;
     },
     resetQuestionnaire(state) {
+      console.log('reseting questionnaire');
       state.questionnaireFeatureId = null;
       state.questionnaireFeatures = [];
+      state.questionnaire = null;
     },
     setQuestionnaireFeatureId(state, data) {
       state.questionnaireFeatureId = data;
