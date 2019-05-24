@@ -226,8 +226,7 @@ export default {
 <style lang="scss">
   .mapStyle {
     width: auto;
-    height: 100%;
-    height: 89vh;
+    height: 87vh;
   }
   .ol-zoom {
     left: unset;
@@ -261,7 +260,7 @@ export default {
   .floating-bottom {
     position: absolute;
     left: 50%;
-    bottom: 2%;
+    bottom: 5%;
     width: 200px;
     // background-color: white;
     overflow-y: auto;
