@@ -9,7 +9,7 @@
                 <v-img
                   height='100%'
                   class="white--text"
-                  src="../static/images/abstract-adult-background-1079033.jpg"
+                  :src="currentTab.menuImage"
                 >
                   <v-container pa-1 grid-list-md text-xs-center fill-height>
                     <v-layout  row wrap align-content-space-between fill-height>
@@ -56,11 +56,11 @@
                 <v-layout pa-4 ma-4 row wrap>
                   <v-flex xs6 class="subheading">
                     <h2 class="font-weight-thin">
-                    <u>Geobabel</u> is a complete toolbox for <u>citizen engagement</u> in decision making.
+                    <span class="font-weight-black">Geobabel</span> is a complete toolbox for <span class="font-weight-black">citizen engagement</span> in decision making.
                     </h2>
                     <span class="font-weight-thin">
                     Brings together local authorities, citizens, planners or researchers on the same table to
-                    discuss and give feedback to each other, resulting in more participatory decision making and <u>substantive public participation</u>.
+                    discuss and give feedback to each other, resulting in more participatory decision making and <span class="font-weight-black">substantive public participation</span>.
                     </span>
                   </v-flex>
                   <v-flex xs6>
@@ -71,10 +71,9 @@
                 <v-layout pa-4 ma-4 row wrap>
                   <v-flex xs6>
                   <v-flex>
-                      <meetingTable color="green--outline" :width="100" :strokeWidth="10" />
-                      <meetingTable color="green--outline" :width="100" :strokeWidth="10" />
-                      <meetingTable color="green--outline" :width="100" :strokeWidth="10" />
-                      <meetingTable color="green--outline" :width="100" :strokeWidth="10" />
+                    <questionnaireVector :width="100"></questionnaireVector>
+                    <ratings :width="200"></ratings>
+                    <mapComments :width="350"></mapComments>
                   </v-flex>
                   </v-flex>
                   <v-flex xs6 class="subheading">
@@ -82,25 +81,11 @@
                      How?
                     </h2>
                     <span class="font-weight-thin">
-                      Geobabel <u>combines</u> simply and effective the <u>crowdsourcing methods with the map</u> using questionnaires, commenting, rating ideas and brainstorming. 
+                      Geobabel <span class="font-weight-black">combines</span> simply and effective the <span class="font-weight-black">crowdsourcing methods with the map</span> using questionnaires, opinion sharing, rating ideas and brainstorming. 
                     </span>
                   </v-flex>
                 </v-layout>
 
-                <v-layout pa-4 ma-4 row wrap>
-                  <v-flex xs6 class="subheading">
-                    <h2 class="font-weight-thin">
-                      PC, tablet, mobile friendly
-                    </h2>
-                    <span class="font-weight-thin">
-                    Brings together local authorities, citizens, planners or researchers on the same table to
-                    discuss and give feedback to each other, resulting in more participatory decision making and <u>substantive public participation</u>.
-                    </span>
-                  </v-flex>
-                  <v-flex xs6>
-                    <p><meetingTable color="green--outline" :width="250" :strokeWidth="10" /></p>
-                  </v-flex>
-                </v-layout>
               </v-flex>
             </v-flex>
 
@@ -109,80 +94,30 @@
               <p>Data collection - collect data about places (Draw on the map places)</p>
               <p>Opinion Seeking - people can comment on places seeking ideas and solutions, brainstorming about places (Comment on this place)</p>
               <p>Crowdvoting - rating ideas about places or rating places (rate this place, order places by preference)</p>
+              <v-layout pa-4 ma-4 row wrap>
+                <v-flex xs6 class="subheading">
+                  <h2 class="font-weight-thin">
+                    PC, tablet, mobile friendly
+                  </h2>
+                  <span class="font-weight-thin">
+                  Brings together local authorities, citizens, planners or researchers on the same table to
+                  discuss and give feedback to each other, resulting in more participatory decision making and <u>substantive public participation</u>.
+                  </span>
+                </v-flex>
+                <v-flex xs6>
+                  <p><meetingTable color="green--outline" :width="250" :strokeWidth="10" /></p>
+                </v-flex>
+              </v-layout>
             </v-flex>
 
             <v-flex xs6 pl-2 text-xs-center v-if='currentTab.id === 3'>
               <v-flex pl-4 pt-4 pr-4 style='overflow-y: auto; max-height: 100%; height: 100vh'>
                 <v-flex xs12 class="text-align-center">
                   <span class="display-2 font-weight-thin">{{ currentTab.title }}</span>
+                  <h2 class="font-weight-thin">When to use Geobabel? Typically when you have to involve citizens in the planning process. We are listing below some of the cases where the platform can be very helpful.</h2>
                 </v-flex>
-                When to use Geobabel? Typically when you have to involve citizens in the planning process. We are listing below some of the cases where the platform can be very helpful.
-                <v-layout row wrap>
-                  <v-flex xs6 pa-2>
-                    <v-card>
-                      <v-img
-                        src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"
-                        aspect-ratio="2.75"
-                      ></v-img>
-                      <v-card-title primary-title>
-                        <div>
-                          <h3 class="headline mb-0">Communicative planning</h3>
-                        </div>
-                      </v-card-title>
-                      <v-card-text>
-                        Communicative planning is an approach to urban planning that gathers stakeholders and engages them in a process to make decisions together in a manner that respects the positions of all involved. It is also sometimes called collaborative planning among planning practitioners or collaborative planning model.
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                  <v-flex xs6 pa-2>
-                    <v-card>
-                      <v-img
-                        src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"
-                        aspect-ratio="2.75"
-                      ></v-img>
-                      <v-card-title primary-title>
-                        <div>
-                          <h3 class="headline mb-0">Participatory planning</h3>
-                        </div>
-                      </v-card-title>
-                      <v-card-text>
-                        Participatory planning is an urban planning paradigm that emphasizes involving the entire community in the strategic and management processes of urban planning; or, community-level planning processes, urban or rural. It is often considered as part of community development. Participatory planning aims to harmonize views among all of its participants as well as prevent conflict between opposing parties. In addition, marginalized groups have an opportunity to participate in the planning process.
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                  <v-flex xs6 pa-2>
-                    <v-card>
-                      <v-img
-                        src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"
-                        aspect-ratio="2.75"
-                      ></v-img>
-                      <v-card-title primary-title>
-                        <div>
-                          <h3 class="headline mb-0">Transactive planning</h3>
-                        </div>
-                      </v-card-title>
-                      <v-card-text>
-                        Transactive planning was a radical break from previous models. Instead of considering public participation as method that would be used in addition to the normal training planning process, participation was a central goal. For the first time, the public was encouraged to take on an active role in the policy setting process, while the planner took on the role of a distributor of information and a feedback source. Transactive planning focuses on interpersonal dialogue that develops ideas, which will be turned into action. One of the central goals is mutual learning where the planner gets more information on the community and citizens become more educated about planning issues.
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                  <v-flex xs6 pa-2>
-                    <v-card>
-                      <v-img
-                        src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"
-                        aspect-ratio="2.75"
-                      ></v-img>
-                      <v-card-title primary-title>
-                        <div>
-                          <h3 class="headline mb-0">Communicative approach</h3>
-                        </div>
-                      </v-card-title>
-                      <v-card-text>
-                        The communicative approach to planning focuses on using communication to help different interests in the process understand each other. The idea is that each individual will approach a conversation with his or her own subjective experience in mind and that from that conservation shared goals and possibilities will emerge. Again, participation plays a central role under this model. The model seeks to include as a broad range of voice to enhance the debate and negotiation that is supposed to form the core of actual plan making. In this model, participation is actually fundamental to the planning process happening. Without the involvement of concerned interests there is no planning.
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
+                <br><useCases width='70%'></useCases>
+
               </v-flex>
             </v-flex>
 
@@ -191,116 +126,7 @@
                 <v-flex xs12 class="text-align-center">
                   <span class="display-2 font-weight-thin">{{ currentTab.title }}</span>
                 </v-flex>
-                <v-layout row wrap>
-                  <v-flex xs6 pa-2>
-                    <v-card>
-                      <v-img
-                        src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"
-                        aspect-ratio="2.75"
-                      ></v-img>
-                      <v-card-title primary-title>
-                        <div>
-                          <h3 class="headline mb-0">Free plan</h3>
-                        </div>
-                      </v-card-title>
-                      <v-card-text>
-                        <v-list>
-                          <v-list-tile>
-                            <v-list-tile-content>
-                              <v-list-tile-title>Limited questionnaires</v-list-tile-title>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                          <v-list-tile>
-                            <v-list-tile-content>
-                              <v-list-tile-title>Limited storage</v-list-tile-title>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                        </v-list>
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                  <v-flex xs6 pa-2>
-                    <v-card>
-                      <v-img
-                        src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"
-                        aspect-ratio="2.75"
-                      ></v-img>
-                      <v-card-title primary-title>
-                        <div>
-                          <h3 class="headline mb-0">Personal plan</h3>
-                        </div>
-                      </v-card-title>
-                      <v-card-text>
-                        <v-list>
-                          <v-list-tile>
-                            <v-list-tile-content>
-                              <v-list-tile-title>Limited questionnaires</v-list-tile-title>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                          <v-list-tile>
-                            <v-list-tile-content>
-                              <v-list-tile-title>Limited storage</v-list-tile-title>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                        </v-list>
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                  <v-flex xs6 pa-2>
-                    <v-card>
-                      <v-img
-                        src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"
-                        aspect-ratio="2.75"
-                      ></v-img>
-                      <v-card-title primary-title>
-                        <div>
-                          <h3 class="headline mb-0">Premium plan</h3>
-                        </div>
-                      </v-card-title>
-                      <v-card-text>
-                        <v-list>
-                          <v-list-tile>
-                            <v-list-tile-content>
-                              <v-list-tile-title>Limited questionnaires</v-list-tile-title>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                          <v-list-tile>
-                            <v-list-tile-content>
-                              <v-list-tile-title>Limited storage</v-list-tile-title>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                        </v-list>
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                  <v-flex xs6 pa-2>
-                    <v-card>
-                      <v-img
-                        src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"
-                        aspect-ratio="2.75"
-                      ></v-img>
-                      <v-card-title primary-title>
-                        <div>
-                          <h3 class="headline mb-0">Custom build</h3>
-                        </div>
-                      </v-card-title>
-                      <v-card-text>
-                        <v-list>
-                          <v-list-tile>
-                            <v-list-tile-content>
-                              <v-list-tile-title>Limited questionnaires</v-list-tile-title>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                          <v-list-tile>
-                            <v-list-tile-content>
-                              <v-list-tile-title>Limited storage</v-list-tile-title>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                        </v-list>
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
+                <pricing width="70%"></pricing>
               </v-flex>
             </v-flex>
 
@@ -354,23 +180,29 @@
 </template>
 <script>
 import meetingTable from '@/components/svg/meeting_table';
+import platformfeatures from '@/components/svg/features';
+import questionnaireVector from '@/components/svg/questionnaire';
+import ratings from '@/components/svg/ratings';
+import mapComments from '@/components/svg/map_with_comments';
+import useCases from '@/components/svg/use_cases';
+import pricing from '@/components/svg/pricing';
 
 export default {
   data() {
     return {
-      currentTab: { id: 1, title: 'What is Geobabel?!' },
+      currentTab: { id: 1, title: 'What is Geobabel?!', menuImage: '../static/images/abstract-adult-background-1079033.jpg' },
       tabs: [
-        { id: 1, title: 'What is Geobabel?' },
-        { id: 2, title: 'Features' },
-        { id: 3, title: 'Use cases' },
-        { id: 4, title: 'Pricing' },
-        { id: 5, title: 'Contact us' },
-        { id: 6, title: 'Case studies' },
+        { id: 1, title: 'What is Geobabel?', menuImage: '../static/images/abstract-adult-background-1079033.jpg' },
+        { id: 2, title: 'Features', menuImage: '../static/images/adult-book-business-297755s.jpg' },
+        { id: 3, title: 'Use cases', menuImage: '../static/images/bird-s-eye-view-buildings-cars-373974.jpg' },
+        { id: 4, title: 'Pricing', menuImage: '../static/images/pricing.jpg' },
+        { id: 5, title: 'Contact us', menuImage: '../static/images/contactus1.jpg' },
+        { id: 6, title: 'Case studies', menuImage: '../static/images/blank-charts-computer-669619.jpg' },
       ],
     };
   },
   components: {
-    meetingTable,
+    meetingTable, platformfeatures, questionnaireVector, ratings, mapComments, useCases, pricing,
   },
   methods: {
     changeTab(id) {
