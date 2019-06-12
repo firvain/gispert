@@ -16,7 +16,7 @@
       <v-card v-if="question.page === page && !deactivatedPages.includes(question.page + 1)">
         <v-card-title primary-title>
           <div>
-            <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === false">*</span></h3>
+            <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === true">*</span></h3>
             <v-alert color="error" icon="warning" :value="question.error">
               {{ $t('message.questionNotAnswered') }}
             </v-alert>
@@ -892,6 +892,9 @@ export default {
       this.$store.commit('setQuestionnaireMode', 'viewer');
     }
     this.loadQuestionnaire();
+    // TODO create combobox and checkbox to input Other value by typing
+    // TODO fix the id every new question takes
+    // custom message after q submittion
   },
 };
 </script>
