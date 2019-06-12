@@ -1,5 +1,5 @@
 <template>
-  <v-layout id="layout1" row wrap xs12 sm12 md12>{{ deactivatedPages }} {{ questionnaire.properties.pages }}
+  <v-layout id="layout1" row wrap xs12 sm12 md12>
     <v-container v-if="page === 0 && !submitted">
       <v-container fluid row
         v-for="item in questionnaire.properties.introduction.items"
