@@ -240,6 +240,25 @@
                         {{ $t('message.addLine')}}
                       </v-btn>
                     </v-container>
+                    <v-container v-if="question.type === 'mapLinesMultiple'">
+                      <v-layout row wrap v-for="line in question.lines" :key="line.id">
+                        <v-flex xs10>
+                          <v-text-field
+                            name="input-1"
+                            v-model="line.value"
+                            :label="$t('message.yourAnswer')"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs2>
+                          <v-btn small fab dark class="indigo">
+                            <v-icon dark>timeline</v-icon>
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
+                      <v-btn dark class="indigo">
+                        {{ $t('message.addLine')}}
+                      </v-btn>
+                    </v-container>
                     <v-flex v-if="question.type === 'titleDescription'">
                       <h3 class="headline mb-0">{{ question.title }}</h3>
                       <div> {{ question.description }} </div>
@@ -274,7 +293,7 @@
               </v-flex>
               <v-flex pa-1 v-if="question.editing">
                 <v-card>
-                  <v-card-title primary-title>
+                  <v-card-title primary-title xs12>
                     <div>
                       <div><h4>{{ $t('message.questionOptions')}}</h4></div>
                     </div>
@@ -359,6 +378,8 @@
                               :key="item.id"
                           >
                             <v-list-tile-content>
+                              <v-layout>
+                              <v-flex xs12>
                               <v-text-field
                                 name="input-1"
                                 v-model="item.value"
@@ -366,7 +387,19 @@
                                 :label="item.value"
                                 @click:append="question.items.remove(item)"
                               ></v-text-field>
-                              <v-icon>delete</v-icon>
+                              <!-- <v-icon>delete</v-icon> -->
+                              </v-flex>
+                              <v-flex xs12>
+                              <v-select
+                                :items="getQuestionnairePagesAsArray"
+                                v-model="item.activateSections"
+                                label="Ενεργοποίηση ενότητας"
+                                single-line
+                                multiple
+                                menu-props="bottom"
+                              ></v-select>
+                              </v-flex>
+                              </v-layout>
                             </v-list-tile-content>
                           </v-list-tile>
                         </template>
@@ -650,6 +683,30 @@
                     </v-flex>
 
 
+                    <v-flex v-if="question.type === 'mapLinesMultiple'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        :label="$t('message.question')"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        :label="$t('message.description')"
+                      ></v-text-field>
+                      <v-checkbox
+                        :label="$t('message.optional')"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>folder_open</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
+
                     <v-flex v-if="question.type === 'titleDescription'">
                       <v-text-field
                         name="input-1"
@@ -756,6 +813,7 @@ export default {
         { type: 'mapPointer', name: this.$t('message.mapPointer') },
         { type: 'mapLineString', name: this.$t('message.mapLineStringPointer') },
         { type: 'mapPointerMultiple', name: this.$t('message.mapPointerMultiple') },
+        { type: 'mapLinesMultiple', name: this.$t('message.mapLinesMultiple') },
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
       ],
       questionnaire: {
@@ -798,6 +856,13 @@ export default {
     },
   },
   computed: {
+    getQuestionnairePagesAsArray() {
+      const pagesArray = ['-'];
+      for (let index = 1; index <= this.questionnaire.properties.pages + 1; index += 1) {
+        pagesArray.push(index);
+      }
+      return pagesArray;
+    },
     computedDateFormattedMomentjsStart() {
       moment.locale(this.$store.state.user.locale);
       this.questionnaire.properties.dateStart = moment(this.dateStart).format('x');
@@ -920,7 +985,7 @@ export default {
           title: null,
           description: null,
           value: null,
-          items: [{ id: `i${this.nextItemId}`, value: '' }],
+          items: [{ id: `i${this.nextItemId}`, value: '', activateSections: [] }],
           error: false,
           optional: false,
           editing: true,
@@ -1061,6 +1126,32 @@ export default {
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointerMultiple);
+      }
+      if (this.newQuestion === 'mapLinesMultiple') {
+        const mapLinesMultiple = {
+          id: this.nextId,
+          type: 'mapLinesMultiple',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          lines: [{
+            id: `i${this.nextItemId}`,
+            value: '',
+            coords: null,
+            style: {
+              strkWdth: 1,
+              strkClr: 'blue',
+              fllClr: 'orange',
+            },
+          }],
+          error: false,
+          optional: false,
+          editing: true,
+          pageBreak: false,
+        };
+        this.nextItemId += 1;
+        this.questionnaire.questions.push(mapLinesMultiple);
       }
       if (this.newQuestion === 'titleDescription') {
         const titleDescription = {

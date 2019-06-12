@@ -134,6 +134,7 @@ module.exports = {
     multipleChoice: 'Flere valg',
     mapPointer: 'Pek på kartet',
     mapPointerMultiple: 'Flere punkter på kartet',
+    mapLinesMultiple: 'Flere linjer på kartet',
     mapLineStringPointer: 'Tegn linje på kartet',
     sortingOptions: 'Preferanse hierarki',
     titleAndDescription: 'Tittel og beskrivelse',

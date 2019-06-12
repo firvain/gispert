@@ -114,6 +114,18 @@
                     </v-list>
                   </v-flex>
 
+                  <v-flex v-if="question.type === 'mapLinesMultiple'">
+                    <v-list one-line>
+                      <template v-for="(item, index) in question.value">
+                        <v-list-tile :key="index" @click="loadFeature(question.coordinates[index], item)">
+                          <v-list-tile-content>
+                            <v-list-tile-title v-html="item"></v-list-tile-title>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </template>
+                    </v-list>
+                  </v-flex>
+
                   </v-card-text>
                 </v-card>
               </v-container>
@@ -221,6 +233,11 @@
                         </v-btn>
                       </v-flex>
 
+                      <v-flex v-if="question.type === 'mapLinesMultiple'">
+                        <v-btn small dark class="indigo" @click='makeMapFormapPointer(question.id)'>
+                          <v-icon dark>location_on</v-icon>{{ $t('message.createMap')}}
+                        </v-btn>
+                      </v-flex>
                     </v-layout>
                   </v-card-text>
                 </v-card>

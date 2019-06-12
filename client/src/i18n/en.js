@@ -134,6 +134,7 @@ module.exports = {
     multipleChoice: 'Multiple choice',
     mapPointer: 'Point on the map',
     mapPointerMultiple: 'Multiple points on the map',
+    mapLinesMultiple: 'Multiple lines on the map',
     mapLineStringPointer: 'Draw line on the map',
     sortingOptions: 'Preference hierarchy',
     titleAndDescription: 'Title and description',

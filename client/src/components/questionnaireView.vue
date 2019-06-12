@@ -1,5 +1,5 @@
 <template>
-  <v-layout id="layout1" row wrap xs12 sm12 md12>
+  <v-layout id="layout1" row wrap xs12 sm12 md12>{{ deactivatedPages }} {{ questionnaire.properties.pages }}
     <v-container v-if="page === 0 && !submitted">
       <v-container fluid row
         v-for="item in questionnaire.properties.introduction.items"
@@ -13,8 +13,7 @@
 
     <v-layout v-if="!submitted" row wrap xs12 sm12 md12>
     <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
-
-      <v-card v-if="question.page === page">
+      <v-card v-if="question.page === page && !deactivatedPages.includes(question.page + 1)">
         <v-card-title primary-title>
           <div>
             <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === false">*</span></h3>
@@ -58,6 +57,7 @@
             :label="$t('message.yourAnswer')"
             single-line
             menu-props="bottom"
+            v-on:input="toggleSections(question.items, question.value)"
           ></v-select>
         </v-flex>
 
@@ -136,6 +136,25 @@
             {{ $t('message.addLine')}}
           </v-btn>
         </v-container>
+        <v-container v-if="question.type === 'mapLinesMultiple'">
+          <v-layout row wrap v-for="line in question.lines" :key="line.id">
+            <v-flex xs10>
+              <v-text-field
+                name="input-1"
+                v-model="line.value"
+                :label="$t('message.yourAnswer')"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs2>
+              <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'LineString', line.value, line.style)">
+                <v-icon dark>timeline</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+          <v-btn dark class="indigo" @click="addRow(question)">
+            {{ $t('message.addLine')}}
+          </v-btn>
+        </v-container>
 
         </v-card-text>
       </v-card>
@@ -143,15 +162,15 @@
     </v-layout>
     <v-layout row wrap v-if="!submitted">
       <v-btn dark block class="indigo" @click="submit('page');"
-        v-if="page < questionnaire.properties.pages">
-        {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages }}</span>
+        v-if="page < questionnaire.properties.pages - deactivatedPages.length">
+        {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages - deactivatedPages.length }}</span>
       </v-btn>
       <v-btn dark block class="grey" @click="page -= 1"
-        v-if="page > 0 && page <= questionnaire.properties.pages">
+        v-if="page > 0 && page <= questionnaire.properties.pages - deactivatedPages.length">
         {{ $t('message.previousSection')}}
       </v-btn>
 
-      <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages">
+      <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages - deactivatedPages.length">
         {{ $t('message.submitQuestionnaire')}}<v-icon dark>send</v-icon>
       </v-btn>
     </v-layout>
@@ -205,9 +224,49 @@ export default {
           offset: 0,
         };
       },
+      deactivatedPages: [],
     };
   },
   methods: {
+    toggleSections() {
+      const pagesToAdd = [];
+      const pagesToRemove = [];
+      // console.log(selected);
+      this.deactivatedPages = [];
+      this.questionnaire.questions.forEach((question) => {
+        // for each question check if has value
+        if (question.type === 'combobox' && (question.value || question.optional === true)) {
+          console.log('found combobox with value or optional:: ', question);
+          question.items.forEach((item) => {
+            if (item.activateSections && item.activateSections[0] !== '-' && question.value === item.value) {
+              console.log('found item active to remove page from deactivated');
+              item.activateSections.forEach((i) => {
+                pagesToRemove.push(i);
+              });
+            }
+            if (item.activateSections && item.activateSections[0] !== '-' && question.value !== item.value) {
+              console.log('found item active to add page to deactivated');
+              item.activateSections.forEach((i) => {
+                pagesToAdd.push(i);
+              });
+            }
+          });
+        }
+        if (question.type === 'combobox' && !question.value) {
+          question.items.forEach((item) => {
+            if (item.activateSections && item.activateSections[0] !== '-') {
+              console.log('found combobox without value:: ', question);
+              item.activateSections.forEach((i) => {
+                pagesToAdd.push(i);
+              });
+            }
+          });
+        }
+      });
+      console.log(pagesToAdd, pagesToRemove);
+      this.deactivatedPages = pagesToAdd.filter(p => !pagesToRemove.includes(p));
+      // this.questionnaire.properties.pages -= this.deactivatedPages.length;
+    },
     scrollTop() {
       const container = document.getElementById('layout1');
       container.scrollTop = 0;
@@ -397,6 +456,40 @@ export default {
             }
           }
           if (q.type === 'mapPointerMultiple') {
+            const coordinates = [];
+            const values = [];
+            q.lines.forEach((b) => {
+              console.log('b:: ', b);
+              if (b.value) {
+                values.push(b.value);
+                const features = this.$store.state.questionnaireFeatures;
+                features.forEach((f) => {
+                  if (f.getProperties().buttonId === b.id) {
+                    coordinates.push(f);
+                  }
+                });
+              }
+            });
+            if ((values.length > 0 && coordinates.length > 0) || q.optional === true) {
+              questionnaireResult.push({
+                id: q.id,
+                title: q.title,
+                value: values,
+                coordinates: coordinates,
+                error: false,
+              });
+            } else {
+              questionnaireResult.push({
+                id: q.id,
+                title: q.title,
+                value: values,
+                coordinates: coordinates,
+                error: true,
+              });
+            }
+            console.log(q.id, q.title, q.value);
+          }
+          if (q.type === 'mapLinesMultiple') {
             const coordinates = [];
             const values = [];
             q.lines.forEach((b) => {
@@ -641,6 +734,45 @@ export default {
           }
           console.log(q.id, q.title, q.value);
         }
+        if (q.type === 'mapLinesMultiple') {
+          const coordinates = [];
+          const values = [];
+          q.lines.forEach((b) => {
+            console.log('b:: ', b);
+            if (b.value) {
+              values.push(b.value);
+              const features = this.$store.state.questionnaireFeatures;
+              features.forEach((f) => {
+                if (f.getProperties().buttonId === b.id) {
+                  f.setProperties({
+                    label: b.value,
+                  });
+                  coordinates.push(geojsonFormat.writeFeatures([f]));
+                }
+              });
+            }
+          });
+          if ((values.length > 0 && coordinates.length > 0) || q.optional === true) {
+            questionnaireResult.push({
+              id: q.id,
+              title: q.title,
+              value: values,
+              coordinates: coordinates,
+              error: false,
+              type: q.type,
+            });
+          } else {
+            questionnaireResult.push({
+              id: q.id,
+              title: q.title,
+              value: values,
+              coordinates: coordinates,
+              error: true,
+              type: q.type,
+            });
+          }
+          console.log(q.id, q.title, q.value);
+        }
       });
       console.log('result:: ', questionnaireResult);
       return questionnaireResult;
@@ -729,6 +861,23 @@ export default {
         this.loading = false;
         this.zoomToExtent();
         this.setLocale(this.questionnaire.properties.locale);
+      }).then(() => {
+        console.log('find deactivated pages');
+        this.questionnaire.questions.forEach((q) => {
+          if (q.items) {
+            q.items.forEach((i) => {
+              if (i.activateSections && i.activateSections !== ''
+              && i.activateSections !== null && i.activateSections[0] !== '-') {
+                // deactivatedPage = parseInt(i.activateSections) - 1;
+                console.log(i.activateSections, typeof (i.activateSections));
+                i.activateSections.forEach((as) => {
+                  console.log('added this page:: ', as);
+                  this.deactivatedPages.push(as);
+                });
+              }
+            });
+          }
+        });
       });
     },
     setLocale(value) {
