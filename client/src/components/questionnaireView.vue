@@ -13,10 +13,11 @@
 
     <v-layout v-if="!submitted" row wrap xs12 sm12 md12>
     <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
-      <v-card v-if="question.page === page && !deactivatedPages.includes(question.page + 1)">
+      <!-- <v-card v-if="question.page === page && !deactivatedPages.includes(question.page + 1)"> -->
+      <v-card v-if="question.page === page">
         <v-card-title primary-title>
           <div>
-            <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === true">*</span></h3>
+            <h3 :class="titleClass(question)">{{ question.title }} <span v-if="question.optional === true">*</span></h3>
             <v-alert color="error" icon="warning" :value="question.error">
               {{ $t('message.questionNotAnswered') }}
             </v-alert>
@@ -162,15 +163,15 @@
     </v-layout>
     <v-layout row wrap v-if="!submitted">
       <v-btn dark block class="indigo" @click="submit('page');"
-        v-if="page < questionnaire.properties.pages - deactivatedPages.length">
+        v-if="showNext">
         {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages - deactivatedPages.length }}</span>
       </v-btn>
-      <v-btn dark block class="grey" @click="page -= 1"
-        v-if="page > 0 && page <= questionnaire.properties.pages - deactivatedPages.length">
+      <v-btn dark block class="grey" @click="goToPreviousPage"
+        v-if="showPrevious">
         {{ $t('message.previousSection')}}
       </v-btn>
 
-      <v-btn dark block class="indigo" @click="submit('all')" v-if="page === questionnaire.properties.pages - deactivatedPages.length">
+      <v-btn dark block class="indigo" @click="submit('all')" v-if="lastPage">
         {{ $t('message.submitQuestionnaire')}}<v-icon dark>send</v-icon>
       </v-btn>
     </v-layout>
@@ -225,9 +226,63 @@ export default {
         };
       },
       deactivatedPages: [],
+      pagesQueue: null,
+      lastPage: false,
+      showNext: true,
+      showPrevious: false,
     };
   },
   methods: {
+    goToPreviousPage() {
+      console.log('checking the previous page', this.page + 1, Object.keys(this.pagesQueue).length);
+      console.log('checking the previous page', this.page - 1, this.pagesQueue);
+      for (let i = this.page - 1; i >= 0; i -= 1) {
+        console.log('checking page:: ', i, this.pagesQueue[i]);
+        if (i === Object.keys(this.pagesQueue).length - 1) {
+          console.log('i = last page');
+          this.lastPage = true;
+          this.showNext = false;
+        }
+        if (i < Object.keys(this.pagesQueue).length - 1) {
+          console.log('i smaller than last page');
+          this.lastPage = false;
+          this.showNext = true;
+        }
+        if (i > 0 && i <= Object.keys(this.pagesQueue).length) {
+          console.log('i not first page but smaller than last page');
+          this.lastPage = false;
+          this.showPrevious = true;
+        }
+        console.log(i);
+        if (this.pagesQueue[i]) {
+          this.page = i;
+          break;
+        }
+      }
+    },
+    goToNextPage() {
+      console.log('checking the next page', this.page + 1, Object.keys(this.pagesQueue).length);
+      for (let i = this.page + 1; i < Object.keys(this.pagesQueue).length; i += 1) {
+        if (i === Object.keys(this.pagesQueue).length - 1) {
+          this.lastPage = true;
+          this.showNext = false;
+        }
+        if (i < Object.keys(this.pagesQueue).length - 1) {
+          this.showNext = true;
+        }
+        if (i > 0 && i <= Object.keys(this.pagesQueue).length) {
+          this.showPrevious = true;
+        }
+        console.log(i);
+        if (this.pagesQueue[i]) {
+          this.page = i;
+          break;
+        }
+      }
+    },
+    titleClass(question) {
+      return !question.style.titleFontSize ? 'headline mb-0' : 'subheading';
+    },
     toggleSections() {
       const pagesToAdd = [];
       const pagesToRemove = [];
@@ -265,7 +320,19 @@ export default {
       });
       console.log(pagesToAdd, pagesToRemove);
       this.deactivatedPages = pagesToAdd.filter(p => !pagesToRemove.includes(p));
-      // this.questionnaire.properties.pages -= this.deactivatedPages.length;
+      const pagesQueue = {};
+      for (let index = 1; index <= this.questionnaire.properties.pages + 1; index += 1) {
+        console.log(this.deactivatedPages);
+        if (this.deactivatedPages.includes(index)) {
+          console.log('false');
+          pagesQueue[`${index - 1}`] = false;
+        } else {
+          console.log('true');
+          pagesQueue[`${index - 1}`] = true;
+        }
+      }
+      console.log('pages queue:: ', pagesQueue);
+      this.pagesQueue = pagesQueue;
     },
     scrollTop() {
       const container = document.getElementById('layout1');
@@ -795,7 +862,8 @@ export default {
         this.validate(res).then((v) => {
           if (v) {
             console.log('next page', v);
-            this.page += 1;
+            // this.page += 1;
+            this.goToNextPage();
             this.scrollTop();
             if (type === 'all') {
               this.getAllValues().then((result) => {

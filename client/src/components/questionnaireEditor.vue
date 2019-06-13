@@ -134,7 +134,9 @@
                   <v-card-title primary-title>
                     <div>
                       <div><h4>{{ $t('message.previewQuestionnaire')}}</h4></div>
-                      <h3 class="headline mb-0">{{ question.title }} <span v-if="question.optional === false">*</span></h3>
+                      <h3 :class="titleClass(question)">{{ question.title }} 
+                        <span v-if="question.optional === false && question.type !== 'titleDescription'">*</span>
+                      </h3>
                       <v-alert color="error" icon="warning" :value="question.error">
                         Δεν έχετε απαντήσει στην ερώτηση
                       </v-alert>
@@ -312,10 +314,16 @@
                         v-model="question.description"
                         :label="$t('message.description')"
                       ></v-text-field>
+                      <v-layout row wrap>
                       <v-checkbox
                         :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
+                      </v-layout>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -884,6 +892,9 @@ export default {
     },
   },
   methods: {
+    titleClass(question) {
+      return !question.style.titleFontSize ? 'headline mb-0' : 'subheading';
+    },
     changeQuestionnaireMode(mode) {
       this.$store.commit('setQuestionnaireMode', mode);
     },
@@ -958,6 +969,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.questionnaire.questions.push(textfield);
       }
@@ -974,6 +988,9 @@ export default {
           editing: true,
           pageBreak: false,
           validation: null,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.questionnaire.questions.push(textfieldvalidation);
       }
@@ -990,6 +1007,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(combobox);
@@ -1007,6 +1027,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(checkboxGroup);
@@ -1024,6 +1047,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(radioGroup);
@@ -1053,6 +1079,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointer);
@@ -1080,6 +1109,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapLineString);
@@ -1097,6 +1129,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(preferenceHierarchy);
@@ -1123,6 +1158,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointerMultiple);
@@ -1149,6 +1187,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(mapLinesMultiple);
@@ -1164,6 +1205,9 @@ export default {
           optional: false,
           editing: true,
           pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
         };
         this.nextItemId += 1;
         this.questionnaire.questions.push(titleDescription);
