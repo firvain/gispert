@@ -35,8 +35,10 @@ class tableOfCheckboxes {
   get vertical() {
     return this.verticalValues;
   }
-
   get items() {
+    return this.items;
+  }
+  createItems() {
     const items = [];
     if (this.horizontalValues && this.verticalValues) {
       this.verticalValues.forEach((vv) => {

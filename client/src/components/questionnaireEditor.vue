@@ -1405,6 +1405,7 @@ export default {
       this.dateEnd = moment.unix(this.qnnaire.properties.dateEnd / 1000).format('YYYY-MM-DD');
       // this.nextId = this.questionnaire.questions.length + 1;
       // this.findNextItemId();
+      // TODO load questionnaire in classes
     }
   },
 };
