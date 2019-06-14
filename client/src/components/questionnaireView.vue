@@ -157,9 +157,66 @@
           </v-btn>
         </v-container>
 
+        <v-container fluid v-if="question.type === 'tableOfCheckboxes'">
+          <v-layout row wrap>
+            <v-container>
+              <v-flex xs12 md12>
+                  <v-layout row wrap>
+                      <v-flex xs1> 
+                        </v-flex>
+                        <v-flex xs1 ma-2 v-for="answer in question.horizontalValues" :key="answer.id">
+                          {{ answer.text }}
+                        </v-flex>
+                  </v-layout>
+              </v-flex>
+              <v-flex xs12 md12>
+                <v-layout row wrap v-for="item in generateItemsTable(question)" :key="item.id">
+                  <v-flex xs1 ma-1>{{ item.title }}</v-flex>
+                  <v-flex ma-2 v-for="answer in item.answers" :key="answer.id" xs1>
+                    <v-checkbox light v-model="answer.selected"></v-checkbox>{{ answer.selected }}
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-container>
+          </v-layout>
+          {{ question }}
+        </v-container>
+<!-- 
+        <v-container fluid v-if="question.type === 'tableOfRadios'">
+          <v-layout row wrap>
+            <v-container>
+              <v-flex xs12 md12>
+                  <v-layout row wrap>
+                      <v-flex xs1> 
+                        </v-flex>
+                        <v-flex xs1 ma-2 v-for="answer in question.items[0].answers" :key="answer.text">
+                          {{ answer.text }}
+                        </v-flex>
+                  </v-layout>
+              </v-flex>
+              <v-flex xs12 md12>
+                <v-layout row wrap v-for="item in question.items" :key="item.title">
+                  <v-flex xs1 ma-1>{{ item.title }}</v-flex>
+
+                    <v-radio-group v-model="question.value" row>
+                      <v-radio xs1
+                        v-for="answer in item.answers"
+                        :key="answer"
+                        label="testing"
+                      >{{ answer }}</v-radio>
+                    </v-radio-group>
+
+                </v-layout>
+              </v-flex>
+            </v-container>
+          </v-layout>
+        </v-container> -->
+
+
         </v-card-text>
       </v-card>
     </v-container>
+
     </v-layout>
     <v-layout row wrap v-if="!submitted">
       <v-btn dark block class="indigo" @click="submit('page');"
@@ -233,6 +290,21 @@ export default {
     };
   },
   methods: {
+    generateItemsTable(question) {
+      console.log('generating table');
+      const items = [];
+      if (question.horizontalValues && question.verticalValues) {
+        question.verticalValues.forEach((vv) => {
+          const answers = [];
+          question.horizontalValues.forEach((hv) => {
+            answers.push({ id: `${hv.id}_${vv.id}`, text: hv.text, selected: hv.selected });
+          });
+          items.push({ id: vv.id, title: vv.title, answers });
+        });
+      }
+      console.log(items);
+      return items;
+    },
     goToPreviousPage() {
       console.log('checking the previous page', this.page + 1, Object.keys(this.pagesQueue).length);
       console.log('checking the previous page', this.page - 1, this.pagesQueue);
@@ -840,6 +912,15 @@ export default {
           }
           console.log(q.id, q.title, q.value);
         }
+        if (q.type === 'tableOfCheckboxes') {
+          questionnaireResult.push({
+            id: q.id,
+            title: q.title,
+            value: q.items,
+            error: false,
+            type: q.type,
+          });
+        }
       });
       console.log('result:: ', questionnaireResult);
       return questionnaireResult;
@@ -961,7 +1042,6 @@ export default {
     }
     this.loadQuestionnaire();
     // TODO create combobox and checkbox to input Other value by typing
-    // TODO fix the id every new question takes
     // custom message after q submittion
   },
 };

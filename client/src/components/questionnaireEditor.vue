@@ -265,6 +265,29 @@
                       <h3 class="headline mb-0">{{ question.title }}</h3>
                       <div> {{ question.description }} </div>
                     </v-flex>
+                    <v-flex fluid v-if="question.type === 'tableOfCheckboxes'">
+                      <v-layout row wrap>
+                        <v-container>
+                          <v-flex xs12 md12>
+                              <v-layout row wrap v-if="question.horizontal && question.vertical">
+                                <v-flex xs1> 
+                                </v-flex>
+                                <v-flex xs1 ma-2 v-for="hv in question.horizontal" :key="hv.id">
+                                  {{ hv.text }}
+                                </v-flex>
+                              </v-layout>
+                          </v-flex>
+                          <v-flex xs12 md12>
+                            <v-layout row wrap v-for="item in question.items" :key="item.id">
+                              <v-flex xs1 ma-1>{{ item.title }}</v-flex>
+                              <v-flex ma-2 v-for="answer in item.answers" :key="answer.id" xs1>
+                                <v-checkbox light v-model="answer.selected"></v-checkbox>
+                              </v-flex>
+                            </v-layout>
+                          </v-flex>
+                        </v-container>
+                      </v-layout>
+                    </v-flex>
 
                     <v-layout row wrap align-center>
                       <v-flex xs4>
@@ -378,7 +401,7 @@
                         :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
-                        <v-btn flat outline fab small @click="nextItemId += 1; question.items.push({id: nextItemId, value: ''});" v-if="question.editing">
+                        <v-btn flat outline fab small @click="question.items.push({id: nextItemId, value: ''});" v-if="question.editing">
                           <v-icon>add</v-icon>
                         </v-btn>
                         <template v-for="item in question.items">
@@ -437,7 +460,7 @@
                         :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
-                        <v-btn flat outline fab small @click="nextItemId += 1; question.checkboxes.push({id: nextItemId, label: '', value: false});"
+                        <v-btn flat outline fab small @click="question.checkboxes.push({id: nextItemId, label: '', value: false});"
                           v-if="question.editing">
                           <v-icon>add</v-icon>
                         </v-btn>
@@ -482,7 +505,7 @@
                         :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
-                        <v-btn flat outline fab small @click="nextItemId += 1; question.radios.push({id: nextItemId, label: '', value: false});"
+                        <v-btn flat outline fab small @click="question.radios.push({id: nextItemId, label: '', value: false});"
                           v-if="question.editing">
                           <v-icon>add</v-icon>
                         </v-btn>
@@ -527,7 +550,7 @@
                         :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
-                        <v-btn flat outline fab small @click="nextItemId += 1; question.optionsToSort.push({id: nextItemId, label: '', value: false});"
+                        <v-btn flat outline fab small @click="question.optionsToSort.push({id: nextItemId, label: '', value: false});"
                           v-if="question.editing">
                           <v-icon>add</v-icon>
                         </v-btn>
@@ -572,7 +595,7 @@
                         :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
-                        <v-btn flat outline fab small @click="nextItemId += 1; question.buttons.push({id: nextItemId, label: '', coords: null});"
+                        <v-btn flat outline fab small @click="question.buttons.push({id: nextItemId, label: '', coords: null});"
                           v-if="question.editing">
                           <v-icon>add</v-icon>
                         </v-btn>
@@ -626,7 +649,7 @@
                         :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
-                        <v-btn flat outline fab small @click="nextItemId += 1; question.buttons.push({id: nextItemId, label: '', coords: null});"
+                        <v-btn flat outline fab small @click="question.buttons.push({id: nextItemId, label: '', coords: null});"
                           v-if="question.editing">
                           <v-icon>add</v-icon>
                         </v-btn>
@@ -734,6 +757,78 @@
                       </v-btn>
                     </v-flex>
 
+                    <v-flex v-if="question.type === 'tableOfCheckboxes'">
+                      <v-text-field
+                        name="input-2"
+                        v-model="question.title"
+                        :label="$t('message.question')"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-2"
+                        v-model="question.description"
+                        :label="$t('message.description')"
+                      ></v-text-field>
+                      <v-layout>
+                        <v-flex xs6>Vertical values
+                          <v-list>
+                            <v-btn flat outline fab small
+                              @click="question.addVerticalValue = { id: nextItemId, title: '' };"
+                              v-if="question.editing">
+                              <v-icon>add</v-icon>
+                            </v-btn>
+                            <template v-for="item in question.vertical">
+                              <v-list-tile
+                                  :key="item.id"
+                              >
+                                <v-list-tile-content>
+                                  <v-text-field
+                                    name="input-1"
+                                    v-model="item.title"
+                                    append-icon="delete"
+                                    @click:append="question.removeVerticalValue = item;"
+                                  ></v-text-field>
+                                  <v-icon>delete</v-icon>
+                                </v-list-tile-content>
+                              </v-list-tile>
+                            </template>
+                          </v-list>
+                        </v-flex>
+                        <v-flex xs6>Horizontal values
+                          <v-list>
+                            <v-btn flat outline fab small @click="question.addHorizontalValue = { id: nextItemId, text: '', selected: false };"
+                              v-if="question.editing">
+                              <v-icon>add</v-icon>
+                            </v-btn>
+                            <template v-for="answer in question.horizontal">
+                              <v-list-tile
+                                  :key="answer.id"
+                              >
+                                <v-list-tile-content>
+                                  <v-text-field
+                                    name="input-1"
+                                    v-model="answer.text"
+                                    append-icon="delete"
+                                    @click:append="question.removeHorizontalValues = item;"
+                                  ></v-text-field>
+                                  <v-icon>delete</v-icon>
+                                </v-list-tile-content>
+                              </v-list-tile>
+                            </template>
+                          </v-list>
+                        </v-flex>
+                      </v-layout>
+                      <v-checkbox
+                        :label="$t('message.optional')"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>folder_open</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
                   </v-container>
                 </v-card>
               </v-flex>
@@ -745,19 +840,19 @@
           <v-flex>
             <v-card>
               <v-card-title primary-title>
-                  <h3 class="headline mb-0">{{ $t('message.addQuestion') }}</h3>
-                  <v-flex xs12 sm12 md12>
-                    <v-select
-                      v-bind:items="questionTypes"
-                      item-value="type"
-                      item-text="name"
-                      v-model="newQuestion"
-                      :label="$t('message.questionType')"
-                      single-line
-                      menu-props='bottom'
-                      v-on:input="loadQuestionType"
-                    ></v-select>
-                  </v-flex>
+                <h3 class="headline mb-0">{{ $t('message.addQuestion') }}</h3>
+                <v-flex xs12 sm12 md12>
+                  <v-select
+                    v-bind:items="questionTypes"
+                    item-value="type"
+                    item-text="name"
+                    v-model="newQuestion"
+                    :label="$t('message.questionType')"
+                    single-line
+                    menu-props='bottom'
+                    v-on:input="loadQuestionType"
+                  ></v-select>
+                </v-flex>
               </v-card-title>
             </v-card>
           </v-flex>
@@ -780,6 +875,7 @@ import axios from 'axios';
 import moment from 'moment';
 import draggable from 'vuedraggable';
 import Swatches from 'vue-swatches';
+import NewtableOfCheckboxes from '@/components/classes/questionnaire';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
@@ -809,8 +905,6 @@ export default {
       datePickerEnd: null,
       loading: false,
       newQuestion: null,
-      nextId: 0,
-      nextItemId: 0,
       questionTypes: [
         { type: 'textfield', name: this.$t('message.text') },
         { type: 'textfieldvalidation', name: 'Text field with validation' },
@@ -823,6 +917,7 @@ export default {
         { type: 'mapPointerMultiple', name: this.$t('message.mapPointerMultiple') },
         { type: 'mapLinesMultiple', name: this.$t('message.mapLinesMultiple') },
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
+        { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') },
       ],
       questionnaire: {
         questions: [],
@@ -855,6 +950,8 @@ export default {
           },
         },
       },
+      // nextId: 0,
+      // nextItemId: 0,
     };
   },
   watch: {
@@ -890,8 +987,30 @@ export default {
       }
       return names;
     },
+    nextId: {
+      cache: false,
+      get() {
+        return String(Date.now()) + Math.floor(Math.random() * 10000);
+      },
+    },
+    nextItemId: {
+      cache: false,
+      get() {
+        return String(Date.now()) + Math.floor(Math.random() * 10000);
+      },
+    },
   },
   methods: {
+    // generateItemsTable(question) {
+    //   console.log('generating table');
+    //   const items = [];
+    //   if (question.horizontalValues && question.verticalValues) {
+    //     question.horizontalValues.forEach((hv) => {
+    //       items.push({ id: hv.id, title: hv.title, answers: question.verticalValues });
+    //     });
+    //   }
+    //   question.items = items; // eslint-disable-line no-param-reassign
+    // },
     titleClass(question) {
       return !question.style.titleFontSize ? 'headline mb-0' : 'subheading';
     },
@@ -1011,7 +1130,6 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(combobox);
       }
       if (this.newQuestion === 'checkboxGroup') {
@@ -1031,7 +1149,6 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(checkboxGroup);
       }
       if (this.newQuestion === 'radioGroup') {
@@ -1051,7 +1168,6 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(radioGroup);
       }
       if (this.newQuestion === 'mapPointer') {
@@ -1083,7 +1199,6 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointer);
       }
       if (this.newQuestion === 'mapLineString') {
@@ -1113,7 +1228,6 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(mapLineString);
       }
       if (this.newQuestion === 'preferenceHierarchy') {
@@ -1133,7 +1247,6 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(preferenceHierarchy);
       }
       if (this.newQuestion === 'mapPointerMultiple') {
@@ -1162,7 +1275,6 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(mapPointerMultiple);
       }
       if (this.newQuestion === 'mapLinesMultiple') {
@@ -1191,7 +1303,6 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(mapLinesMultiple);
       }
       if (this.newQuestion === 'titleDescription') {
@@ -1209,10 +1320,31 @@ export default {
             titleFontSize: null,
           },
         };
-        this.nextItemId += 1;
         this.questionnaire.questions.push(titleDescription);
       }
-      this.nextId += 1;
+      if (this.newQuestion === 'tableOfCheckboxes') {
+        const tableOfCheckboxes = new NewtableOfCheckboxes(this.nextId);
+        // const tableOfCheckboxes = {
+        //   id: this.nextId,
+        //   type: 'tableOfCheckboxes',
+        //   page: 0,
+        //   title: null,
+        //   description: null,
+        //   error: false,
+        //   horizontalValues: [],
+        //   verticalValues: [],
+        //   items: [],
+        //   optional: false,
+        //   editing: true,
+        //   pageBreak: false,
+        //   style: {
+        //     titleFontSize: null,
+        //   },
+        // };
+        // this.nextItemId += 1;
+        this.questionnaire.questions.push(tableOfCheckboxes);
+      }
+      // this.nextId += 1;
       this.$nextTick(() => {
         this.newQuestion = null;
         this.pageBreakChangeControl();
@@ -1223,17 +1355,17 @@ export default {
       this.$store.commit('setQuestionnaireFeatureId', id);
       olMap.setActiveInteraction(type);
     },
-    findNextItemId() {
-      let count = 0;
-      this.questionnaire.questions.forEach((e) => {
-        if (e.items) { count += e.items.length; }
-        if (e.lines) { count += e.lines.length; }
-        if (e.buttons) { count += e.buttons.length; }
-        if (e.checkboxes) { count += e.checkboxes.length; }
-        if (e.radios) { count += e.radios.length; }
-      });
-      this.nextItemId = count + 1;
-    },
+    // findNextItemId() {
+    //   let count = 0;
+    //   this.questionnaire.questions.forEach((e) => {
+    //     if (e.items) { count += e.items.length; }
+    //     if (e.lines) { count += e.lines.length; }
+    //     if (e.buttons) { count += e.buttons.length; }
+    //     if (e.checkboxes) { count += e.checkboxes.length; }
+    //     if (e.radios) { count += e.radios.length; }
+    //   });
+    //   this.nextItemId = count + 1;
+    // },
     closeQuestionnaire() {
       this.$store.commit('setQuestionnaireMode', 'normal');
       this.$eventHub.$emit('refreshQuestionnaires');
@@ -1271,8 +1403,8 @@ export default {
       this.questionnaire = this.qnnaire;
       this.dateStart = moment.unix(this.qnnaire.properties.dateStart / 1000).format('YYYY-MM-DD');
       this.dateEnd = moment.unix(this.qnnaire.properties.dateEnd / 1000).format('YYYY-MM-DD');
-      this.nextId = this.questionnaire.questions.length + 1;
-      this.findNextItemId();
+      // this.nextId = this.questionnaire.questions.length + 1;
+      // this.findNextItemId();
     }
   },
 };

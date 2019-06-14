@@ -207,6 +207,15 @@
                         </barChart>
                       </v-flex>
 
+                      <v-flex v-if="question.type === 'tableOfCheckboxes'" width='400px'>
+                        calculate results
+                        <!-- <barChart
+                          v-if="loadedAgreggates"
+                          :chartdata="createChartDataForcheckboxGroupQuestion(question)"
+                          :options="options">
+                        </barChart> -->
+                      </v-flex>
+
                       <v-flex v-if="question.type === 'preferenceHierarchy'" width='400px'>
                         <barChart
                           v-if="loadedAgreggates"
