@@ -758,6 +758,8 @@
                     </v-flex>
 
                     <v-flex v-if="question.type === 'tableOfCheckboxes'">
+                      {{ question }}
+                      <!-- <toc :question='question'></toc> -->
                       <v-text-field
                         name="input-2"
                         v-model="question.title"
@@ -876,6 +878,7 @@ import moment from 'moment';
 import draggable from 'vuedraggable';
 import Swatches from 'vue-swatches';
 import NewtableOfCheckboxes from '@/components/classes/questionnaire';
+// import toc from '@/components/classes/questionTypes/tableOfCheckboxes/tableOfCheckboxesEditor';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
@@ -883,7 +886,7 @@ import config from '../config';
 export default {
   props: ['qnnaire'],
   components: {
-    draggable, Swatches,
+    draggable, Swatches, // toc,
   },
   data() {
     return {
@@ -1323,7 +1326,10 @@ export default {
         this.questionnaire.questions.push(titleDescription);
       }
       if (this.newQuestion === 'tableOfCheckboxes') {
-        const tableOfCheckboxes = new NewtableOfCheckboxes(this.nextId);
+        const newTOCquestion = {
+          id: this.nextId,
+        };
+        const tableOfCheckboxes = new NewtableOfCheckboxes(newTOCquestion);
         // const tableOfCheckboxes = {
         //   id: this.nextId,
         //   type: 'tableOfCheckboxes',

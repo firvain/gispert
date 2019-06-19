@@ -163,14 +163,14 @@
               <v-flex xs12 md12>
                   <v-layout row wrap>
                       <v-flex xs1> 
-                        </v-flex>
-                        <v-flex xs1 ma-2 v-for="answer in question.horizontalValues" :key="answer.id">
-                          {{ answer.text }}
-                        </v-flex>
+                      </v-flex>
+                      <v-flex xs1 ma-2 v-for="answer in question.horizontalValues" :key="answer.id">
+                        {{ answer.text }}
+                      </v-flex>
                   </v-layout>
               </v-flex>
               <v-flex xs12 md12>
-                <v-layout row wrap v-for="item in generateItemsTable(question)" :key="item.id">
+                <v-layout row wrap v-for="item in question.items" :key="item.id">
                   <v-flex xs1 ma-1>{{ item.title }}</v-flex>
                   <v-flex ma-2 v-for="answer in item.answers" :key="answer.id" xs1>
                     <v-checkbox light v-model="answer.selected"></v-checkbox>{{ answer.selected }}
@@ -179,7 +179,6 @@
               </v-flex>
             </v-container>
           </v-layout>
-          {{ question }}
         </v-container>
 <!-- 
         <v-container fluid v-if="question.type === 'tableOfRadios'">

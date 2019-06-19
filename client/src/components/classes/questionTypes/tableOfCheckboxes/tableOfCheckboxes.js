@@ -2,21 +2,6 @@ class tableOfCheckboxes {
   constructor(question) {
     this.id = question.id;
     this.type = 'tableOfCheckboxes';
-    if (!question.horizontalValues) {
-      this.horizontalValues = [];
-    } else {
-      this.horizontalValues = question.horizontalValues;
-    }
-    if (!question.verticalValues) {
-      this.verticalValues = [];
-    } else {
-      this.verticalValues = question.verticalValues;
-    }
-    if (!question.items) {
-      this.items = [];
-    } else {
-      this.items = question.items;
-    }
     if (!question.page) {
       this.page = 0;
     } else {
@@ -37,29 +22,43 @@ class tableOfCheckboxes {
     } else {
       this.error = question.error;
     }
-    if (!question.optional) {
-      this.optional = false;
+    if (question.horizontalValues) {
+      this.horizontalValues = question.horizontalValues;
     } else {
-      this.optional = question.optional;
+      this.horizontalValues = [];
     }
-    if (!question.editing) {
-      this.editing = true;
+    if (!question.verticalValues) {
+      this.verticalValues = [];
     } else {
-      this.editing = question.editing;
+      this.verticalValues = question.verticalValues;
     }
-    if (!question.pageBreak) {
-      this.pageBreak = false;
-    } else {
-      this.pageBreak = question.pageBreak;
-    }
-    if (!question.style) {
-      this.style = {
-        titleFontSize: null,
-      };
-    } else {
-      this.style = question.style;
-    }
+    // this.items = null;
+    this.optional = false;
+    this.editing = true;
+    this.pageBreak = false;
+    this.style = {
+      titleFontSize: null,
+    };
   }
+  set page(v) {
+    this.page = v;
+  }
+  get page() {
+    return this.page;
+  }
+  set title(v) {
+    this.title = v;
+  }
+  get title() {
+    return this.title;
+  }
+  set description(v) {
+    this.description = v;
+  }
+  get description() {
+    return this.description;
+  }
+
   set addHorizontalValue(v) {
     this.horizontalValues.push(v);
     this.createItems();
@@ -82,7 +81,10 @@ class tableOfCheckboxes {
   get vertical() {
     return this.verticalValues;
   }
-  get items() {
+  set setItems(items) {
+    this.createItems();
+  }
+  get getItems() {
     return this.items;
   }
   createItems() {
@@ -97,7 +99,6 @@ class tableOfCheckboxes {
       });
     }
     this.items = items;
-    // return items;
   }
 }
 export default tableOfCheckboxes;

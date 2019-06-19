@@ -126,6 +126,30 @@
                     </v-list>
                   </v-flex>
 
+                  <v-flex v-if="question.type === 'tableOfCheckboxes'">
+                    <v-layout row wrap>
+                      <v-container>
+                        <v-flex xs12 md12>
+                            <v-layout row wrap>
+                                <v-flex xs1> 
+                                </v-flex>
+                                <v-flex xs1 ma-2 v-for="answer in question.value[0].answers" :key="answer.id">
+                                  {{ answer.text }}
+                                </v-flex>
+                            </v-layout>
+                        </v-flex>
+                        <v-flex xs12 md12>
+                          <v-layout row wrap v-for="item in question.value" :key="item.id">
+                            <v-flex xs1 ma-1>{{ item.title }}</v-flex>
+                            <v-flex ma-2 v-for="answer in item.answers" :key="answer.id" xs1>
+                              <v-checkbox light v-model="answer.selected"></v-checkbox>
+                            </v-flex>
+                          </v-layout>
+                        </v-flex>
+                      </v-container>
+                    </v-layout>
+                  </v-flex>
+
                   </v-card-text>
                 </v-card>
               </v-container>
@@ -208,12 +232,15 @@
                       </v-flex>
 
                       <v-flex v-if="question.type === 'tableOfCheckboxes'" width='400px'>
-                        calculate results
-                        <!-- <barChart
-                          v-if="loadedAgreggates"
-                          :chartdata="createChartDataForcheckboxGroupQuestion(question)"
-                          :options="options">
-                        </barChart> -->
+                        calculate results {{ question.values }}
+                        <template v-for="(item) in question.values[0]">
+                          <barChart
+                            :key="item.id"
+                            v-if="loadedAgreggates"
+                            :chartdata="createChartDataForTableOfCheckboxes(item)"
+                            :options="options">
+                          </barChart>
+                        </template>
                       </v-flex>
 
                       <v-flex v-if="question.type === 'preferenceHierarchy'" width='400px'>
@@ -522,6 +549,24 @@ export default {
       return chartdata;
     },
     createChartDataForComboboxQuestion(question) {
+      const chartdata = {
+        labels: [],
+        datasets: [],
+      };
+      chartdata.labels.push(question.title);
+      Object.keys(this.countUniqueValues(question.values)).forEach((key, index) => {
+        const dataset = {
+          label: this.shortenText(key),
+          // eslint-disable-next-line
+          backgroundColor: this.pickRandomColor(index),
+          data: [this.countUniqueValues(question.values)[key]],
+        };
+        chartdata.datasets.push(dataset);
+      });
+      return chartdata;
+    },
+    createChartDataForTableOfCheckboxes(question) {
+      console.log('creating data for table of checkboxes:: ', question);
       const chartdata = {
         labels: [],
         datasets: [],
