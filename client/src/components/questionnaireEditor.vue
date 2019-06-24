@@ -425,14 +425,27 @@
                               <!-- <v-icon>delete</v-icon> -->
                               </v-flex>
                               <v-flex xs12>
-                              <v-select
-                                :items="getQuestionnairePagesAsArray"
-                                v-model="item.activatePages"
-                                label="Ενεργοποίηση ενότητας"
-                                single-line
-                                multiple
-                                menu-props="bottom"
-                              ></v-select>
+                                <v-select
+                                  :items="getQuestionnairePagesAsArray"
+                                  v-model="item.activatePages"
+                                  label="Ενεργοποίηση ενότητας"
+                                  single-line
+                                  multiple
+                                  menu-props="bottom"
+                                ></v-select>
+                              </v-flex>
+                              <v-flex xs12>
+                                <v-select
+                                  :items="getQuestionsAsArray"
+                                  v-model="item.activateQuestions"
+                                  item-text="title"
+                                  item-value='id'
+                                  label="Ενεργοποίηση ερώτησης"
+                                  single-line
+                                  multiple
+                                  menu-props="bottom"
+                                  return-object
+                                ></v-select>
                               </v-flex>
                               </v-layout>
                             </v-list-tile-content>
@@ -921,7 +934,7 @@ import axios from 'axios';
 import moment from 'moment';
 import draggable from 'vuedraggable';
 import Swatches from 'vue-swatches';
-import NewtableOfCheckboxes from '@/components/classes/questionnaire';
+import { TableOfCheckboxes } from '@/components/classes/questionnaire';
 // import toc from '@/components/classes/questionTypes/tableOfCheckboxes/tableOfCheckboxesEditor';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
@@ -1008,6 +1021,13 @@ export default {
     },
   },
   computed: {
+    getQuestionsAsArray() {
+      const questionsArray = ['-'];
+      this.questionnaire.questions.forEach((question) => {
+        questionsArray.push({ id: question.id, title: question.title });
+      });
+      return questionsArray;
+    },
     getQuestionnairePagesAsArray() {
       const pagesArray = ['-'];
       for (let index = 0; index <= this.questionnaire.properties.pages; index += 1) {
@@ -1168,7 +1188,7 @@ export default {
           title: null,
           description: null,
           value: null,
-          items: [{ id: `i${this.nextItemId}`, value: '', activatePages: [] }],
+          items: [{ id: `i${this.nextItemId}`, value: '', activatePages: [], activateQuestions: [] }],
           error: false,
           optional: false,
           editing: true,
@@ -1373,7 +1393,7 @@ export default {
         const newTOCquestion = {
           id: this.nextId,
         };
-        const tableOfCheckboxes = new NewtableOfCheckboxes(newTOCquestion);
+        const tableOfCheckboxes = new TableOfCheckboxes(newTOCquestion);
         // const tableOfCheckboxes = {
         //   id: this.nextId,
         //   type: 'tableOfCheckboxes',

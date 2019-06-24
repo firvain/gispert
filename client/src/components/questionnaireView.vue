@@ -14,7 +14,7 @@
     <v-layout v-if="!submitted" row wrap xs12 sm12 md12>
     <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
       <!-- <v-card v-if="question.page === page && !deactivatedPages.includes(question.page + 1)"> -->
-      <v-card v-if="question.page === pagehandler.currentPage">
+      <v-card v-if="question.page === pagehandler.currentPage && !pagehandler.deactivatedQuestions.includes(question.id)">
         <v-card-title primary-title>
           <div>
             <h3 :class="titleClass(question)">{{ question.title }} <span v-if="question.optional === true">*</span></h3>
@@ -58,7 +58,7 @@
             :label="$t('message.yourAnswer')"
             single-line
             menu-props="bottom"
-            v-on:input="pagehandler.toggleSections()"
+            v-on:input="pagehandler.toggleSections(); pagehandler.toggleQuestions();"
           ></v-select>
         </v-flex>
 

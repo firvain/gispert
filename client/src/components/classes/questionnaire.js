@@ -1,4 +1,4 @@
-class tableOfCheckboxes {
+class TableOfCheckboxes {
   constructor(question) {
     this.id = question.id;
     this.type = 'tableOfCheckboxes';
@@ -106,8 +106,10 @@ class PageHandler {
     this.questionnaire = q;
     this.totalPages = 0;
     this.pagesQueue = null;
+    this.questionsQueue = null;
     this.currentPage = 0;
     this.deactivatedPages = [];
+    this.deactivatedQuestions = [];
     this.showSubmit = false;
     this.showNext = true;
     this.showPrevious = false;
@@ -119,6 +121,7 @@ class PageHandler {
   init() {
     this.findTotalPages();
     this.toggleSections();
+    this.toggleQuestions();
   }
   set page(v) {
     this.currentPage = v;
@@ -192,6 +195,71 @@ class PageHandler {
       }
     }
   }
+  toggleQuestions() {
+    const questionsToAdd = [];
+    const questionsToRemove = [];
+
+    this.deactivatedQuestions = [];
+    this.questionnaire.questions.forEach((question) => {
+      // for each question check if has value
+      if (
+        question.type === 'combobox' &&
+        (question.value || question.optional === true)
+      ) {
+        console.log('found combobox with value or optional:: ', question);
+        question.items.forEach((item) => {
+          if (
+            item.activateQuestions &&
+            item.activateQuestions[0] !== '-' &&
+            question.value === item.value
+          ) {
+            console.log('found item active to remove page from deactivated');
+            item.activateQuestions.forEach((i) => {
+              questionsToRemove.push(i);
+            });
+          }
+          if (
+            item.activateQuestions &&
+            item.activateQuestions[0] !== '-' &&
+            question.value !== item.value
+          ) {
+            console.log('found item active to add page to deactivated');
+            item.activateQuestions.forEach((i) => {
+              questionsToAdd.push(i);
+            });
+          }
+        });
+      }
+      if (question.type === 'combobox' && !question.value) {
+        question.items.forEach((item) => {
+          if (item.activateQuestions && item.activateQuestions[0] !== '-') {
+            // console.log('found combobox without value:: ', question);
+            item.activateQuestions.forEach((i) => {
+              questionsToAdd.push(i);
+            });
+          }
+        });
+      }
+    });
+    console.log('to add and to remove :: ', questionsToAdd, questionsToRemove);
+    const unique = questionsToAdd.filter(p => !questionsToRemove.includes(p).id);
+    unique.forEach((u) => {
+      this.deactivatedQuestions.push(u.id);
+    });
+    const questionsQueue = {};
+    for (let index = 0; index <= this.totalPages; index += 1) {
+      // console.log(this.deactivatedQuestions);
+      if (this.deactivatedQuestions.includes(index)) {
+        // console.log('false');
+        questionsQueue[`${index}`] = { visibility: false };
+      } else {
+        // console.log('true');
+        questionsQueue[`${index}`] = { visibility: true };
+      }
+    }
+    this.questionsQueue = questionsQueue;
+  }
+
   toggleSections() {
     console.log('toggling sections');
     const pagesToAdd = [];
@@ -255,4 +323,4 @@ class PageHandler {
     this.pagesQueue = pagesQueue;
   }
 }
-export { tableOfCheckboxes, PageHandler };
+export { TableOfCheckboxes, PageHandler };
