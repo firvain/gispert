@@ -655,7 +655,7 @@ export default {
       const geojsonFormat = new ol.format.GeoJSON();
       const questionnaireResult = [];
       this.questionnaire.questions.forEach((q) => {
-        if (q.type === 'textfield' || q.type === 'textfieldvalidation') {
+        if (q.type === 'textfield' || q.type === 'textfieldvalidation' || q.type === 'textarea') {
           if (q.value && q.value.length > 0) {
             questionnaireResult.push({
               id: q.id,
