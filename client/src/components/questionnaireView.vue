@@ -419,7 +419,8 @@ export default {
       this.questionnaire.questions.forEach((q) => {
         if (q.page === this.pagehandler.currentPage) {
           if (q.type === 'textfield' || q.type === 'textfieldvalidation') {
-            if ((q.value && q.value.length > 0) || (q.optional === true)) {
+            if ((q.value && q.value.length > 0) ||
+              (q.optional === true || this.pagehandler.deactivatedQuestions.includes(q.id))) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -437,7 +438,9 @@ export default {
           }
           if (q.type === 'combobox') {
             console.log(q);
-            if (q.value !== null || q.optional === true) {
+            if (q.value !== null ||
+              q.optional === true ||
+              this.pagehandler.deactivatedQuestions.includes(q.id)) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -462,7 +465,9 @@ export default {
             q.checkboxes.forEach((c) => {
               boxes.push([c.label, c.value]);
             });
-            if (errors.includes(true) || q.optional === true) {
+            if (errors.includes(true) ||
+              q.optional === true ||
+              this.pagehandler.deactivatedQuestions.includes(q.id)) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
@@ -479,7 +484,9 @@ export default {
             }
           }
           if (q.type === 'radioGroup') {
-            if (q.value || q.optional === true) {
+            if (q.value ||
+              q.optional === true ||
+              this.pagehandler.deactivatedQuestions.includes(q.id)) {
               questionnaireResult.push({
                 id: q.id,
                 title: q.title,
