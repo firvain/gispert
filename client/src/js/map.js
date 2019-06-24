@@ -544,6 +544,7 @@ drawPoint.on('drawend', (e) => {
       store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
     } else {
       store.commit('addQuestionnaireFeature', e.feature);
+      store.commit('setMapState', 'mapLocked');
     }
   }).then(() => {
     drawPoint.setActive(false);
@@ -580,6 +581,7 @@ drawLineString.on('drawend', (e) => {
       store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
     } else {
       store.commit('addQuestionnaireFeature', e.feature);
+      store.commit('setMapState', 'mapLocked');
     }
   }).then(() => {
     drawPoint.setActive(false);
@@ -618,6 +620,7 @@ drawPolygon.on('drawend', (e) => {
       store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
     } else {
       store.commit('addQuestionnaireFeature', e.feature);
+      store.commit('setMapState', 'mapLocked');
     }
   }).then(() => {
     drawPoint.setActive(false);
@@ -656,6 +659,7 @@ drawBox.on('drawend', (e) => {
       store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
     } else {
       store.commit('addQuestionnaireFeature', e.feature);
+      store.commit('setMapState', 'mapLocked');
     }
   }).then(() => {
     drawPoint.setActive(false);

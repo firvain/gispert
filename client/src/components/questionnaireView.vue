@@ -102,7 +102,9 @@
 
         <v-container row wrap v-if="question.type === 'mapPointer'">
           <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-            <v-btn small fab dark :color="button.style.strkClr" @click="getFromMap(button.id, 'Point', button.label, button.style)">
+            <v-btn small fab dark :color="button.style.strkClr"
+              @click="getFromMap(button.id, 'Point', button.label, button.style);
+              $store.commit('setDrawMessage', '<code>Κάντε κλικ στο σημείο της απάντησής σας</code>');">
               <v-icon dark>location_on</v-icon>
             </v-btn>
           </v-flex>
@@ -128,7 +130,9 @@
               ></v-text-field>
             </v-flex>
             <v-flex xs2>
-              <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'Point', line.value, line.style)">
+              <v-btn small fab dark class="indigo"
+                @click="getFromMap(line.id, 'Point', line.value, line.style);
+                $store.commit('setDrawMessage', '<code>Κάντε κλικ στο σημείο της απάντησής σας</code>');">
                 <v-icon dark>location_on</v-icon>
               </v-btn>
             </v-flex>
@@ -147,7 +151,9 @@
               ></v-text-field>
             </v-flex>
             <v-flex xs2>
-              <v-btn small fab dark class="indigo" @click="getFromMap(line.id, 'LineString', line.value, line.style)">
+              <v-btn small fab dark class="indigo"
+                @click="getFromMap(line.id, 'LineString', line.value, line.style);
+                $store.commit('setDrawMessage', '<code>Διπλό κλικ για ολοκλήρωση σχεδίασης,<br>Delete για διαγραφή τελευταίου σημείου</code>');">
                 <v-icon dark>timeline</v-icon>
               </v-btn>
             </v-flex>
@@ -899,6 +905,7 @@ export default {
         messages: title,
       };
       this.$store.commit('setDrawnFeatureStyle', featureStyle);
+      this.$store.commit('setMapState', 'mapAvailable');
       olMap.setActiveInteraction(type);
     },
     submit(type) {

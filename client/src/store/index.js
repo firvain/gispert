@@ -57,8 +57,12 @@ export default new Vuex.Store({
       videos: null,
     },
     drawMessage: '',
+    mapState: 'mapLocked',
   },
   actions: {
+    setMapState(state, data) {
+      state.commit('setMapState', data);
+    },
     setDrawMessage(state, data) {
       state.commit('setDrawMessage', data);
     },
@@ -208,6 +212,9 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    setMapState(state, data) {
+      state.mapState = data;
+    },
     setDrawMessage(state, data) {
       state.drawMessage = data;
     },

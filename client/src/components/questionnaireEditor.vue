@@ -379,6 +379,10 @@
                         :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -439,6 +443,10 @@
                         :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -483,6 +491,10 @@
                       <v-checkbox
                         :label="$t('message.optional')"
                         v-model="question.optional">
+                      </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
@@ -529,6 +541,10 @@
                         :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -573,6 +589,10 @@
                       <v-checkbox
                         :label="$t('message.optional')"
                         v-model="question.optional">
+                      </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
@@ -628,6 +648,10 @@
                         :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -681,6 +705,10 @@
                         :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -704,6 +732,10 @@
                       <v-checkbox
                         :label="$t('message.optional')"
                         v-model="question.optional">
+                      </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
@@ -729,6 +761,10 @@
                         :label="$t('message.optional')"
                         v-model="question.optional">
                       </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -749,6 +785,10 @@
                         v-model="question.description"
                         :label="$t('message.description')"
                       ></v-text-field>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -822,6 +862,10 @@
                       <v-checkbox
                         :label="$t('message.optional')"
                         v-model="question.optional">
+                      </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
                       </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
