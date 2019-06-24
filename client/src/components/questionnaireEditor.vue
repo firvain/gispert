@@ -1016,7 +1016,7 @@ export default {
         { type: 'mapPointerMultiple', name: this.$t('message.mapPointerMultiple') },
         { type: 'mapLinesMultiple', name: this.$t('message.mapLinesMultiple') },
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
-        { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') },
+        { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') }, // TODO translate table of checkboxes
       ],
       questionnaire: {
         questions: [],
@@ -1530,9 +1530,6 @@ export default {
       this.questionnaire = this.qnnaire;
       this.dateStart = moment.unix(this.qnnaire.properties.dateStart / 1000).format('YYYY-MM-DD');
       this.dateEnd = moment.unix(this.qnnaire.properties.dateEnd / 1000).format('YYYY-MM-DD');
-      // this.nextId = this.questionnaire.questions.length + 1;
-      // this.findNextItemId();
-      // TODO load questionnaire in classes
     }
   },
 };

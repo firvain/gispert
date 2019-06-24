@@ -326,7 +326,6 @@ export default {
       }
     },
     exploreCollection(collection) {
-      // TODO make correct request
       if (this.details) {
         this.$eventHub.$emit('openCollection', null);
         // this.$parent.$parent.$emit('openedcollection', null);

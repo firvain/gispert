@@ -79,7 +79,6 @@ export default {
         }
         if (response.data.user) {
           this.user = response.data;
-          // TODO in index.js of store create variables and mutations
           this.$store.dispatch('setToken', response.data.token);
           this.$store.dispatch('setUser', response.data.user);
         }
