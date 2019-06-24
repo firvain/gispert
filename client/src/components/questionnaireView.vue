@@ -39,6 +39,14 @@
           ></v-text-field>
         </v-flex>
 
+        <v-flex v-if="question.type === 'textarea'">
+          <v-textarea
+            name="input-1"
+            v-model="question.value"
+            :label="$t('message.yourAnswer')"
+          ></v-textarea>
+        </v-flex>
+
         <v-flex v-if="question.type === 'textfieldvalidation' && question.validation === 'email'">
           <v-text-field
             name="input-2"
@@ -418,7 +426,7 @@ export default {
       const questionnaireResult = [];
       this.questionnaire.questions.forEach((q) => {
         if (q.page === this.pagehandler.currentPage) {
-          if (q.type === 'textfield' || q.type === 'textfieldvalidation') {
+          if (q.type === 'textfield' || q.type === 'textfieldvalidation' || q.type === 'textarea') {
             if ((q.value && q.value.length > 0) ||
               (q.optional === true || this.pagehandler.deactivatedQuestions.includes(q.id))) {
               questionnaireResult.push({
@@ -1020,7 +1028,7 @@ export default {
     }
     this.loadQuestionnaire();
     // TODO create combobox and checkbox to input Other value by typing
-    // custom message after q submittion
+    // TODO custom message after q submittion
   },
 };
 </script>

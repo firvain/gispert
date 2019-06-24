@@ -159,6 +159,14 @@
                         disabled
                       ></v-text-field>
                     </v-flex>
+                    <v-flex v-if="question.type === 'textarea'">
+                      <v-textarea
+                        name="input-1"
+                        v-model="question.value"
+                        :label="$t('message.yourAnswer')"
+                        disabled
+                      ></v-textarea>
+                    </v-flex>
                     <v-flex v-if="question.type === 'textfield' && question.validation">
                       <v-text-field
                         name="input-1"
@@ -327,6 +335,36 @@
 
 
                     <v-flex v-if="question.type === 'textfield'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        :label="$t('message.question')"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        :label="$t('message.description')"
+                      ></v-text-field>
+                      <v-layout row wrap>
+                      <v-checkbox
+                        :label="$t('message.optional')"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
+                      </v-layout>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>folder_open</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
+
+                    <v-flex v-if="question.type === 'textarea'">
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
@@ -967,6 +1005,7 @@ export default {
       newQuestion: null,
       questionTypes: [
         { type: 'textfield', name: this.$t('message.text') },
+        { type: 'textarea', name: this.$t('message.textarea') }, // TODO translate textarea
         { type: 'textfieldvalidation', name: 'Text field with validation' },
         { type: 'combobox', name: this.$t('message.expandableMenu') },
         { type: 'checkboxGroup', name: this.$t('message.checkboxes') },
@@ -1160,6 +1199,24 @@ export default {
           },
         };
         this.questionnaire.questions.push(textfield);
+      }
+      if (this.newQuestion === 'textarea') {
+        const textarea = {
+          id: this.nextId,
+          type: 'textarea',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          error: false,
+          optional: false,
+          editing: true,
+          pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
+        };
+        this.questionnaire.questions.push(textarea);
       }
       if (this.newQuestion === 'textfieldvalidation') {
         const textfieldvalidation = {
