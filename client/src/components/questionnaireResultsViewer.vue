@@ -572,15 +572,80 @@ export default {
         datasets: [],
       };
       chartdata.labels.push(question.title);
-      Object.keys(this.countUniqueValues(question.values)).forEach((key, index) => {
-        const dataset = {
-          label: this.shortenText(key),
-          // eslint-disable-next-line
-          backgroundColor: this.pickRandomColor(index),
-          data: [this.countUniqueValues(question.values)[key]],
-        };
-        chartdata.datasets.push(dataset);
+
+      const titles = [];
+      question.value[0].forEach((v) => {
+        v.answers.forEach((t) => {
+          titles.push({ id: t.id, qid: v.id, title: v.title, option: t.text, count: 0 });
+        });
       });
+      console.log('titles:: ', titles);
+
+      const lines = [];
+      question.values.forEach((r) => {
+        console.log('r: ', r);
+        r.forEach((l) => {
+          lines.push(l);
+        });
+      });
+
+      // console.log(lines);
+
+      const groupBy = key => array =>
+        array.reduce((objectsByKeyValue, obj) => {
+          const value = obj[key];
+          // eslint-disable-next-line
+          objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+          return objectsByKeyValue;
+        }, {});
+
+      const groupById = groupBy('id');
+
+      // console.log('group by id:: ', groupById(lines));
+
+      const groups = groupById(lines);
+      // console.log('groups are:: ', groups, typeof(groups));
+
+      Object.entries(groups).forEach((g) => {
+        // console.log('g:: ', g, typeof(g));
+        Object.keys(g).forEach((key) => {
+          const value = g[key];
+          if (Array.isArray(value)) {
+            // console.log('value:: ', value);
+            value.forEach((v) => {
+              // console.log('one reply:: ', v);
+              // const result = { id: v.id, title: v.title };
+              v.answers.forEach((an) => {
+                if (an.selected) {
+                  // console.log('found true:: ', an);
+                  // console.log('titles:: ', titles);
+                  // Find index of specific object using findIndex method.
+                  const objIndex = titles.findIndex((obj => obj.id === an.id));
+                  // Log object to Console.
+                  // console.log("Before update: ", titles[objIndex]);
+                  // Update object's name property.
+                  titles[objIndex].count += 1;
+                  // Log object to console again.
+                  // console.log("After update: ", titles[objIndex]);
+                }
+                // console.log('final true false s:: ', an);
+              });
+              // const unique = [...new Set(titles.map(item => item.id))];
+              // console.log('unique titles:: ', unique);
+            });
+          }
+        });
+      });
+
+      // Object.keys(this.countUniqueValues(question.values)).forEach((key, index) => {
+      //   const dataset = {
+      //     label: this.shortenText(key),
+      //     // eslint-disable-next-line
+      //     backgroundColor: this.pickRandomColor(index),
+      //     data: [this.countUniqueValues(question.values)[key]],
+      //   };
+      //   chartdata.datasets.push(dataset);
+      // });
       return chartdata;
     },
     createChartDataForcheckboxGroupQuestion(question) {

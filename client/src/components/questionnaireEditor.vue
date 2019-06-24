@@ -423,7 +423,7 @@
                               <v-flex xs12>
                               <v-select
                                 :items="getQuestionnairePagesAsArray"
-                                v-model="item.activateSections"
+                                v-model="item.activatePages"
                                 label="Ενεργοποίηση ενότητας"
                                 single-line
                                 multiple
@@ -774,11 +774,11 @@
                         <v-flex xs6>Vertical values
                           <v-list>
                             <v-btn flat outline fab small
-                              @click="question.addVerticalValue = { id: nextItemId, title: '' };"
+                              @click="question.verticalValues.push({ id: nextItemId, title: '' });"
                               v-if="question.editing">
                               <v-icon>add</v-icon>
                             </v-btn>
-                            <template v-for="item in question.vertical">
+                            <template v-for="item in question.verticalValues">
                               <v-list-tile
                                   :key="item.id"
                               >
@@ -787,7 +787,7 @@
                                     name="input-1"
                                     v-model="item.title"
                                     append-icon="delete"
-                                    @click:append="question.removeVerticalValue = item;"
+                                    @click:append="question.verticalValues.remove(item);"
                                   ></v-text-field>
                                   <v-icon>delete</v-icon>
                                 </v-list-tile-content>
@@ -797,11 +797,11 @@
                         </v-flex>
                         <v-flex xs6>Horizontal values
                           <v-list>
-                            <v-btn flat outline fab small @click="question.addHorizontalValue = { id: nextItemId, text: '', selected: false };"
+                            <v-btn flat outline fab small @click="question.horizontalValues.push({ id: nextItemId, text: '', selected: false });"
                               v-if="question.editing">
                               <v-icon>add</v-icon>
                             </v-btn>
-                            <template v-for="answer in question.horizontal">
+                            <template v-for="answer in question.horizontalValues">
                               <v-list-tile
                                   :key="answer.id"
                               >
@@ -810,7 +810,7 @@
                                     name="input-1"
                                     v-model="answer.text"
                                     append-icon="delete"
-                                    @click:append="question.removeHorizontalValues = item;"
+                                    @click:append="question.horizontalValues.remove(answer);"
                                   ></v-text-field>
                                   <v-icon>delete</v-icon>
                                 </v-list-tile-content>
@@ -966,7 +966,7 @@ export default {
   computed: {
     getQuestionnairePagesAsArray() {
       const pagesArray = ['-'];
-      for (let index = 1; index <= this.questionnaire.properties.pages + 1; index += 1) {
+      for (let index = 0; index <= this.questionnaire.properties.pages; index += 1) {
         pagesArray.push(index);
       }
       return pagesArray;
@@ -1124,7 +1124,7 @@ export default {
           title: null,
           description: null,
           value: null,
-          items: [{ id: `i${this.nextItemId}`, value: '', activateSections: [] }],
+          items: [{ id: `i${this.nextItemId}`, value: '', activatePages: [] }],
           error: false,
           optional: false,
           editing: true,

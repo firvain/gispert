@@ -1,6 +1,6 @@
 <template>
   <v-layout id="layout1" row wrap xs12 sm12 md12>
-    <v-container v-if="page === 0 && !submitted">
+    <v-container v-if="pagehandler.currentPage === 0 && !submitted">
       <v-container fluid row
         v-for="item in questionnaire.properties.introduction.items"
         :key="item.id"
@@ -14,7 +14,7 @@
     <v-layout v-if="!submitted" row wrap xs12 sm12 md12>
     <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
       <!-- <v-card v-if="question.page === page && !deactivatedPages.includes(question.page + 1)"> -->
-      <v-card v-if="question.page === page">
+      <v-card v-if="question.page === pagehandler.currentPage">
         <v-card-title primary-title>
           <div>
             <h3 :class="titleClass(question)">{{ question.title }} <span v-if="question.optional === true">*</span></h3>
@@ -58,7 +58,7 @@
             :label="$t('message.yourAnswer')"
             single-line
             menu-props="bottom"
-            v-on:input="toggleSections(question.items, question.value)"
+            v-on:input="pagehandler.toggleSections()"
           ></v-select>
         </v-flex>
 
@@ -173,7 +173,7 @@
                 <v-layout row wrap v-for="item in question.items" :key="item.id">
                   <v-flex xs1 ma-1>{{ item.title }}</v-flex>
                   <v-flex ma-2 v-for="answer in item.answers" :key="answer.id" xs1>
-                    <v-checkbox light v-model="answer.selected"></v-checkbox>{{ answer.selected }}
+                    <v-checkbox light v-model="answer.selected"></v-checkbox>
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -218,18 +218,21 @@
 
     </v-layout>
     <v-layout row wrap v-if="!submitted">
-      <v-btn dark block class="indigo" @click="submit('page');"
-        v-if="showNext">
-        {{ $t('message.nextSection')}} <span v-if="page > 0"> &nbsp; {{ page }} / {{ questionnaire.properties.pages - deactivatedPages.length }}</span>
-      </v-btn>
-      <v-btn dark block class="grey" @click="goToPreviousPage"
-        v-if="showPrevious">
-        {{ $t('message.previousSection')}}
-      </v-btn>
+      <!-- {{ pagehandler.labels() }} {{ pagehandler.currentPage }} {{ pagehandler.deactivatedPages }} -->
+      <v-flex xs12>
+        <v-btn dark block class="indigo" @click="submit('page');"
+          v-if="pagehandler.showNext">
+          {{ $t('message.nextSection')}} <span> &nbsp; {{ pagehandler.labels() }}</span>
+        </v-btn>
+        <v-btn dark block class="grey" @click="goToPreviousPage"
+          v-if="pagehandler.showPrevious">
+          {{ $t('message.previousSection')}}
+        </v-btn>
 
-      <v-btn dark block class="indigo" @click="submit('all')" v-if="lastPage">
-        {{ $t('message.submitQuestionnaire')}}<v-icon dark>send</v-icon>
-      </v-btn>
+        <v-btn dark block class="indigo" @click="submit('all')" v-if="pagehandler.showSubmit">
+          {{ $t('message.submitQuestionnaire')}}<v-icon dark>send</v-icon>
+        </v-btn>
+      </v-flex>
     </v-layout>
     <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
 
@@ -254,6 +257,7 @@
 import ol from 'openlayers';
 import axios from 'axios';
 import draggable from 'vuedraggable';
+import { PageHandler } from '@/components/classes/questionnaire';
 import { app } from '../main';
 import olMap from '../js/map';
 import config from '../config';
@@ -265,6 +269,7 @@ export default {
   },
   data() {
     return {
+      pagehandler: null,
       emailRules: [
         v => !!v || 'E-mail is required',
         v => /[^@]+@[^.]+\..*/.test(v) || 'E-mail must be valid',
@@ -305,51 +310,10 @@ export default {
       return items;
     },
     goToPreviousPage() {
-      console.log('checking the previous page', this.page + 1, Object.keys(this.pagesQueue).length);
-      console.log('checking the previous page', this.page - 1, this.pagesQueue);
-      for (let i = this.page - 1; i >= 0; i -= 1) {
-        console.log('checking page:: ', i, this.pagesQueue[i]);
-        if (i === Object.keys(this.pagesQueue).length - 1) {
-          console.log('i = last page');
-          this.lastPage = true;
-          this.showNext = false;
-        }
-        if (i < Object.keys(this.pagesQueue).length - 1) {
-          console.log('i smaller than last page');
-          this.lastPage = false;
-          this.showNext = true;
-        }
-        if (i > 0 && i <= Object.keys(this.pagesQueue).length) {
-          console.log('i not first page but smaller than last page');
-          this.lastPage = false;
-          this.showPrevious = true;
-        }
-        console.log(i);
-        if (this.pagesQueue[i]) {
-          this.page = i;
-          break;
-        }
-      }
+      this.pagehandler.goToPreviousPage();
     },
     goToNextPage() {
-      console.log('checking the next page', this.page + 1, Object.keys(this.pagesQueue).length);
-      for (let i = this.page + 1; i < Object.keys(this.pagesQueue).length; i += 1) {
-        if (i === Object.keys(this.pagesQueue).length - 1) {
-          this.lastPage = true;
-          this.showNext = false;
-        }
-        if (i < Object.keys(this.pagesQueue).length - 1) {
-          this.showNext = true;
-        }
-        if (i > 0 && i <= Object.keys(this.pagesQueue).length) {
-          this.showPrevious = true;
-        }
-        console.log(i);
-        if (this.pagesQueue[i]) {
-          this.page = i;
-          break;
-        }
-      }
+      this.pagehandler.goToNextPage();
     },
     titleClass(question) {
       return !question.style.titleFontSize ? 'headline mb-0' : 'subheading';
@@ -426,7 +390,7 @@ export default {
             = false; // eslint-disable-line no-param-reassign
         }
       });
-      console.log(!error);
+      console.log('validation result :: ', !error);
       return !error;
     },
     addRow(question) {
@@ -447,7 +411,7 @@ export default {
     async getValues() {
       const questionnaireResult = [];
       this.questionnaire.questions.forEach((q) => {
-        if (q.page === this.page) {
+        if (q.page === this.pagehandler.currentPage) {
           if (q.type === 'textfield' || q.type === 'textfieldvalidation') {
             if ((q.value && q.value.length > 0) || (q.optional === true)) {
               questionnaireResult.push({
@@ -943,7 +907,7 @@ export default {
           if (v) {
             console.log('next page', v);
             // this.page += 1;
-            this.goToNextPage();
+            this.pagehandler.goToNextPage();
             this.scrollTop();
             if (type === 'all') {
               this.getAllValues().then((result) => {
@@ -1010,6 +974,7 @@ export default {
         this.zoomToExtent();
         this.setLocale(this.questionnaire.properties.locale);
       }).then(() => {
+        this.pagehandler = new PageHandler(this.questionnaire);
         console.log('find deactivated pages');
         this.questionnaire.questions.forEach((q) => {
           if (q.items) {
