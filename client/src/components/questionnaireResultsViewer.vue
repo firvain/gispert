@@ -556,13 +556,16 @@ export default {
       };
       chartdata.labels.push(question.title);
       Object.keys(this.countUniqueValues(question.values)).forEach((key, index) => {
-        const dataset = {
-          label: this.shortenText(key),
-          // eslint-disable-next-line
-          backgroundColor: this.pickRandomColor(index),
-          data: [this.countUniqueValues(question.values)[key]],
-        };
-        chartdata.datasets.push(dataset);
+        console.log(key);
+        if (key !== 'null') {
+          const dataset = {
+            label: this.shortenText(key),
+            // eslint-disable-next-line
+            backgroundColor: this.pickRandomColor(index),
+            data: [this.countUniqueValues(question.values)[key]],
+          };
+          chartdata.datasets.push(dataset);
+        }
       });
       // console.log('combobox chartdata to see result :: ', JSON.stringify(chartdata));
       return chartdata;
