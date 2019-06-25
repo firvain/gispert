@@ -145,6 +145,10 @@ class PageHandler {
       }
     });
     this.totalPages = pageCount - this.deactivatedPages.length;
+    if (this.totalPages === 0) {
+      this.showNext = false;
+      this.showSubmit = true;
+    }
   }
   pageVisibility(v) {
     // console.log('page visibility for :: ', v);
