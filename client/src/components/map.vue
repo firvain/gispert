@@ -1,6 +1,18 @@
 <template>
   <div id='mw' class="mapStyle">
-    <div id="overlayLock" :class='$store.state.mapState' v-if="$store.state.questionnaireMode === 'answering'"></div> 
+    <div id="overlayLock" :class='$store.state.mapState' v-if="$store.state.questionnaireMode === 'answering'">
+      <p>Ο χάρτης ενεργοποιείται όταν χρειάζεται να απαντήσετε σε μια ερώτηση που σας ζητάει να υποδείξετε στο χάρτη. Αυτές οι ερωτήσεις περιέχουν κουμπιά σαν αυτά:
+      <v-btn small dark fab class="indigo">
+        <v-icon dark>location_on</v-icon>
+      </v-btn>
+      <v-btn small dark fab class="indigo">
+        <v-icon dark>timeline</v-icon>
+      </v-btn>
+      <br>Με την ροδέλα του ποντικιού σας κάνετε zoom in ή zoom out.
+      <br>Στην περίπτωση που σας ζητείται να σχεδιάσετε γραμμή ή πολύγωνο ισχύει ότι με διπλό κλικ σταματάει η σχεδίαση και με Delete διαγράφεται το τελευταίο σημείο που βάλατε.
+      <br>Σε περίπτωση λάθους (πχ σημείο μπήκε σε λάθος θέση) ξαναπατήστε το ίδιο κουμπί στην αντίστοιχη ερώτηση και ξαναβάλτε το στο χάρτη.
+      </p>
+    </div>
     <div id='mapDiv' class="mapStyle"></div>
     <div id="popup" class="ol-popup">
       <div id="popup-content">
@@ -18,6 +30,7 @@
   </div>
 </template>
 <script>
+// TODO create translations of the locked message
 import ol from 'openlayers';
 import styles from '../js/styles';
 import olMap from '../js/map';
@@ -325,12 +338,17 @@ export default {
   width: 50%; /* Full width (cover the whole page) */
   height: 100%; /* Full height (cover the whole page) */
   top: 0;
-  // left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(0,0,0,0.8); /* Black background with opacity */
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   cursor: pointer; /* Add a pointer on hover */
+  // text-align: center;
+  vertical-align: middle;
+  line-height: 3vh;
+  color: white;
+  word-wrap: break-word;
+  padding: 3vh;
 }
 .mapAvailable {
   display: none;
