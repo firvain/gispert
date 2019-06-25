@@ -232,12 +232,13 @@
                       </v-flex>
 
                       <v-flex v-if="question.type === 'tableOfCheckboxes'" width='400px'>
-                        calculate results {{ question.values }}
-                        <template v-for="(item) in question.values[0]">
+                        <!-- calculate results {{ question.values }} -->
+                        <template v-for="item in createChartDataForTableOfCheckboxes(question)">
+                          {{ item.labels[0] }}
                           <barChart
                             :key="item.id"
                             v-if="loadedAgreggates"
-                            :chartdata="createChartDataForTableOfCheckboxes(item)"
+                            :chartdata="item"
                             :options="options">
                           </barChart>
                         </template>
@@ -427,7 +428,7 @@ export default {
         this.comboitems.push(
           { id: r._id, text: r.results[0].value }); // eslint-disable-line no-underscore-dangle
       });
-      console.log('combo items :: ', this.comboitems);
+      // console.log('combo items :: ', this.comboitems);
     },
     loadResultsForQuestionnaire() {
       console.log('loading::', this.activeQuestionnaire);
@@ -513,7 +514,7 @@ export default {
           });
           this.questionnaireAggregates.push(questionnaireAggregate);
         });
-        console.log('aggregation :: ', this.questionnaireAggregates);
+        // console.log('aggregation :: ', this.questionnaireAggregates);
       });
       this.loadedAgreggates = true;
     },
@@ -563,10 +564,77 @@ export default {
         };
         chartdata.datasets.push(dataset);
       });
+      // console.log('combobox chartdata to see result :: ', JSON.stringify(chartdata));
       return chartdata;
     },
     createChartDataForTableOfCheckboxes(question) {
-      console.log('creating data for table of checkboxes:: ', question);
+      // console.log('creating data for table of checkboxes:: ', question);
+      const titles = [];
+      question.values[0].forEach((v) => {
+        v.answers.forEach((t) => {
+          titles.push({ id: t.id, qid: v.id, title: v.title, option: t.text, count: 0 });
+        });
+      });
+      // console.log('titles:: ', titles);
+      const lines = [];
+      question.values.forEach((r) => {
+        // console.log('r: ', r);
+        r.forEach((l) => {
+          lines.push(l);
+        });
+      });
+      // console.log(lines);
+      const groupBy = key => array =>
+        array.reduce((objectsByKeyValue, obj) => {
+          const value = obj[key];
+          // eslint-disable-next-line
+          objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+          return objectsByKeyValue;
+        }, {});
+
+      const groupById = groupBy('id');
+      // console.log('group by id:: ', groupById(lines));
+      const groups = groupById(lines);
+      Object.entries(groups).forEach((g) => {
+        Object.keys(g).forEach((key) => {
+          const value = g[key];
+          if (Array.isArray(value)) {
+            value.forEach((v) => {
+              v.answers.forEach((an) => {
+                if (an.selected) {
+                  const objIndex = titles.findIndex((obj => obj.id === an.id));
+                  titles[objIndex].count += 1;
+                }
+              });
+            });
+          }
+        });
+      });
+      // console.log('final titles::::: ', titles);
+      const groupByQuestion = groupBy('title');
+      const finalgroups = groupByQuestion(titles);
+      // console.log('titles groups :: ', groupByQuestion(titles));
+      // console.log('-------------------------------------------------------');
+      const chartDataArray = [];
+      Object.keys(finalgroups).forEach((key) => {
+        // console.log(key);
+        const chartdata = {
+          labels: [key],
+          datasets: [],
+        };
+        finalgroups[key].forEach((k, i) => {
+          const dataset = {
+            label: [this.shortenText(k.option)],
+            // eslint-disable-next-line
+            backgroundColor: this.pickRandomColor(i),
+            data: [k.count],
+          };
+          chartdata.datasets.push(dataset);
+        });
+        chartDataArray.push(chartdata);
+      });
+      // console.log('chartdata for table :: ', JSON.stringify(chartDataArray));
+      return chartDataArray;
     },
     createChartDataForcheckboxGroupQuestion(question) {
       const chartdata = {
