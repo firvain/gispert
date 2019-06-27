@@ -16,7 +16,9 @@
       <v-card v-if="question.page === pagehandler.currentPage && !pagehandler.deactivatedQuestions.includes(question.id)">
         <v-card-title primary-title>
           <div>
-            <h3 :class="titleClass(question)">{{ question.title }} <span v-if="question.optional === true">*</span></h3>
+            <h3 :class="titleClass(question)">{{ question.title }} 
+              <span v-if="question.optional === false && question.type !== 'titleDescription'">*</span>
+            </h3>
             <v-alert color="error" icon="warning" :value="question.error">
               {{ $t('message.questionNotAnswered') }}
             </v-alert>
@@ -193,6 +195,14 @@
             </v-container>
           </v-layout>
         </v-container>
+
+        <v-container ma-0 pa-0 v-if="question.type === 'repeatable'">
+          <v-flex v-for='question in question.questions' :key='question.id'>
+            <questionnaireComponents :question='question'></questionnaireComponents>
+          </v-flex>
+          <v-btn block @click='addQuestionSet(question)'>{{ question.buttonText }}</v-btn>
+        </v-container>
+
 <!-- 
         <v-container fluid v-if="question.type === 'tableOfRadios'">
           <v-layout row wrap>
@@ -223,7 +233,6 @@
             </v-container>
           </v-layout>
         </v-container> -->
-
 
         </v-card-text>
       </v-card>
@@ -269,6 +278,7 @@
 import axios from 'axios';
 import draggable from 'vuedraggable';
 import { PageHandler } from '@/components/classes/questionnaire';
+import questionnaireComponents from '@/components/questionnaireComponents/questionnaireComponents';
 import QuestionnaireValidator from '@/components/classes/questionnaireValidator';
 import { app } from '../main';
 import olMap from '../js/map';
@@ -277,7 +287,7 @@ import config from '../config';
 export default {
   props: ['id'],
   components: {
-    draggable,
+    draggable, questionnaireComponents,
   },
   data() {
     return {
@@ -299,7 +309,46 @@ export default {
       },
     };
   },
+  computed: {
+    nextId: {
+      cache: false,
+      get() {
+        return String(Date.now()) + Math.floor(Math.random() * 10000);
+      },
+    },
+  },
   methods: {
+    addQuestionSet(question) {
+      /* eslint-disable no-param-reassign */
+      let idIncrement = 0;
+      const newQuestionSet = this.questionnaire.questions.filter((el) => {
+        // console.log(el);
+        let value;
+        if (el.page === question.repeatsPage && el.type !== 'repeatable') {
+          value = el;
+        }
+        return value;
+      });
+      // console.log('new set :: ', newQuestionSet);
+      newQuestionSet.forEach((q) => {
+        const repeatable = this.questionnaire.questions.filter(x => x.id === question.id);
+        // console.log('repeatable found :: ', repeatable);
+        const newQ = JSON.parse(JSON.stringify(q));
+        newQ.id = `${this.nextId}_${idIncrement}`;
+        newQ.value = null;
+        console.log('q:: ', newQ.id);
+        if (newQ.type === 'mapPointer' || newQ.type === 'mapLineString') {
+          newQ.buttons.forEach((b) => { b.id = `i${this.nextId}_${idIncrement}`; });
+        }
+        if (newQ.type === 'mapPointerMultiple' || newQ.type === 'mapLinesMultiple') {
+          newQ.lines.forEach((b) => { b.id = `i${this.nextId}_${idIncrement}`; });
+        }
+        repeatable[0].questions.push(newQ);
+        idIncrement += 1;
+        // console.log('repeatable :: ', JSON.stringify(repeatable[0]));
+      });
+      /* eslint-enable no-param-reassign */
+    },
     goToPreviousPage() {
       this.pagehandler.goToPreviousPage();
     },

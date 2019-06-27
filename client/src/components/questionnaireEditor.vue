@@ -297,7 +297,7 @@
                       </v-layout>
                     </v-flex>
                     <v-container row wrap v-if="question.type === 'repeatable'">
-                      <v-btn>{{ question.buttonText }}</v-btn>
+                      <v-btn block>{{ question.buttonText }}</v-btn>
                     </v-container>
 
 
@@ -939,7 +939,7 @@
                       <v-select
                         :items="getQuestionnairePagesAsArray"
                         :label="$t('message.whichPageToRepeat')"
-                        v-model="question.Repeatspage"
+                        v-model="question.repeatsPage"
                       ></v-select>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>

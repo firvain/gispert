@@ -288,6 +288,29 @@ class QuestionnaireValidator {
         type: q.type,
       };
     }
+    if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
+      const repeatableResult = [];
+      q.question.forEach((a) => {
+        repeatableResult.push(this.constructor.checkErrorsForQuestion(a).error);
+      });
+      if (!repeatableResult.includes(true)) {
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: q.items,
+          error: false,
+          type: q.type,
+        };
+      } else {
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: q.items,
+          error: true,
+          type: q.type,
+        };
+      }
+    }
     return questionResult;
   }
   getValues(page, deactivatedQuestions, deactivatedPages) {
