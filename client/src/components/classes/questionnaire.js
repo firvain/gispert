@@ -210,14 +210,14 @@ class PageHandler {
         question.type === 'combobox' &&
         (question.value || question.optional === true)
       ) {
-        console.log('found combobox with value or optional:: ', question);
+        // console.log('found combobox with value or optional:: ', question);
         question.items.forEach((item) => {
           if (
             item.activateQuestions &&
             item.activateQuestions[0] !== '-' &&
             question.value === item.value
           ) {
-            console.log('found item active to remove page from deactivated');
+            // console.log('found item active to remove page from deactivated');
             item.activateQuestions.forEach((i) => {
               questionsToRemove.push(i);
             });
@@ -227,7 +227,7 @@ class PageHandler {
             item.activateQuestions[0] !== '-' &&
             question.value !== item.value
           ) {
-            console.log('found item active to add page to deactivated');
+            // console.log('found item active to add page to deactivated');
             item.activateQuestions.forEach((i) => {
               questionsToAdd.push(i);
             });
@@ -245,7 +245,7 @@ class PageHandler {
         });
       }
     });
-    console.log('to add and to remove :: ', questionsToAdd, questionsToRemove);
+    // console.log('to add and to remove :: ', questionsToAdd, questionsToRemove);
     const unique = questionsToAdd.filter(p => !questionsToRemove.includes(p).id);
     unique.forEach((u) => {
       this.deactivatedQuestions.push(u.id);
@@ -265,7 +265,7 @@ class PageHandler {
   }
 
   toggleSections() {
-    console.log('toggling sections');
+    // console.log('toggling sections');
     const pagesToAdd = [];
     const pagesToRemove = [];
     // console.log(selected);
@@ -276,14 +276,14 @@ class PageHandler {
         question.type === 'combobox' &&
         (question.value || question.optional === true)
       ) {
-        console.log('found combobox with value or optional:: ', question);
+        // console.log('found combobox with value or optional:: ', question);
         question.items.forEach((item) => {
           if (
             item.activatePages &&
             item.activatePages[0] !== '-' &&
             question.value === item.value
           ) {
-            console.log('found item active to remove page from deactivated');
+            // console.log('found item active to remove page from deactivated');
             item.activatePages.forEach((i) => {
               pagesToRemove.push(i);
             });
@@ -293,7 +293,7 @@ class PageHandler {
             item.activatePages[0] !== '-' &&
             question.value !== item.value
           ) {
-            console.log('found item active to add page to deactivated');
+            // console.log('found item active to add page to deactivated');
             item.activatePages.forEach((i) => {
               pagesToAdd.push(i);
             });

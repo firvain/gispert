@@ -425,8 +425,13 @@ export default {
     },
     getcomboitems() {
       this.questionnaireResults.forEach((r) => {
-        this.comboitems.push(
-          { id: r._id, text: r.results[0].value }); // eslint-disable-line no-underscore-dangle
+        if (r.results && r.results[0]) {
+          this.comboitems.push(
+            { id: r._id, text: r.results[0].value }); // eslint-disable-line no-underscore-dangle
+        } else {
+          this.comboitems.push(
+            { id: r._id, text: '-' }); // eslint-disable-line no-underscore-dangle
+        }
       });
       // console.log('combo items :: ', this.comboitems);
     },

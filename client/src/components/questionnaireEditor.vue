@@ -296,6 +296,11 @@
                         </v-container>
                       </v-layout>
                     </v-flex>
+                    <v-container row wrap v-if="question.type === 'repeatable'">
+                      <v-btn>{{ question.buttonText }}</v-btn>
+                    </v-container>
+
+
 
                     <v-layout row wrap align-center>
                       <v-flex xs4>
@@ -849,8 +854,6 @@
                     </v-flex>
 
                     <v-flex v-if="question.type === 'tableOfCheckboxes'">
-                      {{ question }}
-                      <!-- <toc :question='question'></toc> -->
                       <v-text-field
                         name="input-2"
                         v-model="question.title"
@@ -926,6 +929,26 @@
                       </v-btn>
                     </v-flex>
 
+
+                    <v-flex v-if="question.type === 'repeatable'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.buttonText"
+                        label="Τίτλος κουμπιού"
+                      ></v-text-field>
+                      <v-select
+                        :items="getQuestionnairePagesAsArray"
+                        :label="$t('message.whichPageToRepeat')"
+                        v-model="question.Repeatspage"
+                      ></v-select>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>folder_open</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
                   </v-container>
                 </v-card>
               </v-flex>
@@ -967,13 +990,11 @@
     </v-layout>
 </template>
 <script>
-// import ol from 'openlayers';
 import axios from 'axios';
 import moment from 'moment';
 import draggable from 'vuedraggable';
 import Swatches from 'vue-swatches';
 import { TableOfCheckboxes } from '@/components/classes/questionnaire';
-// import toc from '@/components/classes/questionTypes/tableOfCheckboxes/tableOfCheckboxesEditor';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
@@ -981,7 +1002,7 @@ import config from '../config';
 export default {
   props: ['qnnaire'],
   components: {
-    draggable, Swatches, // toc,
+    draggable, Swatches,
   },
   data() {
     return {
@@ -1017,6 +1038,7 @@ export default {
         { type: 'mapLinesMultiple', name: this.$t('message.mapLinesMultiple') },
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
         { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') }, // TODO translate table of checkboxes
+        { type: 'repeatable', name: this.$t('message.repeatable') }, // TODO translate repeatable
       ],
       questionnaire: {
         questions: [],
@@ -1049,8 +1071,6 @@ export default {
           },
         },
       },
-      // nextId: 0,
-      // nextItemId: 0,
     };
   },
   watch: {
@@ -1107,16 +1127,6 @@ export default {
     },
   },
   methods: {
-    // generateItemsTable(question) {
-    //   console.log('generating table');
-    //   const items = [];
-    //   if (question.horizontalValues && question.verticalValues) {
-    //     question.horizontalValues.forEach((hv) => {
-    //       items.push({ id: hv.id, title: hv.title, answers: question.verticalValues });
-    //     });
-    //   }
-    //   question.items = items; // eslint-disable-line no-param-reassign
-    // },
     titleClass(question) {
       return !question.style.titleFontSize ? 'headline mb-0' : 'subheading';
     },
@@ -1451,27 +1461,23 @@ export default {
           id: this.nextId,
         };
         const tableOfCheckboxes = new TableOfCheckboxes(newTOCquestion);
-        // const tableOfCheckboxes = {
-        //   id: this.nextId,
-        //   type: 'tableOfCheckboxes',
-        //   page: 0,
-        //   title: null,
-        //   description: null,
-        //   error: false,
-        //   horizontalValues: [],
-        //   verticalValues: [],
-        //   items: [],
-        //   optional: false,
-        //   editing: true,
-        //   pageBreak: false,
-        //   style: {
-        //     titleFontSize: null,
-        //   },
-        // };
-        // this.nextItemId += 1;
         this.questionnaire.questions.push(tableOfCheckboxes);
       }
-      // this.nextId += 1;
+      if (this.newQuestion === 'repeatable') {
+        const newSetOfQuestions = {
+          id: this.nextId,
+          type: 'repeatable',
+          buttonText: '',
+          repeatsPage: '',
+          page: 0,
+          editing: true,
+          questions: [],
+          style: {
+            titleFontSize: null,
+          },
+        };
+        this.questionnaire.questions.push(newSetOfQuestions);
+      }
       this.$nextTick(() => {
         this.newQuestion = null;
         this.pageBreakChangeControl();
@@ -1482,17 +1488,6 @@ export default {
       this.$store.commit('setQuestionnaireFeatureId', id);
       olMap.setActiveInteraction(type);
     },
-    // findNextItemId() {
-    //   let count = 0;
-    //   this.questionnaire.questions.forEach((e) => {
-    //     if (e.items) { count += e.items.length; }
-    //     if (e.lines) { count += e.lines.length; }
-    //     if (e.buttons) { count += e.buttons.length; }
-    //     if (e.checkboxes) { count += e.checkboxes.length; }
-    //     if (e.radios) { count += e.radios.length; }
-    //   });
-    //   this.nextItemId = count + 1;
-    // },
     closeQuestionnaire() {
       this.$store.commit('setQuestionnaireMode', 'normal');
       this.$eventHub.$emit('refreshQuestionnaires');
