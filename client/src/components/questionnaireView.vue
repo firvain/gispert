@@ -336,7 +336,9 @@ export default {
         const newQ = JSON.parse(JSON.stringify(q));
         newQ.id = `${this.nextId}_${idIncrement}`;
         newQ.value = null;
-        console.log('q:: ', newQ.id);
+        newQ.error = false;
+        newQ.parentId = q.id;
+        // console.log('q:: ', newQ.id);
         if (newQ.type === 'mapPointer' || newQ.type === 'mapLineString') {
           newQ.buttons.forEach((b) => { b.id = `i${this.nextId}_${idIncrement}`; });
         }
@@ -375,7 +377,7 @@ export default {
           },
         });
       }
-      console.log(`added this id:: ${question.id}${question.lines.length + 1}`);
+      // console.log(`added this id:: ${question.id}${question.lines.length + 1}`);
     },
     getFromMap(id, type, title, style) {
       olMap.removeFeaturesFromLayer('customLayer', 'buttonId', [id]);
@@ -397,7 +399,7 @@ export default {
         validator.validate('all', this.pagehandler.deactivatedQuestions, this.pagehandler.deactivatedPages)) {
         this.pagehandler.goToNextPage();
         this.scrollTop();
-        console.log('submit all');
+        // console.log('submit all');
         const questionnaireToPost = {
           qid: this.questionnaire._id, // eslint-disable-line no-underscore-dangle
           results: validator.getValues('all', this.pagehandler.deactivatedQuestions, this.pagehandler.deactivatedPages),
@@ -410,7 +412,7 @@ export default {
         && validator.validate(this.pagehandler.currentPage,
         this.pagehandler.deactivatedQuestions,
         this.pagehandler.deactivatedPages)) {
-        console.log('submit page');
+        // console.log('submit page');
         this.pagehandler.goToNextPage();
         this.scrollTop();
       } else {
@@ -463,7 +465,7 @@ export default {
     },
   },
   mounted() {
-    console.log('mounted questionnaire');
+    // console.log('mounted questionnaire');
     if (this.$route.name === 'questionnaire') {
       this.$store.commit('setQuestionnaireMode', 'answering');
     } else {

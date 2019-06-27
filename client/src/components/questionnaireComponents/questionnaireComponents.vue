@@ -1,5 +1,5 @@
 <template>
-  <v-container pa-1 ma-1>
+  <!-- <v-container pa-1 ma-1> -->
     <v-card>
       <v-card-title primary-title>
         <div>
@@ -177,7 +177,7 @@
         </v-container>
       </v-card-text>
     </v-card>
-  </v-container>
+  <!-- </v-container> -->
 </template>
 <script>
 import olMap from '../../js/map';

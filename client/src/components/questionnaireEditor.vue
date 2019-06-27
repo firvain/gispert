@@ -1412,6 +1412,7 @@ export default {
         this.questionnaire.questions.push(mapPointerMultiple);
       }
       if (this.newQuestion === 'mapLinesMultiple') {
+        // TODO let the user submit without pointing at map? or not?
         const mapLinesMultiple = {
           id: this.nextId,
           type: 'mapLinesMultiple',

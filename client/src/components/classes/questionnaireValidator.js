@@ -11,7 +11,9 @@ class QuestionnaireValidator {
   get validatedQuestionnaire() {
     return this.questionnaire;
   }
+
   static checkErrorsForQuestion(q, deactivatedQuestions, deactivatedPages) {
+    /* eslint-disable no-param-reassign */
     const geojsonFormat = new ol.format.GeoJSON();
     let questionResult = null;
 
@@ -27,6 +29,7 @@ class QuestionnaireValidator {
           type: q.type,
         };
       } else {
+        q.error = true;
         questionResult = {
           id: q.id,
           title: q.title,
@@ -49,6 +52,7 @@ class QuestionnaireValidator {
           type: q.type,
         };
       } else {
+        q.error = true;
         questionResult = {
           id: q.id,
           title: q.title,
@@ -79,6 +83,7 @@ class QuestionnaireValidator {
           type: q.type,
         };
       } else {
+        q.error = true;
         questionResult = {
           id: q.id,
           title: q.title,
@@ -101,6 +106,7 @@ class QuestionnaireValidator {
           type: q.type,
         };
       } else {
+        q.error = true;
         questionResult = {
           id: q.id,
           title: q.title,
@@ -124,6 +130,7 @@ class QuestionnaireValidator {
       const values = [];
       q.buttons.forEach((b) => {
         const features = store.state.questionnaireFeatures;
+        // console.log('features :: ', features, b.id);
         values.push(b.label);
         features.forEach((f) => {
           if (f.getProperties().buttonId === b.id) {
@@ -134,6 +141,7 @@ class QuestionnaireValidator {
           }
         });
       });
+      // console.log('coordinates :: ', coordinates);
       if (coordinates.length === q.buttons.length ||
         q.optional === true ||
         deactivatedQuestions.includes(q.id) ||
@@ -147,6 +155,7 @@ class QuestionnaireValidator {
           type: q.type,
         };
       } else {
+        q.error = true;
         questionResult = {
           id: q.id,
           title: q.title,
@@ -185,6 +194,7 @@ class QuestionnaireValidator {
           type: q.type,
         };
       } else {
+        q.error = true;
         questionResult = {
           id: q.id,
           title: q.title,
@@ -226,6 +236,7 @@ class QuestionnaireValidator {
           type: q.type,
         };
       } else {
+        q.error = true;
         questionResult = {
           id: q.id,
           title: q.title,
@@ -267,6 +278,7 @@ class QuestionnaireValidator {
           type: q.type,
         };
       } else {
+        q.error = true;
         questionResult = {
           id: q.id,
           title: q.title,
@@ -288,44 +300,52 @@ class QuestionnaireValidator {
         type: q.type,
       };
     }
-    if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
-      const repeatableResult = [];
-      q.question.forEach((a) => {
-        repeatableResult.push(this.constructor.checkErrorsForQuestion(a).error);
-      });
-      if (!repeatableResult.includes(true)) {
-        questionResult = {
-          id: q.id,
-          title: q.title,
-          value: q.items,
-          error: false,
-          type: q.type,
-        };
-      } else {
-        questionResult = {
-          id: q.id,
-          title: q.title,
-          value: q.items,
-          error: true,
-          type: q.type,
-        };
-      }
-    }
+    // if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
+    //   const repeatableResult = [];
+    //   q.questions.forEach((a) => {
+    //     if (a.type !== 'repeatable') {
+    //       repeatableResult.push(
+    //         this.checkErrorsInRepeatableQuestion(
+    //           a, deactivatedQuestions, deactivatedPages).error,
+    //       );
+    //     }
+    //   });
+    //   if (!repeatableResult.includes(true)) {
+    //     questionResult = {
+    //       id: q.id,
+    //       title: q.title,
+    //       questions: q.questions,
+    //       error: false,
+    //       type: q.type,
+    //     };
+    //   } else {
+    //     questionResult = {
+    //       id: q.id,
+    //       title: q.title,
+    //       questions: q.questions,
+    //       error: true,
+    //       type: q.type,
+    //     };
+    //   }
+    // }
+    // console.log('question result :: ', questionResult);
+    /* eslint-enable no-param-reassign */
     return questionResult;
   }
   getValues(page, deactivatedQuestions, deactivatedPages) {
     const questionnaireResult = [];
     if (page === 'all') {
       this.questionnaire.questions.forEach((q) => {
-        const qResult = this.constructor.checkErrorsForQuestion(
-          q, deactivatedQuestions, deactivatedPages);
-        if (qResult !== null) {
-          questionnaireResult.push(qResult);
-        }
-      });
-    } else {
-      this.questionnaire.questions.forEach((q) => {
-        if (q.page === page) {
+        if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
+          q.questions.forEach((qu) => {
+            const qResult = this.constructor.checkErrorsForQuestion(
+              qu, deactivatedQuestions, deactivatedPages);
+            if (qResult !== null) {
+              qResult.parentId = q.id;
+              questionnaireResult.push(qResult);
+            }
+          });
+        } else {
           const qResult = this.constructor.checkErrorsForQuestion(
             q, deactivatedQuestions, deactivatedPages);
           if (qResult !== null) {
@@ -333,29 +353,57 @@ class QuestionnaireValidator {
           }
         }
       });
+    } else {
+      this.questionnaire.questions.forEach((q) => {
+        if (q.page === page) {
+          if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
+            q.questions.forEach((qu) => {
+              const qResult = this.constructor.checkErrorsForQuestion(
+                qu, deactivatedQuestions, deactivatedPages);
+              if (qResult !== null) {
+                questionnaireResult.push(qResult);
+              }
+            });
+          } else {
+            const qResult = this.constructor.checkErrorsForQuestion(
+              q, deactivatedQuestions, deactivatedPages);
+            if (qResult !== null) {
+              questionnaireResult.push(qResult);
+            }
+          }
+        }
+      });
     }
-    console.log('result:: ', questionnaireResult);
+    // console.log('result:: ', questionnaireResult);
     return questionnaireResult;
   }
 
   validate(page, deactivatedQuestions, deactivatedPages) {
+    const errors = [];
     let error = false;
     this.getValues(page, deactivatedQuestions, deactivatedPages).forEach((q) => {
-      if (q.error) {
+      errors.push(q.error);
+      // if (q.error) {
         // console.log('there is error in ::: ', q.id);
-        const objIndex =
-          this.questionnaire.questions.findIndex((obj => obj.id === q.id));
-        this.questionnaire.questions[objIndex].error
-          = true; // eslint-disable-line no-param-reassign
-        error = true;
-      } else {
-        const objIndex =
-          this.questionnaire.questions.findIndex((obj => obj.id === q.id));
-        this.questionnaire.questions[objIndex].error
-          = false; // eslint-disable-line no-param-reassign
-      }
+        // const objIndex =
+        //   this.questionnaire.questions.findIndex((obj => obj.id === q.id));
+        // if (objIndex) {
+        //   this.questionnaire.questions[objIndex].error
+        //     = true; // eslint-disable-line no-param-reassign
+        // error = true;
+        // }
+      // } else {
+      //   error = false;
+        // const objIndex =
+        //   this.questionnaire.questions.findIndex((obj => obj.id === q.id));
+        // if (objIndex) {
+        //   this.questionnaire.questions[objIndex].error
+        //     = false; // eslint-disable-line no-param-reassign
+        // }
+    //   }
     });
     // console.log('validation result :: ', !error);
+    if (errors.includes(true)) { error = true; }
     return !error;
   }
 }

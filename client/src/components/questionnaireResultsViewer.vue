@@ -150,6 +150,13 @@
                     </v-layout>
                   </v-flex>
 
+                  <v-flex ma-0 pa-0 v-if="question.type === 'repeatable'">
+                    <v-flex v-for='question in question.questions' :key='question.id'>
+                      <questionnaireComponents :question='question'></questionnaireComponents>
+                    </v-flex>
+                  </v-flex>
+
+
                   </v-card-text>
                 </v-card>
               </v-container>
@@ -349,6 +356,7 @@
 import axios from 'axios';
 import ol from 'openlayers';
 import barChart from '@/components/charts/barChart';
+import questionnaireComponents from '@/components/questionnaireComponents/questionnaireComponents';
 import olMap from '../js/map';
 import config from '../config';
 
@@ -356,7 +364,7 @@ export default {
   name: 'questionnaireResultsViewer',
   props: ['id'],
   components: {
-    barChart,
+    barChart, questionnaireComponents,
   },
   data() {
     return {
@@ -490,6 +498,7 @@ export default {
       }
     },
     createAggregates() {
+      // TODO if question has parent id group results by parent id
       const getQuestions = new Promise((resolve) => {
         const questions = [];
         this.questionnaireResults[0].results.forEach((r) => {
@@ -561,7 +570,7 @@ export default {
       };
       chartdata.labels.push(question.title);
       Object.keys(this.countUniqueValues(question.values)).forEach((key, index) => {
-        console.log(key);
+        // console.log(key);
         if (key !== 'null') {
           const dataset = {
             label: this.shortenText(key),
@@ -673,6 +682,7 @@ export default {
       return chartdata;
     },
     pickRandomColor(index) {
+      // TODO find a proper palette
       const colors = ['#ee4035',
         '#f37736',
         '#fdf498',
@@ -758,7 +768,7 @@ export default {
       mapPointerQuestion[0].coordinates.forEach((pair) => {
         pair.forEach((coord) => {
           const featureToLoad = geojsonFormat.readFeatures(coord);
-          console.log(featureToLoad[0]);
+          // console.log(featureToLoad[0]);
           allLayers.forEach((layer) => {
             if (layer.getProperties().name === 'customLayer') {
               let message = '';
@@ -770,7 +780,7 @@ export default {
               featureToLoad[0].setProperties({
                 messages: message,
               });
-              console.log(featureToLoad);
+              // console.log(featureToLoad);
               layer.getSource().addFeature(featureToLoad[0]);
             }
           });
@@ -788,7 +798,7 @@ export default {
         let j = 0;
         r.results.forEach((row) => {
           if (row.type === 'mapPointer' || row.type === 'mapPointerMultiple' || row.type === 'mapLineString') {
-            console.log('row simple :: ', row);
+            // console.log('row simple :: ', row);
             for (let i = 0; i < row.value.length; i += 1) {
               j += 1;
               if (row.coordinates.length > 0) {
@@ -809,7 +819,7 @@ export default {
             }
           }
         });
-        console.log('new row:: ', table);
+        // console.log('new row:: ', table);
       });
       this.geodataTable = table;
     },
