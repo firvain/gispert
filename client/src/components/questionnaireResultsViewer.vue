@@ -797,7 +797,7 @@ export default {
       this.questionnaireResults.forEach((r) => {
         let j = 0;
         r.results.forEach((row) => {
-          if (row.type === 'mapPointer' || row.type === 'mapPointerMultiple' || row.type === 'mapLineString') {
+          if (row.type === 'mapPointer' || row.type === 'mapLineString' || row.type === 'mapPointerMultiple' || row.type === 'mapLinesMultiple') {
             // console.log('row simple :: ', row);
             for (let i = 0; i < row.value.length; i += 1) {
               j += 1;
@@ -829,45 +829,76 @@ export default {
         items: [],
       };
       // const tableRow = [];
-      this.questionnaireResults.forEach((r) => {
+      console.log('q results :: ', this.questionnaireResults);
+      // this.questionnaireResults.forEach((r) => {
         // tableRow.push({ submittedOn: r.submittedOn });
-        r.results.forEach((row) => {
-          if (row.type !== 'mapPointerMultiple') {
-            if (row.type === 'checkboxGroup') {
-              row.value.forEach((v, index) => {
-                this.dataTable.headers.push({ text: v[0], value: `${row.id}_${index}` });
-                // tableRow.push(v[0]);
+      this.questionnaireResults[0].results.forEach((row) => {
+        if (row.type !== 'mapPointerMultiple') {
+          if (row.type === 'checkboxGroup') {
+            row.value.forEach((v, index) => {
+              this.dataTable.headers.push({ text: v[0], value: `${row.id}_${index}` });
+              // tableRow.push(v[0]);
+            });
+          } else if (row.type === 'mapPointer') {
+            row.value.forEach((v, index) => {
+              this.dataTable.headers.push({ text: v, value: `${row.id}_${index}` });
+              // tableRow.push(v);
+            });
+          } else if (row.type === 'tableOfCheckboxes') {
+            console.log('this is a toc row :: ', row);
+            row.value.forEach((v, vindex) => {
+              v.answers.forEach((a, index) => {
+                this.dataTable.headers.push({ text: `${v.title}:${a.text}`, value: `${row.id}_${vindex}_${index}` });
+                console.log(`${row.id}_${vindex}_${index}`);
               });
-            } else if (row.type === 'mapPointer') {
-              row.value.forEach((v, index) => {
-                this.dataTable.headers.push({ text: v, value: `${row.id}_${index}` });
-                // tableRow.push(v);
-              });
-            } else {
-              // tableRow.push(row.title);
-              this.dataTable.headers.push({ text: row.title, value: row.id });
-            }
+              // tableRow.push(v);
+              // this.dataTable.headers.push({ text: v[0].title, value: `${row.id}` });
+            });
+          } else {
+            // tableRow.push(row.title);
+            this.dataTable.headers.push({ text: row.title, value: row.id });
           }
-        });
+        }
       });
+      // });
       // console.log('headers :: ', this.dataTable.headers.length,
-      // JSON.stringify(this.dataTable.headers));
+      console.log(JSON.stringify(this.dataTable.headers));
 
       this.questionnaireResults.forEach((r) => {
         const newRow = {};
         r.results.forEach((row) => {
-          if (row.type !== 'mapPointerMultiple') {
+          if (row.type !== 'mapPointerMultiple' && row.type !== 'mapLinesMultiple') {
             if (row.type === 'checkboxGroup') {
               row.value.forEach((v, index) => {
                 if (v[1]) { newRow[`${row.id}_${index}`] = this.$t('message.yes'); } else { newRow[`${row.id}_${index}`] = this.$t('message.no'); }
                 // newRow[`${row.id}_${index}`] = v[1].toString();
               });
-            } else if (row.type === 'mapPointer') {
+            } else if (row.type === 'mapPointer' || row.type === 'mapLineString') {
               row.value.forEach((v, index) => {
                 newRow[`${row.id}_${index}`] = v;
               });
+            } else if (row.type === 'tableOfCheckboxes') {
+              const columns = {};
+              console.log(row, row.length);
+              row.value.forEach((v, vindex) => {
+              //   console.log('v in row value of toc :: ', v);
+                v.answers.forEach((a, index) => {
+                  if (a.selected === true) {
+                    columns[`${row.id}_${vindex}_${index}`] = this.$t('message.yes');
+                  } else {
+                    columns[`${row.id}_${vindex}_${index}`] = this.$t('message.no');
+                  }
+                  // console.log(`${row.id}_${vindex}_${index}`, a.selected);
+              //     this.dataTable.items.push(newRow);
+                });
+                console.log('new column');
+              });
+              console.log('columns :: ', columns);
+              Object.assign(newRow, columns);
+              // newRow = { ...newRow, columns };
             } else {
               newRow[`${row.id}`] = row.value;
+              console.log('normal table row :: ', newRow[`${row.id}`]);
             }
           }
         });
