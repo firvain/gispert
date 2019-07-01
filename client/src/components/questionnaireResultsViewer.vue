@@ -220,6 +220,11 @@
                           :chartdata="createChartDataForComboboxQuestion(question)"
                           :options="options">
                         </barChart>
+                        <table v-if="loadedAgreggates">
+                          <tr v-for='(dataset, index) in createChartDataForComboboxQuestion(question).datasets' :key='index'>
+                            <td>{{ dataset.label }}</td><td>{{ dataset.data[0] }}</td>
+                          </tr>
+                        </table>
                       </v-flex>
 
                       <v-flex v-if="question.type === 'radioGroup'">
@@ -228,6 +233,11 @@
                           :chartdata="createChartDataForComboboxQuestion(question)"
                           :options="options">
                         </barChart>
+                        <table v-if="loadedAgreggates">
+                          <tr v-for='(dataset, index) in createChartDataForComboboxQuestion(question).datasets' :key='index'>
+                            <td>{{ dataset.label }}</td><td>{{ dataset.data[0] }}</td>
+                          </tr>
+                        </table>
                       </v-flex>
 
                       <v-flex v-if="question.type === 'checkboxGroup'" width='400px'>
@@ -236,10 +246,14 @@
                           :chartdata="createChartDataForcheckboxGroupQuestion(question)"
                           :options="options">
                         </barChart>
+                        <table v-if="loadedAgreggates">
+                          <tr v-for='(dataset, index) in createChartDataForcheckboxGroupQuestion(question).datasets' :key='index'>
+                            <td>{{ dataset.label[0] }}</td><td>{{ dataset.data[0] }}</td>
+                          </tr>
+                        </table>
                       </v-flex>
 
                       <v-flex v-if="question.type === 'tableOfCheckboxes'" width='400px'>
-                        <!-- calculate results {{ question.values }} -->
                         <template v-for="item in createChartDataForTableOfCheckboxes(question)">
                           {{ item.labels[0] }}
                           <barChart
@@ -248,6 +262,11 @@
                             :chartdata="item"
                             :options="options">
                           </barChart>
+                          <table v-if="loadedAgreggates" :key="item.id">
+                            <tr v-for='(dataset, index) in item.datasets' :key='index'>
+                              <td>{{ dataset.label[0] }}</td><td>{{ dataset.data[0] }}</td>
+                            </tr>
+                          </table>
                         </template>
                       </v-flex>
 
