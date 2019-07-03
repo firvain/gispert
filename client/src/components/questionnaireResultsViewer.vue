@@ -42,12 +42,12 @@
                   <v-card-text>
 
                   <v-flex v-if="question.type === 'textfield' || question.type === 'textfieldvalidation'">
-                    {{ question.value }}{{ question.type }}
+                    {{ question.value }}
                     <span v-if="question.value === null"> {{ $t('message.noValue')}} </span>
                   </v-flex>
 
                   <v-flex v-if="question.type === 'textarea'">
-                    {{ question.value }}{{ question.type }}
+                    {{ question.value }}
                     <span v-if="question.value === null"> {{ $t('message.noValue')}} </span>
                   </v-flex>
 
