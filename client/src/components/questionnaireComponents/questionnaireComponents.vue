@@ -151,6 +151,32 @@
             {{ $t('message.addLine')}}
           </v-btn>
         </v-container>
+        <v-container v-if="question.type === 'mapPointsLinesMultiple'">
+          <v-layout row wrap v-for="line in question.lines" :key="line.id">
+            <v-flex xs10>
+              <v-text-field
+                name="input-1"
+                v-model="line.value"
+                :label="$t('message.yourAnswer')"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs2>
+              <v-btn small fab dark class="indigo"
+                @click="getFromMap(line.id, 'Point', line.value, line.style);
+                $store.commit('setDrawMessage', '<code>Kλικ για ολοκλήρωση υπόδειξης</code>');">
+                <v-icon dark>location_on</v-icon>
+              </v-btn>
+              <v-btn small fab dark class="indigo"
+                @click="getFromMap(line.id, 'LineString', line.value, line.style);
+                $store.commit('setDrawMessage', '<code>Διπλό κλικ για ολοκλήρωση σχεδίασης,<br>Delete για διαγραφή τελευταίου σημείου</code>');">
+                <v-icon dark>timeline</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+          <v-btn dark class="indigo" @click="addRow(question)">
+            {{ $t('message.addLine')}}
+          </v-btn>
+        </v-container>
 
         <v-container fluid v-if="question.type === 'tableOfCheckboxes'">
           <v-layout row wrap>
