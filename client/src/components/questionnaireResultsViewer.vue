@@ -816,7 +816,11 @@ export default {
       this.questionnaireResults.forEach((r) => {
         let j = 0;
         r.results.forEach((row) => {
-          if (row.type === 'mapPointer' || row.type === 'mapLineString' || row.type === 'mapPointerMultiple' || row.type === 'mapLinesMultiple') {
+          if (row.type === 'mapPointer'
+            || row.type === 'mapLineString'
+            || row.type === 'mapPointerMultiple'
+            || row.type === 'mapLinesMultiple'
+            || row.type === 'mapPointsLinesMultiple') {
             // console.log('row simple :: ', row);
             for (let i = 0; i < row.value.length; i += 1) {
               j += 1;

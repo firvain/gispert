@@ -269,6 +269,28 @@
                         {{ $t('message.addLine')}}
                       </v-btn>
                     </v-container>
+                    <v-container v-if="question.type === 'mapPointsLinesMultiple'">
+                      <v-layout row wrap v-for="line in question.lines" :key="line.id">
+                        <v-flex xs10>
+                          <v-text-field
+                            name="input-1"
+                            v-model="line.value"
+                            :label="$t('message.yourAnswer')"
+                          ></v-text-field>
+                        </v-flex>
+                        <v-flex xs2>
+                          <v-btn small fab dark class="indigo">
+                            <v-icon dark>location_on</v-icon>
+                          </v-btn>
+                          <v-btn small fab dark class="indigo">
+                            <v-icon dark>timeline</v-icon>
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
+                      <v-btn dark class="indigo">
+                        {{ $t('message.addLine')}}
+                      </v-btn>
+                    </v-container>
                     <v-flex v-if="question.type === 'titleDescription'">
                       <h3 class="headline mb-0">{{ question.title }}</h3>
                       <div> {{ question.description }} </div>
@@ -830,6 +852,34 @@
                     </v-flex>
 
 
+                    <v-flex v-if="question.type === 'mapPointsLinesMultiple'">
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.title"
+                        :label="$t('message.question')"
+                      ></v-text-field>
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.description"
+                        :label="$t('message.description')"
+                      ></v-text-field>
+                      <v-checkbox
+                        :label="$t('message.optional')"
+                        v-model="question.optional">
+                      </v-checkbox>
+                      <v-checkbox
+                        label="Small caps"
+                        v-model="question.style.titleFontSize">
+                      </v-checkbox>
+                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                        <v-icon>folder_open</v-icon>
+                      </v-btn>
+                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                        <v-icon>delete</v-icon>
+                      </v-btn>
+                    </v-flex>
+
+
                     <v-flex v-if="question.type === 'titleDescription'">
                       <v-text-field
                         name="input-1"
@@ -1036,6 +1086,7 @@ export default {
         { type: 'mapLineString', name: this.$t('message.mapLineStringPointer') },
         { type: 'mapPointerMultiple', name: this.$t('message.mapPointerMultiple') },
         { type: 'mapLinesMultiple', name: this.$t('message.mapLinesMultiple') },
+        { type: 'mapPointsLinesMultiple', name: this.$t('message.mapPointsLinesMultiple') }, // TODO translate
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
         { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') }, // TODO translate table of checkboxes
         { type: 'repeatable', name: this.$t('message.repeatable') }, // TODO translate repeatable
@@ -1439,6 +1490,35 @@ export default {
           },
         };
         this.questionnaire.questions.push(mapLinesMultiple);
+      }
+      if (this.newQuestion === 'mapPointsLinesMultiple') {
+        // TODO let the user submit without pointing at map? or not?
+        const mapPointsLinesMultiple = {
+          id: this.nextId,
+          type: 'mapPointsLinesMultiple',
+          page: 0,
+          title: null,
+          description: null,
+          value: null,
+          lines: [{
+            id: `i${this.nextItemId}`,
+            value: '',
+            coords: null,
+            style: {
+              strkWdth: 1,
+              strkClr: 'blue',
+              fllClr: 'orange',
+            },
+          }],
+          error: false,
+          optional: false,
+          editing: true,
+          pageBreak: false,
+          style: {
+            titleFontSize: null,
+          },
+        };
+        this.questionnaire.questions.push(mapPointsLinesMultiple);
       }
       if (this.newQuestion === 'titleDescription') {
         const titleDescription = {

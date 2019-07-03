@@ -290,6 +290,48 @@ class QuestionnaireValidator {
       }
       // console.log(q.id, q.title, q.value);
     }
+    if (q.type === 'mapPointsLinesMultiple') {
+      const coordinates = [];
+      const values = [];
+      q.lines.forEach((b) => {
+        // console.log('b:: ', b);
+        if (b.value) {
+          values.push(b.value);
+          const features = store.state.questionnaireFeatures;
+          features.forEach((f) => {
+            if (f.getProperties().buttonId === b.id) {
+              f.setProperties({
+                label: b.value,
+              });
+              coordinates.push(geojsonFormat.writeFeatures([f]));
+            }
+          });
+        }
+      });
+      if ((values.length > 0 && coordinates.length > 0) ||
+      (q.optional === true || deactivatedQuestions.includes(q.id) ||
+      deactivatedPages.includes(q.page))) {
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: values,
+          coordinates,
+          error: false,
+          type: q.type,
+        };
+      } else {
+        q.error = true;
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: values,
+          coordinates,
+          error: true,
+          type: q.type,
+        };
+      }
+      // console.log(q.id, q.title, q.value);
+    }
     if (q.type === 'tableOfCheckboxes') {
       // TODO does not check errors now
       questionResult = {
@@ -328,7 +370,12 @@ class QuestionnaireValidator {
     //     };
     //   }
     // }
-    // console.log('question result :: ', questionResult);
+    console.log('question result :: ', questionResult);
+    if (questionResult.error) {
+      q.error = true;
+    } else {
+      q.error = false;
+    }
     /* eslint-enable no-param-reassign */
     return questionResult;
   }
