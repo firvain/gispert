@@ -21,7 +21,7 @@
       <v-footer class="pa-0">
         <a flat @click='termsOfUseDialog = true'>Όροι χρήσης</a>
         <v-spacer></v-spacer>
-        <div>Terra Cognita Ltd, All rights reserved. © {{ new Date().getFullYear() }}</div>
+        <div><a href='https://www.terracognita.eu' target='_blank'>Terra Cognita</a>, All rights reserved. © {{ new Date().getFullYear() }}</div>
       </v-footer>
 
       <v-dialog v-model="termsOfUseDialog" max-width="500px">
