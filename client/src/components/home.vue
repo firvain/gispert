@@ -189,6 +189,27 @@
                 </v-flex>
                 <v-layout row wrap>
                   <v-flex xs4 pa-2>
+                    <peopleHoldingMap width='100%'></peopleHoldingMap>
+                  </v-flex>
+                  <v-flex xs8 pa-2>
+                    <h2 class="font-weight-thin">In the Prefecture of Thessaly citizen where summoned to propose places of cultural or environmental value to be part of an Integrated Territorial Investment.
+                    </h2>
+                    <v-divider></v-divider>
+                  </v-flex>
+                </v-layout>
+                <v-layout row wrap>
+                  <v-flex xs4 pa-2>
+                    <mobility width='100%'></mobility>
+                  </v-flex>
+                  <v-flex xs8 pa-2>
+                    <h2 class="font-weight-thin">In the city of Lamia (Greece) citizens summoned to locate mobility problems in their city. Citizen generated data where used to improve
+                      the Sustainable Mobility Plan.
+                    </h2>
+                    <v-divider></v-divider>
+                  </v-flex>
+                </v-layout>
+                <v-layout row wrap>
+                  <v-flex xs4 pa-2>
                     <mobility width='100%'></mobility>
                   </v-flex>
                   <v-flex xs8 pa-2>
