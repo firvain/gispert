@@ -16,6 +16,7 @@ class QuestionnaireValidator {
     /* eslint-disable no-param-reassign */
     const geojsonFormat = new ol.format.GeoJSON();
     let questionResult = null;
+    console.log('checking :: ', q);
 
     if (q.type === 'textfield' || q.type === 'textfieldvalidation' || q.type === 'textarea') {
       if ((q.value && q.value.length > 0) ||
@@ -383,31 +384,13 @@ class QuestionnaireValidator {
     const questionnaireResult = [];
     if (page === 'all') {
       this.questionnaire.questions.forEach((q) => {
-        if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
-          q.questions.forEach((qu) => {
-            const qResult = this.constructor.checkErrorsForQuestion(
-              qu, deactivatedQuestions, deactivatedPages);
-            if (qResult !== null) {
-              qResult.parentId = q.id;
-              questionnaireResult.push(qResult);
-            }
-          });
-        } else {
-          const qResult = this.constructor.checkErrorsForQuestion(
-            q, deactivatedQuestions, deactivatedPages);
-          if (qResult !== null) {
-            questionnaireResult.push(qResult);
-          }
-        }
-      });
-    } else {
-      this.questionnaire.questions.forEach((q) => {
-        if (q.page === page) {
+        if (q.type !== 'titleDescription') {
           if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
             q.questions.forEach((qu) => {
               const qResult = this.constructor.checkErrorsForQuestion(
                 qu, deactivatedQuestions, deactivatedPages);
               if (qResult !== null) {
+                qResult.parentId = q.id;
                 questionnaireResult.push(qResult);
               }
             });
@@ -416,6 +399,28 @@ class QuestionnaireValidator {
               q, deactivatedQuestions, deactivatedPages);
             if (qResult !== null) {
               questionnaireResult.push(qResult);
+            }
+          }
+        }
+      });
+    } else {
+      this.questionnaire.questions.forEach((q) => {
+        if (q.page === page) {
+          if (q.type !== 'titleDescription') {
+            if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
+              q.questions.forEach((qu) => {
+                const qResult = this.constructor.checkErrorsForQuestion(
+                  qu, deactivatedQuestions, deactivatedPages);
+                if (qResult !== null) {
+                  questionnaireResult.push(qResult);
+                }
+              });
+            } else {
+              const qResult = this.constructor.checkErrorsForQuestion(
+                q, deactivatedQuestions, deactivatedPages);
+              if (qResult !== null) {
+                questionnaireResult.push(qResult);
+              }
             }
           }
         }
