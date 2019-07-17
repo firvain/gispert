@@ -372,7 +372,7 @@ class QuestionnaireValidator {
     //   }
     // }
     console.log('question result :: ', questionResult);
-    if (questionResult.error) {
+    if (questionResult && questionResult.error) {
       q.error = true;
     } else {
       q.error = false;

@@ -192,7 +192,7 @@
                     <peopleHoldingMap width='100%'></peopleHoldingMap>
                   </v-flex>
                   <v-flex xs8 pa-2>
-                    <h2 class="font-weight-thin">In the Prefecture of Thessaly citizen where summoned to propose places of cultural or environmental value to be part of an Integrated Territorial Investment.
+                    <h2 class="font-weight-thin">In the Prefecture of Thessaly citizens where summoned to propose places of cultural or environmental value to be part of an Integrated Territorial Investment.
                     </h2>
                     <v-divider></v-divider>
                   </v-flex>
