@@ -387,6 +387,7 @@
                 <tr v-for="row in geodataTable" :key="row.id">
                   <td>{{ row.id }}</td>
                   <td>{{ row.user }}</td>
+                  <td>{{ row.title }}</td>
                   <td>{{ row.question }}</td>
                   <td>{{ row.option }}</td>
                   <td>{{ row.wkt }}</td>
@@ -856,12 +857,14 @@ export default {
             || row.type === 'mapPointerMultiple'
             || row.type === 'mapLinesMultiple'
             || row.type === 'mapPointsLinesMultiple') {
-            // console.log('row simple :: ', row);
+            console.log('row simple :: ', row);
             for (let i = 0; i < row.value.length; i += 1) {
               j += 1;
-              if (row.coordinates.length > 0) {
+              if (row.coordinates.length > 0 && row.coordinates[i]) {
+                console.log('coords:: ', j, wktFormat.writeFeature(geojsonFormat.readFeatures(row.coordinates[i])[0]));
                 table.push({ id: j,
                   user: r.results[0].value,
+                  title: row.title,
                   question: row.id,
                   option: row.value[i],
                   wkt: wktFormat.writeFeature(geojsonFormat.readFeatures(row.coordinates[i])[0]),
@@ -869,6 +872,7 @@ export default {
               } else {
                 table.push({ id: j,
                   user: r.results[0].value,
+                  title: row.title,
                   question: row.id,
                   option: row.value[i],
                   wkt: '',
@@ -877,7 +881,7 @@ export default {
             }
           }
         });
-        // console.log('new row:: ', table);
+        console.log('new row:: ', table);
       });
       this.geodataTable = table;
     },
