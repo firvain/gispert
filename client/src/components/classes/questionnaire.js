@@ -200,6 +200,7 @@ class PageHandler {
     }
   }
   toggleQuestions() {
+    console.log('toggling questions');
     const questionsToAdd = [];
     const questionsToRemove = [];
 
@@ -219,7 +220,7 @@ class PageHandler {
           ) {
             // console.log('found item active to remove page from deactivated');
             item.activateQuestions.forEach((i) => {
-              questionsToRemove.push(i);
+              questionsToRemove.push(i.id);
             });
           }
           if (
@@ -229,7 +230,7 @@ class PageHandler {
           ) {
             // console.log('found item active to add page to deactivated');
             item.activateQuestions.forEach((i) => {
-              questionsToAdd.push(i);
+              questionsToAdd.push(i.id);
             });
           }
         });
@@ -239,29 +240,31 @@ class PageHandler {
           if (item.activateQuestions && item.activateQuestions[0] !== '-') {
             // console.log('found combobox without value:: ', question);
             item.activateQuestions.forEach((i) => {
-              questionsToAdd.push(i);
+              questionsToAdd.push(i.id);
             });
           }
         });
       }
     });
     // console.log('to add and to remove :: ', questionsToAdd, questionsToRemove);
-    const unique = questionsToAdd.filter(p => !questionsToRemove.includes(p).id);
+    const unique = questionsToAdd.filter(p => !questionsToRemove.includes(p));
+    console.log('unique var:: ', unique, JSON.stringify(unique));
     unique.forEach((u) => {
-      this.deactivatedQuestions.push(u.id);
+      this.deactivatedQuestions.push(u);
     });
-    const questionsQueue = {};
-    for (let index = 0; index <= this.totalPages; index += 1) {
-      // console.log(this.deactivatedQuestions);
-      if (this.deactivatedQuestions.includes(index)) {
-        // console.log('false');
-        questionsQueue[`${index}`] = { visibility: false };
-      } else {
-        // console.log('true');
-        questionsQueue[`${index}`] = { visibility: true };
-      }
-    }
-    this.questionsQueue = questionsQueue;
+    console.log('deactivated questions:: ', this.deactivatedQuestions);
+    // const questionsQueue = {};
+    // for (let index = 0; index <= this.totalPages; index += 1) {
+    //   // console.log('deactivated questions:: ', this.deactivatedQuestions);
+    //   if (this.deactivatedQuestions.includes(index)) {
+    //     // console.log('false');
+    //     questionsQueue[`${index}`] = { visibility: false };
+    //   } else {
+    //     // console.log('true');
+    //     questionsQueue[`${index}`] = { visibility: true };
+    //   }
+    // }
+    // this.questionsQueue = questionsQueue;
   }
 
   toggleSections() {
