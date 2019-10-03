@@ -12,11 +12,11 @@ class TableOfCheckboxes {
     } else {
       this.verticalValues = question.verticalValues;
     }
-    if (!question.items) {
-      this.items = [];
-    } else {
-      this.items = question.items;
-    }
+    // if (!question.items) {
+    //   this.items = [];
+    // } else {
+    //   this.items = question.items;
+    // }
     if (!question.page) {
       this.page = 0;
     } else {
@@ -82,9 +82,12 @@ class TableOfCheckboxes {
   get vertical() {
     return this.verticalValues;
   }
-  get items() {
-    return this.items;
-  }
+  // get items() {
+  //   return this.items;
+  // }
+  // set items(i) {
+  //   this.items = [];
+  // }
   createItems() {
     const items = [];
     if (this.horizontalValues && this.verticalValues) {
@@ -96,6 +99,7 @@ class TableOfCheckboxes {
         items.push({ id: vv.id, title: vv.title, answers });
       });
     }
+    console.log(items);
     this.items = items;
     // return items;
   }
@@ -330,4 +334,33 @@ class PageHandler {
     this.pagesQueue = pagesQueue;
   }
 }
-export { TableOfCheckboxes, PageHandler };
+
+class Questionnaire {
+  constructor(questionnaire) {
+    console.log(questionnaire);
+    this.questions = questionnaire.questions;
+    this.properties = questionnaire.properties;
+    this.loaded = false;
+    this.init();
+  }
+  // get questions() {
+  //   return this.questions;
+  // }
+  // set questions(qs) {
+  //   this.questions = qs;
+  // }
+  // get properties() {
+  //   return this.properties;
+  // }
+  init() {
+    this.loaded = true;
+    this.questions.forEach((q, index) => {
+      if (q.type === 'tableOfCheckboxes') {
+        console.log('found table and loading');
+        this.questions[index] = new TableOfCheckboxes(q);
+        console.log(this.questions[index]);
+      }
+    });
+  }
+}
+export { TableOfCheckboxes, PageHandler, Questionnaire };

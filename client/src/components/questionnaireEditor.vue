@@ -1,5 +1,5 @@
 <template>
-    <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">
+    <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">{{ questionnaire.loaded }}
       <v-flex>
         <p>Editor @{{ userEditingNow }}</p>
         <p>Viewers
@@ -295,34 +295,13 @@
                       <h3 class="headline mb-0">{{ question.title }}</h3>
                       <div> {{ question.description }} </div>
                     </v-flex>
-                    <v-flex fluid v-if="question.type === 'tableOfCheckboxes'">
-                      <v-layout row wrap>
-                        <v-container>
-                          <v-flex xs12 md12>
-                              <v-layout row wrap v-if="question.horizontal && question.vertical">
-                                <v-flex xs1> 
-                                </v-flex>
-                                <v-flex xs1 ma-2 v-for="hv in question.horizontal" :key="hv.id">
-                                  {{ hv.text }}
-                                </v-flex>
-                              </v-layout>
-                          </v-flex>
-                          <v-flex xs12 md12>
-                            <v-layout row wrap v-for="item in question.items" :key="item.id">
-                              <v-flex xs1 ma-1>{{ item.title }}</v-flex>
-                              <v-flex ma-2 v-for="answer in item.answers" :key="answer.id" xs1>
-                                <v-checkbox light v-model="answer.selected"></v-checkbox>
-                              </v-flex>
-                            </v-layout>
-                          </v-flex>
-                        </v-container>
-                      </v-layout>
-                    </v-flex>
+
+
                     <v-container row wrap v-if="question.type === 'repeatable'">
                       <v-btn block>{{ question.buttonText }}</v-btn>
                     </v-container>
 
-
+                    <tableOfCheckboxesView :question='question'></tableOfCheckboxesView>
 
                     <v-layout row wrap align-center>
                       <v-flex xs4>
@@ -903,82 +882,7 @@
                       </v-btn>
                     </v-flex>
 
-                    <v-flex v-if="question.type === 'tableOfCheckboxes'">
-                      <v-text-field
-                        name="input-2"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-2"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-layout>
-                        <v-flex xs6>Vertical values
-                          <v-list>
-                            <v-btn flat outline fab small
-                              @click="question.verticalValues.push({ id: nextItemId, title: '' });"
-                              v-if="question.editing">
-                              <v-icon>add</v-icon>
-                            </v-btn>
-                            <template v-for="item in question.verticalValues">
-                              <v-list-tile
-                                  :key="item.id"
-                              >
-                                <v-list-tile-content>
-                                  <v-text-field
-                                    name="input-1"
-                                    v-model="item.title"
-                                    append-icon="delete"
-                                    @click:append="question.verticalValues.remove(item);"
-                                  ></v-text-field>
-                                  <v-icon>delete</v-icon>
-                                </v-list-tile-content>
-                              </v-list-tile>
-                            </template>
-                          </v-list>
-                        </v-flex>
-                        <v-flex xs6>Horizontal values
-                          <v-list>
-                            <v-btn flat outline fab small @click="question.horizontalValues.push({ id: nextItemId, text: '', selected: false });"
-                              v-if="question.editing">
-                              <v-icon>add</v-icon>
-                            </v-btn>
-                            <template v-for="answer in question.horizontalValues">
-                              <v-list-tile
-                                  :key="answer.id"
-                              >
-                                <v-list-tile-content>
-                                  <v-text-field
-                                    name="input-1"
-                                    v-model="answer.text"
-                                    append-icon="delete"
-                                    @click:append="question.horizontalValues.remove(answer);"
-                                  ></v-text-field>
-                                  <v-icon>delete</v-icon>
-                                </v-list-tile-content>
-                              </v-list-tile>
-                            </template>
-                          </v-list>
-                        </v-flex>
-                      </v-layout>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
-
+                    <tableOfCheckboxesEditable :question='question'></tableOfCheckboxesEditable>
 
                     <v-flex v-if="question.type === 'repeatable'">
                       <v-text-field
@@ -1045,6 +949,8 @@ import moment from 'moment';
 import draggable from 'vuedraggable';
 import Swatches from 'vue-swatches';
 import { TableOfCheckboxes } from '@/components/classes/questionnaire';
+import tableOfCheckboxesEditable from '@/components/questionnaireComponents/tableOfCheckboxesEditable';
+import tableOfCheckboxesView from '@/components/questionnaireComponents/tableOfCheckboxesView';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
@@ -1052,7 +958,7 @@ import config from '../config';
 export default {
   props: ['qnnaire'],
   components: {
-    draggable, Swatches,
+    draggable, Swatches, tableOfCheckboxesEditable, tableOfCheckboxesView,
   },
   data() {
     return {
@@ -1604,6 +1510,7 @@ export default {
       console.log('loading questionnaire for edit');
       console.log(this.questionnaire, this.qnnaire.properties.dateStart);
       this.questionnaire = this.qnnaire;
+      console.log('loaded:: ', this.questionnaire);
       this.dateStart = moment.unix(this.qnnaire.properties.dateStart / 1000).format('YYYY-MM-DD');
       this.dateEnd = moment.unix(this.qnnaire.properties.dateEnd / 1000).format('YYYY-MM-DD');
     }

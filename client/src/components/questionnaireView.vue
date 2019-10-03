@@ -1,13 +1,18 @@
 <template>
   <v-layout id="layout1" row wrap xs12 sm12 md12>
     <v-container v-if="pagehandler.currentPage === 0 && !submitted">
-      <v-container fluid row
+      <v-container fluid row pa-0 ma-0
         v-for="item in questionnaire.properties.introduction.items"
         :key="item.id"
       >
         <h3 v-if="item.type === 'heading'" class="headline mb-0">{{ item.value }}</h3>
         <div v-if="item.type === 'text'" > {{ item.value }} </div>
-        <img v-if="item.type === 'image'" :src="item.value" aspect-ratio="2.75"/>
+        <v-card v-if="item.type === 'image'">
+          <v-img
+            :src="item.value"
+            class="grey darken-4"
+          ></v-img>
+        </v-card>
       </v-container>
     </v-container>
 
@@ -205,15 +210,15 @@
                   <v-layout row wrap>
                       <v-flex xs1> 
                       </v-flex>
-                      <v-flex xs1 ma-2 v-for="answer in question.horizontalValues" :key="answer.id">
-                        {{ answer.text }}
+                      <v-flex xs1 ma-0 pa-0 v-for="answer in question.horizontalValues" :key="answer.id">
+                        <div class='rotatedText'>{{ answer.text }}</div>
                       </v-flex>
                   </v-layout>
               </v-flex>
               <v-flex xs12 md12>
                 <v-layout row wrap v-for="item in question.items" :key="item.id">
                   <v-flex xs1 ma-1>{{ item.title }}</v-flex>
-                  <v-flex ma-2 v-for="answer in item.answers" :key="answer.id" xs1>
+                  <v-flex ma-0 pa-1 v-for="answer in item.answers" :key="answer.id" xs1>
                     <v-checkbox light v-model="answer.selected"></v-checkbox>
                   </v-flex>
                 </v-layout>
@@ -511,5 +516,10 @@ export default {
   .force-hover:hover {
     background-color: bisque;
     cursor: pointer;
+  }
+  .rotatedText {
+    -ms-transform: rotate(-90deg); /* IE 9 */
+    -webkit-transform: rotate(-90deg); /* Safari 3-8 */
+    transform: rotate(-90deg);
   }
 </style>
