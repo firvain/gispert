@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid v-if="question.type === 'tableOfCheckboxes'">
+  <v-container fluid v-if="question.type === 'tableOfCheckboxes'" pa-0 ma-0>
     <v-layout row wrap>
       <v-container ma-0 pa-0>
         <v-flex xs12 md12>
@@ -13,8 +13,8 @@
         </v-flex>
         <v-flex xs12 md12>
           <v-layout row wrap v-for="item in question.items" :key="item.id">
-            <v-flex xs1 ma-1>{{ item.title }}</v-flex>
-            <v-flex ma-0 pa-1 v-for="answer in item.answers" :key="answer.id" xs1>
+            <v-flex xs1 mr-4>{{ item.title }}</v-flex>
+            <v-flex xs1 ma-0 pa-0 v-for="answer in item.answers" :key="answer.id">
               <v-checkbox light v-model="answer.selected"></v-checkbox>
             </v-flex>
           </v-layout>

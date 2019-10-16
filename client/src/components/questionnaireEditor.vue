@@ -192,7 +192,7 @@
                           </v-checkbox>
                         </v-flex>
                     </v-container>
-                    <v-container row wrap v-if="question.type === 'radioGroup'">
+                    <!-- <v-container row wrap v-if="question.type === 'radioButtonsGroup'">
                       <v-radio-group v-model="question.value" mandatory>
                         <v-radio
                           v-for="radio in question.radios"
@@ -200,7 +200,7 @@
                           :label="`${radio.label}`"
                         ></v-radio>
                       </v-radio-group>
-                    </v-container>
+                    </v-container> -->
                     <v-container row wrap v-if="question.type === 'preferenceHierarchy'">
                       <v-list one-line>
                         <draggable v-model="question.optionsToSort" @start="drag=true" @end="drag=false">
@@ -302,6 +302,8 @@
                     </v-container>
 
                     <tableOfCheckboxesView :question='question'></tableOfCheckboxesView>
+                    <radioButtonsGroupView :question='question'></radioButtonsGroupView>
+                    <tableOfRadioButtonsView :question='question'></tableOfRadioButtonsView>
 
                     <v-layout row wrap align-center>
                       <v-flex xs4>
@@ -562,7 +564,7 @@
                     </v-flex>
 
 
-                    <v-flex v-if="question.type === 'radioGroup'">
+                    <!-- <v-flex v-if="question.type === 'radioButtonsGroup'">
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
@@ -608,7 +610,7 @@
                       <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
                       </v-btn>
-                    </v-flex>
+                    </v-flex> -->
 
 
                     <v-flex v-if="question.type === 'preferenceHierarchy'">
@@ -883,6 +885,8 @@
                     </v-flex>
 
                     <tableOfCheckboxesEditable :question='question'></tableOfCheckboxesEditable>
+                    <radioButtonsGroupEditable :question='question'></radioButtonsGroupEditable>
+                    <tableOfRadioButtonsEditable :question='question'></tableOfRadioButtonsEditable>
 
                     <v-flex v-if="question.type === 'repeatable'">
                       <v-text-field
@@ -951,6 +955,10 @@ import Swatches from 'vue-swatches';
 import { TableOfCheckboxes } from '@/components/classes/questionnaire';
 import tableOfCheckboxesEditable from '@/components/questionnaireComponents/tableOfCheckboxesEditable';
 import tableOfCheckboxesView from '@/components/questionnaireComponents/tableOfCheckboxesView';
+import tableOfRadioButtonsEditable from '@/components/questionnaireComponents/tableOfRadioButtonsEditable';
+import tableOfRadioButtonsView from '@/components/questionnaireComponents/tableOfRadioButtonsView';
+import radioButtonsGroupEditable from '@/components/questionnaireComponents/radioButtonsGroupEditable';
+import radioButtonsGroupView from '@/components/questionnaireComponents/radioButtonsGroupView';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
@@ -958,7 +966,14 @@ import config from '../config';
 export default {
   props: ['qnnaire'],
   components: {
-    draggable, Swatches, tableOfCheckboxesEditable, tableOfCheckboxesView,
+    draggable,
+    Swatches,
+    tableOfCheckboxesEditable,
+    tableOfCheckboxesView,
+    radioButtonsGroupEditable,
+    radioButtonsGroupView,
+    tableOfRadioButtonsEditable,
+    tableOfRadioButtonsView,
   },
   data() {
     return {
@@ -986,7 +1001,7 @@ export default {
         { type: 'textfieldvalidation', name: 'Text field with validation' },
         { type: 'combobox', name: this.$t('message.expandableMenu') },
         { type: 'checkboxGroup', name: this.$t('message.checkboxes') },
-        { type: 'radioGroup', name: this.$t('message.multipleChoice') },
+        { type: 'radioButtonsGroup', name: this.$t('message.multipleChoice') },
         { type: 'preferenceHierarchy', name: this.$t('message.sortingOptions') },
         { type: 'mapPointer', name: this.$t('message.mapPointer') },
         { type: 'mapLineString', name: this.$t('message.mapLineStringPointer') },
@@ -995,6 +1010,7 @@ export default {
         { type: 'mapPointsLinesMultiple', name: this.$t('message.mapPointsLinesMultiple') }, // TODO translate
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
         { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') }, // TODO translate table of checkboxes
+        { type: 'tableOfRadioButtons', name: this.$t('message.tableOfRadioButtons') }, // TODO translate table of RadioButtons
         { type: 'repeatable', name: this.$t('message.repeatable') }, // TODO translate repeatable
       ],
       questionnaire: {
@@ -1242,10 +1258,10 @@ export default {
         };
         this.questionnaire.questions.push(checkboxGroup);
       }
-      if (this.newQuestion === 'radioGroup') {
-        const radioGroup = {
+      if (this.newQuestion === 'radioButtonsGroup') {
+        const radioButtonsGroup = {
           id: this.nextId,
-          type: 'radioGroup',
+          type: 'radioButtonsGroup',
           page: 0,
           title: null,
           description: null,
@@ -1259,7 +1275,7 @@ export default {
             titleFontSize: null,
           },
         };
-        this.questionnaire.questions.push(radioGroup);
+        this.questionnaire.questions.push(radioButtonsGroup);
       }
       if (this.newQuestion === 'mapPointer') {
         const mapPointer = {
@@ -1449,6 +1465,25 @@ export default {
         };
         const tableOfCheckboxes = new TableOfCheckboxes(newTOCquestion);
         this.questionnaire.questions.push(tableOfCheckboxes);
+      }
+      if (this.newQuestion === 'tableOfRadioButtons') {
+        const tableOfRadioButtons = {
+          id: this.nextId,
+          type: 'tableOfRadioButtons',
+          page: 0,
+          title: null,
+          description: null,
+          error: false,
+          optional: false,
+          editing: true,
+          pageBreak: false,
+          horizontalValues: [],
+          verticalValues: [],
+          style: {
+            titleFontSize: null,
+          },
+        };
+        this.questionnaire.questions.push(tableOfRadioButtons);
       }
       if (this.newQuestion === 'repeatable') {
         const newSetOfQuestions = {

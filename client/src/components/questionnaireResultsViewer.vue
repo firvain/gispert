@@ -256,14 +256,14 @@
                         </table>
                       </v-flex>
 
-                      <v-flex v-if="question.type === 'radioGroup'">
+                      <v-flex v-if="question.type === 'radioButtonsGroup'">
                         <barChart 
                           v-if="loadedAgreggates"
-                          :chartdata="createChartDataForComboboxQuestion(question)"
+                          :chartdata="createChartDataForRadioButtonsQuestion(question)"
                           :options="options">
                         </barChart>
                         <table v-if="loadedAgreggates">
-                          <tr v-for='(dataset, index) in createChartDataForComboboxQuestion(question).datasets' :key='index'>
+                          <tr v-for='(dataset, index) in createChartDataForRadioButtonsQuestion(question).datasets' :key='index'>
                             <td>{{ dataset.label }}</td><td>{{ dataset.data[0] }}</td>
                           </tr>
                         </table>
@@ -616,6 +616,32 @@ export default {
         };
         chartdata.datasets.push(dataset);
       });
+      return chartdata;
+    },
+    createChartDataForRadioButtonsQuestion(question) {
+      // console.log(question);
+      const chartdata = {
+        labels: [],
+        datasets: [],
+      };
+      const allValues = [];
+      chartdata.labels.push(question.title);
+      question.values.forEach((v) => {
+        allValues.push(v.label);
+      });
+      Object.keys(this.countUniqueValues(allValues)).forEach((key, index) => {
+        // console.log(key.label);
+        if (key !== 'null') {
+          const dataset = {
+            label: this.shortenText(key),
+            // eslint-disable-next-line
+            backgroundColor: this.pickRandomColor(index),
+            data: [this.countUniqueValues(allValues)[key]],
+          };
+          chartdata.datasets.push(dataset);
+        }
+      });
+      console.log('combobox chartdata to see result :: ', JSON.stringify(chartdata));
       return chartdata;
     },
     createChartDataForComboboxQuestion(question) {

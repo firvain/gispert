@@ -343,6 +343,63 @@ class QuestionnaireValidator {
         type: q.type,
       };
     }
+    if (q.type === 'radioButtonsGroup') {
+      if (q.value !== null ||
+        q.optional === true ||
+        deactivatedQuestions.includes(q.id) ||
+        deactivatedPages.includes(q.page)) {
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: q.value,
+          error: false,
+          type: q.type,
+        };
+      } else {
+        q.error = true;
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: q.value,
+          error: true,
+          type: q.type,
+        };
+      }
+    }
+    const isNull = function test(element) {
+      // checks whether an element is null
+      return element === null;
+    };
+
+    if (q.type === 'tableOfRadioButtons') {
+      console.log(JSON.stringify(q), 'table radio');
+      const valuesArray = [];
+      q.items.forEach((a) => {
+        valuesArray.push(a.value);
+      });
+      if (!valuesArray.some(isNull) ||
+        q.optional === true ||
+        deactivatedQuestions.includes(q.id) ||
+        deactivatedPages.includes(q.page)) {
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: q.items,
+          error: false,
+          type: q.type,
+        };
+      } else {
+        q.error = true;
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: q.items,
+          error: true,
+          type: q.type,
+        };
+      }
+    }
+
     // if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
     //   const repeatableResult = [];
     //   q.questions.forEach((a) => {

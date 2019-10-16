@@ -227,6 +227,9 @@
           </v-layout>
         </v-container>
 
+        <radioButtonsGroupView :question='question'></radioButtonsGroupView>
+        <tableOfRadioButtonsView :question='question'></tableOfRadioButtonsView>
+
         <v-container ma-0 pa-0 v-if="question.type === 'repeatable'">
           <v-flex v-for='question in question.questions' :key='question.id'>
             <questionnaireComponents :question='question'></questionnaireComponents>
@@ -310,6 +313,8 @@ import axios from 'axios';
 import draggable from 'vuedraggable';
 import { PageHandler } from '@/components/classes/questionnaire';
 import questionnaireComponents from '@/components/questionnaireComponents/questionnaireComponents';
+import radioButtonsGroupView from '@/components/questionnaireComponents/radioButtonsGroupView';
+import tableOfRadioButtonsView from '@/components/questionnaireComponents/tableOfRadioButtonsView';
 import QuestionnaireValidator from '@/components/classes/questionnaireValidator';
 import { app } from '../main';
 import olMap from '../js/map';
@@ -318,7 +323,7 @@ import config from '../config';
 export default {
   props: ['id'],
   components: {
-    draggable, questionnaireComponents,
+    draggable, questionnaireComponents, radioButtonsGroupView, tableOfRadioButtonsView,
   },
   data() {
     return {
