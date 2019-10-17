@@ -299,6 +299,23 @@
                         </template>
                       </v-flex>
 
+                      <v-flex v-if="question.type === 'tableOfRadioButtons'" width='400px'>
+                        <template v-for="item in createChartDataForTableOfRadioButtons(question)">
+                          {{ item.labels[0] }}
+                          <barChart
+                            :key="item.id"
+                            v-if="loadedAgreggates"
+                            :chartdata="item"
+                            :options="options">
+                          </barChart>
+                          <table v-if="loadedAgreggates" :key="item.id">
+                            <tr v-for='(dataset, index) in item.datasets' :key='index'>
+                              <td>{{ dataset.label[0] }}</td><td>{{ dataset.data[0] }}</td>
+                            </tr>
+                          </table>
+                        </template>
+                      </v-flex>
+
                       <v-flex v-if="question.type === 'preferenceHierarchy'" width='400px'>
                         <barChart
                           v-if="loadedAgreggates"
@@ -691,7 +708,7 @@ export default {
         }, {});
 
       const groupById = groupBy('id');
-      // console.log('group by id:: ', groupById(lines));
+      console.log('group by id:: ', groupById(lines));
       const groups = groupById(lines);
       Object.entries(groups).forEach((g) => {
         Object.keys(g).forEach((key) => {
@@ -732,6 +749,65 @@ export default {
         chartDataArray.push(chartdata);
       });
       // console.log('chartdata for table :: ', JSON.stringify(chartDataArray));
+      return chartDataArray;
+    },
+    createChartDataForTableOfRadioButtons(question) {
+      console.log('creating data for table of radiobuttons:: ', question);
+      const titles = [];
+      question.values[0].forEach((v) => {
+        v.answers.forEach((t) => {
+          titles.push({ id: t.id, qid: v.id, title: v.title, option: t.text, count: 0 });
+        });
+      });
+      console.log('titles:: ', titles);
+      const lines = [];
+      question.values.forEach((r) => {
+        // console.log('r: ', r);
+        r.forEach((l) => {
+          lines.push(l);
+        });
+      });
+      console.log('lines are:: ', lines);
+      lines.forEach((line) => {
+        // console.log(line.value.id);
+        titles.forEach((t) => {
+          if (t.id === line.value.id) {
+            // eslint-disable-next-line
+            t.count += 1;
+            console.log(line.value.id, t.id);
+          }
+        });
+      });
+      console.log(JSON.stringify(titles));
+      const groupBy = key => array =>
+        array.reduce((objectsByKeyValue, obj) => {
+          const value = obj[key];
+          // eslint-disable-next-line
+          objectsByKeyValue[value] = (objectsByKeyValue[value] || []).concat(obj);
+          return objectsByKeyValue;
+        }, {});
+
+      const groupById = groupBy('title');
+      const groups = groupById(titles);
+      const chartDataArray = [];
+      Object.keys(groups).forEach((key) => {
+        // console.log('for each key:: ', key);
+        const chartdata = {
+          labels: [key],
+          datasets: [],
+        };
+        groups[key].forEach((k, i) => {
+          const dataset = {
+            label: [this.shortenText(k.option)],
+            // eslint-disable-next-line
+            backgroundColor: this.pickRandomColor(i),
+            data: [k.count],
+          };
+          chartdata.datasets.push(dataset);
+        });
+        chartDataArray.push(chartdata);
+      });
+      console.log('chartdata for table :: ', JSON.stringify(chartDataArray));
       return chartDataArray;
     },
     createChartDataForcheckboxGroupQuestion(question) {
