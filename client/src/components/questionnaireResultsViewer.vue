@@ -690,7 +690,7 @@ export default {
           titles.push({ id: t.id, qid: v.id, title: v.title, option: t.text, count: 0 });
         });
       });
-      // console.log('titles:: ', titles);
+      console.log('titles:: ', titles);
       const lines = [];
       question.values.forEach((r) => {
         // console.log('r: ', r);
@@ -718,14 +718,17 @@ export default {
               v.answers.forEach((an) => {
                 if (an.selected) {
                   const objIndex = titles.findIndex((obj => obj.id === an.id));
-                  titles[objIndex].count += 1;
+                  // console.log('crashes on this::', objIndex);
+                  if (objIndex > -1) {
+                    titles[objIndex].count += 1;
+                  }
                 }
               });
             });
           }
         });
       });
-      // console.log('final titles::::: ', titles);
+      console.log('final titles::::: ', titles);
       const groupByQuestion = groupBy('title');
       const finalgroups = groupByQuestion(titles);
       // console.log('titles groups :: ', groupByQuestion(titles));
@@ -752,14 +755,14 @@ export default {
       return chartDataArray;
     },
     createChartDataForTableOfRadioButtons(question) {
-      console.log('creating data for table of radiobuttons:: ', question);
+      // console.log('creating data for table of radiobuttons:: ', question);
       const titles = [];
       question.values[0].forEach((v) => {
         v.answers.forEach((t) => {
           titles.push({ id: t.id, qid: v.id, title: v.title, option: t.text, count: 0 });
         });
       });
-      console.log('titles:: ', titles);
+      // console.log('titles:: ', titles);
       const lines = [];
       question.values.forEach((r) => {
         // console.log('r: ', r);
@@ -767,18 +770,18 @@ export default {
           lines.push(l);
         });
       });
-      console.log('lines are:: ', lines);
+      // console.log('lines are:: ', lines);
       lines.forEach((line) => {
         // console.log(line.value.id);
         titles.forEach((t) => {
-          if (t.id === line.value.id) {
+          if (line.value && t.id === line.value.id) {
             // eslint-disable-next-line
             t.count += 1;
-            console.log(line.value.id, t.id);
+            // console.log(line.value.id, t.id);
           }
         });
       });
-      console.log(JSON.stringify(titles));
+      // console.log(JSON.stringify(titles));
       const groupBy = key => array =>
         array.reduce((objectsByKeyValue, obj) => {
           const value = obj[key];
@@ -807,7 +810,7 @@ export default {
         });
         chartDataArray.push(chartdata);
       });
-      console.log('chartdata for table :: ', JSON.stringify(chartDataArray));
+      // console.log('chartdata for table :: ', JSON.stringify(chartDataArray));
       return chartDataArray;
     },
     createChartDataForcheckboxGroupQuestion(question) {

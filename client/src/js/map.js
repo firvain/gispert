@@ -316,41 +316,41 @@ const customLayer = new ol.layer.Vector({
   name: 'customLayer',
 });
 
-const geolocationLayer = new ol.layer.Vector({
-  source: new ol.source.Vector(),
-  name: 'geolocationLayer',
-});
-const geolocation = new ol.Geolocation({
-  // enableHighAccuracy must be set to true to have the heading value.
-  trackingOptions: {
-    enableHighAccuracy: true,
-  },
-  projection: 'EPSG:3857',
-});
-geolocation.setTracking(true);
-const accuracyFeature = new ol.Feature();
-geolocation.on('change:accuracyGeometry', () => {
-  accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
-});
-const positionFeature = new ol.Feature();
-positionFeature.setStyle(new ol.style.Style({
-  image: new ol.style.Circle({
-    radius: 6,
-    fill: new ol.style.Fill({
-      color: '#3399CC',
-    }),
-    stroke: new ol.style.Stroke({
-      color: '#fff',
-      width: 2,
-    }),
-  }),
-}));
-geolocation.on('change:position', () => {
-  const coordinates = geolocation.getPosition();
-  positionFeature.setGeometry(coordinates ?
-    new ol.geom.Point(coordinates) : null);
-});
-geolocationLayer.getSource().addFeature(positionFeature);
+// const geolocationLayer = new ol.layer.Vector({
+//   source: new ol.source.Vector(),
+//   name: 'geolocationLayer',
+// });
+// const geolocation = new ol.Geolocation({
+//   // enableHighAccuracy must be set to true to have the heading value.
+//   trackingOptions: {
+//     enableHighAccuracy: true,
+//   },
+//   projection: 'EPSG:3857',
+// });
+// geolocation.setTracking(true);
+// const accuracyFeature = new ol.Feature();
+// geolocation.on('change:accuracyGeometry', () => {
+//   accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
+// });
+// const positionFeature = new ol.Feature();
+// positionFeature.setStyle(new ol.style.Style({
+//   image: new ol.style.Circle({
+//     radius: 6,
+//     fill: new ol.style.Fill({
+//       color: '#3399CC',
+//     }),
+//     stroke: new ol.style.Stroke({
+//       color: '#fff',
+//       width: 2,
+//     }),
+//   }),
+// }));
+// geolocation.on('change:position', () => {
+//   const coordinates = geolocation.getPosition();
+//   positionFeature.setGeometry(coordinates ?
+//     new ol.geom.Point(coordinates) : null);
+// });
+// geolocationLayer.getSource().addFeature(positionFeature);
 // geolocation.on('change', () => {
   // console.log('geolocation :: ', geolocation.getAccuracyGeometry());
   // el('altitude').innerText = geolocation.getAltitude() + ' [m]';
@@ -397,7 +397,7 @@ const olMap = new ol.Map({
     //   }),
     // }),
     customLayer,
-    geolocationLayer,
+    // geolocationLayer,
   ],
   // overlays: [overlay],
   view: new ol.View({
