@@ -2,19 +2,19 @@
   <v-container fluid class="pa-0">
   <Pageheader></Pageheader>
       <v-layout row wrap>
-        <v-flex xs6 md6 v-if="$route.name === 'questionnaire'">
+        <v-flex :class="layoutOption.leftPanel" v-if="$route.name === 'questionnaire'">
           <qnaire class="qnaire" :id="$route.params.id"></qnaire>
         </v-flex>
-        <v-flex xs6 md6 v-else-if="$route.name === 'questionnaireResults'">
+        <v-flex :class="layoutOption.leftPanel" v-else-if="$route.name === 'questionnaireResults'">
           <questionnaireViewer fill-height class="qnaire" :id="$route.params.id"></questionnaireViewer>
         </v-flex>
-        <v-flex xs6 md6 v-else-if="$route.name === 'questionnaireEditor'">
+        <v-flex :class="layoutOption.leftPanel" v-else-if="$route.name === 'questionnaireEditor'">
           <questionnaireEditor fill-height class="qnaire" :id="$route.params.id"></questionnaireEditor>
         </v-flex>
-        <v-flex xs6 md6 v-else>
+        <v-flex :class="layoutOption.leftPanel" v-else>
           <tabs></tabs>
         </v-flex>
-        <v-flex xs6 md6>
+        <v-flex :class="layoutOption.map">
           <mapDiv></mapDiv>
         </v-flex>
       </v-layout>
@@ -139,6 +139,28 @@ export default {
       // this.$eventHub.$emit('routerChanged', 'routerChanged');
     },
   },
+  computed: {
+    layoutOption() {
+      const option = {
+        leftPanel: 'xs6',
+        map: 'xs6',
+      };
+      if (this.$vuetify.breakpoint.smAndDown) {
+        if (this.$store.state.mapState === 'mapAvailable') {
+          option.leftPanel = 'd-none';
+          option.map = 'xs12';
+        } else {
+          option.leftPanel = 'xs12';
+          option.map = 'd-none';
+        }
+      } else {
+        option.leftPanel = 'xs6';
+        option.map = 'xs6';
+      }
+      this.$eventHub.$emit('redrawMap');
+      return option;
+    },
+  },
   methods: {
     loadPostFromPermalink(id) {
       this.$store.commit('setActiveTab', 'explore');
@@ -160,7 +182,6 @@ export default {
       console.log('q::', id);
     },
   },
-
 };
 </script>
 
@@ -183,5 +204,14 @@ a:hover {
 }
 .qnaire {
   overflow-y: scroll;
+}
+.xs12{
+  max-width:100%;
+}
+.xs6{
+  max-width: 50%;
+}
+.d-none {
+  z-index: 0;
 }
 </style>

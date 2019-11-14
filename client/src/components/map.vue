@@ -78,6 +78,12 @@ export default {
     },
   },
   methods: {
+    redrawMap() {
+      console.log('redrawing map');
+      setTimeout(() => {
+        olMap.updateSize();
+      }, 200);
+    },
     setBasemap(basemap) {
       let allLayers = [];
       allLayers = olMap.getLayers().getArray();
@@ -162,6 +168,9 @@ export default {
     },
   },
   mounted() {
+    this.$eventHub.$on('redrawMap', () => {
+      this.redrawMap();
+    });
     olMap.setTarget(document.getElementById('mapDiv'));
     console.log(olMap);
     const container = document.getElementById('popup');
