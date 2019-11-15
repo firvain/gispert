@@ -24,6 +24,7 @@
     "json2csv": "^4.5.4",
     "linkify": "^0.2.1",
     "linkifyjs": "^2.1.5",
+    "mobile-detect": "^1.4.4",
     "moment": "^2.18.0",
     "moment-with-locales-es6": "^2.18.1",
     "openlayers": "^4.2.0",

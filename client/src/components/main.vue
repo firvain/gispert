@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import MobileDetect from 'mobile-detect';
 import Pageheader from '@/components/pageheader';
 import qnaire from '@/components/questionnaireView';
 import questionnaireViewer from '@/components/questionnaireResultsViewer';
@@ -103,6 +104,8 @@ export default {
       olMap: false,
       language: 'el_GR',
       termsOfUseDialog: false,
+      mobileCheck: false,
+      isMobile: false,
     };
   },
   mounted() {
@@ -120,6 +123,8 @@ export default {
       console.log('loading questionnaire');
       this.loadQuestionnaireView(this.$route.params.id);
     }
+    this.mobileCheck = new MobileDetect(window.navigator.userAgent);
+    // console.log('mobile checking :: ', this.mobileCheck.mobile());
   },
   watch: {
     '$route.params': function handle() {
@@ -145,7 +150,15 @@ export default {
         leftPanel: 'xs6',
         map: 'xs6',
       };
-      if (this.$vuetify.breakpoint.smAndDown) {
+      if (this.mobileCheck) {
+        // eslint-disable-next-line
+        if (this.mobileCheck.phone() || this.mobileCheck.tablet()) {
+          this.isMobile = true;
+        } else {
+          this.isMobile = false;
+        }
+      }
+      if (this.$vuetify.breakpoint.smAndDown || this.isMobile) {
         if (this.$store.state.mapState === 'mapAvailable') {
           option.leftPanel = 'd-none';
           option.map = 'xs12';
