@@ -386,7 +386,13 @@
                   {{ $t('message.from')}} {{ pageStart }} {{ $t('message.to')}} {{ pageStop }}
                 </template>
               </v-data-table>
-              <v-btn color="blue darken-1" flat @click.native="exportDataDialog = false">{{ $t("message.close") }}</v-btn>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="blue darken-1" flat @click.native="exportDataDialog = false">{{ $t("message.close") }}</v-btn>
+                <v-btn color="blue darken-1" flat @click.native="download();">
+                  <v-icon dark>archive</v-icon>Export to CSV (excel file)
+                </v-btn>
+              </v-card-actions>
             </v-card>
           </v-dialog>
 
@@ -427,6 +433,7 @@
 <script>
 import axios from 'axios';
 import ol from 'openlayers';
+import json2csv from 'json2csv/lib/json2csv';
 import barChart from '@/components/charts/barChart';
 import questionnaireComponents from '@/components/questionnaireComponents/questionnaireComponents';
 import olMap from '../js/map';
@@ -527,7 +534,7 @@ export default {
     loadFeature(featureToLoad, text) {
       console.log('load feature::', featureToLoad);
       const geojsonFormat = new ol.format.GeoJSON();
-      console.log('adding a post feature data:: ', text);
+      // console.log('adding a post feature data:: ', text);
       const featuresToLoad = geojsonFormat.readFeatures(featureToLoad);
       if (featuresToLoad.length > 0) {
         let allLayers = [];
@@ -613,7 +620,7 @@ export default {
       });
       question.values.forEach((val) => {
         val.forEach((v, index) => {
-          console.log('label:: ', v.label, Math.abs(index - val.length), optionsLength);
+          // console.log('label:: ', v.label, Math.abs(index - val.length), optionsLength);
           data[v.label] = (Math.abs(index - val.length) /
             (question.values.length * optionsLength)) + (data[v.label] || 0);
         });
@@ -658,7 +665,7 @@ export default {
           chartdata.datasets.push(dataset);
         }
       });
-      console.log('combobox chartdata to see result :: ', JSON.stringify(chartdata));
+      // console.log('combobox chartdata to see result :: ', JSON.stringify(chartdata));
       return chartdata;
     },
     createChartDataForComboboxQuestion(question) {
@@ -690,7 +697,7 @@ export default {
           titles.push({ id: t.id, qid: v.id, title: v.title, option: t.text, count: 0 });
         });
       });
-      console.log('titles:: ', titles);
+      // console.log('titles:: ', titles);
       const lines = [];
       question.values.forEach((r) => {
         // console.log('r: ', r);
@@ -708,7 +715,7 @@ export default {
         }, {});
 
       const groupById = groupBy('id');
-      console.log('group by id:: ', groupById(lines));
+      // console.log('group by id:: ', groupById(lines));
       const groups = groupById(lines);
       Object.entries(groups).forEach((g) => {
         Object.keys(g).forEach((key) => {
@@ -728,7 +735,7 @@ export default {
           }
         });
       });
-      console.log('final titles::::: ', titles);
+      // console.log('final titles::::: ', titles);
       const groupByQuestion = groupBy('title');
       const finalgroups = groupByQuestion(titles);
       // console.log('titles groups :: ', groupByQuestion(titles));
@@ -996,7 +1003,7 @@ export default {
         items: [],
       };
       // const tableRow = [];
-      console.log('q results :: ', this.questionnaireResults);
+      // console.log('q results :: ', this.questionnaireResults);
       // this.questionnaireResults.forEach((r) => {
         // tableRow.push({ submittedOn: r.submittedOn });
       this.questionnaireResults[0].results.forEach((row) => {
@@ -1012,14 +1019,21 @@ export default {
               // tableRow.push(v);
             });
           } else if (row.type === 'tableOfCheckboxes') {
-            console.log('this is a toc row :: ', row);
+            // console.log('this is a toc row :: ', row);
             row.value.forEach((v, vindex) => {
               v.answers.forEach((a, index) => {
                 this.dataTable.headers.push({ text: `${v.title}:${a.text}`, value: `${row.id}_${vindex}_${index}` });
-                console.log(`${row.id}_${vindex}_${index}`);
+                // console.log(`${row.id}_${vindex}_${index}`);
               });
               // tableRow.push(v);
               // this.dataTable.headers.push({ text: v[0].title, value: `${row.id}` });
+            });
+          } else if (row.type === 'tableOfRadioButtons') {
+            row.value.forEach((v, vindex) => {
+              v.answers.forEach((a, index) => {
+                this.dataTable.headers.push({ text: `${v.title}:${a.text}`, value: `${row.id}_${vindex}_${index}` });
+                // console.log('table of radios row:: ', `${row.id}_${vindex}_${index}`);
+              });
             });
           } else {
             // tableRow.push(row.title);
@@ -1029,7 +1043,7 @@ export default {
       });
       // });
       // console.log('headers :: ', this.dataTable.headers.length,
-      console.log(JSON.stringify(this.dataTable.headers));
+      // console.log(JSON.stringify(this.dataTable.headers));
 
       this.questionnaireResults.forEach((r) => {
         const newRow = {};
@@ -1044,9 +1058,12 @@ export default {
               row.value.forEach((v, index) => {
                 newRow[`${row.id}_${index}`] = v;
               });
+            } else if (row.type === 'radioButtonsGroup') {
+              // console.log('radio group::', row);
+              newRow[`${row.id}`] = row.value.label;
             } else if (row.type === 'tableOfCheckboxes') {
               const columns = {};
-              console.log(row, row.length);
+              // console.log(row, row.length);
               row.value.forEach((v, vindex) => {
               //   console.log('v in row value of toc :: ', v);
                 v.answers.forEach((a, index) => {
@@ -1055,25 +1072,75 @@ export default {
                   } else {
                     columns[`${row.id}_${vindex}_${index}`] = this.$t('message.no');
                   }
-                  // console.log(`${row.id}_${vindex}_${index}`, a.selected);
-              //     this.dataTable.items.push(newRow);
                 });
-                console.log('new column');
+                // console.log('new column');
               });
-              console.log('columns :: ', columns);
+              // console.log('columns :: ', columns);
               Object.assign(newRow, columns);
               // newRow = { ...newRow, columns };
+            } else if (row.type === 'tableOfRadioButtons') {
+              const columns = {};
+              // console.log(row, row.length);
+              row.value.forEach((v, vindex) => {
+              //   console.log('v in row value of toc :: ', v);
+                v.answers.forEach((a, index) => {
+                  if (a.id === v.value.id) {
+                    columns[`${row.id}_${vindex}_${index}`] = this.$t('message.yes');
+                  } else {
+                    columns[`${row.id}_${vindex}_${index}`] = this.$t('message.no');
+                  }
+                });
+                // console.log('new column of radio');
+              });
+              // console.log('columns :: ', columns);
+              Object.assign(newRow, columns);
             } else {
               newRow[`${row.id}`] = row.value;
-              console.log('normal table row :: ', newRow[`${row.id}`]);
+              // console.log('normal table row :: ', newRow[`${row.id}`]);
             }
           }
         });
         // console.log('newrow :: ', newRow);
         this.dataTable.items.push(newRow);
       });
-      // console.log('items :: ', this.dataTable
-      // .items.length, JSON.stringify(this.dataTable.items));
+      // console.log('items :: ', JSON.stringify(this.dataTable.headers)
+      // , JSON.stringify(this.dataTable.items));
+    },
+    download() {
+      const fields = [];
+      const fieldHeaders = {};
+      this.dataTable.headers.forEach((h) => {
+        fieldHeaders[h.value] = h.text;
+      });
+      this.dataTable.items.forEach((i) => {
+        const row = {};
+        Object.keys(i).forEach((k) => {
+          row[fieldHeaders[k]] = i[k];
+        });
+        fields.push(row);
+      });
+      console.log('fields: ', fields[0]);
+      // const items = this.dataTable.items;
+      const csvParser = new json2csv.Parser({ delimiter: ';' });
+      const csv = csvParser.parse(fields);
+
+      const exportedFilenmae = 'export.csv';
+      const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+      if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, exportedFilenmae);
+      } else {
+        const link = document.createElement('a');
+        if (link.download !== undefined) { // feature detection
+          // Browsers that support HTML5 download attribute
+          const url = URL.createObjectURL(blob);
+          link.setAttribute('href', url);
+          link.setAttribute('download', exportedFilenmae);
+          link.style.visibility = 'hidden';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
     },
   },
   mounted() {

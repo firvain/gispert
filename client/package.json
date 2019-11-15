@@ -21,6 +21,7 @@
     "get-youtube-id": "^1.0.1",
     "hellojs": "^1.16.1",
     "html-linkify": "^1.2.2",
+    "json2csv": "^4.5.4",
     "linkify": "^0.2.1",
     "linkifyjs": "^2.1.5",
     "moment": "^2.18.0",

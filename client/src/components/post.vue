@@ -266,7 +266,7 @@ export default {
           type: 'FeatureCollection',
           features: post.featureData,
         };
-        console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
+        // console.log('adding a post feature data:: ', JSON.stringify(featureCollection));
         const featuresToLoad = geojsonFormat.readFeatures(JSON.stringify(featureCollection));
         if (featuresToLoad.length > 0) {
           let allLayers = [];

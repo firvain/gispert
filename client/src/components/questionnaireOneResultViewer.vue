@@ -136,7 +136,7 @@ export default {
     loadFeature(featureToLoad, text) {
       console.log('load feature::', featureToLoad);
       const geojsonFormat = new ol.format.GeoJSON();
-      console.log('adding a post feature data:: ', text);
+      // console.log('adding a post feature data:: ', text);
       const featuresToLoad = geojsonFormat.readFeatures(featureToLoad);
       if (featuresToLoad.length > 0) {
         let allLayers = [];
