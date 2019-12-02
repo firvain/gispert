@@ -1520,6 +1520,9 @@ export default {
     },
   },
   mounted() {
+    this.$eventHub.$on('removeQuestion', (q) => {
+      this.removeQuestion(q);
+    });
     this.$options.sockets.userEditingThisQuestionnaire = (data) => {
       console.log('this user is editing :: ', data);
       this.userEditingNow = data.username;

@@ -203,30 +203,7 @@
           </v-btn>
         </v-container>
 
-        <v-container fluid v-if="question.type === 'tableOfCheckboxes'">
-          <v-layout row wrap>
-            <v-container>
-              <v-flex xs12 md12>
-                  <v-layout row wrap>
-                      <v-flex xs1> 
-                      </v-flex>
-                      <v-flex xs1 ma-0 pa-0 v-for="answer in question.horizontalValues" :key="answer.id">
-                        <div class='rotatedText'>{{ answer.text }}</div>
-                      </v-flex>
-                  </v-layout>
-              </v-flex>
-              <v-flex xs12 md12>
-                <v-layout row wrap v-for="item in question.items" :key="item.id">
-                  <v-flex xs1 ma-1>{{ item.title }}</v-flex>
-                  <v-flex ma-0 pa-1 v-for="answer in item.answers" :key="answer.id" xs1>
-                    <v-checkbox light v-model="answer.selected"></v-checkbox>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-container>
-          </v-layout>
-        </v-container>
-
+        <tableOfCheckboxesView :question='question'></tableOfCheckboxesView>
         <radioButtonsGroupView :question='question'></radioButtonsGroupView>
         <tableOfRadioButtonsView :question='question'></tableOfRadioButtonsView>
 
@@ -315,6 +292,7 @@ import { PageHandler } from '@/components/classes/questionnaire';
 import questionnaireComponents from '@/components/questionnaireComponents/questionnaireComponents';
 import radioButtonsGroupView from '@/components/questionnaireComponents/radioButtonsGroupView';
 import tableOfRadioButtonsView from '@/components/questionnaireComponents/tableOfRadioButtonsView';
+import tableOfCheckboxesView from '@/components/questionnaireComponents/tableOfCheckboxesView';
 import QuestionnaireValidator from '@/components/classes/questionnaireValidator';
 import { app } from '../main';
 import olMap from '../js/map';
@@ -323,7 +301,11 @@ import config from '../config';
 export default {
   props: ['id'],
   components: {
-    draggable, questionnaireComponents, radioButtonsGroupView, tableOfRadioButtonsView,
+    draggable,
+    questionnaireComponents,
+    radioButtonsGroupView,
+    tableOfRadioButtonsView,
+    tableOfCheckboxesView,
   },
   data() {
     return {

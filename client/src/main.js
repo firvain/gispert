@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 import VueI18n from 'vue-i18n';
 import VueSocketio from 'vue-socket.io';
 import moment from 'moment';
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
 import 'vuetify/dist/vuetify.min.css';
 import App from './App';

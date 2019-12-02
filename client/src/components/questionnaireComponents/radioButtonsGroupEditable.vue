@@ -1,5 +1,5 @@
 <template>
-<v-flex v-if="question.type === 'radioButtonsGroup'">{{ question }}
+<v-flex v-if="question.type === 'radioButtonsGroup'">
     <v-container class="px-0" fluid> {{ question.value }}
       <v-radio-group v-model="question.value" :row='question.horizontal'>
         <v-radio
@@ -68,6 +68,9 @@ export default {
       this.question.radios.push(
         { id: `i${this.nextItemId}`, label: '...' },
       );
+    },
+    removeQuestion() {
+      this.$eventHub.$emit('removeQuestion', this.question);
     },
   },
   computed: {

@@ -107,6 +107,9 @@ export default {
       this.question.items = items;
       // return items;
     },
+    removeQuestion() {
+      this.$eventHub.$emit('removeQuestion', this.question);
+    },
   },
 };
 </script>
