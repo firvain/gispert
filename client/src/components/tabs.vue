@@ -9,10 +9,10 @@
         <v-icon>search</v-icon>
         <b>{{ $t("message.explore") }}</b>
       </v-tab>
-      <v-tab href="#users" ripple>
+      <!-- <v-tab href="#users" ripple>
         <v-icon>fa-user-o</v-icon>
         <b>{{ $t("message.users") }}</b>
-      </v-tab>
+      </v-tab> -->
       <v-tab href="#questionnaires" ripple>
         <v-icon>live_help</v-icon>
         <b>{{ $t('message.questionnaires')}}</b>
@@ -28,11 +28,11 @@
       >
         <explore></explore>
       </v-tab-item>
-      <v-tab-item
+      <!-- <v-tab-item
         value="users"
       >
         <userList></userList>
-      </v-tab-item>
+      </v-tab-item> -->
       <v-tab-item
         value="questionnaires"
       >
@@ -46,13 +46,13 @@
 <script>
 import timeline from '@/components/timeline';
 import explore from '@/components/search';
-import userList from '@/components/userlist';
+// import userList from '@/components/userlist';
 import questionnaires from '@/components/questionnaires';
 
 export default {
   name: 'tabs',
   components: {
-    timeline, explore, userList, questionnaires,
+    timeline, explore, questionnaires,
   },
   data: () => ({
   }),

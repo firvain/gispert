@@ -1,6 +1,5 @@
 <template>
-  <v-container fluid class="pa-0">
-  <Pageheader></Pageheader>
+  <v-container fluid align-center>
       <v-layout row wrap>
         <v-flex :class="layoutOption.leftPanel" v-if="$route.name === 'questionnaire'">
           <qnaire class="qnaire" :id="$route.params.id"></qnaire>
@@ -18,11 +17,6 @@
           <mapDiv></mapDiv>
         </v-flex>
       </v-layout>
-      <v-footer class="pa-0">
-        <a flat @click='termsOfUseDialog = true'>Όροι χρήσης</a>
-        <v-spacer></v-spacer>
-        <div><a href='https://www.terracognita.eu' target='_blank'>Terra Cognita</a>, All rights reserved. © {{ new Date().getFullYear() }}</div>
-      </v-footer>
 
       <v-dialog v-model="termsOfUseDialog" max-width="500px">
         <v-card>
@@ -75,7 +69,6 @@
 
 <script>
 import MobileDetect from 'mobile-detect';
-import Pageheader from '@/components/pageheader';
 import qnaire from '@/components/questionnaireView';
 import questionnaireViewer from '@/components/questionnaireResultsViewer';
 import questionnaireEditor from '@/components/questionnaireEditor';
@@ -89,7 +82,7 @@ import mapDiv from './map';
 export default {
   name: 'mainpage',
   components: {
-    tabs, mapDiv, Pageheader, qnaire, questionnaireViewer, questionnaireEditor,
+    tabs, mapDiv, qnaire, questionnaireViewer, questionnaireEditor,
   },
   data() {
     return {
@@ -170,6 +163,8 @@ export default {
         option.leftPanel = 'xs6';
         option.map = 'xs6';
       }
+      // option.leftPanel = 'xs12';
+      // option.map = 'd-none';
       this.$eventHub.$emit('redrawMap');
       return option;
     },
@@ -199,15 +194,6 @@ export default {
 </script>
 
 <style scoped>
-#main {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  padding: 0px;
-  margin: 0px;
-}
 html {   overflow-y: hidden; }
 .nopadding {
   padding: 0px !important;

@@ -1,5 +1,5 @@
 <template>
-  <v-layout id="layout1" row wrap xs12 sm12 md12>
+  <v-layout id="layout1" row wrap>
     <v-container v-if="pagehandler.currentPage === 0 && !submitted">
       <v-container fluid row pa-0 ma-0
         v-for="item in questionnaire.properties.introduction.items"
@@ -213,38 +213,6 @@
           </v-flex>
           <v-btn block @click='addQuestionSet(question)'>{{ question.buttonText }}</v-btn>
         </v-container>
-
-<!-- 
-        <v-container fluid v-if="question.type === 'tableOfRadios'">
-          <v-layout row wrap>
-            <v-container>
-              <v-flex xs12 md12>
-                  <v-layout row wrap>
-                      <v-flex xs1> 
-                        </v-flex>
-                        <v-flex xs1 ma-2 v-for="answer in question.items[0].answers" :key="answer.text">
-                          {{ answer.text }}
-                        </v-flex>
-                  </v-layout>
-              </v-flex>
-              <v-flex xs12 md12>
-                <v-layout row wrap v-for="item in question.items" :key="item.title">
-                  <v-flex xs1 ma-1>{{ item.title }}</v-flex>
-
-                    <v-radio-group v-model="question.value" row>
-                      <v-radio xs1
-                        v-for="answer in item.answers"
-                        :key="answer"
-                        label="testing"
-                      >{{ answer }}</v-radio>
-                    </v-radio-group>
-
-                </v-layout>
-              </v-flex>
-            </v-container>
-          </v-layout>
-        </v-container> -->
-
         </v-card-text>
       </v-card>
     </v-container>

@@ -1,5 +1,4 @@
 <template>
-  <v-layout column>
     <v-toolbar class="orange lighten-2 no-padding" dark>
       <i class="fa fa-map fa-2x"></i><h1>Geobabel</h1>
       <v-spacer></v-spacer>
@@ -309,7 +308,6 @@
       </v-dialog>
 
     </v-toolbar>
-  </v-layout>
 </template>
 <script>
 import axios from 'axios';
