@@ -99,6 +99,7 @@ export default {
       termsOfUseDialog: false,
       mobileCheck: false,
       isMobile: false,
+      activateMap: true,
     };
   },
   mounted() {
@@ -118,6 +119,9 @@ export default {
     }
     this.mobileCheck = new MobileDetect(window.navigator.userAgent);
     // console.log('mobile checking :: ', this.mobileCheck.mobile());
+    this.$eventHub.$on('deactivateMap', () => {
+      this.activateMap = false;
+    });
   },
   watch: {
     '$route.params': function handle() {
@@ -151,7 +155,7 @@ export default {
           this.isMobile = false;
         }
       }
-      if (this.$vuetify.breakpoint.smAndDown || this.isMobile) {
+      if (this.$vuetify.breakpoint.smAndDown || this.isMobile || !this.activateMap) {
         if (this.$store.state.mapState === 'mapAvailable') {
           option.leftPanel = 'd-none';
           option.map = 'xs12';

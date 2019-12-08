@@ -16,7 +16,7 @@
       </v-container>
     </v-container>
 
-    <v-layout v-if="!submitted" row wrap xs12 sm12 md12>
+    <v-layout v-if="!submitted" row wrap xs12 sm12 md12 justify-center>
     <v-container pa-0 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
       <v-card v-if="question.page === pagehandler.currentPage && !pagehandler.deactivatedQuestions.includes(question.id)">
         <v-card-title primary-title>
@@ -222,7 +222,8 @@
       <v-flex xs12>
         <v-btn dark block class="indigo" @click="submit('page');"
           v-if="pagehandler.showNext">
-          {{ $t('message.nextSection')}} <span> &nbsp; {{ pagehandler.labels() }}</span>
+          {{ $t('message.nextSection')}}
+          <!-- <span> &nbsp; {{ pagehandler.labels() }}</span> -->
         </v-btn>
         <v-btn dark block class="grey" @click="goToPreviousPage"
           v-if="pagehandler.showPrevious">
@@ -444,6 +445,9 @@ export default {
         this.setLocale(this.questionnaire.properties.locale);
       }).then(() => {
         this.pagehandler = new PageHandler(this.questionnaire);
+        if (this.$store.state.questionnaire.properties.activateMap === false) {
+          this.$eventHub.$emit('deactivateMap');
+        }
       });
     },
     setLocale(value) {
