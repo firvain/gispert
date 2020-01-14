@@ -1,5 +1,5 @@
 <template>
-  <v-layout id="layout1" row wrap>{{ questionnaire}}
+  <v-layout id="layout1" row wrap>
     <v-container v-if="pagehandler.currentPage === 0 && !submitted">
       <v-container fluid row pa-0 ma-0
         v-for="item in questionnaire.properties.introduction.items"
@@ -54,7 +54,6 @@
 
         <questionSetRepeaterView :question='question' :questionnaire='questionnaire'></questionSetRepeaterView>
 
-        
         </v-card-text>
       </v-card>
     </v-container>

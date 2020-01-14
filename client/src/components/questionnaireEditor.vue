@@ -417,14 +417,19 @@
                         v-model="question.description"
                         :label="$t('message.description')"
                       ></v-text-field>
-                      <v-select
-                        v-bind:items="['email']"
+                      <!-- <v-select
+                        v-bind:items="['email', 'number']"
                         v-model="question.validation"
                         :label="$t('message.selectValidationType')"
                         single-line
                         return-object
                         menu-props="bottom"
-                      ></v-select>
+                      ></v-select> -->
+                      <v-text-field
+                        name="input-1"
+                        v-model="question.validation"
+                        :label="$t('message.selectValidationType')"
+                      ></v-text-field>
                       <v-checkbox
                         :label="$t('message.optional')"
                         v-model="question.optional">

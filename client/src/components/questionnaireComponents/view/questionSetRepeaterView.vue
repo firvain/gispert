@@ -15,7 +15,7 @@
         <textFieldView :question='question'></textFieldView>
         <textFieldValidation :question='question'></textFieldValidation>
         <textAreaView :question='question'></textAreaView>
-        <comboboxView :question='question' :pagehandler='pagehandler'></comboboxView>
+        <comboboxView :question='question'></comboboxView>
         <checkboxGroupView :question='question'></checkboxGroupView>
         <radioButtonsGroupView :question='question'></radioButtonsGroupView>
         <preferenceHierarchyView :question='question'></preferenceHierarchyView>
@@ -84,30 +84,30 @@ export default {
     addQuestionSet(question) {
       /* eslint-disable no-param-reassign */
       let idIncrement = 0;
-      question.repeatQuestions.forEach((q) => {
-        console.log('repeat this question:: ', JSON.stringify(q));
-      });
+      // question.repeatQuestions.forEach((q) => {
+      //   console.log('repeat this question:: ', JSON.stringify(q));
+      // });
       const repeat = [];
       question.repeatQuestions.forEach((r) => {
         repeat.push(r.id);
       });
       const newQuestionSet = this.questionnaire.questions.filter(q =>
       repeat.includes(q.id));
-      newQuestionSet.forEach((n) => {
-        console.log('set of questions to clone:: ', JSON.stringify(n));
-      });
+      // newQuestionSet.forEach((n) => {
+      //   console.log('set of questions to clone:: ', JSON.stringify(n));
+      // });
       newQuestionSet.forEach((s) => {
-        console.log('question in set::', JSON.stringify(s));
+        // console.log('question in set::', JSON.stringify(s));
         const cloneQuestion = this.jsonCopy(s);
         // { ...s };
         cloneQuestion.id = `${this.nextId}_${idIncrement}`;
         cloneQuestion.parentId = s.id;
-        console.log('question clone::', JSON.stringify(cloneQuestion));
+        // console.log('question clone::', JSON.stringify(cloneQuestion));
         idIncrement += 1;
-        console.log('adding clone to::', JSON.stringify(question));
+        // console.log('adding clone to::', JSON.stringify(question));
         question.questions.push(cloneQuestion);
       });
-      console.log('-------------------------------------');
+      // console.log('-------------------------------------');
       // newQuestionSet.forEach((q) => {
       //   const repeatable = this.questionnaire.questions.filter(x => x.id === question.id);
       //   console.log('repeatable found :: ', repeatable);
