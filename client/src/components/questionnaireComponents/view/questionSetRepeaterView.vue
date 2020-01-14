@@ -98,8 +98,10 @@ export default {
       });
       newQuestionSet.forEach((s) => {
         console.log('question in set::', JSON.stringify(s));
-        const cloneQuestion = { ...s };
+        const cloneQuestion = this.jsonCopy(s);
+        // { ...s };
         cloneQuestion.id = `${this.nextId}_${idIncrement}`;
+        cloneQuestion.parentId = s.id;
         console.log('question clone::', JSON.stringify(cloneQuestion));
         idIncrement += 1;
         console.log('adding clone to::', JSON.stringify(question));
@@ -126,6 +128,9 @@ export default {
       //   console.log('repeatable :: ', JSON.stringify(repeatable[0]));
       // });
       /* eslint-enable no-param-reassign */
+    },
+    jsonCopy(src) {
+      return JSON.parse(JSON.stringify(src));
     },
   },
 };

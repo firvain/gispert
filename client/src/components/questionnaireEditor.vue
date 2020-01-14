@@ -58,6 +58,10 @@
           v-model="questionnaire.properties.publicAccess"
           :label="$t('message.enablePublicAccess')"
         ></v-switch>
+        <v-switch
+          v-model="questionnaire.properties.activateMap"
+          label="Show map when answering"
+        ></v-switch>
 
         {{ $t('message.questionnaireMapExtent')}}
         <v-btn small fab dark class="indigo" @click="getFromMap('qExtent', 'Box')">

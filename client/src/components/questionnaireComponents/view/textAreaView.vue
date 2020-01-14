@@ -9,7 +9,7 @@
 </template>
 <script>
 export default {
-  name: 'textarea',
+  name: 'textArea',
   props: ['question'],
 };
 </script>
