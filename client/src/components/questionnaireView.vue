@@ -1,5 +1,5 @@
 <template>
-  <v-layout id="layout1" row wrap>
+  <v-layout id="layout1" row wrap>{{ questionnaire}}
     <v-container v-if="pagehandler.currentPage === 0 && !submitted">
       <v-container fluid row pa-0 ma-0
         v-for="item in questionnaire.properties.introduction.items"
@@ -21,7 +21,7 @@
       <v-card v-if="question.page === pagehandler.currentPage && !pagehandler.deactivatedQuestions.includes(question.id)">
         <v-card-title primary-title>
           <div>
-            <h3 :class="titleClass(question)">{{ question.title }} 
+            <h3 :class="titleClass(question)">{{ question.title }}
               <span v-if="question.optional === true && question.type !== 'titleDescription'">*</span>
             </h3>
             <v-alert color="error" icon="warning" :value="question.error">
@@ -37,182 +37,24 @@
         />
         <v-card-text>
 
-        <v-flex v-if="question.type === 'textfield'">
-          <v-text-field
-            name="input-1"
-            v-model="question.value"
-            :label="$t('message.yourAnswer')"
-          ></v-text-field>
-        </v-flex>
-
-        <v-flex v-if="question.type === 'textarea'">
-          <v-textarea
-            name="input-1"
-            v-model="question.value"
-            :label="$t('message.yourAnswer')"
-          ></v-textarea>
-        </v-flex>
-
-        <v-flex v-if="question.type === 'textfieldvalidation' && question.validation === 'email'">
-          <v-text-field
-            name="input-2"
-            v-model="question.value"
-            :label="$t('message.yourAnswer')"
-            :rules="emailRules"
-          ></v-text-field>
-        </v-flex>
-
-        <v-flex v-if="question.type === 'combobox'">
-          <v-select
-            v-bind:items="question.items"
-            v-model="question.value"
-            item-value="value"
-            item-text="value"
-            
-            :label="$t('message.yourAnswer')"
-            single-line
-            menu-props="bottom"
-            v-on:input="pagehandler.toggleSections(); pagehandler.toggleQuestions();"
-          ></v-select>
-        </v-flex>
-
-        <v-container row wrap v-if="question.type === 'checkboxGroup'">
-            <v-flex v-for="checkbox in question.checkboxes" :key="checkbox.id">
-              <v-checkbox
-                :label="checkbox.label"
-                v-model="checkbox.value"
-                :value="checkbox.value">
-              </v-checkbox>
-            </v-flex>
-        </v-container>
-
-        <v-container row wrap v-if="question.type === 'radioGroup'">
-          <v-radio-group v-model="question.value" mandatory>
-            <v-radio
-              v-for="radio in question.radios"
-              :key="radio.id"
-              :label="`${radio.label}`"
-              :value="radio.label"
-            ></v-radio>
-          </v-radio-group>
-        </v-container>
-
-        <v-container row wrap v-if="question.type === 'preferenceHierarchy'">
-          <v-list one-line>
-            <draggable v-model="question.optionsToSort" @start="drag=true" @end="drag=false">
-              <template v-for='element in question.optionsToSort'>
-                <v-list-tile :key="element.id" avatar class='force-hover'>
-                  <v-list-tile-avatar>
-                    <v-icon>drag_indicator</v-icon>
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <v-list-tile-title v-html="element.label"></v-list-tile-title>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </template>
-            </draggable>
-          </v-list>
-        </v-container>
-
-        <v-container row wrap v-if="question.type === 'mapPointer'">
-          <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-            <v-btn small fab dark :color="button.style.strkClr"
-              @click="getFromMap(button.id, 'Point', button.label, button.style);
-              $store.commit('setDrawMessage', '<code>Κάντε κλικ στο σημείο της απάντησής σας</code>');">
-              <v-icon dark>location_on</v-icon>
-            </v-btn>
-          </v-flex>
-        </v-container>
-
-        <v-container row wrap v-if="question.type === 'mapLineString'">
-          <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-            <v-btn small fab dark :color="button.style.strkClr"
-              @click="getFromMap(button.id, 'LineString', button.label, button.style);
-              $store.commit('setDrawMessage', '<code>Διπλό κλικ για ολοκλήρωση σχεδίασης,<br>Delete για διαγραφή τελευταίου σημείου</code>');">
-              <v-icon dark>timeline</v-icon>
-            </v-btn>
-          </v-flex>
-        </v-container>
-
-        <v-container v-if="question.type === 'mapPointerMultiple'">
-          <v-layout row wrap v-for="line in question.lines" :key="line.id">
-            <v-flex xs10>
-              <v-text-field
-                name="input-1"
-                v-model="line.value"
-                :label="$t('message.yourAnswer')"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs2>
-              <v-btn small fab dark class="indigo"
-                @click="getFromMap(line.id, 'Point', line.value, line.style);
-                $store.commit('setDrawMessage', '<code>Κάντε κλικ στο σημείο της απάντησής σας</code>');">
-                <v-icon dark>location_on</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-          <v-btn dark class="indigo" @click="addRow(question)">
-            {{ $t('message.addLine')}}
-          </v-btn>
-        </v-container>
-        <v-container v-if="question.type === 'mapLinesMultiple'">
-          <v-layout row wrap v-for="line in question.lines" :key="line.id">
-            <v-flex xs10>
-              <v-text-field
-                name="input-1"
-                v-model="line.value"
-                :label="$t('message.yourAnswer')"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs2>
-              <v-btn small fab dark class="indigo"
-                @click="getFromMap(line.id, 'LineString', line.value, line.style);
-                $store.commit('setDrawMessage', '<code>Διπλό κλικ για ολοκλήρωση σχεδίασης,<br>Delete για διαγραφή τελευταίου σημείου</code>');">
-                <v-icon dark>timeline</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-          <v-btn dark class="indigo" @click="addRow(question)">
-            {{ $t('message.addLine')}}
-          </v-btn>
-        </v-container>
-        <v-container v-if="question.type === 'mapPointsLinesMultiple'">
-          <v-layout row wrap v-for="line in question.lines" :key="line.id">
-            <v-flex xs10>
-              <v-text-field
-                name="input-1"
-                v-model="line.value"
-                :label="$t('message.yourAnswer')"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs2>
-              <v-btn small fab dark class="indigo"
-                @click="getFromMap(line.id, 'Point', line.value, line.style);
-                $store.commit('setDrawMessage', '<code>Kλικ για ολοκλήρωση υπόδειξης</code>');">
-                <v-icon dark>location_on</v-icon>
-              </v-btn>
-              <v-btn small fab dark class="indigo"
-                @click="getFromMap(line.id, 'LineString', line.value, line.style);
-                $store.commit('setDrawMessage', '<code>Διπλό κλικ για ολοκλήρωση σχεδίασης,<br>Delete για διαγραφή τελευταίου σημείου</code>');">
-                <v-icon dark>timeline</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
-          <v-btn dark class="indigo" @click="addRow(question)">
-            {{ $t('message.addLine')}}
-          </v-btn>
-        </v-container>
-
         <tableOfCheckboxesView :question='question'></tableOfCheckboxesView>
-        <radioButtonsGroupView :question='question'></radioButtonsGroupView>
         <tableOfRadioButtonsView :question='question'></tableOfRadioButtonsView>
+        <textFieldView :question='question'></textFieldView>
+        <textFieldValidation :question='question'></textFieldValidation>
+        <textAreaView :question='question'></textAreaView>
+        <comboboxView :question='question' :pagehandler='pagehandler'></comboboxView>
+        <checkboxGroupView :question='question'></checkboxGroupView>
+        <radioButtonsGroupView :question='question'></radioButtonsGroupView>
+        <preferenceHierarchyView :question='question'></preferenceHierarchyView>
+        <mapPointerView :question='question'></mapPointerView>
+        <mapLineStringView :question='question'></mapLineStringView>
+        <mapPointerMultipleView :question='question'></mapPointerMultipleView>
+        <mapLineStringMultipleView :question='question'></mapLineStringMultipleView>
+        <mapPointOrLineStringMultipleView :question='question'></mapPointOrLineStringMultipleView>
 
-        <v-container ma-0 pa-0 v-if="question.type === 'repeatable'">
-          <v-flex v-for='question in question.questions' :key='question.id'>
-            <questionnaireComponents :question='question'></questionnaireComponents>
-          </v-flex>
-          <v-btn block @click='addQuestionSet(question)'>{{ question.buttonText }}</v-btn>
-        </v-container>
+        <questionSetRepeaterView :question='question' :questionnaire='questionnaire'></questionSetRepeaterView>
+
+        
         </v-card-text>
       </v-card>
     </v-container>
@@ -256,33 +98,52 @@
 </template>
 <script>
 import axios from 'axios';
-import draggable from 'vuedraggable';
 import { PageHandler } from '@/components/classes/questionnaire';
-import questionnaireComponents from '@/components/questionnaireComponents/questionnaireComponents';
-import radioButtonsGroupView from '@/components/questionnaireComponents/radioButtonsGroupView';
-import tableOfRadioButtonsView from '@/components/questionnaireComponents/tableOfRadioButtonsView';
-import tableOfCheckboxesView from '@/components/questionnaireComponents/tableOfCheckboxesView';
 import QuestionnaireValidator from '@/components/classes/questionnaireValidator';
+import textFieldView from '@/components/questionnaireComponents/view/textFieldView';
+import textFieldValidation from '@/components/questionnaireComponents/view/textFieldValidationView';
+import textAreaView from '@/components/questionnaireComponents/view/textAreaView';
+import comboboxView from '@/components/questionnaireComponents/view/comboboxView';
+import checkboxGroupView from '@/components/questionnaireComponents/view/checkboxGroupView';
+import preferenceHierarchyView from '@/components/questionnaireComponents/view/preferenceHierarchyView';
+import mapPointerView from '@/components/questionnaireComponents/view/mapPointerView';
+import mapLineStringView from '@/components/questionnaireComponents/view/mapLineStringView';
+import mapPointerMultipleView from '@/components/questionnaireComponents/view/mapPointerMultipleView';
+import mapLineStringMultipleView from '@/components/questionnaireComponents/view/mapLineStringMultipleView';
+import mapPointOrLineStringMultipleView from '@/components/questionnaireComponents/view/mapPointOrLineStringMultipleView';
+import radioButtonsGroupView from '@/components/questionnaireComponents/view/radioButtonsGroupView';
+import tableOfRadioButtonsView from '@/components/questionnaireComponents/view/tableOfRadioButtonsView';
+import tableOfCheckboxesView from '@/components/questionnaireComponents/view/tableOfCheckboxesView';
+// import questionSetRepeaterView from
+// '@/components/questionnaireComponents/view/questionSetRepeaterView';
 import { app } from '../main';
 import olMap from '../js/map';
 import config from '../config';
 
 export default {
+  name: 'questionnaireview',
   props: ['id'],
   components: {
-    draggable,
-    questionnaireComponents,
+    questionSetRepeaterView: () => import('@/components/questionnaireComponents/view/questionSetRepeaterView'),
+    textFieldView,
+    textFieldValidation,
+    textAreaView,
+    comboboxView,
+    checkboxGroupView,
+    preferenceHierarchyView,
+    mapPointerView,
+    mapLineStringView,
+    mapPointerMultipleView,
+    mapLineStringMultipleView,
+    mapPointOrLineStringMultipleView,
     radioButtonsGroupView,
     tableOfRadioButtonsView,
     tableOfCheckboxesView,
+    // questionSetRepeaterView,
   },
   data() {
     return {
       pagehandler: null,
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /[^@]+@[^.]+\..*/.test(v) || 'E-mail must be valid',
-      ],
       snackbarError: false,
       submitted: false,
       loading: false,
@@ -296,48 +157,7 @@ export default {
       },
     };
   },
-  computed: {
-    nextId: {
-      cache: false,
-      get() {
-        return String(Date.now()) + Math.floor(Math.random() * 10000);
-      },
-    },
-  },
   methods: {
-    addQuestionSet(question) {
-      /* eslint-disable no-param-reassign */
-      let idIncrement = 0;
-      const newQuestionSet = this.questionnaire.questions.filter((el) => {
-        // console.log(el);
-        let value;
-        if (el.page === question.repeatsPage && el.type !== 'repeatable') {
-          value = el;
-        }
-        return value;
-      });
-      // console.log('new set :: ', newQuestionSet);
-      newQuestionSet.forEach((q) => {
-        const repeatable = this.questionnaire.questions.filter(x => x.id === question.id);
-        // console.log('repeatable found :: ', repeatable);
-        const newQ = JSON.parse(JSON.stringify(q));
-        newQ.id = `${this.nextId}_${idIncrement}`;
-        newQ.value = null;
-        newQ.error = false;
-        newQ.parentId = q.id;
-        // console.log('q:: ', newQ.id);
-        if (newQ.type === 'mapPointer' || newQ.type === 'mapLineString') {
-          newQ.buttons.forEach((b) => { b.id = `i${this.nextId}_${idIncrement}`; });
-        }
-        if (newQ.type === 'mapPointerMultiple' || newQ.type === 'mapLinesMultiple') {
-          newQ.lines.forEach((b) => { b.id = `i${this.nextId}_${idIncrement}`; });
-        }
-        repeatable[0].questions.push(newQ);
-        idIncrement += 1;
-        // console.log('repeatable :: ', JSON.stringify(repeatable[0]));
-      });
-      /* eslint-enable no-param-reassign */
-    },
     goToPreviousPage() {
       this.pagehandler.goToPreviousPage();
     },
@@ -350,35 +170,6 @@ export default {
     scrollTop() {
       const container = document.getElementById('layout1');
       container.scrollTop = 0;
-    },
-    addRow(question) {
-      if (question.lines.length < 21) {
-        question.lines.push({
-          id: `${question.id}${question.lines.length + 1}`,
-          value: null,
-          coords: [],
-          style: {
-            strkWdth: 2,
-            strkClr: 'blue',
-            fllClr: 'orange',
-          },
-        });
-      }
-      // console.log(`added this id:: ${question.id}${question.lines.length + 1}`);
-    },
-    getFromMap(id, type, title, style) {
-      olMap.removeFeaturesFromLayer('customLayer', 'buttonId', [id]);
-      this.$store.commit('setQuestionnaireFeatureId', id);
-      const featureStyle = {
-        strkWdth: style.strkWdth,
-        strkClr: style.strkClr,
-        fllClr: style.fllClr,
-        radius: style.radius,
-        messages: title,
-      };
-      this.$store.commit('setDrawnFeatureStyle', featureStyle);
-      this.$store.commit('setMapState', 'mapAvailable');
-      olMap.setActiveInteraction(type);
     },
     submit(type) {
       const validator = new QuestionnaireValidator(this.questionnaire);

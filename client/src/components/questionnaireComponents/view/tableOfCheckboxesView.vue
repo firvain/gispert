@@ -22,6 +22,7 @@
 
 <script>
 export default {
+  name: 'tableofcheckboxes',
   props: ['question'],
 };
 </script>

@@ -99,7 +99,7 @@ class TableOfCheckboxes {
         items.push({ id: vv.id, title: vv.title, answers });
       });
     }
-    console.log(items);
+    // console.log(items);
     this.items = items;
     // return items;
   }
@@ -204,7 +204,7 @@ class PageHandler {
     }
   }
   toggleQuestions() {
-    console.log('toggling questions');
+    // console.log('toggling questions');
     const questionsToAdd = [];
     const questionsToRemove = [];
 
@@ -249,14 +249,21 @@ class PageHandler {
           }
         });
       }
+      if (question.type === 'repeatable') {
+        // console.log('do not show these questions');
+        question.repeatQuestions.forEach((r) => {
+          // console.log('remove:: ', r.id);
+          questionsToAdd.push(r.id);
+        });
+      }
     });
     // console.log('to add and to remove :: ', questionsToAdd, questionsToRemove);
     const unique = questionsToAdd.filter(p => !questionsToRemove.includes(p));
-    console.log('unique var:: ', unique, JSON.stringify(unique));
+    // console.log('unique var:: ', unique, JSON.stringify(unique));
     unique.forEach((u) => {
       this.deactivatedQuestions.push(u);
     });
-    console.log('deactivated questions:: ', this.deactivatedQuestions);
+    // console.log('deactivated questions:: ', this.deactivatedQuestions);
     // const questionsQueue = {};
     // for (let index = 0; index <= this.totalPages; index += 1) {
     //   // console.log('deactivated questions:: ', this.deactivatedQuestions);
@@ -337,7 +344,7 @@ class PageHandler {
 
 class Questionnaire {
   constructor(questionnaire) {
-    console.log(questionnaire);
+    // console.log(questionnaire);
     this.questions = questionnaire.questions;
     this.properties = questionnaire.properties;
     this.loaded = false;
@@ -356,9 +363,9 @@ class Questionnaire {
     this.loaded = true;
     this.questions.forEach((q, index) => {
       if (q.type === 'tableOfCheckboxes') {
-        console.log('found table and loading');
+        // console.log('found table and loading');
         this.questions[index] = new TableOfCheckboxes(q);
-        console.log(this.questions[index]);
+        // console.log(this.questions[index]);
       }
     });
   }

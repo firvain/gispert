@@ -895,10 +895,25 @@
                         label="Τίτλος κουμπιού"
                       ></v-text-field>
                       <v-select
-                        :items="getQuestionnairePagesAsArray"
+                        :items="getQuestionsAsArray"
+                        v-model="question.repeatQuestions"
+                        item-text="title"
+                        item-value='id'
+                        label="Ενεργοποίηση ερώτησης"
+                        single-line
+                        multiple
+                        menu-props="bottom"
+                        return-object
+                      ></v-select>
+                      <!-- <v-select
+                        :items="getQuestionsAsArray"
                         :label="$t('message.whichPageToRepeat')"
                         v-model="question.repeatsPage"
-                      ></v-select>
+                      ></v-select> -->
+                      <v-checkbox
+                        label="Show one repeatable on start"
+                        v-model="question.showRepeatableOnStart">
+                      </v-checkbox>
                       <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
@@ -953,17 +968,18 @@ import moment from 'moment';
 import draggable from 'vuedraggable';
 import Swatches from 'vue-swatches';
 import { TableOfCheckboxes } from '@/components/classes/questionnaire';
-import tableOfCheckboxesEditable from '@/components/questionnaireComponents/tableOfCheckboxesEditable';
-import tableOfCheckboxesView from '@/components/questionnaireComponents/tableOfCheckboxesView';
-import tableOfRadioButtonsEditable from '@/components/questionnaireComponents/tableOfRadioButtonsEditable';
-import tableOfRadioButtonsView from '@/components/questionnaireComponents/tableOfRadioButtonsView';
-import radioButtonsGroupEditable from '@/components/questionnaireComponents/radioButtonsGroupEditable';
-import radioButtonsGroupView from '@/components/questionnaireComponents/radioButtonsGroupView';
+import tableOfCheckboxesEditable from '@/components/questionnaireComponents/edit/tableOfCheckboxesEditable';
+import tableOfCheckboxesView from '@/components/questionnaireComponents/view/tableOfCheckboxesView';
+import tableOfRadioButtonsEditable from '@/components/questionnaireComponents/edit/tableOfRadioButtonsEditable';
+import tableOfRadioButtonsView from '@/components/questionnaireComponents/view/tableOfRadioButtonsView';
+import radioButtonsGroupEditable from '@/components/questionnaireComponents/edit/radioButtonsGroupEditable';
+import radioButtonsGroupView from '@/components/questionnaireComponents/view/radioButtonsGroupView';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
 
 export default {
+  name: 'questionnaireeditor',
   props: ['qnnaire'],
   components: {
     draggable,
