@@ -308,6 +308,7 @@
                     <tableOfCheckboxesView :question='question'></tableOfCheckboxesView>
                     <radioButtonsGroupView :question='question'></radioButtonsGroupView>
                     <tableOfRadioButtonsView :question='question'></tableOfRadioButtonsView>
+                    <tableOfInputsView :question='question'></tableOfInputsView>
 
                     <v-layout row wrap align-center>
                       <v-flex xs4>
@@ -896,6 +897,7 @@
                     <tableOfCheckboxesEditable :question='question'></tableOfCheckboxesEditable>
                     <radioButtonsGroupEditable :question='question'></radioButtonsGroupEditable>
                     <tableOfRadioButtonsEditable :question='question'></tableOfRadioButtonsEditable>
+                    <tableOfInputsEditable :question='question'></tableOfInputsEditable>
 
                     <v-flex v-if="question.type === 'repeatable'">
                       <v-text-field
@@ -983,6 +985,8 @@ import tableOfRadioButtonsEditable from '@/components/questionnaireComponents/ed
 import tableOfRadioButtonsView from '@/components/questionnaireComponents/view/tableOfRadioButtonsView';
 import radioButtonsGroupEditable from '@/components/questionnaireComponents/edit/radioButtonsGroupEditable';
 import radioButtonsGroupView from '@/components/questionnaireComponents/view/radioButtonsGroupView';
+import tableOfInputsEditable from '@/components/questionnaireComponents/edit/tableOfInputsEditable';
+import tableOfInputsView from '@/components/questionnaireComponents/view/tableOfInputsView';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
@@ -993,6 +997,8 @@ export default {
   components: {
     draggable,
     Swatches,
+    tableOfInputsEditable,
+    tableOfInputsView,
     tableOfCheckboxesEditable,
     tableOfCheckboxesView,
     radioButtonsGroupEditable,
@@ -1035,6 +1041,7 @@ export default {
         { type: 'mapPointsLinesMultiple', name: this.$t('message.mapPointsLinesMultiple') }, // TODO translate
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
         { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') }, // TODO translate table of checkboxes
+        { type: 'tableOfInputs', name: this.$t('message.tableOfInputs') }, // TODO translate table of inputs
         { type: 'tableOfRadioButtons', name: this.$t('message.tableOfRadioButtons') }, // TODO translate table of RadioButtons
         { type: 'repeatable', name: this.$t('message.repeatable') }, // TODO translate repeatable
       ],
@@ -1524,6 +1531,24 @@ export default {
           },
         };
         this.questionnaire.questions.push(newSetOfQuestions);
+      }
+      if (this.newQuestion === 'tableOfInputs') {
+        const tableOfInputs = {
+          id: this.nextId,
+          type: 'tableOfInputs',
+          page: 0,
+          title: null,
+          description: null,
+          error: false,
+          optional: false,
+          editing: true,
+          pageBreak: false,
+          verticalValues: [],
+          style: {
+            titleFontSize: null,
+          },
+        };
+        this.questionnaire.questions.push(tableOfInputs);
       }
       this.$nextTick(() => {
         this.newQuestion = null;

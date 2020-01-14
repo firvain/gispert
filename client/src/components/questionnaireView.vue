@@ -51,6 +51,7 @@
         <mapPointerMultipleView :question='question'></mapPointerMultipleView>
         <mapLineStringMultipleView :question='question'></mapLineStringMultipleView>
         <mapPointOrLineStringMultipleView :question='question'></mapPointOrLineStringMultipleView>
+        <tableOfInputsView :question='question'></tableOfInputsView>
 
         <questionSetRepeaterView :question='question' :questionnaire='questionnaire'></questionSetRepeaterView>
 
@@ -113,6 +114,7 @@ import mapPointOrLineStringMultipleView from '@/components/questionnaireComponen
 import radioButtonsGroupView from '@/components/questionnaireComponents/view/radioButtonsGroupView';
 import tableOfRadioButtonsView from '@/components/questionnaireComponents/view/tableOfRadioButtonsView';
 import tableOfCheckboxesView from '@/components/questionnaireComponents/view/tableOfCheckboxesView';
+import tableOfInputsView from '@/components/questionnaireComponents/view/tableOfInputsView';
 // import questionSetRepeaterView from
 // '@/components/questionnaireComponents/view/questionSetRepeaterView';
 import { app } from '../main';
@@ -138,6 +140,7 @@ export default {
     radioButtonsGroupView,
     tableOfRadioButtonsView,
     tableOfCheckboxesView,
+    tableOfInputsView,
     // questionSetRepeaterView,
   },
   data() {
