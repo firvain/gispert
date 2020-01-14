@@ -3,7 +3,7 @@
     <table>
     <tr>
       <template v-for="header in [{text: '', id: '0'}].concat(question.horizontalValues)">
-      <td :key="header.id" class='rotatedText' align="center">
+      <td :key="header.id" class='rotatedText' height='100'>
         {{header.text}}
       </td>
       </template>
@@ -31,10 +31,11 @@ export default {
   -ms-writing-mode: tb-rl;
   -webkit-writing-mode: vertical-rl;
   writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  white-space: nowrap;
-  padding: 1em;
+  transform: rotate(90deg);
+  /* white-space: nowrap; */
+  /* padding: 1em; */
   font-weight: bold;
+  text-align: top;
 }
 tr:nth-child(even) {background-color: #f2f2f2;}
 </style>

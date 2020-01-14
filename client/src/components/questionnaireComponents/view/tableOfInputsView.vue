@@ -27,6 +27,7 @@ export default {
       let color = 'normal';
       if (this.sum <= this.question.sumValidation) {
         color = 'normal';
+        this.question.error = false;
       } else {
         color = 'warning';
         this.question.error = true;
@@ -36,7 +37,7 @@ export default {
     sum() {
       let sum = 0;
       this.question.verticalValues.forEach((v) => {
-        console.log(sum, v.value);
+        // console.log(sum, v.value);
         sum += Number(v.value);
       });
       return sum;
