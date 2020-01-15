@@ -309,6 +309,7 @@
                     <radioButtonsGroupView :question='question'></radioButtonsGroupView>
                     <tableOfRadioButtonsView :question='question'></tableOfRadioButtonsView>
                     <tableOfInputsView :question='question'></tableOfInputsView>
+                    <selectFromMapView :question='question'></selectFromMapView>
 
                     <v-layout row wrap align-center>
                       <v-flex xs4>
@@ -898,6 +899,7 @@
                     <radioButtonsGroupEditable :question='question'></radioButtonsGroupEditable>
                     <tableOfRadioButtonsEditable :question='question'></tableOfRadioButtonsEditable>
                     <tableOfInputsEditable :question='question'></tableOfInputsEditable>
+                    <selectFromMapEditable :question='question'></selectFromMapEditable>
 
                     <v-flex v-if="question.type === 'repeatable'">
                       <v-text-field
@@ -987,6 +989,8 @@ import radioButtonsGroupEditable from '@/components/questionnaireComponents/edit
 import radioButtonsGroupView from '@/components/questionnaireComponents/view/radioButtonsGroupView';
 import tableOfInputsEditable from '@/components/questionnaireComponents/edit/tableOfInputsEditable';
 import tableOfInputsView from '@/components/questionnaireComponents/view/tableOfInputsView';
+import selectFromMapEditable from '@/components/questionnaireComponents/edit/selectFromMapEditable';
+import selectFromMapView from '@/components/questionnaireComponents/view/selectFromMapView';
 import 'vue-swatches/dist/vue-swatches.min.css';
 import olMap from '../js/map';
 import config from '../config';
@@ -1005,6 +1009,8 @@ export default {
     radioButtonsGroupView,
     tableOfRadioButtonsEditable,
     tableOfRadioButtonsView,
+    selectFromMapEditable,
+    selectFromMapView,
   },
   data() {
     return {
@@ -1039,6 +1045,7 @@ export default {
         { type: 'mapPointerMultiple', name: this.$t('message.mapPointerMultiple') },
         { type: 'mapLinesMultiple', name: this.$t('message.mapLinesMultiple') },
         { type: 'mapPointsLinesMultiple', name: this.$t('message.mapPointsLinesMultiple') }, // TODO translate
+        { type: 'mapSelector', name: this.$t('message.mapSelector') }, // TODO translate
         { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
         { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') }, // TODO translate table of checkboxes
         { type: 'tableOfInputs', name: this.$t('message.tableOfInputs') }, // TODO translate table of inputs
@@ -1549,6 +1556,37 @@ export default {
           },
         };
         this.questionnaire.questions.push(tableOfInputs);
+      }
+      if (this.newQuestion === 'mapSelector') {
+        const mapSelector = {
+          id: this.nextId,
+          type: 'mapSelector',
+          page: 0,
+          title: null,
+          description: null,
+          error: false,
+          buttons: [
+            {
+              id: `i${this.nextItemId}`,
+              label: '',
+              coords: null,
+              style: {
+                radius: 5,
+                strkWdth: 1,
+                strkClr: 'blue',
+                fllClr: 'orange',
+              },
+            },
+          ],
+          optional: false,
+          editing: true,
+          pageBreak: false,
+          coords: null,
+          style: {
+            titleFontSize: null,
+          },
+        };
+        this.questionnaire.questions.push(mapSelector);
       }
       this.$nextTick(() => {
         this.newQuestion = null;

@@ -38,7 +38,9 @@ export default {
       let sum = 0;
       this.question.verticalValues.forEach((v) => {
         // console.log(sum, v.value);
-        sum += Number(v.value);
+        if (v.value) {
+          sum += Number(v.value);
+        }
       });
       return sum;
     },
@@ -46,14 +48,5 @@ export default {
 };
 </script>
 <style scoped>
-  .rotatedText {
-  -ms-writing-mode: tb-rl;
-  -webkit-writing-mode: vertical-rl;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  white-space: nowrap;
-  padding: 1em;
-  font-weight: bold;
-}
-tr:nth-child(even) {background-color: #f2f2f2;}
+  tr:nth-child(even) {background-color: #f2f2f2;}
 </style>
