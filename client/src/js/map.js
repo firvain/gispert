@@ -513,6 +513,10 @@ selectClick.on('select', () => {
   const selectedFeature = selectClick.getFeatures().item(0);
   olMap.selectedFeature = selectedFeature;
   store.commit('setSelected', selectedFeature);
+  if (store.state.questionnaireMode === 'answering') {
+    store.commit('setMapState', 'mapLocked');
+    console.log('feature id::', selectedFeature.getProperties().id);
+  }
 });
 
 drawPoint.on('drawend', (e) => {

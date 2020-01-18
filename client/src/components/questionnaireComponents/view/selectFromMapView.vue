@@ -1,7 +1,7 @@
 <template>
   <v-container row wrap v-if="question.type === 'mapSelector'">
     <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-      <v-btn small fab dark :color="button.style.strkClr" @click="getFromMap()">
+      <v-btn small fab dark :color="button.style.strkClr" @click="getFromMap(button.id)">
         <v-icon dark>all_out</v-icon>
       </v-btn>
     </v-flex>
@@ -16,23 +16,21 @@ export default {
   props: ['question'],
   watch: {
     '$store.state.feature': function change(e) {
-      this.changeQuestionCoords(e.getProperties().id);
+      if (this.question.buttons
+      && this.question.buttons[0].id === this.$store.state.questionnaireFeatureId) {
+        this.question.value = e.getProperties().id;
+      }
     },
   },
   methods: {
-    getFromMap() {
+    getFromMap(id) {
       this.loadFeatures();
       this.$store.commit('setMapState', 'mapAvailable');
       olMap.setActiveInteraction('select');
-    },
-    changeQuestionCoords(c) {
-      this.question.value = c;
-      this.$store.commit('setMapState', 'mapLocked');
-      console.log(this.question);
+      this.$store.commit('setQuestionnaireFeatureId', id);
     },
     loadFeatures() {
       if (this.question.mapDataToSelectFrom) {
-        // console.log('json string of coords:: ', this.question.mapDataToSelectFrom);
         const geojsonFormat = new ol.format.GeoJSON();
         const featuresToLoad =
         geojsonFormat.readFeatures(this.question.mapDataToSelectFrom, {
@@ -48,10 +46,9 @@ export default {
           }
         });
         featuresToLoad.forEach((f) => {
-          // console.log('adding feature to map:: ', f);
           customlayersource.addFeature(f);
-          const g = f.getGeometry().getExtent();
-          olMap.getView().fit(g, olMap.getSize());
+          // const g = f.getGeometry().getExtent();
+          // olMap.getView().fit(g, olMap.getSize());
         });
       }
     },

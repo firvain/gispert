@@ -269,6 +269,20 @@
                         </table>
                       </v-flex>
 
+                      <v-flex v-if="question.type === 'mapSelector'">
+                        <barChart 
+                          v-if="loadedAgreggates"
+                          :chartdata="createChartDataForRadioButtonsQuestion(question)"
+                          :options="options">
+                        </barChart>
+                        <table v-if="loadedAgreggates">
+                          <tr v-for='(dataset, index) in createChartDataForRadioButtonsQuestion(question).datasets' :key='index'>
+                            <td>{{ dataset.label }}</td><td>{{ dataset.data[0] }}</td>
+                          </tr>
+                        </table>
+                      </v-flex>
+
+
                       <v-flex v-if="question.type === 'checkboxGroup'" width='400px'>
                         <barChart
                           v-if="loadedAgreggates"

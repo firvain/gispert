@@ -37,24 +37,24 @@
         />
         <v-card-text>
 
-        <tableOfCheckboxesView :question='question'></tableOfCheckboxesView>
-        <tableOfRadioButtonsView :question='question'></tableOfRadioButtonsView>
-        <textFieldView :question='question'></textFieldView>
-        <textFieldValidation :question='question'></textFieldValidation>
-        <textAreaView :question='question'></textAreaView>
-        <comboboxView :question='question' :pagehandler='pagehandler'></comboboxView>
-        <checkboxGroupView :question='question'></checkboxGroupView>
-        <radioButtonsGroupView :question='question'></radioButtonsGroupView>
-        <preferenceHierarchyView :question='question'></preferenceHierarchyView>
-        <mapPointerView :question='question'></mapPointerView>
-        <mapLineStringView :question='question'></mapLineStringView>
-        <mapPointerMultipleView :question='question'></mapPointerMultipleView>
-        <mapLineStringMultipleView :question='question'></mapLineStringMultipleView>
-        <mapPointOrLineStringMultipleView :question='question'></mapPointOrLineStringMultipleView>
-        <tableOfInputsView :question='question'></tableOfInputsView>
-        <selectFromMapView :question='question'></selectFromMapView>
+        <tableOfCheckboxesView v-if='question.type === "tableOfCheckboxes"' :question='question'></tableOfCheckboxesView>
+        <tableOfRadioButtonsView v-if='question.type === "tableOfRadioButtons"' :question='question'></tableOfRadioButtonsView>
+        <textFieldView v-if='question.type === "textfield"' :question='question'></textFieldView>
+        <textFieldValidation v-if='question.type === "textfieldvalidation"' :question='question'></textFieldValidation>
+        <textAreaView v-if='question.type === "textarea"' :question='question'></textAreaView>
+        <comboboxView v-if='question.type === "combobox"' :question='question' :pagehandler='pagehandler'></comboboxView>
+        <checkboxGroupView v-if='question.type === "checkboxGroup"' :question='question'></checkboxGroupView>
+        <radioButtonsGroupView v-if='question.type === "radioButtonsGroup"' :question='question'></radioButtonsGroupView>
+        <preferenceHierarchyView v-if='question.type === "preferenceHierarchy"' :question='question'></preferenceHierarchyView>
+        <mapPointerView v-if='question.type === "mapPointer"' :question='question'></mapPointerView>
+        <mapLineStringView v-if='question.type === "mapLineString"' :question='question'></mapLineStringView>
+        <mapPointerMultipleView v-if='question.type === "mapPointerMultiple"' :question='question'></mapPointerMultipleView>
+        <mapLineStringMultipleView v-if='question.type === "mapLineStringMultiple"' :question='question'></mapLineStringMultipleView>
+        <mapPointOrLineStringMultipleView v-if='question.type === "mapPointsLinesMultiple"' :question='question'></mapPointOrLineStringMultipleView>
+        <tableOfInputsView v-if='question.type === "tableOfInputs"' :question='question'></tableOfInputsView>
+        <selectFromMapView v-if='question.type === "mapSelector"' :question='question'></selectFromMapView>
 
-        <questionSetRepeaterView :question='question' :questionnaire='questionnaire'></questionSetRepeaterView>
+        <questionSetRepeaterView v-if='question.type === "repeatable"' :question='question' :questionnaire='questionnaire'></questionSetRepeaterView>
 
         </v-card-text>
       </v-card>
