@@ -2,6 +2,7 @@ import ol from 'openlayers';
 // import Vue from 'vue';
 // import Vuex from 'vuex';
 import store from '../store';
+// import { json } from 'express';
 
 const mapCenter = [2425483, 4910237];
 
@@ -511,9 +512,7 @@ olMap.setActiveInteraction = (interactionName) => {
 selectClick.on('select', () => {
   const selectedFeature = selectClick.getFeatures().item(0);
   olMap.selectedFeature = selectedFeature;
-  // console.log(selectedFeature);
   store.commit('setSelected', selectedFeature);
-  // console.log(store.state.count);
 });
 
 drawPoint.on('drawend', (e) => {

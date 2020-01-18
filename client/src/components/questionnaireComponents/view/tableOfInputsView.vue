@@ -25,7 +25,7 @@ export default {
   computed: {
     validationClass() {
       let color = 'normal';
-      if (this.sum <= this.question.sumValidation) {
+      if (this.sum === Number(this.question.sumValidation)) {
         color = 'normal';
         this.question.error = false;
       } else {

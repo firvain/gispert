@@ -628,6 +628,9 @@ export default new Vuex.Store({
     getLatestDrawnFeature(state) {
       return state.newpostfeature;
     },
+    getSelectedFeature(state){
+      return state.feature;
+    },
     notificationsGetter(state) {
       const unreadNotifications = state.notifications.filter(function (notification) {
         return notification.read === 0;
