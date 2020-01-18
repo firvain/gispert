@@ -251,9 +251,45 @@ class PageHandler {
       }
       if (question.type === 'repeatable') {
         // console.log('do not show these questions');
-        question.repeatQuestions.forEach((r) => {
-          // console.log('remove:: ', r.id);
-          questionsToAdd.push(r.id);
+        question.questions.forEach((r) => {
+          if (
+            r.type === 'combobox' &&
+            (r.value || r.optional === true)
+          ) {
+            // console.log('found combobox with value or optional:: ', r);
+            r.items.forEach((item) => {
+              if (
+                item.activateQuestions &&
+                item.activateQuestions[0] !== '-' &&
+                r.value === item.value
+              ) {
+                // console.log('found item active to remove page from deactivated');
+                item.activateQuestions.forEach((i) => {
+                  questionsToRemove.push(i.id);
+                });
+              }
+              if (
+                item.activateQuestions &&
+                item.activateQuestions[0] !== '-' &&
+                r.value !== item.value
+              ) {
+                // console.log('found item active to add page to deactivated');
+                item.activateQuestions.forEach((i) => {
+                  questionsToAdd.push(i.id);
+                });
+              }
+            });
+          }
+          if (r.type === 'combobox' && !r.value) {
+            r.items.forEach((item) => {
+              if (item.activateQuestions && item.activateQuestions[0] !== '-') {
+                // console.log('found combobox without value:: ', question);
+                item.activateQuestions.forEach((i) => {
+                  questionsToAdd.push(i.id);
+                });
+              }
+            });
+          }
         });
       }
     });

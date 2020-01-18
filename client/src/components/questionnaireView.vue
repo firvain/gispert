@@ -1,6 +1,6 @@
 <template>
   <v-layout id="layout1" row wrap>
-    <v-container v-if="pagehandler.currentPage === 0 && !submitted">
+    <v-container v-if="pagehandler && pagehandler.currentPage === 0 && !submitted">
       <v-container fluid row pa-0 ma-0
         v-for="item in questionnaire.properties.introduction.items"
         :key="item.id"
@@ -42,7 +42,7 @@
         <textFieldView v-if='question.type === "textfield"' :question='question'></textFieldView>
         <textFieldValidation v-if='question.type === "textfieldvalidation"' :question='question'></textFieldValidation>
         <textAreaView v-if='question.type === "textarea"' :question='question'></textAreaView>
-        <comboboxView v-if='question.type === "combobox"' :question='question' :pagehandler='pagehandler'></comboboxView>
+        <comboboxView v-if='question.type === "combobox"' :question='question'></comboboxView>
         <checkboxGroupView v-if='question.type === "checkboxGroup"' :question='question'></checkboxGroupView>
         <radioButtonsGroupView v-if='question.type === "radioButtonsGroup"' :question='question'></radioButtonsGroupView>
         <preferenceHierarchyView v-if='question.type === "preferenceHierarchy"' :question='question'></preferenceHierarchyView>
@@ -54,7 +54,7 @@
         <tableOfInputsView v-if='question.type === "tableOfInputs"' :question='question'></tableOfInputsView>
         <selectFromMapView v-if='question.type === "mapSelector"' :question='question'></selectFromMapView>
 
-        <questionSetRepeaterView v-if='question.type === "repeatable"' :question='question' :questionnaire='questionnaire'></questionSetRepeaterView>
+        <questionSetRepeaterView v-if='question.type === "repeatable"' :question='question' :questionnaire='questionnaire' :pagehandler='pagehandler'></questionSetRepeaterView>
 
         </v-card-text>
       </v-card>
@@ -251,15 +251,17 @@ export default {
     },
   },
   mounted() {
-    // console.log('mounted questionnaire');
     if (this.$route.name === 'questionnaire') {
       this.$store.commit('setQuestionnaireMode', 'answering');
     } else {
       this.$store.commit('setQuestionnaireMode', 'viewer');
     }
     this.loadQuestionnaire();
-    // TODO create combobox and checkbox to input Other value by typing
-    // TODO custom message after q submittion
+    this.$eventHub.$on('toggleSectionsAndQuestions', () => {
+      this.pagehandler.toggleQuestions();
+      this.pagehandler.toggleSections();
+      console.log('toggling questions');
+    });
   },
 };
 </script>

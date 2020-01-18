@@ -8,7 +8,7 @@
       :label="$t('message.yourAnswer')"
       single-line
       menu-props="bottom"
-      v-on:input="pagehandler.toggleSections(); pagehandler.toggleQuestions();"
+      v-on:input="emitToggling()"
     ></v-select>
   </v-container>
 </template>
@@ -16,5 +16,10 @@
 export default {
   name: 'combobox',
   props: ['question', 'pagehandler'],
+  methods: {
+    emitToggling() {
+      this.$eventHub.$emit('toggleSectionsAndQuestions');
+    },
+  },
 };
 </script>

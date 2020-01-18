@@ -53,7 +53,7 @@ import questionSetRepeaterView from '@/components/questionnaireComponents/view/q
 
 export default {
   name: 'questionSetRepeaterView',
-  props: ['question', 'questionnaire'],
+  props: ['question', 'questionnaire', 'pagehandler'],
   components: {
     textFieldView,
     textFieldValidation,
@@ -88,6 +88,7 @@ export default {
       /* eslint-disable no-param-reassign */
       let idIncrement = 0;
       const repeat = [];
+      const idsTable = [];
       question.repeatQuestions.forEach((r) => {
         repeat.push(r.id);
       });
@@ -96,6 +97,8 @@ export default {
       newQuestionSet.forEach((s) => {
         const cloneQuestion = this.jsonCopy(s);
         cloneQuestion.id = `${this.nextId}_${idIncrement}`;
+        const newIdJoin = { newId: cloneQuestion.id, oldId: s.id };
+        idsTable.push(newIdJoin);
         if (cloneQuestion.type === 'mapPointer'
         || cloneQuestion.type === 'mapLineString'
         || cloneQuestion.type === 'mapPointerMultiple'
@@ -106,6 +109,23 @@ export default {
         idIncrement += 1;
         question.questions.push(cloneQuestion);
       });
+      console.log('table of ids::', idsTable);
+      question.questions.forEach((q) => {
+        if (q.type === 'combobox') {
+          // console.log('must repeat selection rules:: ', q.items);
+          q.items.forEach((i) => {
+            if (i.activateQuestions && i.activateQuestions.length > 0) {
+              console.log('what to activate:: ', i.activateQuestions);
+              i.activateQuestions.forEach((a) => {
+                console.log('search and replace this::', a.id);
+                const idToReplaceWith = idsTable.find(x => x.oldId === a.id).newId;
+                a.id = idToReplaceWith;
+              });
+            }
+          });
+        }
+      });
+      console.log('final question set:: ', question.questions);
       /* eslint-enable no-param-reassign */
     },
     jsonCopy(src) {

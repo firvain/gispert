@@ -1,6 +1,6 @@
 <template>
   <v-container row wrap v-if="question.type === 'mapSelector'">
-    <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
+    <v-flex v-for="button in question.buttons" :key="button.id">
       <v-btn small fab dark :color="button.style.strkClr" @click="getFromMap(button.id)">
         <v-icon dark>all_out</v-icon>
       </v-btn>
