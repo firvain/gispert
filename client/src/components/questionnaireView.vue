@@ -54,7 +54,7 @@
         <tableOfInputsView v-if='question.type === "tableOfInputs"' :question='question'></tableOfInputsView>
         <selectFromMapView v-if='question.type === "mapSelector"' :question='question'></selectFromMapView>
 
-        <questionSetRepeaterView v-if='question.type === "repeatable"' :question='question' :questionnaire='questionnaire' :pagehandler='pagehandler'></questionSetRepeaterView>
+        <questionSetRepeaterView v-if='question.type === "repeatable"' :question='question' :questionnaire='questionnaire'></questionSetRepeaterView>
 
         </v-card-text>
       </v-card>

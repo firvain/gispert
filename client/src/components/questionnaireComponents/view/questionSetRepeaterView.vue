@@ -1,6 +1,7 @@
 <template name='questionSetRepeaterView'>
   <v-container fluid v-if="question.type === 'repeatable'" pa-0 ma-0>
     <v-flex v-for='question in question.questions' :key='question.id'>
+      <div v-if="!$store.state.deactivatedQuestions.includes(question.id)">
         <div>
           <h3 :class="titleClass(question)">{{ question.title }}
             <span v-if="question.optional === true && question.type !== 'titleDescription'">*</span>
@@ -27,8 +28,7 @@
         <selectFromMapView :question='question'></selectFromMapView>
 
         <questionSetRepeaterView :question='question' :questionnaire='questionnaire' />
-        <!-- <v-container fluid v-if="question.type === 'repeatable'" pa-0 ma-0> a repeater
-        </v-container> -->
+      </div>
     </v-flex>
     <v-btn block @click='addQuestionSet(question)'>{{ question.buttonText }}</v-btn>
   </v-container>
@@ -53,7 +53,7 @@ import questionSetRepeaterView from '@/components/questionnaireComponents/view/q
 
 export default {
   name: 'questionSetRepeaterView',
-  props: ['question', 'questionnaire', 'pagehandler'],
+  props: ['question', 'questionnaire'],
   components: {
     textFieldView,
     textFieldValidation,
@@ -109,24 +109,35 @@ export default {
         idIncrement += 1;
         question.questions.push(cloneQuestion);
       });
-      console.log('table of ids::', idsTable);
+      // console.log('table of ids::', idsTable);
       question.questions.forEach((q) => {
         if (q.type === 'combobox') {
           // console.log('must repeat selection rules:: ', q.items);
           q.items.forEach((i) => {
             if (i.activateQuestions && i.activateQuestions.length > 0) {
-              console.log('what to activate:: ', i.activateQuestions);
+              // console.log('what to activate before replace:: ', i.activateQuestions);
               i.activateQuestions.forEach((a) => {
                 console.log('search and replace this::', a.id);
-                const idToReplaceWith = idsTable.find(x => x.oldId === a.id).newId;
-                a.id = idToReplaceWith;
+                if (idsTable.find(x => x.oldId === a.id)) {
+                  const idToReplaceWith = idsTable.find(x => x.oldId === a.id).newId;
+                  console.log('with this:: ', idToReplaceWith);
+                  a.id = idToReplaceWith;
+                  console.log('check if a has been replaced::', a, a.id);
+                }
               });
             }
           });
         }
       });
+      question.questions.forEach((qq) => {
+        console.log('qq:: ', qq.id, qq.title);
+        if (qq.type === 'combobox') {
+          console.log('qq combobox activates::', qq.items);
+        }
+      });
       console.log('final question set:: ', question.questions);
       /* eslint-enable no-param-reassign */
+      this.$eventHub.$emit('toggleSectionsAndQuestions');
     },
     jsonCopy(src) {
       return JSON.parse(JSON.stringify(src));

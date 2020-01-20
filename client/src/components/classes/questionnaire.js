@@ -1,3 +1,5 @@
+import store from '../../store';
+
 class TableOfCheckboxes {
   constructor(question) {
     this.id = question.id;
@@ -250,42 +252,55 @@ class PageHandler {
         });
       }
       if (question.type === 'repeatable') {
-        // console.log('do not show these questions');
+        // console.log('REPEATABLE :: do not show these questions');
+        question.repeatQuestions.forEach((repeated) => {
+          questionsToAdd.push(repeated.id);
+          // console.log('repeatable id to remove::', repeated.id);
+        });
+        console.log('removed repeatable questions');
         question.questions.forEach((r) => {
-          if (
-            r.type === 'combobox' &&
-            (r.value || r.optional === true)
-          ) {
-            // console.log('found combobox with value or optional:: ', r);
-            r.items.forEach((item) => {
+          console.log('print questions in repeatable:: ', r);
+          if (r.questions) {
+            console.log(r.questions);
+            r.questions.forEach((rq) => {
+              console.log('rq::', rq.type);
               if (
-                item.activateQuestions &&
-                item.activateQuestions[0] !== '-' &&
-                r.value === item.value
+                rq.type === 'combobox'
+                && (rq.value || rq.optional === true)
               ) {
-                // console.log('found item active to remove page from deactivated');
-                item.activateQuestions.forEach((i) => {
-                  questionsToRemove.push(i.id);
+                console.log('found combobox with value or optional:: ', rq);
+                rq.items.forEach((item) => {
+                  console.log('found this with questions::', item.activateQuestions);
+                  // if (
+                  //   item.activateQuestions &&
+                  //   item.activateQuestions[0] !== '-' &&
+                  //   rq.value === item.value
+                  // ) {
+                  //   console.log('found item active to remove question from deactivated');
+                  //   item.activateQuestions.forEach((i) => {
+                  //     // questionsToRemove.push(i.id);
+                  //     questionsToAdd.push(i.id);
+                  //   });
+                  // }
+                  if (
+                    item.activateQuestions &&
+                    item.activateQuestions[0] !== '-' &&
+                    rq.value !== item.value
+                  ) {
+                    item.activateQuestions.forEach((i) => {
+                      questionsToAdd.push(i.id);
+                    });
+                  }
                 });
               }
-              if (
-                item.activateQuestions &&
-                item.activateQuestions[0] !== '-' &&
-                r.value !== item.value
-              ) {
-                // console.log('found item active to add page to deactivated');
-                item.activateQuestions.forEach((i) => {
-                  questionsToAdd.push(i.id);
-                });
-              }
-            });
-          }
-          if (r.type === 'combobox' && !r.value) {
-            r.items.forEach((item) => {
-              if (item.activateQuestions && item.activateQuestions[0] !== '-') {
-                // console.log('found combobox without value:: ', question);
-                item.activateQuestions.forEach((i) => {
-                  questionsToAdd.push(i.id);
+              if (rq.type === 'combobox' && !rq.value) {
+                rq.items.forEach((item) => {
+                  if (item.activateQuestions && item.activateQuestions[0] !== '-') {
+                    // console.log('found combobox without value:: ', question);
+                    item.activateQuestions.forEach((i) => {
+                      questionsToAdd.push(i.id);
+                    });
+                  }
                 });
               }
             });
@@ -299,7 +314,8 @@ class PageHandler {
     unique.forEach((u) => {
       this.deactivatedQuestions.push(u);
     });
-    // console.log('deactivated questions:: ', this.deactivatedQuestions);
+    console.log('deactivated questions:: ', this.deactivatedQuestions);
+    store.commit('setDeactivatedQuestions', this.deactivatedQuestions);
     // const questionsQueue = {};
     // for (let index = 0; index <= this.totalPages; index += 1) {
     //   // console.log('deactivated questions:: ', this.deactivatedQuestions);

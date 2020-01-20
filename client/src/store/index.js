@@ -58,8 +58,12 @@ export default new Vuex.Store({
     },
     drawMessage: '',
     mapState: 'mapLocked',
+    deactivatedQuestions: null,
   },
   actions: {
+    setDeactivatedQuestions(state, data) {
+      state.commit('setDeactivatedQuestions', data);
+    },
     setMapState(state, data) {
       state.commit('setMapState', data);
     },
@@ -212,6 +216,9 @@ export default new Vuex.Store({
     },
   },
   mutations: {
+    setDeactivatedQuestions(state, data) {
+      state.deactivatedQuestions = data;
+    },
     setMapState(state, data) {
       state.mapState = data;
     },
