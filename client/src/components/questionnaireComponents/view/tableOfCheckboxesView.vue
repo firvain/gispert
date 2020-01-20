@@ -31,7 +31,7 @@ export default {
   -ms-writing-mode: tb-rl;
   -webkit-writing-mode: vertical-rl;
   writing-mode: vertical-rl;
-  transform: rotate(90deg);
+  transform: rotate(270deg);
   /* white-space: nowrap; */
   /* padding: 1em; */
   font-weight: bold;
