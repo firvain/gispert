@@ -1,46 +1,54 @@
 <template>
-    <v-layout row>
-      <collectionsList></collectionsList>
-    </v-layout>
+  <v-layout row>
+    <collectionsList></collectionsList>
+  </v-layout>
 </template>
 <script>
-import axios from 'axios';
-import post from './post';
-import config from '../config';
-import collectionsList from './collectionsList';
+import axios from "axios";
+import post from "./post";
+import config from "../config";
+import collectionsList from "./collectionsList";
 
 export default {
-  name: 'search',
-  data() {
-    return {
-    };
-  },
+  name: "Search",
   components: {
-    collectionsList, post,
+    collectionsList,
+    post
+  },
+  data() {
+    return {};
   },
   methods: {
     getPublicCollections() {
       const serverUrl = `${config.url}/collections`;
-      axios.get(serverUrl, { params: {
-        type: 'public',
-      },
-      }).then((response) => {
-        this.publicCollections = response.data;
-      }).then(() => {
-        this.loading = false;
-      });
+      axios
+        .get(serverUrl, {
+          params: {
+            type: "public"
+          }
+        })
+        .then(response => {
+          this.publicCollections = response.data;
+        })
+        .then(() => {
+          this.loading = false;
+        });
     },
     getPrivateCollections() {
       const serverUrl = `${config.url}/collections`;
-      axios.get(serverUrl, { params: {
-        type: 'private',
-      },
-      }).then((response) => {
-        this.privateCollections = response.data;
-      }).then(() => {
-        this.loading = false;
-      });
-    },
-  },
+      axios
+        .get(serverUrl, {
+          params: {
+            type: "private"
+          }
+        })
+        .then(response => {
+          this.privateCollections = response.data;
+        })
+        .then(() => {
+          this.loading = false;
+        });
+    }
+  }
 };
 </script>

@@ -1,7 +1,7 @@
-import ol from 'openlayers';
+import ol from "openlayers";
 // import Vue from 'vue';
 // import Vuex from 'vuex';
-import store from '../store';
+import store from "../store";
 // import { json } from 'express';
 
 const mapCenter = [2425483, 4910237];
@@ -13,47 +13,47 @@ const mapCenter = [2425483, 4910237];
 const bingMapsAerial = new ol.layer.Tile({
   preload: Infinity,
   visible: false,
-  name: 'bing',
+  name: "bing",
   source: new ol.source.BingMaps({
-    key: 'Ap3sskZ5BccP6TvBr0FoLc9orA4_R1uh-8UjpOKYciXL1hNMtAJr_BdxMjTJNkpv',
-    imagerySet: 'AerialWithLabels',
-  }),
+    key: "Ap3sskZ5BccP6TvBr0FoLc9orA4_R1uh-8UjpOKYciXL1hNMtAJr_BdxMjTJNkpv",
+    imagerySet: "AerialWithLabels"
+  })
 });
 
 const getHashtags = function getText(feature) {
-  const hashtags = feature.get('hashtags');
-  const measurement = feature.get('measurement');
-  const name = feature.get('name');
-  let messages = feature.get('messages');
+  const hashtags = feature.get("hashtags");
+  const measurement = feature.get("measurement");
+  const name = feature.get("name");
+  let messages = feature.get("messages");
 
   if (messages !== undefined) {
-    const n = messages.replace(/ *\([^)]*\) */g, '').split('\n');
+    const n = messages.replace(/ *\([^)]*\) */g, "").split("\n");
     const n1 = n.slice(Math.max(n.length - 5, 0));
-    const n2 = n1.join('\n');
+    const n2 = n1.join("\n");
     messages = n2;
   }
 
   const labelArray = [];
   const textArray = [messages, measurement, hashtags, name];
-  textArray.forEach((t) => {
+  textArray.forEach(t => {
     if (t !== undefined) {
       labelArray.push(t);
     }
   });
   let text = labelArray[0];
   if (labelArray.length === 0) {
-    text = '';
+    text = "";
   }
   return text;
 };
 
 function normalStyle(feature) {
   let style;
-  if (feature.getGeometry().getType() === 'Point') {
-    const strokeWidth = feature.get('strkWdth');
-    const strokeColor = feature.get('strkClr');
-    const fillColor = feature.get('fllClr');
-    const radius = feature.get('radius');
+  if (feature.getGeometry().getType() === "Point") {
+    const strokeWidth = feature.get("strkWdth");
+    const strokeColor = feature.get("strkClr");
+    const fillColor = feature.get("fllClr");
+    const radius = feature.get("radius");
 
     let setStrokeWidth;
     let setStrokeColor;
@@ -68,12 +68,12 @@ function normalStyle(feature) {
     if (strokeColor !== undefined) {
       setStrokeColor = strokeColor;
     } else {
-      setStrokeColor = 'blue';
+      setStrokeColor = "blue";
     }
     if (fillColor !== undefined) {
       setFillColor = fillColor;
     } else {
-      setFillColor = 'rgba(255, 255, 255, 0.4)';
+      setFillColor = "rgba(255, 255, 255, 0.4)";
     }
     if (radius !== undefined) {
       setradius = radius;
@@ -83,39 +83,39 @@ function normalStyle(feature) {
 
     style = new ol.style.Style({
       fill: new ol.style.Fill({
-        color: 'rgba(255, 255, 255, 0.4)',
+        color: "rgba(255, 255, 255, 0.4)"
       }),
       stroke: new ol.style.Stroke({
         color: setStrokeColor,
-        width: setStrokeWidth,
+        width: setStrokeWidth
       }),
       image: new ol.style.Circle({
         radius: setradius,
         fill: new ol.style.Fill({
-          color: setFillColor,
+          color: setFillColor
         }),
         stroke: new ol.style.Stroke({
           color: setStrokeColor,
-          width: setStrokeWidth,
-        }),
+          width: setStrokeWidth
+        })
       }),
       text: new ol.style.Text({
-        font: 'bold 12px Verdana',
+        font: "bold 12px Verdana",
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: setStrokeColor,
+          color: setStrokeColor
         }),
         stroke: new ol.style.Stroke({
-          color: 'white',
-          width: 2,
+          color: "white",
+          width: 2
         }),
-        offsetY: -15,
-      }),
+        offsetY: -15
+      })
     });
   }
-  if (feature.getGeometry().getType() === 'LineString') {
-    const strokeWidth = feature.get('strkWdth');
-    const strokeColor = feature.get('strkClr');
+  if (feature.getGeometry().getType() === "LineString") {
+    const strokeWidth = feature.get("strkWdth");
+    const strokeColor = feature.get("strkClr");
     // const start = feature.getGeometry().getFirstCoordinate();
     // const end = feature.getGeometry().getLastCoordinate();
 
@@ -134,32 +134,32 @@ function normalStyle(feature) {
     if (strokeColor !== undefined) {
       setStrokeColor = strokeColor;
     } else {
-      setStrokeColor = 'blue';
+      setStrokeColor = "blue";
     }
 
     style = new ol.style.Style({
       stroke: new ol.style.Stroke({
         color: setStrokeColor,
-        width: setStrokeWidth,
+        width: setStrokeWidth
       }),
       text: new ol.style.Text({
-        font: 'bold 12px Verdana',
+        font: "bold 12px Verdana",
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: setStrokeColor,
+          color: setStrokeColor
         }),
         stroke: new ol.style.Stroke({
-          color: 'white',
-          width: 3.5,
+          color: "white",
+          width: 3.5
         }),
-        offsetY: -15,
-      }),
+        offsetY: -15
+      })
     });
   }
-  if (feature.getGeometry().getType() === 'Polygon') {
-    const strokeWidth = feature.get('strkWdth');
-    const strokeColor = feature.get('strkClr');
-    const fillColor = feature.get('fllClr');
+  if (feature.getGeometry().getType() === "Polygon") {
+    const strokeWidth = feature.get("strkWdth");
+    const strokeColor = feature.get("strkClr");
+    const fillColor = feature.get("fllClr");
 
     let setStrokeWidth;
     let setStrokeColor;
@@ -173,44 +173,44 @@ function normalStyle(feature) {
     if (strokeColor !== undefined) {
       setStrokeColor = strokeColor;
     } else {
-      setStrokeColor = 'blue';
+      setStrokeColor = "blue";
     }
     if (fillColor !== undefined) {
       setFillColor = fillColor;
     } else {
-      setFillColor = 'rgba(255, 255, 255, 0.4)';
+      setFillColor = "rgba(255, 255, 255, 0.4)";
     }
 
     style = new ol.style.Style({
       fill: new ol.style.Fill({
-        color: 'rgba(255, 255, 255, 0.4)',
+        color: "rgba(255, 255, 255, 0.4)"
       }),
       stroke: new ol.style.Stroke({
         color: setStrokeColor,
-        width: setStrokeWidth,
+        width: setStrokeWidth
       }),
       image: new ol.style.Circle({
         radius: 5,
         fill: new ol.style.Fill({
-          color: setFillColor,
+          color: setFillColor
         }),
         stroke: new ol.style.Stroke({
           color: setStrokeColor,
-          width: setStrokeWidth,
-        }),
+          width: setStrokeWidth
+        })
       }),
       text: new ol.style.Text({
-        font: 'bold 12px Verdana',
+        font: "bold 12px Verdana",
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: setStrokeColor,
+          color: setStrokeColor
         }),
         stroke: new ol.style.Stroke({
-          color: 'white',
-          width: 3.5,
+          color: "white",
+          width: 3.5
         }),
-        offsetY: -15,
-      }),
+        offsetY: -15
+      })
     });
   }
   return [style];
@@ -218,103 +218,102 @@ function normalStyle(feature) {
 
 function selectedStyle(feature) {
   const setstrkWidth = 2;
-  const setstrkColor = 'white';
-  const setFillColor = 'rgba(0, 0, 255, 0.2)';
+  const setstrkColor = "white";
+  const setFillColor = "rgba(0, 0, 255, 0.2)";
   let style;
-  if (feature.getGeometry().getType() === 'Point') {
+  if (feature.getGeometry().getType() === "Point") {
     style = new ol.style.Style({
       fill: new ol.style.Fill({
-        color: setFillColor,
+        color: setFillColor
       }),
       stroke: new ol.style.Stroke({
         color: setstrkColor,
-        width: setstrkWidth,
+        width: setstrkWidth
       }),
       image: new ol.style.Circle({
         radius: 5,
         fill: new ol.style.Fill({
-          color: setFillColor,
+          color: setFillColor
         }),
         stroke: new ol.style.Stroke({
           color: setstrkColor,
-          width: setstrkWidth,
-        }),
+          width: setstrkWidth
+        })
       }),
       text: new ol.style.Text({
-        font: 'bold 12px Verdana',
+        font: "bold 12px Verdana",
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: 'orange',
+          color: "orange"
         }),
         stroke: new ol.style.Stroke({
-          color: 'red',
-          width: 3.5,
+          color: "red",
+          width: 3.5
         }),
-        offsetY: -15,
-      }),
+        offsetY: -15
+      })
     });
   }
-  if (feature.getGeometry().getType() === 'LineString') {
+  if (feature.getGeometry().getType() === "LineString") {
     style = new ol.style.Style({
       stroke: new ol.style.Stroke({
         color: setstrkColor,
-        width: setstrkWidth,
+        width: setstrkWidth
       }),
       text: new ol.style.Text({
-        font: 'bold 12px Verdana',
+        font: "bold 12px Verdana",
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: 'blue',
+          color: "blue"
         }),
         stroke: new ol.style.Stroke({
-          color: 'white',
-          width: 3.5,
+          color: "white",
+          width: 3.5
         }),
-        offsetY: -15,
-      }),
+        offsetY: -15
+      })
     });
   }
-  if (feature.getGeometry().getType() === 'Polygon') {
+  if (feature.getGeometry().getType() === "Polygon") {
     style = new ol.style.Style({
       fill: new ol.style.Fill({
-        color: setFillColor,
+        color: setFillColor
       }),
       stroke: new ol.style.Stroke({
         color: setstrkColor,
-        width: setstrkWidth,
+        width: setstrkWidth
       }),
       image: new ol.style.Circle({
         radius: 5,
         fill: new ol.style.Fill({
-          color: setFillColor,
+          color: setFillColor
         }),
         stroke: new ol.style.Stroke({
           color: setstrkColor,
-          width: setstrkWidth,
-        }),
+          width: setstrkWidth
+        })
       }),
       text: new ol.style.Text({
-        font: 'bold 12px Verdana',
+        font: "bold 12px Verdana",
         text: getHashtags(feature),
         fill: new ol.style.Fill({
-          color: 'blue',
+          color: "blue"
         }),
         stroke: new ol.style.Stroke({
-          color: 'white',
-          width: 3.5,
+          color: "white",
+          width: 3.5
         }),
-        offsetY: -15,
-      }),
+        offsetY: -15
+      })
     });
   }
   return [style];
 }
 
-
 const customLayer = new ol.layer.Vector({
   style: normalStyle,
   source: new ol.source.Vector(),
-  name: 'customLayer',
+  name: "customLayer"
 });
 
 // const geolocationLayer = new ol.layer.Vector({
@@ -353,13 +352,12 @@ const customLayer = new ol.layer.Vector({
 // });
 // geolocationLayer.getSource().addFeature(positionFeature);
 // geolocation.on('change', () => {
-  // console.log('geolocation :: ', geolocation.getAccuracyGeometry());
-  // el('altitude').innerText = geolocation.getAltitude() + ' [m]';
-  // el('altitudeAccuracy').innerText = geolocation.getAltitudeAccuracy() + ' [m]';
-  // el('heading').innerText = geolocation.getHeading() + ' [rad]';
-  // el('speed').innerText = geolocation.getSpeed() + ' [m/s]';
+// console.log('geolocation :: ', geolocation.getAccuracyGeometry());
+// el('altitude').innerText = geolocation.getAltitude() + ' [m]';
+// el('altitudeAccuracy').innerText = geolocation.getAltitudeAccuracy() + ' [m]';
+// el('heading').innerText = geolocation.getHeading() + ' [rad]';
+// el('speed').innerText = geolocation.getSpeed() + ' [m/s]';
 // });
-
 
 const dragAndDropInteraction = new ol.interaction.DragAndDrop({
   formatConstructors: [
@@ -367,24 +365,26 @@ const dragAndDropInteraction = new ol.interaction.DragAndDrop({
     ol.format.GeoJSON,
     ol.format.IGC,
     ol.format.KML,
-    ol.format.TopoJSON,
-  ],
+    ol.format.TopoJSON
+  ]
 });
 
 // const overlay = new ol.Overlay();
 const olMap = new ol.Map({
-  target: 'map',
+  target: "map",
   interactions: ol.interaction.defaults().extend([dragAndDropInteraction]),
   layers: [
     bingMapsAerial,
     new ol.layer.Tile({
-      name: 'esri',
+      name: "esri",
       source: new ol.source.XYZ({
-        attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
-            'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
-        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
-            'World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-      }),
+        attributions:
+          'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+          'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+        url:
+          "https://server.arcgisonline.com/ArcGIS/rest/services/" +
+          "World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+      })
     }),
     // new ol.layer.Tile({
     //   name: 'here',
@@ -397,21 +397,21 @@ const olMap = new ol.Map({
     //     attributions: `Map Tiles &copy; ' ${new Date().getFullYear()} '<a href="http://developer.here.com">HERE</a>`,
     //   }),
     // }),
-    customLayer,
+    customLayer
     // geolocationLayer,
   ],
   // overlays: [overlay],
   view: new ol.View({
     center: mapCenter,
     zoom: 16,
-    maxZoom: 19,
+    maxZoom: 19
   }),
-  selectedItem: null,
+  selectedItem: null
 });
 
 // overlay.setPosition([218000, 4500000]);
 
-dragAndDropInteraction.on('addfeatures', (event) => {
+dragAndDropInteraction.on("addfeatures", event => {
   customLayer.getSource().addFeatures(event.features);
   olMap.getView().fit(customLayer.getSource().getExtent());
 });
@@ -420,9 +420,9 @@ const collection = new ol.Collection();
 const selectClick = new ol.interaction.Select({
   layers: [customLayer],
   condition: ol.events.condition.click,
-  style: selectedStyle,
+  style: selectedStyle
 });
-selectClick.getFeatures().on('change:length', () => {
+selectClick.getFeatures().on("change:length", () => {
   const length = selectClick.getFeatures().getLength();
   if (length > 1) {
     selectClick.getFeatures().clear();
@@ -438,28 +438,28 @@ selectClick.getFeatures().on('change:length', () => {
 
 const drawPoint = new ol.interaction.Draw({
   source: customLayer.getSource(),
-  type: ('Point'),
-  name: 'point',
+  type: "Point",
+  name: "point"
 });
 
 const drawLineString = new ol.interaction.Draw({
   source: customLayer.getSource(),
-  type: ('LineString'),
-  name: 'line',
+  type: "LineString",
+  name: "line"
 });
 
 const drawPolygon = new ol.interaction.Draw({
   source: customLayer.getSource(),
-  type: ('Polygon'),
-  name: 'polygon',
+  type: "Polygon",
+  name: "polygon"
 });
 
 // eslint-disable-next-line
 const drawBox = new ol.interaction.Draw({
   source: customLayer.getSource(),
-  type: ('Circle'),
-  name: 'box',
-  geometryFunction: ol.interaction.Draw.createBox(),
+  type: "Circle",
+  name: "box",
+  geometryFunction: ol.interaction.Draw.createBox()
 });
 
 olMap.addInteraction(selectClick);
@@ -468,10 +468,10 @@ olMap.addInteraction(drawLineString);
 olMap.addInteraction(drawPolygon);
 olMap.addInteraction(drawBox);
 
-drawPoint.setProperties({ name: 'Point' });
-drawLineString.setProperties({ name: 'LineString' });
-drawPolygon.setProperties({ name: 'Polygon' });
-drawBox.setProperties({ name: 'Box' });
+drawPoint.setProperties({ name: "Point" });
+drawLineString.setProperties({ name: "LineString" });
+drawPolygon.setProperties({ name: "Polygon" });
+drawBox.setProperties({ name: "Box" });
 
 drawPoint.setActive(false);
 drawLineString.setActive(false);
@@ -479,12 +479,11 @@ drawPolygon.setActive(false);
 drawBox.setActive(false);
 selectClick.setActive(true);
 
-
-olMap.setActiveInteraction = (interactionName) => {
+olMap.setActiveInteraction = interactionName => {
   // console.log('setting interaction to :: ', interactionName);
-  if (interactionName === 'select') {
+  if (interactionName === "select") {
     // console.log('setting interaction to select');
-    olMap.getInteractions().forEach((interaction) => {
+    olMap.getInteractions().forEach(interaction => {
       if (interaction instanceof ol.interaction.Select) {
         interaction.setActive(true);
       } else if (interaction instanceof ol.interaction.Draw) {
@@ -493,7 +492,7 @@ olMap.setActiveInteraction = (interactionName) => {
     });
   } else {
     // console.log('setting interaction to draw');
-    olMap.getInteractions().forEach((interaction) => {
+    olMap.getInteractions().forEach(interaction => {
       if (interaction instanceof ol.interaction.Select) {
         interaction.setActive(false);
       } else if (interaction instanceof ol.interaction.Draw) {
@@ -508,24 +507,23 @@ olMap.setActiveInteraction = (interactionName) => {
   }
 };
 
-
-selectClick.on('select', () => {
+selectClick.on("select", () => {
   const selectedFeature = selectClick.getFeatures().item(0);
   olMap.selectedFeature = selectedFeature;
-  store.commit('setSelected', selectedFeature);
-  if (store.state.questionnaireMode === 'answering') {
-    store.commit('setMapState', 'mapLocked');
-    console.log('feature id::', selectedFeature.getProperties().id);
+  store.commit("setSelected", selectedFeature);
+  if (store.state.questionnaireMode === "answering") {
+    store.commit("setMapState", "mapLocked");
+    console.log("feature id::", selectedFeature.getProperties().id);
   }
 });
 
-drawPoint.on('drawend', (e) => {
-  store.commit('setDrawMessage', '');
-  const startDrawend = new Promise((resolve) => {
+drawPoint.on("drawend", e => {
+  store.commit("setDrawMessage", "");
+  const startDrawend = new Promise(resolve => {
     let username = null;
     let userserial = null;
-    if (store.state.questionnaireMode === 'answering') {
-      userserial = '_';
+    if (store.state.questionnaireMode === "answering") {
+      userserial = "_";
       username = store.state.drawnFeatureStyle.messages;
     } else {
       userserial = store.state.user._id; // eslint-disable-line no-underscore-dangle
@@ -538,32 +536,39 @@ drawPoint.on('drawend', (e) => {
       // fllClr: 'orange',
       mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
       name: `@ ${username}`,
-      userId: userserial, // eslint-disable-line no-underscore-dangle
+      userId: userserial // eslint-disable-line no-underscore-dangle
     });
     resolve(true);
   });
-  startDrawend.then(() => {
-    if (store.state.questionnaireMode === 'normal') {
-      store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
-    } else {
-      store.commit('addQuestionnaireFeature', e.feature);
-      store.commit('setMapState', 'mapLocked');
-    }
-  }).then(() => {
-    drawPoint.setActive(false);
-    drawLineString.setActive(false);
-    drawPolygon.setActive(false);
-    drawBox.setActive(false);
-    selectClick.setActive(true);
-  });
+  startDrawend
+    .then(() => {
+      if (store.state.questionnaireMode === "normal") {
+        store.commit("setUserPostProperties", [
+          {
+            property: "userFeatures",
+            value: new ol.format.GeoJSON().writeFeatures([e.feature])
+          }
+        ]);
+      } else {
+        store.commit("addQuestionnaireFeature", e.feature);
+        store.commit("setMapState", "mapLocked");
+      }
+    })
+    .then(() => {
+      drawPoint.setActive(false);
+      drawLineString.setActive(false);
+      drawPolygon.setActive(false);
+      drawBox.setActive(false);
+      selectClick.setActive(true);
+    });
 });
-drawLineString.on('drawend', (e) => {
-  store.commit('setDrawMessage', '');
-  const startDrawend = new Promise((resolve) => {
+drawLineString.on("drawend", e => {
+  store.commit("setDrawMessage", "");
+  const startDrawend = new Promise(resolve => {
     let username = null;
     let userserial = null;
-    if (store.state.questionnaireMode === 'answering') {
-      userserial = '_';
+    if (store.state.questionnaireMode === "answering") {
+      userserial = "_";
       username = store.state.drawnFeatureStyle.messages;
     } else {
       userserial = store.state.user._id; // eslint-disable-line no-underscore-dangle
@@ -575,32 +580,39 @@ drawLineString.on('drawend', (e) => {
       // fllClr: 'orange',
       mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
       name: `@ ${username}`,
-      userId: userserial, // eslint-disable-line no-underscore-dangle
+      userId: userserial // eslint-disable-line no-underscore-dangle
     });
     resolve(true);
   });
-  startDrawend.then(() => {
-    if (store.state.questionnaireMode === 'normal') {
-      store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
-    } else {
-      store.commit('addQuestionnaireFeature', e.feature);
-      store.commit('setMapState', 'mapLocked');
-    }
-  }).then(() => {
-    drawPoint.setActive(false);
-    drawLineString.setActive(false);
-    drawPolygon.setActive(false);
-    drawBox.setActive(false);
-    selectClick.setActive(true);
-  });
+  startDrawend
+    .then(() => {
+      if (store.state.questionnaireMode === "normal") {
+        store.commit("setUserPostProperties", [
+          {
+            property: "userFeatures",
+            value: new ol.format.GeoJSON().writeFeatures([e.feature])
+          }
+        ]);
+      } else {
+        store.commit("addQuestionnaireFeature", e.feature);
+        store.commit("setMapState", "mapLocked");
+      }
+    })
+    .then(() => {
+      drawPoint.setActive(false);
+      drawLineString.setActive(false);
+      drawPolygon.setActive(false);
+      drawBox.setActive(false);
+      selectClick.setActive(true);
+    });
 });
-drawPolygon.on('drawend', (e) => {
-  store.commit('setDrawMessage', '');
-  const startDrawend = new Promise((resolve) => {
+drawPolygon.on("drawend", e => {
+  store.commit("setDrawMessage", "");
+  const startDrawend = new Promise(resolve => {
     let username = null;
     let userserial = null;
-    if (store.state.questionnaireMode === 'answering') {
-      userserial = '_';
+    if (store.state.questionnaireMode === "answering") {
+      userserial = "_";
       username = store.state.drawnFeatureStyle.messages;
     } else {
       userserial = store.state.user._id; // eslint-disable-line no-underscore-dangle
@@ -608,38 +620,45 @@ drawPolygon.on('drawend', (e) => {
     }
     e.feature.setProperties({
       strkWdth: 1,
-      strkClr: 'blue',
+      strkClr: "blue",
       fill: new ol.style.Fill({
-        color: 'rgba(0, 0, 255, 0.1)',
+        color: "rgba(0, 0, 255, 0.1)"
       }),
       mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
       name: `@ ${username}`,
-      userId: userserial, // eslint-disable-line no-underscore-dangle
+      userId: userserial // eslint-disable-line no-underscore-dangle
     });
     resolve(true);
   });
-  startDrawend.then(() => {
-    if (store.state.questionnaireMode === 'normal') {
-      store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
-    } else {
-      store.commit('addQuestionnaireFeature', e.feature);
-      store.commit('setMapState', 'mapLocked');
-    }
-  }).then(() => {
-    drawPoint.setActive(false);
-    drawLineString.setActive(false);
-    drawPolygon.setActive(false);
-    drawBox.setActive(false);
-    selectClick.setActive(true);
-  });
+  startDrawend
+    .then(() => {
+      if (store.state.questionnaireMode === "normal") {
+        store.commit("setUserPostProperties", [
+          {
+            property: "userFeatures",
+            value: new ol.format.GeoJSON().writeFeatures([e.feature])
+          }
+        ]);
+      } else {
+        store.commit("addQuestionnaireFeature", e.feature);
+        store.commit("setMapState", "mapLocked");
+      }
+    })
+    .then(() => {
+      drawPoint.setActive(false);
+      drawLineString.setActive(false);
+      drawPolygon.setActive(false);
+      drawBox.setActive(false);
+      selectClick.setActive(true);
+    });
 });
-drawBox.on('drawend', (e) => {
-  store.commit('setDrawMessage', '');
-  const startDrawend = new Promise((resolve) => {
+drawBox.on("drawend", e => {
+  store.commit("setDrawMessage", "");
+  const startDrawend = new Promise(resolve => {
     let username = null;
     let userserial = null;
-    if (store.state.questionnaireMode === 'answering') {
-      userserial = '_';
+    if (store.state.questionnaireMode === "answering") {
+      userserial = "_";
       username = store.state.drawnFeatureStyle.messages;
     } else {
       userserial = store.state.user._id; // eslint-disable-line no-underscore-dangle
@@ -647,46 +666,53 @@ drawBox.on('drawend', (e) => {
     }
     e.feature.setProperties({
       strkWdth: 1,
-      strkClr: 'blue',
+      strkClr: "blue",
       fill: new ol.style.Fill({
-        color: 'rgba(0, 0, 255, 0.1)',
+        color: "rgba(0, 0, 255, 0.1)"
       }),
       mongoID: `${userserial}${Date.now()}`, // eslint-disable-line no-underscore-dangle
       name: `@ ${username}`,
-      userId: userserial, // eslint-disable-line no-underscore-dangle
+      userId: userserial // eslint-disable-line no-underscore-dangle
     });
     resolve(true);
   });
-  startDrawend.then(() => {
-    if (store.state.questionnaireMode === 'normal') {
-      store.commit('setUserPostProperties', [{ property: 'userFeatures', value: new ol.format.GeoJSON().writeFeatures([e.feature]) }]);
-    } else {
-      store.commit('addQuestionnaireFeature', e.feature);
-      store.commit('setMapState', 'mapLocked');
-    }
-  }).then(() => {
-    drawPoint.setActive(false);
-    drawLineString.setActive(false);
-    drawPolygon.setActive(false);
-    drawBox.setActive(false);
-    selectClick.setActive(true);
-  });
+  startDrawend
+    .then(() => {
+      if (store.state.questionnaireMode === "normal") {
+        store.commit("setUserPostProperties", [
+          {
+            property: "userFeatures",
+            value: new ol.format.GeoJSON().writeFeatures([e.feature])
+          }
+        ]);
+      } else {
+        store.commit("addQuestionnaireFeature", e.feature);
+        store.commit("setMapState", "mapLocked");
+      }
+    })
+    .then(() => {
+      drawPoint.setActive(false);
+      drawLineString.setActive(false);
+      drawPolygon.setActive(false);
+      drawBox.setActive(false);
+      selectClick.setActive(true);
+    });
 });
 
 olMap.removeFeaturesFromLayer = (layername, property, ids) => {
   // console.log('removing :: ', ids);
   let allLayers = [];
   allLayers = olMap.getLayers().getArray();
-  allLayers.forEach((layer) => {
+  allLayers.forEach(layer => {
     if (layer.getProperties().name === layername) {
-      layer.getSource().forEachFeature((feature) => {
+      layer.getSource().forEachFeature(feature => {
         if (ids.includes(feature.get(property))) {
           layer.getSource().removeFeature(feature);
         }
       });
     }
   });
-  olMap.getInteractions().forEach((interaction) => {
+  olMap.getInteractions().forEach(interaction => {
     if (interaction instanceof ol.interaction.Select) {
       interaction.getFeatures().clear();
     }

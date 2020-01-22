@@ -1,33 +1,35 @@
 <template>
-    <v-container fluid>
-      <v-layout row wrap v-if="$store.state.userTimeline.length > 0">
+  <v-container fluid>
+    <v-layout v-if="$store.state.userTimeline.length > 0" row wrap>
+      <v-flex
+        v-for="thread in $store.state.userTimeline"
+        :key="thread._id"
+        md12
+      >
+        <thread :thread="thread"></thread>
+      </v-flex>
+      <v-progress-linear
+        v-show="loading"
+        :indeterminate="true"
+      ></v-progress-linear>
+      <v-btn
+        v-if="!endOfPosts && $store.state.userTimeline.length !== 0"
+        block
+        @click="next_page"
+      >
+        {{ $t("message.loadMore") }}
+        <v-icon right dark>navigate_next</v-icon>
+      </v-btn>
 
-        <v-flex
-          md12
-          v-for="thread in $store.state.userTimeline"
-          :key="thread._id"
-        >
-        <thread :thread='thread'></thread>
-        </v-flex>
-        <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
-        <v-btn
-          v-on:click='next_page'
-          v-if="!endOfPosts && $store.state.userTimeline.length !== 0"
-          block
-        >
-          {{ $t('message.loadMore')}}
-          <v-icon right dark>navigate_next</v-icon>
-        </v-btn>
-
-        <!-- <v-flex
+      <!-- <v-flex
           md12
           v-for="post in posts"
           :key="post._id"
         >
           <post :post='post'></post>
         </v-flex> -->
-      </v-layout>
-      <!-- <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
+    </v-layout>
+    <!-- <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
       <v-btn
         v-if="$store.state.userTimeline.length > 0 && endOfPosts === false"
         v-on:click='next_page'
@@ -36,42 +38,57 @@
         {{ $t('message.loadMore')}}
         <v-icon right dark>navigate_next</v-icon>
       </v-btn> -->
-      <span v-if="$store.state.userTimeline.length === 0">{{ $t('message.noPosts')}}</span>
-    </v-container>
+    <span v-if="$store.state.userTimeline.length === 0">{{
+      $t("message.noPosts")
+    }}</span>
+  </v-container>
 </template>
 <script>
-import axios from 'axios';
-import thread from '@/components/thread';
+import axios from "axios";
+import thread from "@/components/thread";
 // import newPost from '@/components/new_post';
-import config from '../config';
-import olMap from '../js/map';
+import config from "../config";
+import olMap from "../js/map";
 
 export default {
-  props: ['id'],
-  name: 'timeline',
+  name: "Timeline",
+  components: {
+    thread
+  },
+  props: ["id"],
   data() {
     return {
       explore_estate: null,
       startPage: 0,
       limitPage: 25,
       loading: false,
-      endOfPosts: false,
+      endOfPosts: false
     };
   },
-  components: {
-    thread,
-  },
   watch: {
-    '$store.state.openedTimeline': function changed() {
+    "$store.state.openedTimeline": function changed() {
       let allLayers = [];
       allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
+      allLayers.forEach(layer => {
+        if (layer.getProperties().name === "customLayer") {
           layer.getSource().clear();
         }
       });
       this.loadTimeline(this.$store.state.openedTimeline.id);
-    },
+    }
+  },
+  mounted() {
+    this.loadTimeline(this.id);
+
+    this.$eventHub.$on("openTimeline", id => {
+      console.log("open timeline from notification usertimelinevue:: ", id);
+      this.loadTimeline(id);
+    });
+
+    this.$options.sockets.newPost = data => {
+      console.log("new post from socket", data);
+      this.$store.dispatch("addPostToUserTimeline", data);
+    };
   },
   methods: {
     // refresh_page() {
@@ -104,33 +121,36 @@ export default {
       const userID = this.id; // eslint-disable-line no-underscore-dangle
       console.log(userID, this.$store.state.user._id); // eslint-disable-line no-underscore-dangle
       const url = `${config.url}/posts/person`;
-      axios.get(url, {
-        params: {
-          start: this.startPage.toString(),
-          end: this.limitPage.toString(),
-          userIdTl: userID,
-          userIdCl: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-        },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        if (response.data.length < this.limitPage) {
-          this.endOfPosts = true;
-        }
-        if (response.data.length > 0) {
-          response.data.forEach((d) => {
-            // this.posts.push(d);
-            this.$store.state.commit('addPostToUserTimeline', d);
-          });
-        }
-      }).then(() => {
-        this.loading = false;
-      });
+      axios
+        .get(url, {
+          params: {
+            start: this.startPage.toString(),
+            end: this.limitPage.toString(),
+            userIdTl: userID,
+            userIdCl: this.$store.state.user._id // eslint-disable-line no-underscore-dangle
+          },
+          headers: { "x-access-token": this.$store.state.token }
+        })
+        .then(response => {
+          if (response.data.length < this.limitPage) {
+            this.endOfPosts = true;
+          }
+          if (response.data.length > 0) {
+            response.data.forEach(d => {
+              // this.posts.push(d);
+              this.$store.state.commit("addPostToUserTimeline", d);
+            });
+          }
+        })
+        .then(() => {
+          this.loading = false;
+        });
     },
     loadTimeline(timelineId) {
       let allLayers = [];
       allLayers = olMap.getLayers().getArray();
-      allLayers.forEach((layer) => {
-        if (layer.getProperties().name === 'customLayer') {
+      allLayers.forEach(layer => {
+        if (layer.getProperties().name === "customLayer") {
           layer.getSource().clear();
         }
       });
@@ -139,7 +159,7 @@ export default {
       let url;
       let userID;
       if (this.$store.state.isUserLoggedIn) {
-        console.log('loading timeline');
+        console.log("loading timeline");
         url = `${config.url}/posts/person`;
         if (timelineId) {
           userID = timelineId;
@@ -147,37 +167,27 @@ export default {
           userID = this.id; // eslint-disable-line no-underscore-dangle
         }
       }
-      axios.get(url, {
-        params: {
-          start: this.startPage.toString(),
-          end: this.limitPage.toString(),
-          userIdTl: userID,
-          userIdCl: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-        },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        if (response.data.length < this.limitPage) {
-          this.endOfPosts = true;
-        }
-        this.$store.dispatch('setUserTimeline', response.data);
-      }).then(() => {
-        this.loading = false;
-      });
-    },
-  },
-  mounted() {
-    this.loadTimeline(this.id);
-
-    this.$eventHub.$on('openTimeline', (id) => {
-      console.log('open timeline from notification usertimelinevue:: ', id);
-      this.loadTimeline(id);
-    });
-
-    this.$options.sockets.newPost = (data) => {
-      console.log('new post from socket', data);
-      this.$store.dispatch('addPostToUserTimeline', data);
-    };
-  },
+      axios
+        .get(url, {
+          params: {
+            start: this.startPage.toString(),
+            end: this.limitPage.toString(),
+            userIdTl: userID,
+            userIdCl: this.$store.state.user._id // eslint-disable-line no-underscore-dangle
+          },
+          headers: { "x-access-token": this.$store.state.token }
+        })
+        .then(response => {
+          if (response.data.length < this.limitPage) {
+            this.endOfPosts = true;
+          }
+          this.$store.dispatch("setUserTimeline", response.data);
+        })
+        .then(() => {
+          this.loading = false;
+        });
+    }
+  }
 };
 </script>
 <style>

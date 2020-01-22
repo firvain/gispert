@@ -2,45 +2,80 @@
   <div>
     <v-layout class="text-xs-center">
       <v-tooltip bottom>
-        <v-btn fab flat outline small :color="toolColors[0]" slot="activator" @click="setDraw('Point')">
+        <v-btn
+          slot="activator"
+          fab
+          text
+          outline
+          small
+          :color="toolColors[0]"
+          @click="setDraw('Point')"
+        >
           <v-icon dark>location_on</v-icon>
         </v-btn>
         <span>Βάλε στο χάρτη ένα σημείο</span>
       </v-tooltip>
       <v-tooltip bottom>
-      <v-btn fab flat outline small :color="toolColors[1]" slot="activator" @click="setDraw('LineString')">
-        <v-icon dark>linear_scale</v-icon>
-      </v-btn>
+        <v-btn
+          slot="activator"
+          fab
+          text
+          outline
+          small
+          :color="toolColors[1]"
+          @click="setDraw('LineString')"
+        >
+          <v-icon dark>linear_scale</v-icon>
+        </v-btn>
         <span>Βάλε στο χάρτη μία γραμμή</span>
       </v-tooltip>
       <v-tooltip bottom>
-      <v-btn fab flat outline small :color="toolColors[2]" slot="activator" @click="setDraw('Polygon')">
-        <v-icon dark>rounded_corner</v-icon>
-      </v-btn>
+        <v-btn
+          slot="activator"
+          fab
+          text
+          outline
+          small
+          :color="toolColors[2]"
+          @click="setDraw('Polygon')"
+        >
+          <v-icon dark>rounded_corner</v-icon>
+        </v-btn>
         <span>Βάλε στο χάρτη ένα πολύγωνο</span>
       </v-tooltip>
       <v-tooltip bottom>
-      <v-btn fab flat outline small :color="toolColors[3]" slot="activator" @click="videoUrlDialog = true">
-        <v-icon dark>video_call</v-icon>
-      </v-btn>
+        <v-btn
+          slot="activator"
+          fab
+          text
+          outline
+          small
+          :color="toolColors[3]"
+          @click="videoUrlDialog = true"
+        >
+          <v-icon dark>video_call</v-icon>
+        </v-btn>
         <span>Πρόσθεσε ένα video</span>
       </v-tooltip>
       <v-tooltip bottom>
-      <v-btn fab flat outline small :color="toolColors[4]" slot="activator" @click="imageUrlDialog = true">
-        <v-icon dark>add_a_photo</v-icon>
-      </v-btn>
+        <v-btn
+          slot="activator"
+          fab
+          text
+          outline
+          small
+          :color="toolColors[4]"
+          @click="imageUrlDialog = true"
+        >
+          <v-icon dark>add_a_photo</v-icon>
+        </v-btn>
         <span>Πρόσθεσε μια εικόνα</span>
       </v-tooltip>
     </v-layout>
 
-    <v-dialog
-      v-model="imageUrlDialog"
-    >
+    <v-dialog v-model="imageUrlDialog">
       <v-card>
-        <v-card-title
-          class="headline grey lighten-2"
-          primary-title
-        >
+        <v-card-title class="headline grey lighten-2" primary-title>
           Προσθήκη εικόνας
         </v-card-title>
 
@@ -57,10 +92,12 @@
           <v-spacer></v-spacer>
           <v-btn
             color="primary"
-            flat
+            text
             @click="
               imageUrlDialog = false;
-              $store.commit('setUserPostProperties', [{ property: 'images', value: imageURL }]);
+              $store.commit('setUserPostProperties', [
+                { property: 'images', value: imageURL }
+              ]);
             "
           >
             ΟΚ
@@ -69,14 +106,9 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="videoUrlDialog"
-    >
+    <v-dialog v-model="videoUrlDialog">
       <v-card>
-        <v-card-title
-          class="headline grey lighten-2"
-          primary-title
-        >
+        <v-card-title class="headline grey lighten-2" primary-title>
           Προσθήκη Youtube video
         </v-card-title>
 
@@ -91,11 +123,7 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            flat
-            @click="addVideoToPost()"
-          >
+          <v-btn color="primary" text @click="addVideoToPost()">
             ΟΚ
           </v-btn>
         </v-card-actions>
@@ -104,31 +132,31 @@
   </div>
 </template>
 <script>
-import getYouTubeID from 'get-youtube-id';
+import getYouTubeID from "get-youtube-id";
 // import userSelector from './selectCloseUsers';
-import olMap from '../js/map';
+import olMap from "../js/map";
 
 export default {
-  name: 'mapTools',
-  props: ['idtomatch', 'replyid'],
+  name: "MapTools",
   components: {
     // userSelector,
   },
+  props: ["idtomatch", "replyid"],
   data: () => ({
-    selectColor: 'green',
-    drawColor: 'white',
-    toolColors: ['green', 'grey', 'grey', 'grey', 'grey'],
+    selectColor: "green",
+    drawColor: "white",
+    toolColors: ["green", "grey", "grey", "grey", "grey"],
     selectedFeature: olMap.selectedFeature,
     activeAnalysis: null,
     // userSelector: false,
     createBufferDialog: false,
     bufferDistance: 500,
-    measurement: '',
+    measurement: "",
     dialogMeasurements: false,
     imageUrlDialog: false,
     videoUrlDialog: false,
     imageURL: undefined,
-    videoURL: undefined,
+    videoURL: undefined
   }),
   computed: {
     currentlySelectedFeature() {
@@ -139,31 +167,33 @@ export default {
         return this.$store.state.activeMapTool;
       },
       set: function handle() {
-        return 'selectFeatures';
-      },
-    },
+        return "selectFeatures";
+      }
+    }
   },
   methods: {
     setDraw(type) {
-      if (type === 'Point') {
-        this.toolColors = ['green', 'grey', 'grey', 'grey', 'grey'];
-        olMap.setActiveInteraction('Point');
+      if (type === "Point") {
+        this.toolColors = ["green", "grey", "grey", "grey", "grey"];
+        olMap.setActiveInteraction("Point");
       }
-      if (type === 'LineString') {
-        this.toolColors = ['grey', 'green', 'grey', 'grey', 'grey'];
-        olMap.setActiveInteraction('LineString');
+      if (type === "LineString") {
+        this.toolColors = ["grey", "green", "grey", "grey", "grey"];
+        olMap.setActiveInteraction("LineString");
       }
-      if (type === 'Polygon') {
-        this.toolColors = ['grey', 'grey', 'green', 'grey', 'grey'];
-        olMap.setActiveInteraction('Polygon');
+      if (type === "Polygon") {
+        this.toolColors = ["grey", "grey", "green", "grey", "grey"];
+        olMap.setActiveInteraction("Polygon");
       }
     },
     addVideoToPost() {
       this.videoUrlDialog = false;
       const id = getYouTubeID(this.videoURL);
-      this.$store.commit('setUserPostProperties', [{ property: 'videos', value: id }]);
-    },
-  },
+      this.$store.commit("setUserPostProperties", [
+        { property: "videos", value: id }
+      ]);
+    }
+  }
 };
 </script>
 <style>

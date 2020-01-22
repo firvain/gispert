@@ -1,4 +1,4 @@
-import * as types from './mutation-types';
+import * as types from "./mutation-types";
 /* eslint-disable */
 
 export const addToSelected = ({ commit }, feature) => {

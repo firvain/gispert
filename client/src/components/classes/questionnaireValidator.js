@@ -1,5 +1,5 @@
-import ol from 'openlayers';
-import store from '../../store';
+import ol from "openlayers";
+import store from "../../store";
 
 class QuestionnaireValidator {
   constructor(questionnaire) {
@@ -16,41 +16,25 @@ class QuestionnaireValidator {
     /* eslint-disable no-param-reassign */
     const geojsonFormat = new ol.format.GeoJSON();
     let questionResult = null;
-    console.log('checking :: ', q);
+    console.log("checking :: ", q);
 
-    if (q.type === 'textfield' || q.type === 'textfieldvalidation' || q.type === 'textarea') {
-      if ((q.value && q.value.length > 0) ||
-      (q.optional === true || deactivatedQuestions.includes(q.id)
-      || deactivatedPages.includes(q.page))) {
-        questionResult = {
-          id: q.id,
-          title: q.title,
-          value: q.value,
-          error: false,
-          type: q.type,
-        };
-      } else {
-        q.error = true;
-        questionResult = {
-          id: q.id,
-          title: q.title,
-          value: q.value,
-          error: true,
-          type: q.type,
-        };
-      }
-    }
-    if (q.type === 'combobox') {
-      if (q.value !== null ||
+    if (
+      q.type === "textfield" ||
+      q.type === "textfieldvalidation" ||
+      q.type === "textarea"
+    ) {
+      if (
+        (q.value && q.value.length > 0) ||
         q.optional === true ||
         deactivatedQuestions.includes(q.id) ||
-        deactivatedPages.includes(q.page)) {
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           value: q.value,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -59,52 +43,81 @@ class QuestionnaireValidator {
           title: q.title,
           value: q.value,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
     }
-    if (q.type === 'checkboxGroup') {
+    if (q.type === "combobox") {
+      if (
+        q.value !== null ||
+        q.optional === true ||
+        deactivatedQuestions.includes(q.id) ||
+        deactivatedPages.includes(q.page)
+      ) {
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: q.value,
+          error: false,
+          type: q.type
+        };
+      } else {
+        q.error = true;
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: q.value,
+          error: true,
+          type: q.type
+        };
+      }
+    }
+    if (q.type === "checkboxGroup") {
       const boxes = [];
       const errors = [];
-      q.checkboxes.forEach((c) => {
+      q.checkboxes.forEach(c => {
         errors.push(c.value);
       });
-      q.checkboxes.forEach((c) => {
+      q.checkboxes.forEach(c => {
         boxes.push([c.label, c.value]);
       });
-      if (errors.includes(true) ||
-      q.optional === true ||
-      deactivatedQuestions.includes(q.id) ||
-      deactivatedPages.includes(q.page)) {
-        questionResult = {
-          id: q.id,
-          title: q.title,
-          value: boxes,
-          error: false,
-          type: q.type,
-        };
-      } else {
-        q.error = true;
-        questionResult = {
-          id: q.id,
-          title: q.title,
-          value: boxes,
-          error: true,
-          type: q.type,
-        };
-      }
-    }
-    if (q.type === 'radioGroup') {
-      if (q.value ||
+      if (
+        errors.includes(true) ||
         q.optional === true ||
         deactivatedQuestions.includes(q.id) ||
-        deactivatedPages.includes(q.page)) {
+        deactivatedPages.includes(q.page)
+      ) {
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: boxes,
+          error: false,
+          type: q.type
+        };
+      } else {
+        q.error = true;
+        questionResult = {
+          id: q.id,
+          title: q.title,
+          value: boxes,
+          error: true,
+          type: q.type
+        };
+      }
+    }
+    if (q.type === "radioGroup") {
+      if (
+        q.value ||
+        q.optional === true ||
+        deactivatedQuestions.includes(q.id) ||
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           value: q.value,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -113,47 +126,49 @@ class QuestionnaireValidator {
           title: q.title,
           value: q.value,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
     }
-    if (q.type === 'preferenceHierarchy') {
+    if (q.type === "preferenceHierarchy") {
       questionResult = {
         id: q.id,
         title: q.title,
         value: q.optionsToSort,
         error: false,
-        type: q.type,
+        type: q.type
       };
     }
-    if (q.type === 'mapPointer') {
+    if (q.type === "mapPointer") {
       const coordinates = [];
       const values = [];
-      q.buttons.forEach((b) => {
+      q.buttons.forEach(b => {
         const features = store.state.questionnaireFeatures;
         // console.log('features :: ', features, b.id);
         values.push(b.label);
-        features.forEach((f) => {
+        features.forEach(f => {
           if (f.getProperties().buttonId === b.id) {
             f.setProperties({
-              label: b.label,
+              label: b.label
             });
             coordinates.push(geojsonFormat.writeFeatures([f]));
           }
         });
       });
       // console.log('coordinates :: ', coordinates);
-      if (coordinates.length === q.buttons.length ||
+      if (
+        coordinates.length === q.buttons.length ||
         q.optional === true ||
         deactivatedQuestions.includes(q.id) ||
-        deactivatedPages.includes(q.page)) {
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           coordinates,
           value: values,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -163,36 +178,38 @@ class QuestionnaireValidator {
           coordinates,
           value: values,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
     }
-    if (q.type === 'mapLineString') {
+    if (q.type === "mapLineString") {
       const coordinates = [];
       const values = [];
-      q.buttons.forEach((b) => {
+      q.buttons.forEach(b => {
         values.push(b.label);
         const features = store.state.questionnaireFeatures;
-        features.forEach((f) => {
+        features.forEach(f => {
           if (f.getProperties().buttonId === b.id) {
             f.setProperties({
-              label: b.label,
+              label: b.label
             });
             coordinates.push(geojsonFormat.writeFeatures([f]));
           }
         });
       });
-      if (coordinates.length === q.buttons.length ||
+      if (
+        coordinates.length === q.buttons.length ||
         q.optional === true ||
         deactivatedQuestions.includes(q.id) ||
-        deactivatedPages.includes(q.page)) {
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           coordinates,
           value: values,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -202,39 +219,41 @@ class QuestionnaireValidator {
           coordinates,
           value: values,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
     }
-    if (q.type === 'mapPointerMultiple') {
+    if (q.type === "mapPointerMultiple") {
       const coordinates = [];
       const values = [];
-      q.lines.forEach((b) => {
+      q.lines.forEach(b => {
         // console.log('b:: ', b);
         if (b.value) {
           values.push(b.value);
           const features = store.state.questionnaireFeatures;
-          features.forEach((f) => {
+          features.forEach(f => {
             if (f.getProperties().buttonId === b.id) {
               f.setProperties({
-                label: b.value,
+                label: b.value
               });
               coordinates.push(geojsonFormat.writeFeatures([f]));
             }
           });
         }
       });
-      if ((values.length > 0 && coordinates.length > 0) ||
+      if (
+        (values.length > 0 && coordinates.length > 0) ||
         q.optional === true ||
         deactivatedQuestions.includes(q.id) ||
-        deactivatedPages.includes(q.page)) {
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           value: values,
           coordinates,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -244,39 +263,42 @@ class QuestionnaireValidator {
           value: values,
           coordinates,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
       // console.log(q.id, q.title, q.value);
     }
-    if (q.type === 'mapLinesMultiple') {
+    if (q.type === "mapLinesMultiple") {
       const coordinates = [];
       const values = [];
-      q.lines.forEach((b) => {
+      q.lines.forEach(b => {
         // console.log('b:: ', b);
         if (b.value) {
           values.push(b.value);
           const features = store.state.questionnaireFeatures;
-          features.forEach((f) => {
+          features.forEach(f => {
             if (f.getProperties().buttonId === b.id) {
               f.setProperties({
-                label: b.value,
+                label: b.value
               });
               coordinates.push(geojsonFormat.writeFeatures([f]));
             }
           });
         }
       });
-      if ((values.length > 0 && coordinates.length > 0) ||
-      (q.optional === true || deactivatedQuestions.includes(q.id) ||
-      deactivatedPages.includes(q.page))) {
+      if (
+        (values.length > 0 && coordinates.length > 0) ||
+        q.optional === true ||
+        deactivatedQuestions.includes(q.id) ||
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           value: values,
           coordinates,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -286,39 +308,42 @@ class QuestionnaireValidator {
           value: values,
           coordinates,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
       // console.log(q.id, q.title, q.value);
     }
-    if (q.type === 'mapPointsLinesMultiple') {
+    if (q.type === "mapPointsLinesMultiple") {
       const coordinates = [];
       const values = [];
-      q.lines.forEach((b) => {
+      q.lines.forEach(b => {
         // console.log('b:: ', b);
         if (b.value) {
           values.push(b.value);
           const features = store.state.questionnaireFeatures;
-          features.forEach((f) => {
+          features.forEach(f => {
             if (f.getProperties().buttonId === b.id) {
               f.setProperties({
-                label: b.value,
+                label: b.value
               });
               coordinates.push(geojsonFormat.writeFeatures([f]));
             }
           });
         }
       });
-      if ((values.length > 0 && coordinates.length > 0) ||
-      (q.optional === true || deactivatedQuestions.includes(q.id) ||
-      deactivatedPages.includes(q.page))) {
+      if (
+        (values.length > 0 && coordinates.length > 0) ||
+        q.optional === true ||
+        deactivatedQuestions.includes(q.id) ||
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           value: values,
           coordinates,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -328,32 +353,34 @@ class QuestionnaireValidator {
           value: values,
           coordinates,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
       // console.log(q.id, q.title, q.value);
     }
-    if (q.type === 'tableOfCheckboxes') {
+    if (q.type === "tableOfCheckboxes") {
       // TODO does not check errors now
       questionResult = {
         id: q.id,
         title: q.title,
         value: q.items,
         error: false,
-        type: q.type,
+        type: q.type
       };
     }
-    if (q.type === 'radioButtonsGroup') {
-      if (q.value !== null ||
+    if (q.type === "radioButtonsGroup") {
+      if (
+        q.value !== null ||
         q.optional === true ||
         deactivatedQuestions.includes(q.id) ||
-        deactivatedPages.includes(q.page)) {
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           value: q.value,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -362,7 +389,7 @@ class QuestionnaireValidator {
           title: q.title,
           value: q.value,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
     }
@@ -371,22 +398,24 @@ class QuestionnaireValidator {
       return element === null;
     };
 
-    if (q.type === 'tableOfRadioButtons') {
-      console.log(JSON.stringify(q), 'table radio');
+    if (q.type === "tableOfRadioButtons") {
+      console.log(JSON.stringify(q), "table radio");
       const valuesArray = [];
-      q.items.forEach((a) => {
+      q.items.forEach(a => {
         valuesArray.push(a.value);
       });
-      if (!valuesArray.some(isNull) ||
+      if (
+        !valuesArray.some(isNull) ||
         q.optional === true ||
         deactivatedQuestions.includes(q.id) ||
-        deactivatedPages.includes(q.page)) {
+        deactivatedPages.includes(q.page)
+      ) {
         questionResult = {
           id: q.id,
           title: q.title,
           value: q.items,
           error: false,
-          type: q.type,
+          type: q.type
         };
       } else {
         q.error = true;
@@ -395,7 +424,7 @@ class QuestionnaireValidator {
           title: q.title,
           value: q.items,
           error: true,
-          type: q.type,
+          type: q.type
         };
       }
     }
@@ -428,7 +457,7 @@ class QuestionnaireValidator {
     //     };
     //   }
     // }
-    console.log('question result :: ', questionResult);
+    console.log("question result :: ", questionResult);
     if (questionResult && questionResult.error) {
       q.error = true;
     } else {
@@ -439,13 +468,20 @@ class QuestionnaireValidator {
   }
   getValues(page, deactivatedQuestions, deactivatedPages) {
     const questionnaireResult = [];
-    if (page === 'all') {
-      this.questionnaire.questions.forEach((q) => {
-        if (q.type !== 'titleDescription') {
-          if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
-            q.questions.forEach((qu) => {
+    if (page === "all") {
+      this.questionnaire.questions.forEach(q => {
+        if (q.type !== "titleDescription") {
+          if (
+            q.type === "repeatable" &&
+            q.questions &&
+            q.questions.length > 0
+          ) {
+            q.questions.forEach(qu => {
               const qResult = this.constructor.checkErrorsForQuestion(
-                qu, deactivatedQuestions, deactivatedPages);
+                qu,
+                deactivatedQuestions,
+                deactivatedPages
+              );
               if (qResult !== null) {
                 qResult.parentId = q.id;
                 questionnaireResult.push(qResult);
@@ -453,7 +489,10 @@ class QuestionnaireValidator {
             });
           } else {
             const qResult = this.constructor.checkErrorsForQuestion(
-              q, deactivatedQuestions, deactivatedPages);
+              q,
+              deactivatedQuestions,
+              deactivatedPages
+            );
             if (qResult !== null) {
               questionnaireResult.push(qResult);
             }
@@ -461,20 +500,30 @@ class QuestionnaireValidator {
         }
       });
     } else {
-      this.questionnaire.questions.forEach((q) => {
+      this.questionnaire.questions.forEach(q => {
         if (q.page === page) {
-          if (q.type !== 'titleDescription') {
-            if (q.type === 'repeatable' && q.questions && q.questions.length > 0) {
-              q.questions.forEach((qu) => {
+          if (q.type !== "titleDescription") {
+            if (
+              q.type === "repeatable" &&
+              q.questions &&
+              q.questions.length > 0
+            ) {
+              q.questions.forEach(qu => {
                 const qResult = this.constructor.checkErrorsForQuestion(
-                  qu, deactivatedQuestions, deactivatedPages);
+                  qu,
+                  deactivatedQuestions,
+                  deactivatedPages
+                );
                 if (qResult !== null) {
                   questionnaireResult.push(qResult);
                 }
               });
             } else {
               const qResult = this.constructor.checkErrorsForQuestion(
-                q, deactivatedQuestions, deactivatedPages);
+                q,
+                deactivatedQuestions,
+                deactivatedPages
+              );
               if (qResult !== null) {
                 questionnaireResult.push(qResult);
               }
@@ -490,29 +539,31 @@ class QuestionnaireValidator {
   validate(page, deactivatedQuestions, deactivatedPages) {
     const errors = [];
     let error = false;
-    this.getValues(page, deactivatedQuestions, deactivatedPages).forEach((q) => {
+    this.getValues(page, deactivatedQuestions, deactivatedPages).forEach(q => {
       errors.push(q.error);
       // if (q.error) {
-        // console.log('there is error in ::: ', q.id);
-        // const objIndex =
-        //   this.questionnaire.questions.findIndex((obj => obj.id === q.id));
-        // if (objIndex) {
-        //   this.questionnaire.questions[objIndex].error
-        //     = true; // eslint-disable-line no-param-reassign
-        // error = true;
-        // }
+      // console.log('there is error in ::: ', q.id);
+      // const objIndex =
+      //   this.questionnaire.questions.findIndex((obj => obj.id === q.id));
+      // if (objIndex) {
+      //   this.questionnaire.questions[objIndex].error
+      //     = true; // eslint-disable-line no-param-reassign
+      // error = true;
+      // }
       // } else {
       //   error = false;
-        // const objIndex =
-        //   this.questionnaire.questions.findIndex((obj => obj.id === q.id));
-        // if (objIndex) {
-        //   this.questionnaire.questions[objIndex].error
-        //     = false; // eslint-disable-line no-param-reassign
-        // }
-    //   }
+      // const objIndex =
+      //   this.questionnaire.questions.findIndex((obj => obj.id === q.id));
+      // if (objIndex) {
+      //   this.questionnaire.questions[objIndex].error
+      //     = false; // eslint-disable-line no-param-reassign
+      // }
+      //   }
     });
     // console.log('validation result :: ', !error);
-    if (errors.includes(true)) { error = true; }
+    if (errors.includes(true)) {
+      error = true;
+    }
     return !error;
   }
 }

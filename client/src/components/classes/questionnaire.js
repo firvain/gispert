@@ -1,9 +1,9 @@
-import store from '../../store';
+import store from "../../store";
 
 class TableOfCheckboxes {
   constructor(question) {
     this.id = question.id;
-    this.type = 'tableOfCheckboxes';
+    this.type = "tableOfCheckboxes";
     if (!question.horizontalValues) {
       this.horizontalValues = [];
     } else {
@@ -56,7 +56,7 @@ class TableOfCheckboxes {
     }
     if (!question.style) {
       this.style = {
-        titleFontSize: null,
+        titleFontSize: null
       };
     } else {
       this.style = question.style;
@@ -93,10 +93,14 @@ class TableOfCheckboxes {
   createItems() {
     const items = [];
     if (this.horizontalValues && this.verticalValues) {
-      this.verticalValues.forEach((vv) => {
+      this.verticalValues.forEach(vv => {
         const answers = [];
-        this.horizontalValues.forEach((hv) => {
-          answers.push({ id: `${hv.id}_${vv.id}`, text: hv.text, selected: hv.selected });
+        this.horizontalValues.forEach(hv => {
+          answers.push({
+            id: `${hv.id}_${vv.id}`,
+            text: hv.text,
+            selected: hv.selected
+          });
         });
         items.push({ id: vv.id, title: vv.title, answers });
       });
@@ -122,7 +126,8 @@ class PageHandler {
     this.init();
   }
   labels() {
-    return `${this.currentPage + 1} / ${Object.keys(this.pagesQueue).length - this.deactivatedPages.length}`;
+    return `${this.currentPage + 1} / ${Object.keys(this.pagesQueue).length -
+      this.deactivatedPages.length}`;
   }
   init() {
     this.findTotalPages();
@@ -139,13 +144,13 @@ class PageHandler {
     const buttons = {
       next: this.showNext,
       previous: this.showPrevious,
-      submit: this.showSubmit,
+      submit: this.showSubmit
     };
     return buttons;
   }
   findTotalPages() {
     let pageCount = 0;
-    this.questionnaire.questions.forEach((q) => {
+    this.questionnaire.questions.forEach(q => {
       if (q.page >= pageCount) {
         pageCount = q.page;
       }
@@ -211,66 +216,69 @@ class PageHandler {
     const questionsToRemove = [];
 
     this.deactivatedQuestions = [];
-    this.questionnaire.questions.forEach((question) => {
+    this.questionnaire.questions.forEach(question => {
       // for each question check if has value
       if (
-        question.type === 'combobox' &&
+        question.type === "combobox" &&
         (question.value || question.optional === true)
       ) {
         // console.log('found combobox with value or optional:: ', question);
-        question.items.forEach((item) => {
+        question.items.forEach(item => {
           if (
             item.activateQuestions &&
-            item.activateQuestions[0] !== '-' &&
+            item.activateQuestions[0] !== "-" &&
             question.value === item.value
           ) {
             // console.log('found item active to remove page from deactivated');
-            item.activateQuestions.forEach((i) => {
+            item.activateQuestions.forEach(i => {
               questionsToRemove.push(i.id);
             });
           }
           if (
             item.activateQuestions &&
-            item.activateQuestions[0] !== '-' &&
+            item.activateQuestions[0] !== "-" &&
             question.value !== item.value
           ) {
             // console.log('found item active to add page to deactivated');
-            item.activateQuestions.forEach((i) => {
+            item.activateQuestions.forEach(i => {
               questionsToAdd.push(i.id);
             });
           }
         });
       }
-      if (question.type === 'combobox' && !question.value) {
-        question.items.forEach((item) => {
-          if (item.activateQuestions && item.activateQuestions[0] !== '-') {
+      if (question.type === "combobox" && !question.value) {
+        question.items.forEach(item => {
+          if (item.activateQuestions && item.activateQuestions[0] !== "-") {
             // console.log('found combobox without value:: ', question);
-            item.activateQuestions.forEach((i) => {
+            item.activateQuestions.forEach(i => {
               questionsToAdd.push(i.id);
             });
           }
         });
       }
-      if (question.type === 'repeatable') {
+      if (question.type === "repeatable") {
         // console.log('REPEATABLE :: do not show these questions');
-        question.repeatQuestions.forEach((repeated) => {
+        question.repeatQuestions.forEach(repeated => {
           questionsToAdd.push(repeated.id);
           // console.log('repeatable id to remove::', repeated.id);
         });
-        console.log('removed repeatable questions');
-        question.questions.forEach((r) => {
-          console.log('print questions in repeatable:: ', r);
+        console.log("removed repeatable questions");
+        question.questions.forEach(r => {
+          console.log("print questions in repeatable:: ", r);
           if (r.questions) {
             console.log(r.questions);
-            r.questions.forEach((rq) => {
-              console.log('rq::', rq.type);
+            r.questions.forEach(rq => {
+              console.log("rq::", rq.type);
               if (
-                rq.type === 'combobox'
-                && (rq.value || rq.optional === true)
+                rq.type === "combobox" &&
+                (rq.value || rq.optional === true)
               ) {
-                console.log('found combobox with value or optional:: ', rq);
-                rq.items.forEach((item) => {
-                  console.log('found this with questions::', item.activateQuestions);
+                console.log("found combobox with value or optional:: ", rq);
+                rq.items.forEach(item => {
+                  console.log(
+                    "found this with questions::",
+                    item.activateQuestions
+                  );
                   // if (
                   //   item.activateQuestions &&
                   //   item.activateQuestions[0] !== '-' &&
@@ -284,20 +292,23 @@ class PageHandler {
                   // }
                   if (
                     item.activateQuestions &&
-                    item.activateQuestions[0] !== '-' &&
+                    item.activateQuestions[0] !== "-" &&
                     rq.value !== item.value
                   ) {
-                    item.activateQuestions.forEach((i) => {
+                    item.activateQuestions.forEach(i => {
                       questionsToAdd.push(i.id);
                     });
                   }
                 });
               }
-              if (rq.type === 'combobox' && !rq.value) {
-                rq.items.forEach((item) => {
-                  if (item.activateQuestions && item.activateQuestions[0] !== '-') {
+              if (rq.type === "combobox" && !rq.value) {
+                rq.items.forEach(item => {
+                  if (
+                    item.activateQuestions &&
+                    item.activateQuestions[0] !== "-"
+                  ) {
                     // console.log('found combobox without value:: ', question);
-                    item.activateQuestions.forEach((i) => {
+                    item.activateQuestions.forEach(i => {
                       questionsToAdd.push(i.id);
                     });
                   }
@@ -311,11 +322,11 @@ class PageHandler {
     // console.log('to add and to remove :: ', questionsToAdd, questionsToRemove);
     const unique = questionsToAdd.filter(p => !questionsToRemove.includes(p));
     // console.log('unique var:: ', unique, JSON.stringify(unique));
-    unique.forEach((u) => {
+    unique.forEach(u => {
       this.deactivatedQuestions.push(u);
     });
-    console.log('deactivated questions:: ', this.deactivatedQuestions);
-    store.commit('setDeactivatedQuestions', this.deactivatedQuestions);
+    console.log("deactivated questions:: ", this.deactivatedQuestions);
+    store.commit("setDeactivatedQuestions", this.deactivatedQuestions);
     // const questionsQueue = {};
     // for (let index = 0; index <= this.totalPages; index += 1) {
     //   // console.log('deactivated questions:: ', this.deactivatedQuestions);
@@ -336,41 +347,41 @@ class PageHandler {
     const pagesToRemove = [];
     // console.log(selected);
     this.deactivatedPages = [];
-    this.questionnaire.questions.forEach((question) => {
+    this.questionnaire.questions.forEach(question => {
       // for each question check if has value
       if (
-        question.type === 'combobox' &&
+        question.type === "combobox" &&
         (question.value || question.optional === true)
       ) {
         // console.log('found combobox with value or optional:: ', question);
-        question.items.forEach((item) => {
+        question.items.forEach(item => {
           if (
             item.activatePages &&
-            item.activatePages[0] !== '-' &&
+            item.activatePages[0] !== "-" &&
             question.value === item.value
           ) {
             // console.log('found item active to remove page from deactivated');
-            item.activatePages.forEach((i) => {
+            item.activatePages.forEach(i => {
               pagesToRemove.push(i);
             });
           }
           if (
             item.activatePages &&
-            item.activatePages[0] !== '-' &&
+            item.activatePages[0] !== "-" &&
             question.value !== item.value
           ) {
             // console.log('found item active to add page to deactivated');
-            item.activatePages.forEach((i) => {
+            item.activatePages.forEach(i => {
               pagesToAdd.push(i);
             });
           }
         });
       }
-      if (question.type === 'combobox' && !question.value) {
-        question.items.forEach((item) => {
-          if (item.activatePages && item.activatePages[0] !== '-') {
+      if (question.type === "combobox" && !question.value) {
+        question.items.forEach(item => {
+          if (item.activatePages && item.activatePages[0] !== "-") {
             // console.log('found combobox without value:: ', question);
-            item.activatePages.forEach((i) => {
+            item.activatePages.forEach(i => {
               pagesToAdd.push(i);
             });
           }
@@ -414,7 +425,7 @@ class Questionnaire {
   init() {
     this.loaded = true;
     this.questions.forEach((q, index) => {
-      if (q.type === 'tableOfCheckboxes') {
+      if (q.type === "tableOfCheckboxes") {
         // console.log('found table and loading');
         this.questions[index] = new TableOfCheckboxes(q);
         // console.log(this.questions[index]);

@@ -1,48 +1,78 @@
 <template>
-    <v-container fluid v-bind="{ [`grid-list-${size}`]: true }" v-if="mode === 0" id="timeline">
-      <newPost v-if="$store.state.isUserLoggedIn === true"></newPost>
-      <v-flex
-        md12
-        v-for="thread in $store.state.timeline"
-        :key="thread._id"
-      >
-      <thread :thread='thread'></thread>
-      </v-flex>
-      <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
-      <v-btn
-        v-on:click='next_page'
-        v-if="!endOfPosts && $store.state.isUserLoggedIn"
-        block
-      >
-        {{ $t('message.loadMore')}}
-        <v-icon right dark>navigate_next</v-icon>
-      </v-btn>
-    </v-container>
+  <v-container
+    v-if="mode === 0"
+    id="timeline"
+    fluid
+    v-bind="{ [`grid-list-${size}`]: true }"
+  >
+    <newPost v-if="$store.state.isUserLoggedIn === true"></newPost>
+    <v-flex v-for="thread in $store.state.timeline" :key="thread._id" md12>
+      <thread :thread="thread"></thread>
+    </v-flex>
+    <v-progress-linear
+      v-show="loading"
+      :indeterminate="true"
+    ></v-progress-linear>
+    <v-btn
+      v-if="!endOfPosts && $store.state.isUserLoggedIn"
+      block
+      @click="next_page"
+    >
+      {{ $t("message.loadMore") }}
+      <v-icon right dark>navigate_next</v-icon>
+    </v-btn>
+  </v-container>
 </template>
 <script>
-import axios from 'axios';
-import thread from '@/components/thread';
+import axios from "axios";
+import thread from "@/components/thread";
 // import post from './post';
-import newPost from './new_post';
-import config from '../config';
+import newPost from "./new_post";
+import config from "../config";
 
 export default {
-  name: 'timeline',
+  name: "Timeline",
+  components: {
+    newPost,
+    thread
+  },
   data() {
     return {
       posts: [],
-      size: 'md',
-      expand: 'md12',
+      size: "md",
+      expand: "md12",
       mode: 0,
       explore_estate: null,
       startPage: 0,
       limitPage: 50,
       loading: false,
-      endOfPosts: false,
+      endOfPosts: false
     };
   },
-  components: {
-    newPost, thread,
+  watch: {
+    "$store.state.isUserLoggedIn": function locale() {
+      this.newPostText = this.$t("message.newPost");
+    }
+  },
+  mounted() {
+    if (this.$store.state.timeline === []) {
+      this.load_first_page();
+    }
+    // else {
+    //   this.posts = this.$store.state.timeline;
+    // }
+    this.$eventHub.$on("logged-in", () => {
+      this.$store.dispatch("setTimeline", []);
+      this.load_first_page();
+    });
+    this.$eventHub.$on("refreshTimeline", () => {
+      this.$store.dispatch("setTimeline", []);
+      this.load_first_page();
+    });
+    // this.$eventHub.$on('newPost', () => {
+    // this.replies.unshift(data);
+    // this.toggle_new_post();
+    // });
   },
   methods: {
     // refresh_page() {
@@ -70,19 +100,24 @@ export default {
     next_page() {
       this.loading = true;
       this.startPage += 50;
-      const url = `${config.url}/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
-      axios.get(url, {
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        if (response.data.length < this.limitPage) {
-          this.endOfPosts = true;
-        }
-        response.data.forEach((d) => {
-          this.posts.push(d);
+      const url = `${
+        config.url
+      }/posts/all?start=${this.startPage.toString()}&end=${this.limitPage.toString()}`;
+      axios
+        .get(url, {
+          headers: { "x-access-token": this.$store.state.token }
+        })
+        .then(response => {
+          if (response.data.length < this.limitPage) {
+            this.endOfPosts = true;
+          }
+          response.data.forEach(d => {
+            this.posts.push(d);
+          });
+        })
+        .then(() => {
+          this.loading = false;
         });
-      }).then(() => {
-        this.loading = false;
-      });
     },
     load_first_page() {
       this.loading = true;
@@ -96,52 +131,30 @@ export default {
         userID = this.$store.state.user._id; // eslint-disable-line no-underscore-dangle
       } else {
         url = `${config.url}/public/timeline`;
-        userID = '';
+        userID = "";
       }
-      axios.get(url, {
-        params: {
-          start: this.startPage.toString(),
-          end: this.limitPage.toString(),
-          userId: userID, // eslint-disable-line no-underscore-dangle
-        },
-        headers: { 'x-access-token': this.$store.state.token },
-      }).then((response) => {
-        console.log('posts fetched are:: ', response.data.length);
-        if (response.data.length < this.limitPage) {
-          this.endOfPosts = true;
-        }
-        this.posts = response.data;
-      }).then(() => {
-        this.loading = false;
-        this.$store.dispatch('setTimeline', this.posts);
-      });
-    },
-  },
-  mounted() {
-    if (this.$store.state.timeline === []) {
-      this.load_first_page();
+      axios
+        .get(url, {
+          params: {
+            start: this.startPage.toString(),
+            end: this.limitPage.toString(),
+            userId: userID // eslint-disable-line no-underscore-dangle
+          },
+          headers: { "x-access-token": this.$store.state.token }
+        })
+        .then(response => {
+          console.log("posts fetched are:: ", response.data.length);
+          if (response.data.length < this.limitPage) {
+            this.endOfPosts = true;
+          }
+          this.posts = response.data;
+        })
+        .then(() => {
+          this.loading = false;
+          this.$store.dispatch("setTimeline", this.posts);
+        });
     }
-    // else {
-    //   this.posts = this.$store.state.timeline;
-    // }
-    this.$eventHub.$on('logged-in', () => {
-      this.$store.dispatch('setTimeline', []);
-      this.load_first_page();
-    });
-    this.$eventHub.$on('refreshTimeline', () => {
-      this.$store.dispatch('setTimeline', []);
-      this.load_first_page();
-    });
-    // this.$eventHub.$on('newPost', () => {
-      // this.replies.unshift(data);
-      // this.toggle_new_post();
-    // });
-  },
-  watch: {
-    '$store.state.isUserLoggedIn': function locale() {
-      this.newPostText = this.$t('message.newPost');
-    },
-  },
+  }
 };
 </script>
 <style>

@@ -58,7 +58,7 @@
                 </v-img>
               </v-card>
             </v-flex>
-            <v-flex xs6 v-if='currentTab.id === 1'>
+            <v-flex v-if='currentTab.id === 1' xs6>
               <v-flex pl-4 pt-4 pr-4 style='overflow-y: auto; max-height: 100%; height: 100vh'>
                 <v-flex xs12 class="text-align-center">
                   <span class="display-2 font-weight-thin">Welcome to the Geobabel platform!</span>
@@ -75,7 +75,7 @@
                     </span>
                   </v-flex>
                   <v-flex xs6>
-                    <p><meetingTable color="green--outline" :width="250" :strokeWidth="10" /></p>
+                    <p><meetingTable color="green--outline" :width="250" :stroke-width="10" /></p>
                   </v-flex>
                 </v-layout>
 
@@ -122,7 +122,7 @@
               </v-flex>
             </v-flex>
 
-            <v-flex xs6 pl-2 text-xs-start v-if='currentTab.id === 2'>
+            <v-flex v-if='currentTab.id === 2' xs6 pl-2 text-xs-start>
               <v-flex pl-4 pt-4 pr-4 style='overflow-y: auto; max-height: 100%; height: 100vh'>
                 <v-flex xs12 class="text-align-start">
                   <span class="display-2 font-weight-thin">{{ currentTab.title }}</span>
@@ -139,7 +139,7 @@
               </v-flex>
             </v-flex>
 
-            <v-flex xs6 pl-2 text-xs-start v-if='currentTab.id === 3'>
+            <v-flex v-if='currentTab.id === 3' xs6 pl-2 text-xs-start>
               <v-flex pl-4 pt-4 pr-4 style='overflow-y: auto; max-height: 100%; height: 100vh'>
                 <v-flex xs12 class="text-align-start">
                   <span class="display-2 font-weight-thin">{{ currentTab.title }}</span>
@@ -156,7 +156,7 @@
               </v-flex>
             </v-flex>
 
-            <v-flex xs6 pl-2 text-xs-start v-if='currentTab.id === 4'>
+            <v-flex v-if='currentTab.id === 4' xs6 pl-2 text-xs-start>
               <v-flex pl-4 pt-4 pr-4 style='overflow-y: auto; max-height: 100%; height: 100vh'>
                 <v-flex xs12 class="text-align-center">
                   <span class="display-2 font-weight-thin">{{ currentTab.title }}</span>
@@ -165,7 +165,7 @@
               </v-flex>
             </v-flex>
 
-            <v-flex xs6 pl-2 text-xs-center v-if='currentTab.id === 5'>
+            <v-flex v-if='currentTab.id === 5' xs6 pl-2 text-xs-center>
               <v-flex pl-4 pt-4 pr-4 style='overflow-y: auto; max-height: 100%; height: 100vh'>
                 <v-flex xs12 class="text-align-center">
                   <span class="display-2 font-weight-thin">{{ currentTab.title }}</span>
@@ -182,7 +182,7 @@
               </v-flex>
             </v-flex>
 
-            <v-flex xs6 pl-2 text-xs-start v-if='currentTab.id === 6'>
+            <v-flex v-if='currentTab.id === 6' xs6 pl-2 text-xs-start>
               <v-flex pl-4 pt-4 pr-4 style='overflow-y: auto; max-height: 100%; height: 100vh'>
                 <v-flex xs12 class="text-align-center">
                   <span class="display-2 font-weight-thin">{{ currentTab.title }}</span>
@@ -242,19 +242,6 @@ import devices from '@/components/svg/devices';
 import mobility from '@/components/svg/mobility';
 
 export default {
-  data() {
-    return {
-      currentTab: { id: 1, title: 'What is Geobabel?!', menuImage: '../static/images/abstract-adult-background-1079033.jpg' },
-      tabs: [
-        { id: 1, title: 'What is Geobabel?', menuImage: '../static/images/abstract-adult-background-1079033.jpg' },
-        { id: 2, title: 'Features', menuImage: '../static/images/adult-book-business-297755s.jpg' },
-        { id: 3, title: 'Use cases', menuImage: '../static/images/bird-s-eye-view-buildings-cars-373974.jpg' },
-        { id: 4, title: 'Pricing', menuImage: '../static/images/pricing.jpg' },
-        { id: 5, title: 'Contact us', menuImage: '../static/images/contactus1.jpg' },
-        { id: 6, title: 'Case studies', menuImage: '../static/images/blank-charts-computer-669619.jpg' },
-      ],
-    };
-  },
   components: {
     meetingTable,
     platformfeatures,
@@ -267,6 +254,19 @@ export default {
     peopleHoldingMap,
     devices,
     mobility,
+  },
+  data() {
+    return {
+      currentTab: { id: 1, title: 'What is Geobabel?!', menuImage: '../static/images/abstract-adult-background-1079033.jpg' },
+      tabs: [
+        { id: 1, title: 'What is Geobabel?', menuImage: '../static/images/abstract-adult-background-1079033.jpg' },
+        { id: 2, title: 'Features', menuImage: '../static/images/adult-book-business-297755s.jpg' },
+        { id: 3, title: 'Use cases', menuImage: '../static/images/bird-s-eye-view-buildings-cars-373974.jpg' },
+        { id: 4, title: 'Pricing', menuImage: '../static/images/pricing.jpg' },
+        { id: 5, title: 'Contact us', menuImage: '../static/images/contactus1.jpg' },
+        { id: 6, title: 'Case studies', menuImage: '../static/images/blank-charts-computer-669619.jpg' },
+      ],
+    };
   },
   methods: {
     changeTab(id) {

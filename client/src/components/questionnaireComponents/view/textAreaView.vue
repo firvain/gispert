@@ -1,15 +1,15 @@
 <template>
-  <v-container fluid v-if="question.type === 'textarea'" pa-0 ma-0>
+  <v-container v-if="question.type === 'textarea'" fluid pa-0 ma-0>
     <v-text-field
-      name="input-1"
       v-model="question.value"
+      name="input-1"
       :label="$t('message.yourAnswer')"
     ></v-text-field>
   </v-container>
 </template>
 <script>
 export default {
-  name: 'textArea',
-  props: ['question'],
+  name: "TextArea",
+  props: ["question"]
 };
 </script>

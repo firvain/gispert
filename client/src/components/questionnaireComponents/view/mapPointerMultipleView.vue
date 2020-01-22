@@ -1,45 +1,55 @@
 <template>
-  <v-container fluid v-if="question.type === 'mapPointerMultiple'" pa-0 ma-0>
-    <v-layout row wrap v-for="line in question.lines" :key="line.id">
+  <v-container v-if="question.type === 'mapPointerMultiple'" fluid pa-0 ma-0>
+    <v-layout v-for="line in question.lines" :key="line.id" row wrap>
       <v-flex xs10>
         <v-text-field
-          name="input-1"
           v-model="line.value"
+          name="input-1"
           :label="$t('message.yourAnswer')"
         ></v-text-field>
       </v-flex>
       <v-flex xs2>
-        <v-btn small fab dark class="indigo"
-          @click="getFromMap(line.id, 'Point', line.value, line.style);
-          $store.commit('setDrawMessage', '<code>Κάντε κλικ στο σημείο της απάντησής σας</code>');">
+        <v-btn
+          small
+          fab
+          dark
+          class="indigo"
+          @click="
+            getFromMap(line.id, 'Point', line.value, line.style);
+            $store.commit(
+              'setDrawMessage',
+              '<code>Κάντε κλικ στο σημείο της απάντησής σας</code>'
+            );
+          "
+        >
           <v-icon dark>location_on</v-icon>
         </v-btn>
       </v-flex>
     </v-layout>
     <v-btn dark class="indigo" @click="addRow(question)">
-      {{ $t('message.addLine')}}
+      {{ $t("message.addLine") }}
     </v-btn>
   </v-container>
 </template>
 <script>
-import olMap from '../../../js/map';
+import olMap from "../../../js/map";
 
 export default {
-  name: 'mappointermultiple',
-  props: ['question'],
+  name: "Mappointermultiple",
+  props: ["question"],
   methods: {
     getFromMap(id, type, title, style) {
-      olMap.removeFeaturesFromLayer('customLayer', 'buttonId', [id]);
-      this.$store.commit('setQuestionnaireFeatureId', id);
+      olMap.removeFeaturesFromLayer("customLayer", "buttonId", [id]);
+      this.$store.commit("setQuestionnaireFeatureId", id);
       const featureStyle = {
         strkWdth: style.strkWdth,
         strkClr: style.strkClr,
         fllClr: style.fllClr,
         radius: style.radius,
-        messages: title,
+        messages: title
       };
-      this.$store.commit('setDrawnFeatureStyle', featureStyle);
-      this.$store.commit('setMapState', 'mapAvailable');
+      this.$store.commit("setDrawnFeatureStyle", featureStyle);
+      this.$store.commit("setMapState", "mapAvailable");
       olMap.setActiveInteraction(type);
     },
     addRow(question) {
@@ -50,12 +60,12 @@ export default {
           coords: [],
           style: {
             strkWdth: 2,
-            strkClr: 'blue',
-            fllClr: 'orange',
-          },
+            strkClr: "blue",
+            fllClr: "orange"
+          }
         });
       }
-    },
-  },
+    }
+  }
 };
 </script>

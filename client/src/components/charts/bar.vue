@@ -1,12 +1,10 @@
 <template>
-    <div>
-        test
-    </div>
+  <div>
+    test
+  </div>
 </template>
 <script>
-import barChart from './barChart';
+import barChart from "./barChart";
 
-export default {
-
-};
+export default {};
 </script>

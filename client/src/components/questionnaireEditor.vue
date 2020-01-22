@@ -1,202 +1,258 @@
 <template>
-    <v-layout row wrap xs12 sm12 md12 v-if="questionnaire">{{ questionnaire.loaded }}
-      <v-flex>
-        <p>Editor @{{ userEditingNow }}</p>
-        <p>Viewers
-          <v-badge color="blue">
-            <template v-slot:badge>
-              <span  v-if="usersViewingQuestionnaire">{{ usersViewingQuestionnaire.length }}</span>
+  <v-layout v-if="questionnaire" row wrap xs12 sm12 md12
+    >{{ questionnaire.loaded }}
+    <v-flex>
+      <p>Editor @{{ userEditingNow }}</p>
+      <p>
+        Viewers
+        <v-badge color="blue">
+          <template v-slot:badge>
+            <span v-if="usersViewingQuestionnaire">{{
+              usersViewingQuestionnaire.length
+            }}</span>
+          </template>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon color="primary" dark v-on="on">person</v-icon>
             </template>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-icon color="primary" dark v-on="on">person</v-icon>
-              </template>
-              <ul id="example-1" v-if="usersViewingQuestionnaireNames">
-                <li v-for="item in usersViewingQuestionnaireNames" :key="item">
-                  {{ item }}
-                </li>
-              </ul>
-              <!-- <span>{{ usersViewingQuestionnaireNames }}</span> -->
-            </v-tooltip>
-          </v-badge>
-        </p>
-      <v-btn block dark outline small color="green"
-        @click="closeQuestionnaire(); changeQuestionnaireMode('normal');"
-        v-if="$store.state.questionnaireMode !== 'normal'">
+            <ul v-if="usersViewingQuestionnaireNames" id="example-1">
+              <li v-for="item in usersViewingQuestionnaireNames" :key="item">
+                {{ item }}
+              </li>
+            </ul>
+            <!-- <span>{{ usersViewingQuestionnaireNames }}</span> -->
+          </v-tooltip>
+        </v-badge>
+      </p>
+      <v-btn
+        v-if="$store.state.questionnaireMode !== 'normal'"
+        block
+        dark
+        outline
+        small
+        color="green"
+        @click="
+          closeQuestionnaire();
+          changeQuestionnaireMode('normal');
+        "
+      >
         <v-icon dark>undo</v-icon>
-        {{ $t('message.back')}}
+        {{ $t("message.back") }}
       </v-btn>
-      <h1>{{ $t('message.createQuestionnaire')}}</h1>
-        <v-flex v-if="questionnaire.properties.introduction.items.length > 0">
-          <v-flex fluid row
-            v-for="item in questionnaire.properties.introduction.items"
-            :key="item.id"
-          >
-            <v-text-field
-              v-if="item.type === 'heading'"
-              name="input-1"
-              v-model="item.value"
-              :label="$t('message.questionnaireTitle')"
-            ></v-text-field>
-            <v-text-field
-              v-if="item.type === 'text'"
-              name="input-1"
-              v-model="item.value"
-              :label="$t('message.questionnaireDescription')"
-            ></v-text-field>
-            <img v-if="item.type === 'image'" :src="item.value" aspect-ratio="2.75"/>
+      <h1>{{ $t("message.createQuestionnaire") }}</h1>
+      <v-flex v-if="questionnaire.properties.introduction.items.length > 0">
+        <v-flex
+          v-for="item in questionnaire.properties.introduction.items"
+          :key="item.id"
+          fluid
+          row
+        >
+          <v-text-field
+            v-if="item.type === 'heading'"
+            v-model="item.value"
+            name="input-1"
+            :label="$t('message.questionnaireTitle')"
+          ></v-text-field>
+          <v-text-field
+            v-if="item.type === 'text'"
+            v-model="item.value"
+            name="input-1"
+            :label="$t('message.questionnaireDescription')"
+          ></v-text-field>
+          <img
+            v-if="item.type === 'image'"
+            :src="item.value"
+            aspect-ratio="2.75"
+          />
 
-            <!-- <v-checkbox
+          <!-- <v-checkbox
               v-if="item.type === 'loginRequired'"
               label="Να απαιτείται η εγγραφή του χρήστη"
               v-model="questionnaire.properties.loginRequired">
             </v-checkbox> -->
-          </v-flex>
         </v-flex>
+      </v-flex>
 
-        <v-switch
-          v-model="questionnaire.properties.publicAccess"
-          :label="$t('message.enablePublicAccess')"
-        ></v-switch>
-        <v-switch
-          v-model="questionnaire.properties.activateMap"
-          label="Show map when answering"
-        ></v-switch>
+      <v-switch
+        v-model="questionnaire.properties.publicAccess"
+        :label="$t('message.enablePublicAccess')"
+      ></v-switch>
+      <v-switch
+        v-model="questionnaire.properties.activateMap"
+        label="Show map when answering"
+      ></v-switch>
 
-        {{ $t('message.questionnaireMapExtent')}}
-        <v-btn small fab dark class="indigo" @click="getFromMap('qExtent', 'Box')">
-          <v-icon dark>location_on</v-icon>
-        </v-btn>
+      {{ $t("message.questionnaireMapExtent") }}
+      <v-btn
+        small
+        fab
+        dark
+        class="indigo"
+        @click="getFromMap('qExtent', 'Box')"
+      >
+        <v-icon dark>location_on</v-icon>
+      </v-btn>
 
-        <v-select
-          class="top"
-          v-bind:items="languages"
-          item-text="name"
-          item-value="id"
-          v-model="questionnaire.properties.locale"
-          :label="$t('message.selectLanguage')"
-          single-line
-          menu-props='bottom'
-        ></v-select>
+      <v-select
+        v-model="questionnaire.properties.locale"
+        class="top"
+        :items="languages"
+        item-text="name"
+        item-value="id"
+        :label="$t('message.selectLanguage')"
+        single-line
+        menu-props="bottom"
+      ></v-select>
 
-        <v-dialog
-          ref="dialogStart"
-          v-model="datePickerStart"
-          :return-value.sync="dateStart"
-          persistent
-          lazy
-          full-width
-          width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              :value="computedDateFormattedMomentjsStart"
-              :label="$t('message.questionnaireStart')"
-              prepend-icon="event"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="dateStart" scrollable>
-            <v-spacer></v-spacer>
-            <v-btn flat color="primary" @click="datePickerStart = false">{{ $t('message.cancel') }}</v-btn>
-            <v-btn flat color="primary" @click="$refs.dialogStart.save(dateStart)">OK</v-btn>
-          </v-date-picker>
-        </v-dialog>
+      <v-dialog
+        ref="dialogStart"
+        v-model="datePickerStart"
+        :return-value.sync="dateStart"
+        persistent
+        lazy
+        full-width
+        width="290px"
+      >
+        <template v-slot:activator="{ on }">
+          <v-text-field
+            :value="computedDateFormattedMomentjsStart"
+            :label="$t('message.questionnaireStart')"
+            prepend-icon="event"
+            readonly
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="dateStart" scrollable>
+          <v-spacer></v-spacer>
+          <v-btn text color="primary" @click="datePickerStart = false">{{
+            $t("message.cancel")
+          }}</v-btn>
+          <v-btn text color="primary" @click="$refs.dialogStart.save(dateStart)"
+            >OK</v-btn
+          >
+        </v-date-picker>
+      </v-dialog>
 
-        <v-dialog
-          ref="dialogEnd"
-          v-model="datePickerEnd"
-          :return-value.sync="dateEnd"
-          persistent
-          lazy
-          full-width
-          width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              :value="computedDateFormattedMomentjsEnd"
-              :label="$t('message.questionnaireEnd')"
-              prepend-icon="event"
-              readonly
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="dateEnd" scrollable>
-            <v-spacer></v-spacer>
-            <v-btn flat color="primary" @click="datePickerEnd = false">Cancel</v-btn>
-            <v-btn flat color="primary" @click="$refs.dialogEnd.save(dateEnd)">OK</v-btn>
-          </v-date-picker>
-        </v-dialog>
+      <v-dialog
+        ref="dialogEnd"
+        v-model="datePickerEnd"
+        :return-value.sync="dateEnd"
+        persistent
+        lazy
+        full-width
+        width="290px"
+      >
+        <template v-slot:activator="{ on }">
+          <v-text-field
+            :value="computedDateFormattedMomentjsEnd"
+            :label="$t('message.questionnaireEnd')"
+            prepend-icon="event"
+            readonly
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="dateEnd" scrollable>
+          <v-spacer></v-spacer>
+          <v-btn text color="primary" @click="datePickerEnd = false"
+            >Cancel</v-btn
+          >
+          <v-btn text color="primary" @click="$refs.dialogEnd.save(dateEnd)"
+            >OK</v-btn
+          >
+        </v-date-picker>
+      </v-dialog>
 
-
-        <v-container pa-1 ma-0 row v-for="question in questionnaire.questions" :key="question.id">
-          <v-card>
-            <v-layout row wrap>
-              <v-flex xs12 pa-1>
-                <v-card>
-                  <v-card-title primary-title>
+      <v-container
+        v-for="question in questionnaire.questions"
+        :key="question.id"
+        pa-1
+        ma-0
+        row
+      >
+        <v-card>
+          <v-layout row wrap>
+            <v-flex xs12 pa-1>
+              <v-card>
+                <v-card-title primary-title>
+                  <div>
                     <div>
-                      <div><h4>{{ $t('message.previewQuestionnaire')}}</h4></div>
-                      <h3 :class="titleClass(question)">{{ question.title }} 
-                        <span v-if="question.optional === false && question.type !== 'titleDescription'">*</span>
-                      </h3>
-                      <v-alert color="error" icon="warning" :value="question.error">
-                        Δεν έχετε απαντήσει στην ερώτηση
-                      </v-alert>
-                      <div> {{ question.description }} </div>
+                      <h4>{{ $t("message.previewQuestionnaire") }}</h4>
                     </div>
-                  </v-card-title>
-                  <img
-                    v-if="question.image"
-                    :src="question.image"
-                    aspect-ratio="2.75"
-                  />
-                  <v-card-text>
-
-
-                    <v-flex v-if="question.type === 'textfield'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.value"
-                        :label="$t('message.yourAnswer')"
-                        disabled
-                      ></v-text-field>
+                    <h3 :class="titleClass(question)">
+                      {{ question.title }}
+                      <span
+                        v-if="
+                          question.optional === false &&
+                            question.type !== 'titleDescription'
+                        "
+                        >*</span
+                      >
+                    </h3>
+                    <v-alert
+                      color="error"
+                      icon="warning"
+                      :value="question.error"
+                    >
+                      Δεν έχετε απαντήσει στην ερώτηση
+                    </v-alert>
+                    <div>{{ question.description }}</div>
+                  </div>
+                </v-card-title>
+                <img
+                  v-if="question.image"
+                  :src="question.image"
+                  aspect-ratio="2.75"
+                />
+                <v-card-text>
+                  <v-flex v-if="question.type === 'textfield'">
+                    <v-text-field
+                      v-model="question.value"
+                      name="input-1"
+                      :label="$t('message.yourAnswer')"
+                      disabled
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex v-if="question.type === 'textarea'">
+                    <v-textarea
+                      v-model="question.value"
+                      name="input-1"
+                      :label="$t('message.yourAnswer')"
+                      disabled
+                    ></v-textarea>
+                  </v-flex>
+                  <v-flex
+                    v-if="question.type === 'textfield' && question.validation"
+                  >
+                    <v-text-field
+                      v-model="question.value"
+                      name="input-1"
+                      :label="$t('message.yourAnswer')"
+                      disabled
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex v-if="question.type === 'combobox'">
+                    <v-select
+                      :items="question.items"
+                      item-value="id"
+                      item-text="value"
+                      :label="$t('message.yourAnswer')"
+                      single-line
+                      menu-props="bottom"
+                    ></v-select>
+                  </v-flex>
+                  <v-container
+                    v-if="question.type === 'checkboxGroup'"
+                    row
+                    wrap
+                  >
+                    <v-flex
+                      v-for="checkbox in question.checkboxes"
+                      :key="checkbox.id"
+                    >
+                      <v-checkbox :label="checkbox.label"> </v-checkbox>
                     </v-flex>
-                    <v-flex v-if="question.type === 'textarea'">
-                      <v-textarea
-                        name="input-1"
-                        v-model="question.value"
-                        :label="$t('message.yourAnswer')"
-                        disabled
-                      ></v-textarea>
-                    </v-flex>
-                    <v-flex v-if="question.type === 'textfield' && question.validation">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.value"
-                        :label="$t('message.yourAnswer')"
-                        disabled
-                      ></v-text-field>
-                    </v-flex>
-                    <v-flex v-if="question.type === 'combobox'">
-                      <v-select
-                        v-bind:items="question.items"
-                        item-value="id"
-                        item-text="value"
-                        :label="$t('message.yourAnswer')"
-                        single-line
-                        menu-props="bottom"
-                      ></v-select>
-                    </v-flex>
-                    <v-container row wrap v-if="question.type === 'checkboxGroup'">
-                        <v-flex v-for="checkbox in question.checkboxes" :key="checkbox.id">
-                          <v-checkbox
-                            :label="checkbox.label">
-                          </v-checkbox>
-                        </v-flex>
-                    </v-container>
-                    <!-- <v-container row wrap v-if="question.type === 'radioButtonsGroup'">
+                  </v-container>
+                  <!-- <v-container row wrap v-if="question.type === 'radioButtonsGroup'">
                       <v-radio-group v-model="question.value" mandatory>
                         <v-radio
                           v-for="radio in question.radios"
@@ -205,221 +261,314 @@
                         ></v-radio>
                       </v-radio-group>
                     </v-container> -->
-                    <v-container row wrap v-if="question.type === 'preferenceHierarchy'">
-                      <v-list one-line>
-                        <draggable v-model="question.optionsToSort" @start="drag=true" @end="drag=false">
-                          <template v-for='element in question.optionsToSort'>
-                            <v-list-tile :key="element.id" avatar class='force-hover'>
-                              <v-list-tile-avatar>
-                                <v-icon>drag_indicator</v-icon>
-                              </v-list-tile-avatar>
-                              <v-list-tile-content>
-                                <v-list-tile-title v-html="element.label"></v-list-tile-title>
-                              </v-list-tile-content>
-                            </v-list-tile>
-                          </template>
-                        </draggable>
-                      </v-list>
-                    </v-container>
-                    <v-container row wrap v-if="question.type === 'mapPointer'">
-                      <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-                        <v-btn small fab dark :color="button.style.strkClr">
+                  <v-container
+                    v-if="question.type === 'preferenceHierarchy'"
+                    row
+                    wrap
+                  >
+                    <v-list one-line>
+                      <draggable
+                        v-model="question.optionsToSort"
+                        @start="drag = true"
+                        @end="drag = false"
+                      >
+                        <template v-for="element in question.optionsToSort">
+                          <v-list-tile
+                            :key="element.id"
+                            avatar
+                            class="force-hover"
+                          >
+                            <v-list-tile-avatar>
+                              <v-icon>drag_indicator</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                              <v-list-tile-title>{{
+                                element.label
+                              }}</v-list-tile-title>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </template>
+                      </draggable>
+                    </v-list>
+                  </v-container>
+                  <v-container v-if="question.type === 'mapPointer'" row wrap>
+                    <v-flex v-for="button in question.buttons" :key="button.id"
+                      >{{ button.label }}
+                      <v-btn small fab dark :color="button.style.strkClr">
+                        <v-icon dark>location_on</v-icon>
+                      </v-btn>
+                    </v-flex>
+                  </v-container>
+                  <v-container
+                    v-if="question.type === 'mapLineString'"
+                    row
+                    wrap
+                  >
+                    <v-flex v-for="button in question.buttons" :key="button.id"
+                      >{{ button.label }}
+                      <v-btn small fab dark :color="button.style.strkClr">
+                        <v-icon dark>timeline</v-icon>
+                      </v-btn>
+                    </v-flex>
+                  </v-container>
+                  <v-container v-if="question.type === 'mapPointerMultiple'">
+                    <v-layout
+                      v-for="line in question.lines"
+                      :key="line.id"
+                      row
+                      wrap
+                    >
+                      <v-flex xs10>
+                        <v-text-field
+                          v-model="line.value"
+                          name="input-1"
+                          :label="$t('message.yourAnswer')"
+                        ></v-text-field>
+                      </v-flex>
+                      <v-flex xs2>
+                        <v-btn small fab dark class="indigo">
                           <v-icon dark>location_on</v-icon>
                         </v-btn>
                       </v-flex>
-                    </v-container>
-                    <v-container row wrap v-if="question.type === 'mapLineString'">
-                      <v-flex v-for="button in question.buttons" :key="button.id">{{ button.label }}
-                        <v-btn small fab dark :color="button.style.strkClr">
+                    </v-layout>
+                    <v-btn dark class="indigo">
+                      {{ $t("message.addLine") }}
+                    </v-btn>
+                  </v-container>
+                  <v-container v-if="question.type === 'mapLinesMultiple'">
+                    <v-layout
+                      v-for="line in question.lines"
+                      :key="line.id"
+                      row
+                      wrap
+                    >
+                      <v-flex xs10>
+                        <v-text-field
+                          v-model="line.value"
+                          name="input-1"
+                          :label="$t('message.yourAnswer')"
+                        ></v-text-field>
+                      </v-flex>
+                      <v-flex xs2>
+                        <v-btn small fab dark class="indigo">
                           <v-icon dark>timeline</v-icon>
                         </v-btn>
                       </v-flex>
-                    </v-container>
-                    <v-container v-if="question.type === 'mapPointerMultiple'">
-                      <v-layout row wrap v-for="line in question.lines" :key="line.id">
-                        <v-flex xs10>
-                          <v-text-field
-                            name="input-1"
-                            v-model="line.value"
-                            :label="$t('message.yourAnswer')"
-                          ></v-text-field>
-                        </v-flex>
-                        <v-flex xs2>
-                          <v-btn small fab dark class="indigo">
-                            <v-icon dark>location_on</v-icon>
-                          </v-btn>
-                        </v-flex>
-                      </v-layout>
-                      <v-btn dark class="indigo">
-                        {{ $t('message.addLine')}}
+                    </v-layout>
+                    <v-btn dark class="indigo">
+                      {{ $t("message.addLine") }}
+                    </v-btn>
+                  </v-container>
+                  <v-container
+                    v-if="question.type === 'mapPointsLinesMultiple'"
+                  >
+                    <v-layout
+                      v-for="line in question.lines"
+                      :key="line.id"
+                      row
+                      wrap
+                    >
+                      <v-flex xs10>
+                        <v-text-field
+                          v-model="line.value"
+                          name="input-1"
+                          :label="$t('message.yourAnswer')"
+                        ></v-text-field>
+                      </v-flex>
+                      <v-flex xs2>
+                        <v-btn small fab dark class="indigo">
+                          <v-icon dark>location_on</v-icon>
+                        </v-btn>
+                        <v-btn small fab dark class="indigo">
+                          <v-icon dark>timeline</v-icon>
+                        </v-btn>
+                      </v-flex>
+                    </v-layout>
+                    <v-btn dark class="indigo">
+                      {{ $t("message.addLine") }}
+                    </v-btn>
+                  </v-container>
+                  <v-flex v-if="question.type === 'titleDescription'">
+                    <h3 class="headline mb-0">{{ question.title }}</h3>
+                    <div>{{ question.description }}</div>
+                  </v-flex>
+
+                  <v-container v-if="question.type === 'repeatable'" row wrap>
+                    <v-btn block>{{ question.buttonText }}</v-btn>
+                  </v-container>
+
+                  <tableOfCheckboxesView
+                    :question="question"
+                  ></tableOfCheckboxesView>
+                  <radioButtonsGroupView
+                    :question="question"
+                  ></radioButtonsGroupView>
+                  <tableOfRadioButtonsView
+                    :question="question"
+                  ></tableOfRadioButtonsView>
+                  <tableOfInputsView :question="question"></tableOfInputsView>
+                  <selectFromMapView :question="question"></selectFromMapView>
+
+                  <v-layout row wrap align-center>
+                    <v-flex xs4>
+                      <v-btn
+                        v-if="!question.editing"
+                        text
+                        outline
+                        fab
+                        small
+                        @click="question.editing = !question.editing"
+                      >
+                        <v-icon>folder</v-icon>
                       </v-btn>
-                    </v-container>
-                    <v-container v-if="question.type === 'mapLinesMultiple'">
-                      <v-layout row wrap v-for="line in question.lines" :key="line.id">
-                        <v-flex xs10>
-                          <v-text-field
-                            name="input-1"
-                            v-model="line.value"
-                            :label="$t('message.yourAnswer')"
-                          ></v-text-field>
-                        </v-flex>
-                        <v-flex xs2>
-                          <v-btn small fab dark class="indigo">
-                            <v-icon dark>timeline</v-icon>
-                          </v-btn>
-                        </v-flex>
-                      </v-layout>
-                      <v-btn dark class="indigo">
-                        {{ $t('message.addLine')}}
+                      <v-btn
+                        text
+                        outline
+                        fab
+                        small
+                        @click="reorderQuestions(question, 'up')"
+                      >
+                        <v-icon>arrow_upward</v-icon>
                       </v-btn>
-                    </v-container>
-                    <v-container v-if="question.type === 'mapPointsLinesMultiple'">
-                      <v-layout row wrap v-for="line in question.lines" :key="line.id">
-                        <v-flex xs10>
-                          <v-text-field
-                            name="input-1"
-                            v-model="line.value"
-                            :label="$t('message.yourAnswer')"
-                          ></v-text-field>
-                        </v-flex>
-                        <v-flex xs2>
-                          <v-btn small fab dark class="indigo">
-                            <v-icon dark>location_on</v-icon>
-                          </v-btn>
-                          <v-btn small fab dark class="indigo">
-                            <v-icon dark>timeline</v-icon>
-                          </v-btn>
-                        </v-flex>
-                      </v-layout>
-                      <v-btn dark class="indigo">
-                        {{ $t('message.addLine')}}
+                      <v-btn
+                        text
+                        outline
+                        fab
+                        small
+                        @click="reorderQuestions(question, 'down')"
+                      >
+                        <v-icon>arrow_downward</v-icon>
                       </v-btn>
-                    </v-container>
-                    <v-flex v-if="question.type === 'titleDescription'">
-                      <h3 class="headline mb-0">{{ question.title }}</h3>
-                      <div> {{ question.description }} </div>
                     </v-flex>
-
-
-                    <v-container row wrap v-if="question.type === 'repeatable'">
-                      <v-btn block>{{ question.buttonText }}</v-btn>
-                    </v-container>
-
-                    <tableOfCheckboxesView :question='question'></tableOfCheckboxesView>
-                    <radioButtonsGroupView :question='question'></radioButtonsGroupView>
-                    <tableOfRadioButtonsView :question='question'></tableOfRadioButtonsView>
-                    <tableOfInputsView :question='question'></tableOfInputsView>
-                    <selectFromMapView :question='question'></selectFromMapView>
-
-                    <v-layout row wrap align-center>
-                      <v-flex xs4>
-                        <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="!question.editing">
-                          <v-icon>folder</v-icon>
-                        </v-btn>
-                        <v-btn flat outline fab small @click="reorderQuestions(question, 'up');">
-                          <v-icon>arrow_upward</v-icon>
-                        </v-btn>
-                        <v-btn flat outline fab small @click="reorderQuestions(question, 'down');">
-                          <v-icon>arrow_downward</v-icon>
-                        </v-btn>
-                      </v-flex>
-                      <v-flex xs4>
-                        <v-checkbox
-                          v-model="question.pageBreak"
-                          @change="pageBreakChangeControl"
-                          :label="$t('message.changeSection')">
-                        </v-checkbox>
-                      </v-flex>
-                      <v-flex>
-                        <h5>{{ $t('message.section')}}: {{ question.page + 1 }}</h5>
-                      </v-flex>
+                    <v-flex xs4>
+                      <v-checkbox
+                        v-model="question.pageBreak"
+                        :label="$t('message.changeSection')"
+                        @change="pageBreakChangeControl"
+                      >
+                      </v-checkbox>
+                    </v-flex>
+                    <v-flex>
+                      <h5>
+                        {{ $t("message.section") }}: {{ question.page + 1 }}
+                      </h5>
+                    </v-flex>
                   </v-layout>
-
-                  </v-card-text>
-                </v-card>
-              </v-flex>
-              <v-flex pa-1 v-if="question.editing">
-                <v-card>
-                  <v-card-title primary-title xs12>
+                </v-card-text>
+              </v-card>
+            </v-flex>
+            <v-flex v-if="question.editing" pa-1>
+              <v-card>
+                <v-card-title primary-title xs12>
+                  <div>
                     <div>
-                      <div><h4>{{ $t('message.questionOptions')}}</h4></div>
+                      <h4>{{ $t("message.questionOptions") }}</h4>
                     </div>
-                  </v-card-title>
-                  <v-container>
-
-
-                    <v-flex v-if="question.type === 'textfield'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-layout row wrap>
+                  </div>
+                </v-card-title>
+                <v-container>
+                  <v-flex v-if="question.type === 'textfield'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-layout row wrap>
                       <v-checkbox
+                        v-model="question.optional"
                         :label="$t('message.optional')"
-                        v-model="question.optional">
+                      >
                       </v-checkbox>
                       <v-checkbox
+                        v-model="question.style.titleFontSize"
                         label="Small caps"
-                        v-model="question.style.titleFontSize">
+                      >
                       </v-checkbox>
-                      </v-layout>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
+                    </v-layout>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
-
-                    <v-flex v-if="question.type === 'textarea'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-layout row wrap>
+                  <v-flex v-if="question.type === 'textarea'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-layout row wrap>
                       <v-checkbox
+                        v-model="question.optional"
                         :label="$t('message.optional')"
-                        v-model="question.optional">
+                      >
                       </v-checkbox>
                       <v-checkbox
+                        v-model="question.style.titleFontSize"
                         label="Small caps"
-                        v-model="question.style.titleFontSize">
+                      >
                       </v-checkbox>
-                      </v-layout>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
+                    </v-layout>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
-
-                    <v-flex v-if="question.type === 'textfieldvalidation'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <!-- <v-select
+                  <v-flex v-if="question.type === 'textfieldvalidation'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <!-- <v-select
                         v-bind:items="['email', 'number']"
                         v-model="question.validation"
                         :label="$t('message.selectValidationType')"
@@ -427,64 +576,86 @@
                         return-object
                         menu-props="bottom"
                       ></v-select> -->
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.validation"
-                        :label="$t('message.selectValidationType')"
-                      ></v-text-field>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
+                    <v-text-field
+                      v-model="question.validation"
+                      name="input-1"
+                      :label="$t('message.selectValidationType')"
+                    ></v-text-field>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
+
+                  <v-flex v-if="question.type === 'combobox'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-list>
+                      <v-btn
+                        v-if="question.editing"
+                        text
+                        outline
+                        fab
+                        small
+                        @click="
+                          question.items.push({ id: nextItemId, value: '' })
+                        "
+                      >
+                        <v-icon>add</v-icon>
                       </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
-
-
-
-                    <v-flex v-if="question.type === 'combobox'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-list>
-                        <v-btn flat outline fab small @click="question.items.push({id: nextItemId, value: ''});" v-if="question.editing">
-                          <v-icon>add</v-icon>
-                        </v-btn>
-                        <template v-for="item in question.items">
-                          <v-list-tile
-                              :key="item.id"
-                          >
-                            <v-list-tile-content>
-                              <v-layout>
+                      <template v-for="item in question.items">
+                        <v-list-tile :key="item.id">
+                          <v-list-tile-content>
+                            <v-layout>
                               <v-flex xs12>
-                              <v-text-field
-                                name="input-1"
-                                v-model="item.value"
-                                append-icon="delete"
-                                :label="item.value"
-                                @click:append="question.items.remove(item)"
-                              ></v-text-field>
-                              <!-- <v-icon>delete</v-icon> -->
+                                <v-text-field
+                                  v-model="item.value"
+                                  name="input-1"
+                                  append-icon="delete"
+                                  :label="item.value"
+                                  @click:append="question.items.remove(item)"
+                                ></v-text-field>
+                                <!-- <v-icon>delete</v-icon> -->
                               </v-flex>
                               <v-flex xs12>
                                 <v-select
-                                  :items="getQuestionnairePagesAsArray"
                                   v-model="item.activatePages"
+                                  :items="getQuestionnairePagesAsArray"
                                   label="Ενεργοποίηση ενότητας"
                                   single-line
                                   multiple
@@ -493,10 +664,10 @@
                               </v-flex>
                               <v-flex xs12>
                                 <v-select
-                                  :items="getQuestionsAsArray"
                                   v-model="item.activateQuestions"
+                                  :items="getQuestionsAsArray"
                                   item-text="title"
-                                  item-value='id'
+                                  item-value="id"
                                   label="Ενεργοποίηση ερώτησης"
                                   single-line
                                   multiple
@@ -504,29 +675,119 @@
                                   return-object
                                 ></v-select>
                               </v-flex>
-                              </v-layout>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                        </template>
-                      </v-list>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
+                            </v-layout>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </template>
+                    </v-list>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
+                  <v-flex v-if="question.type === 'checkboxGroup'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-list>
+                      <v-btn
+                        v-if="question.editing"
+                        text
+                        outline
+                        fab
+                        small
+                        @click="
+                          question.checkboxes.push({
+                            id: nextItemId,
+                            label: '',
+                            value: false
+                          })
+                        "
+                      >
+                        <v-icon>add</v-icon>
+                      </v-btn>
+                      <template v-for="item in question.checkboxes">
+                        <v-list-tile :key="item.id">
+                          <v-list-tile-content>
+                            <v-text-field
+                              v-model="item.label"
+                              name="input-1"
+                              append-icon="delete"
+                              @click:append="question.checkboxes.remove(item)"
+                            ></v-text-field>
+                            <v-icon>delete</v-icon>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </template>
+                    </v-list>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
-                    <v-flex v-if="question.type === 'checkboxGroup'">
+                  <!-- <v-flex v-if="question.type === 'radioButtonsGroup'">
                       <v-text-field
                         name="input-1"
                         v-model="question.title"
@@ -538,56 +799,7 @@
                         :label="$t('message.description')"
                       ></v-text-field>
                       <v-list>
-                        <v-btn flat outline fab small @click="question.checkboxes.push({id: nextItemId, label: '', value: false});"
-                          v-if="question.editing">
-                          <v-icon>add</v-icon>
-                        </v-btn>
-                        <template v-for="item in question.checkboxes">
-                          <v-list-tile
-                              :key="item.id"
-                          >
-                            <v-list-tile-content>
-                              <v-text-field
-                                name="input-1"
-                                v-model="item.label"
-                                append-icon="delete"
-                                @click:append="question.checkboxes.remove(item)"
-                              ></v-text-field>
-                              <v-icon>delete</v-icon>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                        </template>
-                      </v-list>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
-
-
-                    <!-- <v-flex v-if="question.type === 'radioButtonsGroup'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-list>
-                        <v-btn flat outline fab small @click="question.radios.push({id: nextItemId, label: '', value: false});"
+                        <v-btn text outline fab small @click="question.radios.push({id: nextItemId, label: '', value: false});"
                           v-if="question.editing">
                           <v-icon>add</v-icon>
                         </v-btn>
@@ -615,389 +827,578 @@
                         label="Small caps"
                         v-model="question.style.titleFontSize">
                       </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
+                      <v-btn text outline fab small @click="question.editing = !question.editing" v-if="question.editing">
                         <v-icon>folder_open</v-icon>
                       </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
+                      <v-btn text outline fab small @click="removeQuestion(question)" v-if="question.editing">
                         <v-icon>delete</v-icon>
                       </v-btn>
                     </v-flex> -->
 
-
-                    <v-flex v-if="question.type === 'preferenceHierarchy'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-list>
-                        <v-btn flat outline fab small @click="question.optionsToSort.push({id: nextItemId, label: '', value: false});"
-                          v-if="question.editing">
-                          <v-icon>add</v-icon>
-                        </v-btn>
-                        <template v-for="item in question.optionsToSort">
-                          <v-list-tile
-                              :key="item.id"
-                          >
-                            <v-list-tile-content>
-                              <v-text-field
-                                name="input-1"
-                                v-model="item.label"
-                                append-icon="delete"
-                                @click:append="question.optionsToSort.remove(item)"
-                              ></v-text-field>
-                              <v-icon>delete</v-icon>
-                            </v-list-tile-content>
-                          </v-list-tile>
-                        </template>
-                      </v-list>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
+                  <v-flex v-if="question.type === 'preferenceHierarchy'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-list>
+                      <v-btn
+                        v-if="question.editing"
+                        text
+                        outline
+                        fab
+                        small
+                        @click="
+                          question.optionsToSort.push({
+                            id: nextItemId,
+                            label: '',
+                            value: false
+                          })
+                        "
+                      >
+                        <v-icon>add</v-icon>
                       </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
+                      <template v-for="item in question.optionsToSort">
+                        <v-list-tile :key="item.id">
+                          <v-list-tile-content>
+                            <v-text-field
+                              v-model="item.label"
+                              name="input-1"
+                              append-icon="delete"
+                              @click:append="
+                                question.optionsToSort.remove(item)
+                              "
+                            ></v-text-field>
+                            <v-icon>delete</v-icon>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </template>
+                    </v-list>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
+
+                  <v-flex v-if="question.type === 'mapPointer'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-list>
+                      <v-btn
+                        v-if="question.editing"
+                        text
+                        outline
+                        fab
+                        small
+                        @click="
+                          question.buttons.push({
+                            id: nextItemId,
+                            label: '',
+                            coords: null
+                          })
+                        "
+                      >
+                        <v-icon>add</v-icon>
                       </v-btn>
-                    </v-flex>
 
+                      <template v-for="item in question.buttons">
+                        <v-list-tile :key="item.id">
+                          <v-list-tile-content>
+                            <v-text-field
+                              v-model="item.label"
+                              name="input-1"
+                              append-icon="delete"
+                              @click:append="question.buttons.remove(item)"
+                            ></v-text-field>
+                            <v-icon>delete</v-icon>
+                          </v-list-tile-content>
+                          <Swatches
+                            v-model="item.style.strkClr"
+                            popover-to="left"
+                            swatch-size="24"
+                            inline
+                          />
+                          <v-flex xs12 sm3 md1>
+                            <v-text-field
+                              v-model="item.style.radius"
+                              label="size"
+                              box
+                            ></v-text-field>
+                          </v-flex>
+                        </v-list-tile>
+                      </template>
+                    </v-list>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
-                    <v-flex v-if="question.type === 'mapPointer'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-list>
-                        <v-btn flat outline fab small @click="question.buttons.push({id: nextItemId, label: '', coords: null});"
-                          v-if="question.editing">
-                          <v-icon>add</v-icon>
-                        </v-btn>
-
-                        <template v-for="item in question.buttons">
-                          <v-list-tile
-                              :key="item.id"
-                          >
-                            <v-list-tile-content>
-                              <v-text-field
-                                name="input-1"
-                                v-model="item.label"
-                                append-icon="delete"
-                                @click:append="question.buttons.remove(item)"
-                              ></v-text-field>
-                              <v-icon>delete</v-icon>
-                            </v-list-tile-content>
-                            <Swatches v-model="item.style.strkClr" popover-to="left" swatch-size='24' inline/>
-                            <v-flex xs12 sm3 md1>
-                              <v-text-field
-                                v-model="item.style.radius"
-                                label="size"
-                                box
-                              ></v-text-field>
-                            </v-flex>
-                          </v-list-tile>
-                        </template>
-                      </v-list>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
+                  <v-flex v-if="question.type === 'mapLineString'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-list>
+                      <v-btn
+                        v-if="question.editing"
+                        text
+                        outline
+                        fab
+                        small
+                        @click="
+                          question.buttons.push({
+                            id: nextItemId,
+                            label: '',
+                            coords: null
+                          })
+                        "
+                      >
+                        <v-icon>add</v-icon>
                       </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
+                      <template v-for="item in question.buttons">
+                        <v-list-tile :key="item.id">
+                          <v-list-tile-content>
+                            <v-text-field
+                              v-model="item.label"
+                              name="input-1"
+                              append-icon="delete"
+                              @click:append="question.buttons.remove(item)"
+                            ></v-text-field>
+                            <v-icon>delete</v-icon>
+                          </v-list-tile-content>
+                          <Swatches
+                            v-model="item.style.strkClr"
+                            popover-to="left"
+                            swatch-size="24"
+                            inline
+                          />
+                          <v-flex xs12 sm3 md1>
+                            <v-text-field
+                              v-model="item.style.strkWdth"
+                              label="size"
+                              box
+                            ></v-text-field>
+                          </v-flex>
+                        </v-list-tile>
+                      </template>
+                    </v-list>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
+                  <v-flex v-if="question.type === 'mapPointerMultiple'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
-                    <v-flex v-if="question.type === 'mapLineString'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-list>
-                        <v-btn flat outline fab small @click="question.buttons.push({id: nextItemId, label: '', coords: null});"
-                          v-if="question.editing">
-                          <v-icon>add</v-icon>
-                        </v-btn>
-                        <template v-for="item in question.buttons">
-                          <v-list-tile
-                              :key="item.id"
-                          >
-                            <v-list-tile-content>
-                              <v-text-field
-                                name="input-1"
-                                v-model="item.label"
-                                append-icon="delete"
-                                @click:append="question.buttons.remove(item)"
-                              ></v-text-field>
-                              <v-icon>delete</v-icon>
-                            </v-list-tile-content>
-                            <Swatches v-model="item.style.strkClr" popover-to="left" swatch-size='24' inline/>
-                            <v-flex xs12 sm3 md1>
-                              <v-text-field
-                                v-model="item.style.strkWdth"
-                                label="size"
-                                box
-                              ></v-text-field>
-                            </v-flex>
-                          </v-list-tile>
-                        </template>
-                      </v-list>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
+                  <v-flex v-if="question.type === 'mapLinesMultiple'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
+                  <v-flex v-if="question.type === 'mapPointsLinesMultiple'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      :label="$t('message.question')"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-checkbox
+                      v-model="question.optional"
+                      :label="$t('message.optional')"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
-                    <v-flex v-if="question.type === 'mapPointerMultiple'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
+                  <v-flex v-if="question.type === 'titleDescription'">
+                    <v-text-field
+                      v-model="question.title"
+                      name="input-1"
+                      label="Τίτλος"
+                    ></v-text-field>
+                    <v-text-field
+                      v-model="question.description"
+                      name="input-1"
+                      :label="$t('message.description')"
+                    ></v-text-field>
+                    <v-checkbox
+                      v-model="question.style.titleFontSize"
+                      label="Small caps"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
 
+                  <tableOfCheckboxesEditable
+                    :question="question"
+                  ></tableOfCheckboxesEditable>
+                  <radioButtonsGroupEditable
+                    :question="question"
+                  ></radioButtonsGroupEditable>
+                  <tableOfRadioButtonsEditable
+                    :question="question"
+                  ></tableOfRadioButtonsEditable>
+                  <tableOfInputsEditable
+                    :question="question"
+                  ></tableOfInputsEditable>
+                  <selectFromMapEditable
+                    :question="question"
+                  ></selectFromMapEditable>
 
-                    <v-flex v-if="question.type === 'mapLinesMultiple'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
-
-
-                    <v-flex v-if="question.type === 'mapPointsLinesMultiple'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        :label="$t('message.question')"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-checkbox
-                        :label="$t('message.optional')"
-                        v-model="question.optional">
-                      </v-checkbox>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
-
-
-                    <v-flex v-if="question.type === 'titleDescription'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.title"
-                        label="Τίτλος"
-                      ></v-text-field>
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.description"
-                        :label="$t('message.description')"
-                      ></v-text-field>
-                      <v-checkbox
-                        label="Small caps"
-                        v-model="question.style.titleFontSize">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
-
-                    <tableOfCheckboxesEditable :question='question'></tableOfCheckboxesEditable>
-                    <radioButtonsGroupEditable :question='question'></radioButtonsGroupEditable>
-                    <tableOfRadioButtonsEditable :question='question'></tableOfRadioButtonsEditable>
-                    <tableOfInputsEditable :question='question'></tableOfInputsEditable>
-                    <selectFromMapEditable :question='question'></selectFromMapEditable>
-
-                    <v-flex v-if="question.type === 'repeatable'">
-                      <v-text-field
-                        name="input-1"
-                        v-model="question.buttonText"
-                        label="Τίτλος κουμπιού"
-                      ></v-text-field>
-                      <v-select
-                        :items="getQuestionsAsArray"
-                        v-model="question.repeatQuestions"
-                        item-text="title"
-                        item-value='id'
-                        label="Ενεργοποίηση ερώτησης"
-                        single-line
-                        multiple
-                        menu-props="bottom"
-                        return-object
-                      ></v-select>
-                      <!-- <v-select
+                  <v-flex v-if="question.type === 'repeatable'">
+                    <v-text-field
+                      v-model="question.buttonText"
+                      name="input-1"
+                      label="Τίτλος κουμπιού"
+                    ></v-text-field>
+                    <v-select
+                      v-model="question.repeatQuestions"
+                      :items="getQuestionsAsArray"
+                      item-text="title"
+                      item-value="id"
+                      label="Ενεργοποίηση ερώτησης"
+                      single-line
+                      multiple
+                      menu-props="bottom"
+                      return-object
+                    ></v-select>
+                    <!-- <v-select
                         :items="getQuestionsAsArray"
                         :label="$t('message.whichPageToRepeat')"
                         v-model="question.repeatsPage"
                       ></v-select> -->
-                      <v-checkbox
-                        label="Show one repeatable on start"
-                        v-model="question.showRepeatableOnStart">
-                      </v-checkbox>
-                      <v-btn flat outline fab small @click="question.editing = !question.editing" v-if="question.editing">
-                        <v-icon>folder_open</v-icon>
-                      </v-btn>
-                      <v-btn flat outline fab small @click="removeQuestion(question)" v-if="question.editing">
-                        <v-icon>delete</v-icon>
-                      </v-btn>
-                    </v-flex>
+                    <v-checkbox
+                      v-model="question.showRepeatableOnStart"
+                      label="Show one repeatable on start"
+                    >
+                      >
+                    </v-checkbox>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="question.editing = !question.editing"
+                    >
+                      <v-icon>folder_open</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-if="question.editing"
+                      text
+                      outline
+                      fab
+                      small
+                      @click="removeQuestion(question)"
+                    >
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-flex>
+                </v-container>
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </v-card>
+      </v-container>
 
-                  </v-container>
-                </v-card>
+      <v-layout row wrap xs12 sm12 md12>
+        <v-flex>
+          <v-card>
+            <v-card-title primary-title>
+              <h3 class="headline mb-0">{{ $t("message.addQuestion") }}</h3>
+              <v-flex xs12 sm12 md12>
+                <v-select
+                  v-model="newQuestion"
+                  :items="questionTypes"
+                  item-value="type"
+                  item-text="name"
+                  :label="$t('message.questionType')"
+                  single-line
+                  menu-props="bottom"
+                  @input="loadQuestionType"
+                ></v-select>
               </v-flex>
-            </v-layout>
+            </v-card-title>
           </v-card>
-        </v-container>
-
-        <v-layout row wrap xs12 sm12 md12>
-          <v-flex>
-            <v-card>
-              <v-card-title primary-title>
-                <h3 class="headline mb-0">{{ $t('message.addQuestion') }}</h3>
-                <v-flex xs12 sm12 md12>
-                  <v-select
-                    v-bind:items="questionTypes"
-                    item-value="type"
-                    item-text="name"
-                    v-model="newQuestion"
-                    :label="$t('message.questionType')"
-                    single-line
-                    menu-props='bottom'
-                    v-on:input="loadQuestionType"
-                  ></v-select>
-                </v-flex>
-              </v-card-title>
-            </v-card>
-          </v-flex>
-        </v-layout>
-        <div v-if="userIsEditor || $store.state.questionnaireMode === 'creator'">
-          <v-btn @click="saveQuestionnaire().then(() => { this.loading = false });">
-            {{ $t('message.saveQuestionnaire') }}<v-icon dark>save</v-icon>
-          </v-btn>
-          <v-btn @click="closeQuestionnaire()">
-            {{ $t('message.cancel') }}<v-icon dark>cancel</v-icon>
-          </v-btn>
-          <v-progress-linear v-show="loading" :indeterminate="true"></v-progress-linear>
-        </div>
-      </v-flex>
-    </v-layout>
+        </v-flex>
+      </v-layout>
+      <div v-if="userIsEditor || $store.state.questionnaireMode === 'creator'">
+        <v-btn
+          @click="
+            saveQuestionnaire().then(() => {
+              loading = false;
+            })
+          "
+        >
+          {{ $t("message.saveQuestionnaire") }}<v-icon dark>save</v-icon>
+        </v-btn>
+        <v-btn @click="closeQuestionnaire()">
+          {{ $t("message.cancel") }}<v-icon dark>cancel</v-icon>
+        </v-btn>
+        <v-progress-linear
+          v-show="loading"
+          :indeterminate="true"
+        ></v-progress-linear>
+      </div>
+    </v-flex>
+  </v-layout>
 </template>
 <script>
-import axios from 'axios';
-import moment from 'moment';
-import draggable from 'vuedraggable';
-import Swatches from 'vue-swatches';
-import { TableOfCheckboxes } from '@/components/classes/questionnaire';
-import tableOfCheckboxesEditable from '@/components/questionnaireComponents/edit/tableOfCheckboxesEditable';
-import tableOfCheckboxesView from '@/components/questionnaireComponents/view/tableOfCheckboxesView';
-import tableOfRadioButtonsEditable from '@/components/questionnaireComponents/edit/tableOfRadioButtonsEditable';
-import tableOfRadioButtonsView from '@/components/questionnaireComponents/view/tableOfRadioButtonsView';
-import radioButtonsGroupEditable from '@/components/questionnaireComponents/edit/radioButtonsGroupEditable';
-import radioButtonsGroupView from '@/components/questionnaireComponents/view/radioButtonsGroupView';
-import tableOfInputsEditable from '@/components/questionnaireComponents/edit/tableOfInputsEditable';
-import tableOfInputsView from '@/components/questionnaireComponents/view/tableOfInputsView';
-import selectFromMapEditable from '@/components/questionnaireComponents/edit/selectFromMapEditable';
-import selectFromMapView from '@/components/questionnaireComponents/view/selectFromMapView';
-import 'vue-swatches/dist/vue-swatches.min.css';
-import olMap from '../js/map';
-import config from '../config';
+import axios from "axios";
+import moment from "moment";
+import draggable from "vuedraggable";
+import Swatches from "vue-swatches";
+import { TableOfCheckboxes } from "@/components/classes/questionnaire";
+import tableOfCheckboxesEditable from "@/components/questionnaireComponents/edit/tableOfCheckboxesEditable";
+import tableOfCheckboxesView from "@/components/questionnaireComponents/view/tableOfCheckboxesView";
+import tableOfRadioButtonsEditable from "@/components/questionnaireComponents/edit/tableOfRadioButtonsEditable";
+import tableOfRadioButtonsView from "@/components/questionnaireComponents/view/tableOfRadioButtonsView";
+import radioButtonsGroupEditable from "@/components/questionnaireComponents/edit/radioButtonsGroupEditable";
+import radioButtonsGroupView from "@/components/questionnaireComponents/view/radioButtonsGroupView";
+import tableOfInputsEditable from "@/components/questionnaireComponents/edit/tableOfInputsEditable";
+import tableOfInputsView from "@/components/questionnaireComponents/view/tableOfInputsView";
+import selectFromMapEditable from "@/components/questionnaireComponents/edit/selectFromMapEditable";
+import selectFromMapView from "@/components/questionnaireComponents/view/selectFromMapView";
+import "vue-swatches/dist/vue-swatches.min.css";
+import olMap from "../js/map";
+import config from "../config";
 
 export default {
-  name: 'questionnaireeditor',
-  props: ['qnnaire'],
+  name: "Questionnaireeditor",
   components: {
     draggable,
     Swatches,
@@ -1010,7 +1411,13 @@ export default {
     tableOfRadioButtonsEditable,
     tableOfRadioButtonsView,
     selectFromMapEditable,
-    selectFromMapView,
+    selectFromMapView
+  },
+  props: {
+    qnnaire: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
@@ -1020,37 +1427,58 @@ export default {
       dateStart: null,
       dateEnd: null,
       languages: [
-        { id: 'en', name: 'English' },
-        { id: 'fr', name: 'Français' },
-        { id: 'el_GR', name: 'Ελληνικά' },
-        { id: 'de', name: 'Deutsche' },
-        { id: 'it', name: 'Italiano' },
-        { id: 'es', name: 'Español' },
-        { id: 'nn', name: 'Norsk' },
+        { id: "en", name: "English" },
+        { id: "fr", name: "Français" },
+        { id: "el_GR", name: "Ελληνικά" },
+        { id: "de", name: "Deutsche" },
+        { id: "it", name: "Italiano" },
+        { id: "es", name: "Español" },
+        { id: "nn", name: "Norsk" }
       ],
       datePickerStart: null,
       datePickerEnd: null,
       loading: false,
       newQuestion: null,
       questionTypes: [
-        { type: 'textfield', name: this.$t('message.text') },
-        { type: 'textarea', name: this.$t('message.textarea') }, // TODO translate textarea
-        { type: 'textfieldvalidation', name: 'Text field with validation' },
-        { type: 'combobox', name: this.$t('message.expandableMenu') },
-        { type: 'checkboxGroup', name: this.$t('message.checkboxes') },
-        { type: 'radioButtonsGroup', name: this.$t('message.multipleChoice') },
-        { type: 'preferenceHierarchy', name: this.$t('message.sortingOptions') },
-        { type: 'mapPointer', name: this.$t('message.mapPointer') },
-        { type: 'mapLineString', name: this.$t('message.mapLineStringPointer') },
-        { type: 'mapPointerMultiple', name: this.$t('message.mapPointerMultiple') },
-        { type: 'mapLinesMultiple', name: this.$t('message.mapLinesMultiple') },
-        { type: 'mapPointsLinesMultiple', name: this.$t('message.mapPointsLinesMultiple') }, // TODO translate
-        { type: 'mapSelector', name: this.$t('message.mapSelector') }, // TODO translate
-        { type: 'titleDescription', name: this.$t('message.titleAndDescription') },
-        { type: 'tableOfCheckboxes', name: this.$t('message.tableOfCheckboxes') }, // TODO translate table of checkboxes
-        { type: 'tableOfInputs', name: this.$t('message.tableOfInputs') }, // TODO translate table of inputs
-        { type: 'tableOfRadioButtons', name: this.$t('message.tableOfRadioButtons') }, // TODO translate table of RadioButtons
-        { type: 'repeatable', name: this.$t('message.repeatable') }, // TODO translate repeatable
+        { type: "textfield", name: this.$t("message.text") },
+        { type: "textarea", name: this.$t("message.textarea") }, // TODO translate textarea
+        { type: "textfieldvalidation", name: "Text field with validation" },
+        { type: "combobox", name: this.$t("message.expandableMenu") },
+        { type: "checkboxGroup", name: this.$t("message.checkboxes") },
+        { type: "radioButtonsGroup", name: this.$t("message.multipleChoice") },
+        {
+          type: "preferenceHierarchy",
+          name: this.$t("message.sortingOptions")
+        },
+        { type: "mapPointer", name: this.$t("message.mapPointer") },
+        {
+          type: "mapLineString",
+          name: this.$t("message.mapLineStringPointer")
+        },
+        {
+          type: "mapPointerMultiple",
+          name: this.$t("message.mapPointerMultiple")
+        },
+        { type: "mapLinesMultiple", name: this.$t("message.mapLinesMultiple") },
+        {
+          type: "mapPointsLinesMultiple",
+          name: this.$t("message.mapPointsLinesMultiple")
+        }, // TODO translate
+        { type: "mapSelector", name: this.$t("message.mapSelector") }, // TODO translate
+        {
+          type: "titleDescription",
+          name: this.$t("message.titleAndDescription")
+        },
+        {
+          type: "tableOfCheckboxes",
+          name: this.$t("message.tableOfCheckboxes")
+        }, // TODO translate table of checkboxes
+        { type: "tableOfInputs", name: this.$t("message.tableOfInputs") }, // TODO translate table of inputs
+        {
+          type: "tableOfRadioButtons",
+          name: this.$t("message.tableOfRadioButtons")
+        }, // TODO translate table of RadioButtons
+        { type: "repeatable", name: this.$t("message.repeatable") } // TODO translate repeatable
       ],
       questionnaire: {
         questions: [],
@@ -1066,60 +1494,64 @@ export default {
             items: [
               {
                 id: 1,
-                type: 'heading',
-                value: null,
+                type: "heading",
+                value: null
               },
               {
                 id: 2,
-                type: 'text',
-                value: null,
+                type: "text",
+                value: null
               },
               {
                 id: 3,
-                type: 'loginRequired',
-                value: false,
-              },
-            ],
-          },
-        },
-      },
+                type: "loginRequired",
+                value: false
+              }
+            ]
+          }
+        }
+      }
     };
-  },
-  watch: {
-    '$store.state.questionnaireFeatures': function set() {
-      const feature = this.$store.state.questionnaireFeatures[0];
-      this.questionnaire.properties.mapExtent = feature.getGeometry().getExtent();
-    },
   },
   computed: {
     getQuestionsAsArray() {
-      const questionsArray = ['-'];
-      this.questionnaire.questions.forEach((question) => {
+      const questionsArray = ["-"];
+      this.questionnaire.questions.forEach(question => {
         questionsArray.push({ id: question.id, title: question.title });
       });
       return questionsArray;
     },
     getQuestionnairePagesAsArray() {
-      const pagesArray = ['-'];
-      for (let index = 0; index <= this.questionnaire.properties.pages; index += 1) {
+      const pagesArray = ["-"];
+      for (
+        let index = 0;
+        index <= this.questionnaire.properties.pages;
+        index += 1
+      ) {
         pagesArray.push(index);
       }
       return pagesArray;
     },
     computedDateFormattedMomentjsStart() {
       moment.locale(this.$store.state.user.locale);
-      this.questionnaire.properties.dateStart = moment(this.dateStart).format('x');
-      return this.dateStart ? moment(this.dateStart).format('dddd, MMMM Do YYYY') : '';
+      this.questionnaire.properties.dateStart = moment(this.dateStart).format(
+        "x"
+      );
+      return this.dateStart
+        ? moment(this.dateStart).format("dddd, MMMM Do YYYY")
+        : "";
     },
     computedDateFormattedMomentjsEnd() {
       moment.locale(this.$store.state.user.locale);
-      this.questionnaire.properties.dateEnd = moment(this.dateEnd).format('x');
-      return this.dateEnd ? moment(this.dateEnd).format('dddd, MMMM Do YYYY') : '';
+      this.questionnaire.properties.dateEnd = moment(this.dateEnd).format("x");
+      return this.dateEnd
+        ? moment(this.dateEnd).format("dddd, MMMM Do YYYY")
+        : "";
     },
     usersViewingQuestionnaireNames() {
       const names = [];
       if (this.usersViewingQuestionnaire) {
-        this.usersViewingQuestionnaire.forEach((u) => {
+        this.usersViewingQuestionnaire.forEach(u => {
           names.push(u.username);
         });
       }
@@ -1129,28 +1561,75 @@ export default {
       cache: false,
       get() {
         return String(Date.now()) + Math.floor(Math.random() * 10000);
-      },
+      }
     },
     nextItemId: {
       cache: false,
       get() {
         return String(Date.now()) + Math.floor(Math.random() * 10000);
-      },
-    },
+      }
+    }
+  },
+  watch: {
+    "$store.state.questionnaireFeatures": function set() {
+      const feature = this.$store.state.questionnaireFeatures[0];
+      this.questionnaire.properties.mapExtent = feature
+        .getGeometry()
+        .getExtent();
+    }
+  },
+  mounted() {
+    this.$eventHub.$on("removeQuestion", q => {
+      this.removeQuestion(q);
+    });
+    this.$options.sockets.userEditingThisQuestionnaire = data => {
+      console.log("this user is editing :: ", data);
+      this.userEditingNow = data.username;
+      if (this.$store.state.user._id === data.user) {
+        // eslint-disable-line no-underscore-dangle
+        this.userIsEditor = true;
+      } else {
+        this.userIsEditor = false;
+      }
+    };
+    this.$options.sockets.liveUsersInThisQuestionnaire = data => {
+      console.log("these users are in :: ", data);
+      this.usersViewingQuestionnaire = data;
+    };
+    this.$socket.emit("joinQuestionnaireRoom", {
+      user: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
+      questionnaire: this.qnnaire._id, // eslint-disable-line no-underscore-dangle
+      username: this.$store.state.user.name,
+      timestamp: Date.now()
+    });
+    this.$store.commit("setQuestionnaireMode", "editor");
+    console.log("trying to edit :: ", this.qnnaire);
+    if (this.qnnaire) {
+      console.log("loading questionnaire for edit");
+      console.log(this.questionnaire, this.qnnaire.properties.dateStart);
+      this.questionnaire = this.qnnaire;
+      console.log("loaded:: ", this.questionnaire);
+      this.dateStart = moment
+        .unix(this.qnnaire.properties.dateStart / 1000)
+        .format("YYYY-MM-DD");
+      this.dateEnd = moment
+        .unix(this.qnnaire.properties.dateEnd / 1000)
+        .format("YYYY-MM-DD");
+    }
   },
   methods: {
     titleClass(question) {
-      return !question.style.titleFontSize ? 'headline mb-0' : 'subheading';
+      return !question.style.titleFontSize ? "headline mb-0" : "subheading";
     },
     changeQuestionnaireMode(mode) {
-      this.$store.commit('setQuestionnaireMode', mode);
+      this.$store.commit("setQuestionnaireMode", mode);
     },
     convertToTimestamp(date) {
-      console.log('date to convert :: ', date);
+      console.log("date to convert :: ", date);
     },
     pageBreakChangeControl() {
       let page = 0;
-      this.questionnaire.questions.forEach((q) => {
+      this.questionnaire.questions.forEach(q => {
         // console.log(q.pageBreak);
         if (q.pageBreak) {
           page += 1;
@@ -1165,7 +1644,7 @@ export default {
     },
     async saveQuestionnaire() {
       // this.$store.commit('setQuestionnaireMode', 'normal');
-      this.questionnaire.questions.forEach((q) => {
+      this.questionnaire.questions.forEach(q => {
         // eslint-disable-next-line
         q.editing = false;
       });
@@ -1173,41 +1652,52 @@ export default {
         const url = `${config.url}/questionnaires/save`;
         console.log(url);
         const data = this.questionnaire;
-        axios.post(url, { data }, {
-          headers: { 'x-access-token': this.$store.state.token },
-        }).then((response) => {
-          // this.$store.commit('setQuestionnaireMode', 'normal');
-          this.$eventHub.$emit('refreshQuestionnaires');
-          console.log('response to save :: ', response);
-          if (response.data.type === 'new') {
-            console.log('questionnaire new');
-          } else if (response.data.type === 'replaced') {
-            console.log('questionnaire replaced');
-          }
-        });
+        axios
+          .post(
+            url,
+            { data },
+            {
+              headers: { "x-access-token": this.$store.state.token }
+            }
+          )
+          .then(response => {
+            // this.$store.commit('setQuestionnaireMode', 'normal');
+            this.$eventHub.$emit("refreshQuestionnaires");
+            console.log("response to save :: ", response);
+            if (response.data.type === "new") {
+              console.log("questionnaire new");
+            } else if (response.data.type === "replaced") {
+              console.log("questionnaire replaced");
+            }
+          });
       } catch (error) {
         this.error = error.response.data.error;
       }
-      console.log('questionnaire json is :: ', JSON.stringify(this.questionnaire));
+      console.log(
+        "questionnaire json is :: ",
+        JSON.stringify(this.questionnaire)
+      );
     },
     removeQuestion(question) {
       this.questionnaire.questions.remove(question);
     },
     reorderQuestions(question, direction) {
-      const index = this.questionnaire.questions.findIndex(item => item.id === question.id);
-      if (direction === 'up') {
+      const index = this.questionnaire.questions.findIndex(
+        item => item.id === question.id
+      );
+      if (direction === "up") {
         this.questionnaire.questions.move(index, index - 1);
-      } else if (direction === 'down') {
+      } else if (direction === "down") {
         this.questionnaire.questions.move(index, index + 1);
       }
       this.pageBreakChangeControl();
     },
     loadQuestionType() {
       console.log(this.newQuestion);
-      if (this.newQuestion === 'textfield') {
+      if (this.newQuestion === "textfield") {
         const textfield = {
           id: this.nextId,
-          type: 'textfield',
+          type: "textfield",
           page: 0,
           title: null,
           description: null,
@@ -1217,15 +1707,15 @@ export default {
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(textfield);
       }
-      if (this.newQuestion === 'textarea') {
+      if (this.newQuestion === "textarea") {
         const textarea = {
           id: this.nextId,
-          type: 'textarea',
+          type: "textarea",
           page: 0,
           title: null,
           description: null,
@@ -1235,15 +1725,15 @@ export default {
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(textarea);
       }
-      if (this.newQuestion === 'textfieldvalidation') {
+      if (this.newQuestion === "textfieldvalidation") {
         const textfieldvalidation = {
           id: this.nextId,
-          type: 'textfieldvalidation',
+          type: "textfieldvalidation",
           page: 0,
           title: null,
           description: null,
@@ -1254,72 +1744,79 @@ export default {
           pageBreak: false,
           validation: null,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(textfieldvalidation);
       }
-      if (this.newQuestion === 'combobox') {
+      if (this.newQuestion === "combobox") {
         const combobox = {
           id: this.nextId,
-          type: 'combobox',
+          type: "combobox",
           page: 0,
           title: null,
           description: null,
           value: null,
-          items: [{ id: `i${this.nextItemId}`, value: '', activatePages: [], activateQuestions: [] }],
+          items: [
+            {
+              id: `i${this.nextItemId}`,
+              value: "",
+              activatePages: [],
+              activateQuestions: []
+            }
+          ],
           error: false,
           optional: false,
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(combobox);
       }
-      if (this.newQuestion === 'checkboxGroup') {
+      if (this.newQuestion === "checkboxGroup") {
         const checkboxGroup = {
           id: this.nextId,
-          type: 'checkboxGroup',
+          type: "checkboxGroup",
           page: 0,
           title: null,
           description: null,
           value: null,
-          checkboxes: [{ id: `i${this.nextItemId}`, label: '', value: false }],
+          checkboxes: [{ id: `i${this.nextItemId}`, label: "", value: false }],
           error: false,
           optional: false,
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(checkboxGroup);
       }
-      if (this.newQuestion === 'radioButtonsGroup') {
+      if (this.newQuestion === "radioButtonsGroup") {
         const radioButtonsGroup = {
           id: this.nextId,
-          type: 'radioButtonsGroup',
+          type: "radioButtonsGroup",
           page: 0,
           title: null,
           description: null,
           value: null,
-          radios: [{ id: `i${this.nextItemId}`, label: '', radioValue: false }],
+          radios: [{ id: `i${this.nextItemId}`, label: "", radioValue: false }],
           error: false,
           optional: false,
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(radioButtonsGroup);
       }
-      if (this.newQuestion === 'mapPointer') {
+      if (this.newQuestion === "mapPointer") {
         const mapPointer = {
           id: this.nextId,
-          type: 'mapPointer',
+          type: "mapPointer",
           page: 0,
           title: null,
           description: null,
@@ -1327,59 +1824,60 @@ export default {
           buttons: [
             {
               id: `i${this.nextItemId}`,
-              label: '',
+              label: "",
               coords: null,
               style: {
                 radius: 5,
                 strkWdth: 1,
-                strkClr: 'blue',
-                fllClr: 'orange',
-              },
-            },
+                strkClr: "blue",
+                fllClr: "orange"
+              }
+            }
           ],
           error: false,
           optional: false,
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(mapPointer);
       }
-      if (this.newQuestion === 'mapLineString') {
+      if (this.newQuestion === "mapLineString") {
         const mapLineString = {
           id: this.nextId,
-          type: 'mapLineString',
+          type: "mapLineString",
           page: 0,
           title: null,
           description: null,
           value: null,
           buttons: [
-            { id: `i${this.nextItemId}`,
-              label: '',
+            {
+              id: `i${this.nextItemId}`,
+              label: "",
               coords: null,
               style: {
                 strkWdth: 1,
-                strkClr: 'blue',
-                fllClr: 'orange',
-              },
-            },
+                strkClr: "blue",
+                fllClr: "orange"
+              }
+            }
           ],
           error: false,
           optional: false,
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(mapLineString);
       }
-      if (this.newQuestion === 'preferenceHierarchy') {
+      if (this.newQuestion === "preferenceHierarchy") {
         const preferenceHierarchy = {
           id: this.nextId,
-          type: 'preferenceHierarchy',
+          type: "preferenceHierarchy",
           page: 0,
           title: null,
           description: null,
@@ -1390,101 +1888,107 @@ export default {
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(preferenceHierarchy);
       }
-      if (this.newQuestion === 'mapPointerMultiple') {
+      if (this.newQuestion === "mapPointerMultiple") {
         const mapPointerMultiple = {
           id: this.nextId,
-          type: 'mapPointerMultiple',
+          type: "mapPointerMultiple",
           page: 0,
           title: null,
           description: null,
           value: null,
-          lines: [{
-            id: `i${this.nextItemId}`,
-            value: '',
-            coords: null,
-            style: {
-              strkWdth: 1,
-              strkClr: 'blue',
-              fllClr: 'orange',
-            },
-          }],
+          lines: [
+            {
+              id: `i${this.nextItemId}`,
+              value: "",
+              coords: null,
+              style: {
+                strkWdth: 1,
+                strkClr: "blue",
+                fllClr: "orange"
+              }
+            }
+          ],
           error: false,
           optional: false,
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(mapPointerMultiple);
       }
-      if (this.newQuestion === 'mapLinesMultiple') {
+      if (this.newQuestion === "mapLinesMultiple") {
         // TODO let the user submit without pointing at map? or not?
         const mapLinesMultiple = {
           id: this.nextId,
-          type: 'mapLinesMultiple',
+          type: "mapLinesMultiple",
           page: 0,
           title: null,
           description: null,
           value: null,
-          lines: [{
-            id: `i${this.nextItemId}`,
-            value: '',
-            coords: null,
-            style: {
-              strkWdth: 1,
-              strkClr: 'blue',
-              fllClr: 'orange',
-            },
-          }],
+          lines: [
+            {
+              id: `i${this.nextItemId}`,
+              value: "",
+              coords: null,
+              style: {
+                strkWdth: 1,
+                strkClr: "blue",
+                fllClr: "orange"
+              }
+            }
+          ],
           error: false,
           optional: false,
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(mapLinesMultiple);
       }
-      if (this.newQuestion === 'mapPointsLinesMultiple') {
+      if (this.newQuestion === "mapPointsLinesMultiple") {
         // TODO let the user submit without pointing at map? or not?
         const mapPointsLinesMultiple = {
           id: this.nextId,
-          type: 'mapPointsLinesMultiple',
+          type: "mapPointsLinesMultiple",
           page: 0,
           title: null,
           description: null,
           value: null,
-          lines: [{
-            id: `i${this.nextItemId}`,
-            value: '',
-            coords: null,
-            style: {
-              strkWdth: 1,
-              strkClr: 'blue',
-              fllClr: 'orange',
-            },
-          }],
+          lines: [
+            {
+              id: `i${this.nextItemId}`,
+              value: "",
+              coords: null,
+              style: {
+                strkWdth: 1,
+                strkClr: "blue",
+                fllClr: "orange"
+              }
+            }
+          ],
           error: false,
           optional: false,
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(mapPointsLinesMultiple);
       }
-      if (this.newQuestion === 'titleDescription') {
+      if (this.newQuestion === "titleDescription") {
         const titleDescription = {
           id: this.nextId,
-          type: 'titleDescription',
+          type: "titleDescription",
           page: 0,
           title: null,
           description: null,
@@ -1493,22 +1997,22 @@ export default {
           editing: true,
           pageBreak: false,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(titleDescription);
       }
-      if (this.newQuestion === 'tableOfCheckboxes') {
+      if (this.newQuestion === "tableOfCheckboxes") {
         const newTOCquestion = {
-          id: this.nextId,
+          id: this.nextId
         };
         const tableOfCheckboxes = new TableOfCheckboxes(newTOCquestion);
         this.questionnaire.questions.push(tableOfCheckboxes);
       }
-      if (this.newQuestion === 'tableOfRadioButtons') {
+      if (this.newQuestion === "tableOfRadioButtons") {
         const tableOfRadioButtons = {
           id: this.nextId,
-          type: 'tableOfRadioButtons',
+          type: "tableOfRadioButtons",
           page: 0,
           title: null,
           description: null,
@@ -1519,30 +2023,30 @@ export default {
           horizontalValues: [],
           verticalValues: [],
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(tableOfRadioButtons);
       }
-      if (this.newQuestion === 'repeatable') {
+      if (this.newQuestion === "repeatable") {
         const newSetOfQuestions = {
           id: this.nextId,
-          type: 'repeatable',
-          buttonText: '',
-          repeatsPage: '',
+          type: "repeatable",
+          buttonText: "",
+          repeatsPage: "",
           page: 0,
           editing: true,
           questions: [],
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(newSetOfQuestions);
       }
-      if (this.newQuestion === 'tableOfInputs') {
+      if (this.newQuestion === "tableOfInputs") {
         const tableOfInputs = {
           id: this.nextId,
-          type: 'tableOfInputs',
+          type: "tableOfInputs",
           page: 0,
           title: null,
           description: null,
@@ -1552,15 +2056,15 @@ export default {
           pageBreak: false,
           verticalValues: [],
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(tableOfInputs);
       }
-      if (this.newQuestion === 'mapSelector') {
+      if (this.newQuestion === "mapSelector") {
         const mapSelector = {
           id: this.nextId,
-          type: 'mapSelector',
+          type: "mapSelector",
           page: 0,
           title: null,
           description: null,
@@ -1568,23 +2072,23 @@ export default {
           buttons: [
             {
               id: `i${this.nextItemId}`,
-              label: '',
+              label: "",
               coords: null,
               style: {
                 radius: 5,
                 strkWdth: 1,
-                strkClr: 'blue',
-                fllClr: 'orange',
-              },
-            },
+                strkClr: "blue",
+                fllClr: "orange"
+              }
+            }
           ],
           optional: false,
           editing: true,
           pageBreak: false,
           coords: null,
           style: {
-            titleFontSize: null,
-          },
+            titleFontSize: null
+          }
         };
         this.questionnaire.questions.push(mapSelector);
       }
@@ -1594,58 +2098,24 @@ export default {
       });
     },
     getFromMap(id, type) {
-      olMap.removeFeaturesFromLayer('customLayer', 'buttonId', id);
-      this.$store.commit('setQuestionnaireFeatureId', id);
+      olMap.removeFeaturesFromLayer("customLayer", "buttonId", id);
+      this.$store.commit("setQuestionnaireFeatureId", id);
       olMap.setActiveInteraction(type);
     },
     closeQuestionnaire() {
-      this.$store.commit('setQuestionnaireMode', 'normal');
-      this.$eventHub.$emit('refreshQuestionnaires');
-      this.$socket.emit('exitQuestionnaireRoom', {
+      this.$store.commit("setQuestionnaireMode", "normal");
+      this.$eventHub.$emit("refreshQuestionnaires");
+      this.$socket.emit("exitQuestionnaireRoom", {
         user: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-        questionnaire: this.questionnaire._id, // eslint-disable-line no-underscore-dangle
+        questionnaire: this.questionnaire._id // eslint-disable-line no-underscore-dangle
       });
-    },
-  },
-  mounted() {
-    this.$eventHub.$on('removeQuestion', (q) => {
-      this.removeQuestion(q);
-    });
-    this.$options.sockets.userEditingThisQuestionnaire = (data) => {
-      console.log('this user is editing :: ', data);
-      this.userEditingNow = data.username;
-      if (this.$store.state.user._id === data.user) { // eslint-disable-line no-underscore-dangle
-        this.userIsEditor = true;
-      } else {
-        this.userIsEditor = false;
-      }
-    };
-    this.$options.sockets.liveUsersInThisQuestionnaire = (data) => {
-      console.log('these users are in :: ', data);
-      this.usersViewingQuestionnaire = data;
-    };
-    this.$socket.emit('joinQuestionnaireRoom', {
-      user: this.$store.state.user._id, // eslint-disable-line no-underscore-dangle
-      questionnaire: this.qnnaire._id, // eslint-disable-line no-underscore-dangle
-      username: this.$store.state.user.name,
-      timestamp: Date.now(),
-    });
-    this.$store.commit('setQuestionnaireMode', 'editor');
-    console.log('trying to edit :: ', this.qnnaire);
-    if (this.qnnaire) {
-      console.log('loading questionnaire for edit');
-      console.log(this.questionnaire, this.qnnaire.properties.dateStart);
-      this.questionnaire = this.qnnaire;
-      console.log('loaded:: ', this.questionnaire);
-      this.dateStart = moment.unix(this.qnnaire.properties.dateStart / 1000).format('YYYY-MM-DD');
-      this.dateEnd = moment.unix(this.qnnaire.properties.dateEnd / 1000).format('YYYY-MM-DD');
     }
-  },
+  }
 };
 </script>
 <style scoped>
-  .force-hover:hover {
-    background-color: bisque;
-    cursor: pointer;
-  }
+.force-hover:hover {
+  background-color: bisque;
+  cursor: pointer;
+}
 </style>

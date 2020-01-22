@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios from "axios";
 
-export default(() => {
+export default () => {
   // console.log('problem?');
   const url = axios.create({
-    baseURL: 'https://localhost:8081/v1/',
+    baseURL: "https://localhost:8081/v1/"
   });
   return url;
-});
+};
